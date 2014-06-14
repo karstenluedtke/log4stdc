@@ -1,0 +1,478 @@
+
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#define L4SC_WINDOWS_FILES 1
+#define L4SC_WINDOWS_LOCKS 1
+#include <windows.h>
+#include <malloc.h>  /* for alloca */
+#else
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <pthread.h>
+#endif
+
+#include "logobjects.h"
+
+struct appender_lock;
+
+static l4sc_appender_ptr_t init_appender(void *buf, size_t bufsize);
+static void destroy_appender(l4sc_appender_ptr_t appender);
+static size_t get_appender_size(l4sc_appender_cptr_t obj);
+
+static int  set_appender_option(l4sc_appender_ptr_t obj,
+				const char *name,size_t namelen,
+				const char *value, size_t vallen);
+static int  get_appender_option(l4sc_appender_cptr_t obj,
+				const char *name,size_t namelen,
+				char *valbuf, size_t bufsize);
+static void apply_appender_options(l4sc_appender_ptr_t obj);
+static void append_to_output(l4sc_appender_ptr_t appender,
+			     l4sc_logmessage_cptr_t msg);
+static struct appender_lock *lock_appender(l4sc_appender_ptr_t appender);
+static void unlock_appender(l4sc_appender_ptr_t appender,
+					struct appender_lock *lock);
+static void open_appender(l4sc_appender_ptr_t appender);
+static void close_appender(l4sc_appender_ptr_t appender);
+static int  start_rollover(l4sc_appender_ptr_t appender);
+static void complete_rollover(l4sc_appender_ptr_t appender);
+
+static int merge_path(char *buf, int bufsize,
+		      const char *dirpath, const char *relpath, int rellen);
+
+#define is_open(appender) ((appender)->fu.fh != NULL)
+
+#define need_rollover(appender,len) \
+	(((appender)->maxfilesize > 0) && \
+	 ((appender)->maxfilesize < (appender)->filesize + (len)))
+
+extern const struct l4sc_appender_class l4sc_sysout_appender_class;
+
+const struct l4sc_appender_class l4sc_file_appender_class = {
+	.super = &l4sc_sysout_appender_class,
+	.name = "fileappender",
+	.init = init_appender,
+	.destroy = destroy_appender,
+	.clonesize = get_appender_size,
+
+	.set_opt = set_appender_option,
+	.get_opt = get_appender_option,
+	.apply = apply_appender_options,
+	.close = close_appender,
+
+	.append = append_to_output,
+};
+
+struct appender_lock {
+#ifdef L4SC_WINDOWS_LOCKS
+	CRITICAL_SECTION critsection;
+#else
+	pthread_mutex_t mutex;
+#endif
+};
+
+int
+l4sc_appender_lock_size(void)
+{
+	return (sizeof(struct appender_lock));
+}
+
+static char initial_working_directory[256] = { 0 };
+
+static l4sc_appender_ptr_t
+init_appender(void *buf, size_t bufsize)
+{
+	struct appender_lock *lock;
+
+	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
+			  l4sc_appender_ptr_t, appender, buf, bufsize,
+			  &l4sc_file_appender_class);
+
+	appender->name = "file appender";
+	lock = (struct appender_lock *) &appender->lockbuf;
+	if (sizeof(*lock) <= sizeof(&appender->lockbuf)) {
+#ifdef L4SC_WINDOWS_LOCKS
+		InitializeCriticalSection(&lock->critsection);
+#else
+		static pthread_mutexattr_t attr;
+		pthread_mutexattr_init (&attr);
+		pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE);
+		pthread_mutex_init(&lock->mutex, &attr);
+#endif
+		appender->lock = lock;
+	} else {
+		LOGERROR(("%s: too few space for lock, need %d, have %d",
+			__FUNCTION__, (int) sizeof(*lock),
+			(int) sizeof(appender->lockbuf)));
+	}
+	if (initial_working_directory[0] == 0) {
+		if (getcwd(initial_working_directory,
+				sizeof(initial_working_directory)) == NULL) {
+			LOGERROR(("%s: cannot store initial working dir: %d",
+				__FUNCTION__, (int) errno));
+		}
+	}
+	return (appender);
+}
+
+static void
+destroy_appender(l4sc_appender_ptr_t appender)
+{
+	struct appender_lock *lock = appender->lock;
+	close_appender(appender);
+	if (lock) {
+#ifdef L4SC_WINDOWS_LOCKS
+		DeleteCriticalSection(&lock->critsection);
+#else
+		pthread_mutex_destroy(&lock->mutex);
+#endif
+	}
+	BFC_DESTROY_EPILOGUE(appender, &l4sc_file_appender_class);
+}
+
+static size_t
+get_appender_size(l4sc_appender_cptr_t obj)
+{
+	return (sizeof(struct l4sc_appender));
+}
+
+static int
+set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
+				     const char *value, size_t vallen)
+{
+	LOGINFO(("%s: %.*s=\"%.*s\"",__FUNCTION__,
+		(int) namelen, name, (int) vallen, value));
+
+	if ((namelen == 4) && (strncasecmp(name, "File", 4) == 0)) {
+		int n = merge_path(obj->pathbuf, sizeof(obj->pathbuf),
+				   initial_working_directory, value, vallen);
+		if ((n > 0) && (n < sizeof(obj->pathbuf))) {
+			obj->filename = obj->pathbuf;
+			LOGINFO(("%s: File set to \"%s\"",
+				__FUNCTION__, obj->filename));
+		} else {
+			char *p = malloc(n+20);
+			if (p != NULL) {
+				merge_path(p, n+20, initial_working_directory, 
+								value, vallen);
+				obj->filename = p;
+				LOGINFO(("%s: File set to \"%s\" (malloc)",
+					__FUNCTION__, obj->filename));
+			} else {
+				LOGERROR(("%s: no memory for File \"%.*s\"",
+					__FUNCTION__, (int) vallen, value));
+			}
+		}
+	} else if ((namelen == 11)
+		&& (strncasecmp(name, "MaxFileSize", 11) == 0)) {
+		char *unit = NULL;
+		obj->maxfilesize = strtoul(value, &unit, 10);
+		if (unit != NULL) {
+			while ((unit < value+vallen) && (unit[0] == ' ')) {
+				unit++;
+			}
+			if (unit < value+vallen) {
+				switch (unit[0]) {
+				case 'k':
+				case 'K': obj->maxfilesize <<= 10;
+					  break;
+				case 'm':
+				case 'M': obj->maxfilesize <<= 20;
+					  break;
+				case 'g':
+				case 'G': obj->maxfilesize <<= 30;
+					  break;
+				default:
+					LOGERROR(("%s: unknown unit in"
+						" %.*s=\"%.*s\"",__FUNCTION__,
+						(int) namelen, name,
+						(int) vallen, value));
+				}
+			}
+		}
+		if (obj->maxfilesize < 50) {
+			/* assume size in MB */
+			obj->maxfilesize <<= 20;
+		} else if (obj->maxfilesize < 1000) {
+			/* assume size in kB */
+			obj->maxfilesize <<= 10;
+		}
+		LOGINFO(("%s: MaxFileSize set to %lu",
+			__FUNCTION__, obj->maxfilesize));
+		
+	} else if ((namelen == 14)
+		&& (strncasecmp(name, "MaxBackupIndex", 14) == 0)) {
+		obj->maxbackupindex = strtoul(value, NULL, 10);
+		LOGINFO(("%s: MaxBackupIndex set to %u",
+			__FUNCTION__, obj->maxbackupindex));
+	}
+	return (0);
+}
+
+static int
+get_appender_option(l4sc_appender_cptr_t obj, const char *name, size_t namelen,
+				     char *valbuf, size_t bufsize)
+{
+	return (0);
+}
+
+#if defined(L4SC_WINDOWS_FILES)
+#define WRITEFH(a,s,l)	WriteFile((HANDLE)(a)->fu.fh,(s),(l),NULL,NULL)
+#else
+static int write_and_retry(int fd, const char *s, int len)
+{
+	int rc, err, written = 0;
+	while (written < len) {
+		if ((rc = write(fd, s+written, len-written)) > 0) {
+			written += rc;
+		} else if (rc < 0) {
+			err = errno;
+			if ((err != EAGAIN) && (err != EINTR)) {
+				return (-err);
+			}
+		}
+	}
+	return (written);
+}
+#define WRITEFH(a,s,l)	write_and_retry((a)->fu.fd,(s),(l))
+#endif
+
+static void
+append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
+{
+	l4sc_layout_cptr_t layout = &appender->layout;
+	size_t len = 0;
+	int rolling = 0;
+	struct appender_lock *lock;
+	if (msg && ((len = msg->msglen) > 0)) {
+		size_t bufsize = len + 100;
+		char *buf = alloca(bufsize);
+		len = VMETHCALL(layout,format,(layout,msg,buf,bufsize), 0);
+		if (len > 0) {
+			if (is_open(appender) && !need_rollover(appender,len)) {
+				WRITEFH(appender, buf, len);
+				appender->filesize += len;
+			} else {
+
+				lock = lock_appender(appender);
+
+				if (!is_open(appender)) {
+					open_appender(appender);
+				}
+				if (need_rollover(appender, len)) {
+					rolling = start_rollover(appender);
+				}
+				if (is_open(appender)) {
+					WRITEFH(appender, buf, len);
+					appender->filesize += len;
+				}
+
+				unlock_appender(appender, lock);
+			
+				if (rolling) {
+					complete_rollover(appender);
+				}
+			}
+		}
+	}
+}
+
+static void
+apply_appender_options(l4sc_appender_ptr_t obj)
+{
+}
+
+static struct appender_lock *
+lock_appender(l4sc_appender_ptr_t appender)
+{
+	struct appender_lock *lock = appender->lock;
+	if (lock) {
+#ifdef L4SC_WINDOWS_LOCKS
+		EnterCriticalSection(&lock->critsection);
+#else
+		pthread_mutex_lock(&lock->mutex);
+#endif
+		return (lock);
+	}
+	return (NULL);
+}
+
+static void
+unlock_appender(l4sc_appender_ptr_t appender, struct appender_lock *lock)
+{
+	
+	if (lock) {
+#ifdef L4SC_WINDOWS_LOCKS
+		LeaveCriticalSection(&lock->critsection);
+#else
+		pthread_mutex_unlock(&lock->mutex);
+#endif
+	}
+}
+
+static void
+open_appender(l4sc_appender_ptr_t appender)
+{
+#if defined(L4SC_WINDOWS_FILES)
+	if (appender->filename != NULL) {
+		HANDLE fh = CreateFileA(appender->filename, FILE_APPEND_DATA,
+			FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL /* FILE_FLAG_WRITE_THROUGH */,
+			NULL);
+		if (fh != INVALID_HANDLE_VALUE) {
+			DWORD sizehigh=0;
+			DWORD size = GetFileSize(fh, &sizehigh);
+			if (size == INVALID_FILE_SIZE) {
+				size = 0;
+			}
+			appender->fu.fh = (void *) fh;
+			appender->filesize = size;
+		}
+	}
+#else
+	if (appender->filename != NULL) {
+		int fd = open(appender->filename,
+			      O_WRONLY | O_APPEND | O_CREAT, 0644);
+		if (fd != -1) {
+			struct stat sb;
+			if (fstat(fd, &sb) != 0) {
+				memset(&sb, 0, sizeof(sb));
+			}
+			appender->fu.fd = fd;
+			appender->filesize = sb.st_size;
+		}
+	}
+#endif
+}
+
+static void
+close_appender(l4sc_appender_ptr_t appender)
+{
+#if defined(L4SC_WINDOWS_FILES)
+	HANDLE fh = appender->fu.fh;
+	appender->fu.fh = NULL;
+	appender->fu.fd = 0;
+	if (fh) {
+		CloseHandle((HANDLE) fh);
+	}
+#else
+	int fd = appender->fu.fd;
+	appender->fu.fh = NULL;
+	appender->fu.fd = 0;
+	if (fd) {
+		close(fd);
+	}
+#endif
+}
+
+static int
+start_rollover(l4sc_appender_ptr_t appender)
+{
+	int fnlen, bufsize;
+	char *from, *to;
+	if (appender->filename == NULL) {
+		return (0);
+	}
+	fnlen = strlen(appender->filename);
+	bufsize = fnlen + 10;
+	from = alloca(bufsize);
+	to   = alloca(bufsize);
+	/*
+	 * test.log > test.log.0
+	 */
+	memcpy(from, appender->filename, fnlen);
+	from[fnlen] = '\0';
+	memcpy(to,   appender->filename, fnlen);
+	to[fnlen+0] = '.';
+	to[fnlen+1] = '0';
+	to[fnlen+2] = '\0';
+#if defined(L4SC_WINDOWS_FILES)
+	close_appender(appender);
+	MoveFileExA(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
+#else
+	rename(from, to);
+	close_appender(appender);
+#endif
+	open_appender(appender);
+	return (1);
+}
+
+static void
+complete_rollover(l4sc_appender_ptr_t appender)
+{
+	int i, fnlen, bufsize;
+	char *from, *to;
+	if (appender->filename == NULL) {
+		return;
+	}
+	fnlen = strlen(appender->filename);
+	bufsize = fnlen + 10;
+	from = alloca(bufsize);
+	to   = alloca(bufsize);
+
+	/*
+	 * Remove last backup file
+	 */
+	snprintf(from+fnlen, 6, ".%u", appender->maxbackupindex);
+#if defined(L4SC_WINDOWS_FILES)
+	DeleteFileA(from);
+#else
+	unlink(from);
+#endif
+	/*
+	 * test.log.8 -> test.log.9,
+	 * test.log.7 -> test.log.8,
+	 * ...
+	 * test.log.0 -> test.log.1
+	 */
+	for (i = appender->maxbackupindex; i > 0; i--) {
+		snprintf(to+fnlen, 6,   ".%d", i);
+		snprintf(from+fnlen, 6, ".%d", i-1);
+#if defined(L4SC_WINDOWS_FILES)
+		MoveFileExA(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
+#else
+		rename(from, to);
+#endif
+	}
+}
+
+static int
+merge_path(char *buf, int bufsize,
+	   const char *dirpath, const char *relpath, int rellen)
+{
+	char sep = '/';
+	const int dirlen = strlen(dirpath);
+	int i;
+
+	if ((relpath == NULL) || (rellen <= 0)) {
+		LOGERROR(("%s: no relative path", __FUNCTION__));
+		return (-EFAULT);
+	}
+	if ((dirlen == 0)
+	 || ((rellen > 0) && ((relpath[0] == '/') || (relpath[0] == '\\')))
+	 || ((rellen > 2) && ( relpath[1] == ':')		/* "C:/" */
+			  && ((relpath[2] == '/') || (relpath[2] == '\\')))) {
+		if (buf && (bufsize > 0)) {
+			snprintf(buf, bufsize, "%.*s", rellen, relpath);
+		}
+		return (rellen);
+	} else {
+		for (i=0; i < dirlen; i++) {
+			if ((dirpath[i] == '/') || (dirpath[i] == '\\')) {
+				sep = dirpath[i];
+				break;
+			}
+		}
+		if (buf && (bufsize > 0)) {
+			snprintf(buf, bufsize, "%.*s%c%.*s",
+				dirlen, dirpath, sep, rellen, relpath);
+		}
+	}
+	return (dirlen + rellen + 1);
+}
+

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender class="org.apache.log4j.ConsoleAppender" name="Console">
+		<layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="pallog">
+        <param name="File" value="pal.log"/>
+        <param name="MaxBackupIndex" value="9"/>
+        <param name="MaxFileSize" value="10MB"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p&gt; %m%n"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="pionlog">
+        <param name="File" value="pion.log"/>
+        <param name="MaxBackupIndex" value="3"/>
+        <param name="MaxFileSize" value="2MB"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p&gt; %m%n&gt; %m%n%m%n"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="R">
+        <param name="MaxBackupIndex" value="3"/>
+        <param name="MaxFileSize" value="2048KB"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+	
+	
+	<logger name="com.teles.softphone.app">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.impl.accountmngr">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.impl.calllogmngr">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+
+	<logger name="com.teles.softphone.impl.callmngr">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.impl.prtcl.C5">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.services.configservice">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.services.directoryservice">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.services.genericprtcl">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.services.palservice">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.services.resourcemngr">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.util">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger name="com.teles.softphone.ui">
+		<level value="INFO"/>
+		<appender-ref ref="R"/>
+	</logger>
+	
+	<logger additivity="false" name="pal">
+        <level value="info"/>
+        <appender-ref ref="pallog"/>
+    </logger>
+    <logger name="pal.api">
+        <level value="info"/>
+    </logger>
+    <logger name="pal.csta">
+        <level value="info"/>
+    </logger>
+    <logger name="pal.script">
+        <level value="info"/>
+    </logger>
+    <logger name="pal.service">
+        <level value="info"/>
+    </logger>
+    <logger name="pal.soap">
+        <level value="info"/>
+    </logger>
+    <logger name="pal.soap.data">
+        <level value="info"/>
+    </logger>
+    <logger name="pal.voip">
+        <level value="info"/>
+    </logger>
+    <logger name="pal.xml">
+        <level value="info"/>
+    </logger>
+	
+
+    <logger additivity="false" name="pion">
+        <level value="info"/>
+        <appender-ref ref="pionlog"/>
+    </logger>
+    
+<!--	<root>
+        <level name="root" value="INFO"/>
+    </root> -->
+</log4j:configuration>

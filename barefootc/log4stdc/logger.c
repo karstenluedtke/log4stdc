@@ -8,10 +8,11 @@
 #include <errno.h>
 
 #include "logobjects.h"
+#include "barefootc/mempool.h"
 
 #define MAX_APPENDERS_PER_LOGGER 4
 
-static l4sc_logger_ptr_t init_logger(void *buf, size_t bufsize);
+static l4sc_logger_ptr_t init_logger(void *, size_t, struct mempool *);
 static void destroy_logger(l4sc_logger_ptr_t logger);
 static void do_not_destroy(l4sc_logger_ptr_t logger);
 static size_t	  get_logger_size(l4sc_logger_cptr_t obj);
@@ -90,12 +91,12 @@ int l4sc_num_loggers = 1;
 l4sc_logger_ptr_t l4sc_loggers[MAX_LOGGERS] = { &rootlogger, NULL };
 
 static l4sc_logger_ptr_t
-init_logger(void *buf, size_t bufsize)
+init_logger(void *buf, size_t bufsize, struct mempool *pool)
 {
 	int i;
 
 	BFC_INIT_PROLOGUE(l4sc_logger_class_ptr_t,
-			  l4sc_logger_ptr_t, logger, buf, bufsize,
+			  l4sc_logger_ptr_t, logger, buf, bufsize, pool,
 			  &loggercls);
 
 	logger->name = "logger";
@@ -297,6 +298,7 @@ l4sc_get_logger(const char *name, int namelen)
 {
 	l4sc_logger_ptr_t logger = NULL;
 	int i, nlen = (namelen > 0)? namelen: strlen(name);
+	struct mempool *pool = get_default_mempool();
 
 	for (i=0; i < l4sc_num_loggers; i++) {
 		if ((logger = l4sc_loggers[i]) != NULL) {
@@ -309,9 +311,10 @@ l4sc_get_logger(const char *name, int namelen)
 
 	LOGINFO(("%s: logger %.*s not found, creating ...",
 				__FUNCTION__, nlen, name));
-	logger = malloc(sizeof(*logger));
-	CMETHCALL(&loggercls, init, (logger, sizeof(*logger)), logger);
+	logger = bfc_mempool_alloc(pool, sizeof(*logger));
+	CMETHCALL(&loggercls, init, (logger, sizeof(*logger), pool), logger);
 	CMETHCALL(&loggercls, set_name, (logger, name, nlen), (void)0);
+	logger->pool = pool;
 	LOGINFO(("%s: created %s (class %s).",
 				__FUNCTION__, logger->name, loggercls.name));
 	return (logger);

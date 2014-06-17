@@ -8,7 +8,7 @@
 #include "barefootc/object.h"
 #include "barefootc/mempool.h"
 
-static struct mempool *init_pool(void *buf, size_t bufsize);
+static struct mempool *init_pool(void *buf,size_t bufsize,struct mempool *pool);
 static void destroy_pool(struct mempool *pool);
 static struct mempool *clone_pool(const struct mempool *pool,
 				  void *buf, size_t bufsize);
@@ -64,10 +64,10 @@ struct stdc_mempool bfc_stdc_mempool = {
 };
 
 static struct mempool *
-init_pool(void *buf, size_t bufsize)
+init_pool(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(bfc_mempool_class_ptr_t,
-			  struct stdc_mempool *, stdcpool, buf, bufsize,
+			  struct stdc_mempool *, stdcpool, buf, bufsize, pool,
 			  &bfc_stdc_mempool_class);
 	return ((struct mempool *) stdcpool);
 }

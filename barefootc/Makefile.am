@@ -1,10 +1,17 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
-lib_LIBRARIES = liblog4stdc.a
+lib_LIBRARIES = libbarefootc.a liblog4stdc.a
 include_HEADERS = log4stdc/log4stdc.h
 nobase_include_HEADERS = barefootc/object.h
+nobase_include_HEADERS+= barefootc/mempool.h
+nobase_include_HEADERS+= barefootc/vector.h
 
 noinst_PROGRAMS = testlink
+noinst_PROGRAMS+= vector_test
+
+libbarefootc_a_SOURCES = containers/vector_ref.c
+libbarefootc_a_SOURCES+= containers/vector_set.c
+libbarefootc_a_SOURCES+= mempools/stdcpool.c
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjects.h
 liblog4stdc_a_SOURCES+= barefootc/object.h
@@ -37,5 +44,9 @@ liblog4stdc_a_SOURCES+= log4cxx/loader.cpp
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a -lexpat
 testlink_DEPENDENCIES = liblog4stdc.a
+
+vector_test_SOURCES = containers/vector_test.c
+vector_test_LDADD = libbarefootc.a
+vector_test_DEPENDENCIES = libbarefootc.a
 
 AM_CPPFLAGS = -Ilog4stdc

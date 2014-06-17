@@ -441,7 +441,7 @@ do {									\
  */
  
 #define BFC_VECTOR_INIT(vec) \
-	BFC_VECTOR_INIT_POOL(vec,get_stdc_mempool())
+	BFC_VECTOR_INIT_POOL(vec,get_default_mempool())
 
 /**
  * @brief    Set a custom memory allocation functions for a vector.

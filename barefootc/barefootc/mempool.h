@@ -121,6 +121,11 @@ void mempool_dump_all(int depth);
 void mempool_dump_subpools(struct mempool *pool, int depth);
 void mempool_fatal(const char *msg, const struct mempool *pool);
 
+struct mempool *bfc_get_default_mempool(void);
+#ifndef get_default_mempool
+#define get_default_mempool	bfc_get_default_mempool
+#endif
+
 struct mempool *bfc_get_stdc_mempool(const char *, int, const char *);
 #ifndef get_stdc_mempool
 #define get_stdc_mempool() bfc_get_stdc_mempool(__FILE__,__LINE__,__FUNCTION__)

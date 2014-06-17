@@ -41,10 +41,12 @@ liblog4stdc_a_SOURCES+= log4cxx/pool.cpp
 liblog4stdc_a_SOURCES+= log4cxx/mutex.cpp
 liblog4stdc_a_SOURCES+= log4cxx/properties.cpp
 liblog4stdc_a_SOURCES+= log4cxx/loader.cpp
+liblog4stdc_a_SOURCES+= mempools/stdcpool.c
+liblog4stdc_a_SOURCES+= mempools/defaultpool.c
 
 testlink_SOURCES = testlink.cpp
-testlink_LDADD = liblog4stdc.a libbarefootc.a -lexpat
-testlink_DEPENDENCIES = liblog4stdc.a libbarefootc.a
+testlink_LDADD = liblog4stdc.a -lexpat
+testlink_DEPENDENCIES = liblog4stdc.a
 
 vector_test_SOURCES = containers/vector_test.c
 vector_test_LDADD = libbarefootc.a

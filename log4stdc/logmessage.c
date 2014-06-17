@@ -29,7 +29,7 @@
 
 #include "logobjects.h"
 
-static l4sc_logmessage_ptr_t init_logmessage(void *buf, size_t bufsize);
+static l4sc_logmessage_ptr_t init_logmessage(void *, size_t, struct mempool *);
 static size_t get_logmessage_size(l4sc_logmessage_cptr_t obj);
 static unsigned get_logmessage_hashcode(l4sc_logmessage_cptr_t obj);
 static int  is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other);
@@ -48,10 +48,10 @@ const struct l4sc_logmessage_class l4sc_logmessage_class = {
 };
 
 static l4sc_logmessage_ptr_t
-init_logmessage(void *buf, size_t bufsize)
+init_logmessage(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(const struct l4sc_logmessage_class *,
-			  l4sc_logmessage_ptr_t, logmessage, buf, bufsize,
+			  l4sc_logmessage_ptr_t, logmessage, buf, bufsize, pool,
 			  &l4sc_logmessage_class);
 
 	return ((l4sc_logmessage_ptr_t) logmessage);
@@ -117,7 +117,7 @@ l4sc_init_logmessage(void *buf, size_t bufsize,
 {
 	l4sc_logmessage_ptr_t m;
 	
-	if ((m = init_logmessage(buf, bufsize)) != NULL) {
+	if ((m = init_logmessage(buf, bufsize, NULL)) != NULL) {
 #if defined(L4SC_USE_WINDOWS_SYSTEMTIME)
 		FILETIME ft;
 		uint64_t tmp, secs;

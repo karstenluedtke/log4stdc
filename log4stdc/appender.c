@@ -8,8 +8,9 @@
 #endif
 
 #include "logobjects.h"
+#include "barefootc/mempool.h"
 
-static l4sc_appender_ptr_t init_appender(void *buf, size_t bufsize);
+static l4sc_appender_ptr_t init_appender(void *, size_t, struct mempool *);
 static void destroy_appender(l4sc_appender_ptr_t appender);
 static size_t get_appender_size(l4sc_appender_cptr_t obj);
 
@@ -53,19 +54,19 @@ l4sc_appender_ptr_t l4sc_appenders[MAX_APPENDERS] = { NULL };
 
 
 static l4sc_appender_ptr_t
-init_appender(void *buf, size_t bufsize)
+init_appender(void *buf, size_t bufsize, struct mempool *pool)
 {
 	l4sc_layout_ptr_t layout;
 	int i;
 
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
-			  l4sc_appender_ptr_t, appender, buf, bufsize,
+			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_sysout_appender_class);
 
 	appender->name = "sysout appender";
 	layout = &appender->layout;
 	CMETHCALL(&l4sc_patternlayout_class,
-		  init, (layout, sizeof(appender->layout)), layout);
+		  init, (layout, sizeof(appender->layout), pool), layout);
 	for (i=0; i < l4sc_num_appenders; i++) {
 		if (l4sc_appenders[i] == NULL) {
 			l4sc_appenders[i] = appender;
@@ -195,6 +196,7 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 	int i;
 	l4sc_appender_ptr_t appender = NULL;
 	l4sc_appender_class_ptr_t clazz = &l4sc_sysout_appender_class;
+	struct mempool *pool = get_default_mempool();
 
 	for (i=0; i < l4sc_num_appenders; i++) {
 		if ((appender = l4sc_appenders[i]) != NULL) {
@@ -216,9 +218,10 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 
 	LOGINFO(("%s: appender %.*s not found, creating %.*s ...",
 				__FUNCTION__, nlen, name, klen, kind));
-	appender = malloc(sizeof(*appender));
-	CMETHCALL(clazz, init, (appender, sizeof(*appender)), appender);
+	appender = bfc_mempool_alloc(pool, sizeof(*appender));
+	CMETHCALL(clazz, init, (appender, sizeof(*appender), pool), appender);
 	CMETHCALL(clazz, set_name, (appender, name, nlen), (void)0);
+	appender->pool = pool;
 	LOGINFO(("%s: created %s (class %s).",
 				__FUNCTION__, appender->name, clazz->name));
 	return (appender);

@@ -31,10 +31,10 @@ const struct l4sc_object_class l4sc_object_class = {
 };
 
 l4sc_objptr_t
-l4sc_default_init_object(void *buf, size_t bufsize)
+l4sc_default_init_object(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(const struct l4sc_object_class *,
-			  l4sc_objptr_t, object, buf, bufsize,
+			  l4sc_objptr_t, object, buf, bufsize, pool,
 			  &l4sc_object_class);
 	return ((l4sc_objptr_t) object);
 }

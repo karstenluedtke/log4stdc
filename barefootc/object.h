@@ -48,14 +48,14 @@ struct bfc_objhdr {
 	const char *	name;	  /**< class name */			     \
 	void *		spare2;						     \
 	void *		spare3;						     \
-	objptrT	      (*init)     (void *buf, size_t bufsize);		     \
-	void	      (*destroy)  (objptrT obj);			     \
-	objptrT	      (*clone)    (cobjptrT obj, void *buf, size_t bufsize); \
-	size_t	      (*clonesize)(cobjptrT obj);			     \
-	unsigned      (*hashcode) (cobjptrT obj);			     \
-	int	      (*equals)   (cobjptrT obj, cobjptrT other);	     \
-	int	      (*length)   (cobjptrT obj);			     \
-	int	      (*tostring) (cobjptrT obj, char *buf, size_t bufsize); \
+	objptrT	      (*init)     (void *, size_t, struct mempool *);	     \
+	void	      (*destroy)  (objptrT);				     \
+	objptrT	      (*clone)    (cobjptrT, void *, size_t);		     \
+	size_t	      (*clonesize)(cobjptrT);				     \
+	unsigned      (*hashcode) (cobjptrT);				     \
+	int	      (*equals)   (cobjptrT, cobjptrT);			     \
+	int	      (*length)   (cobjptrT);				     \
+	int	      (*tostring) (cobjptrT, char *, size_t);		     \
 	void *		spare12;					     \
 	void *		spare13;					     \
 	void *		spare14;					     \
@@ -111,14 +111,14 @@ struct bfc_classhdr {
 #define VMETHCALL(obj,vmeth,args,dflt) \
 	(BFC_CLASS(obj)? CMETHCALL(BFC_CLASS(obj),vmeth,args,dflt): (dflt))
 
-#define BFC_INIT_PROLOGUE(classptrT,objptrT,obj,buf,size,cls)		\
+#define BFC_INIT_PROLOGUE(classptrT,objptrT,obj,buf,size,pool,cls)	\
 	objptrT obj = (objptrT) (buf);					\
 	if (size < sizeof(*obj)) {					\
 		return (NULL);						\
 	} else {							\
 		memset(obj, 0, sizeof(*obj));				\
 		if ((cls)->super) {					\
-			CMETHCALL((cls)->super, init,(obj,size), obj);	\
+		    CMETHCALL((cls)->super, init,(obj,size,pool), obj);	\
 		}							\
 		obj->vptr = (cls);					\
 		obj->name = #obj;					\

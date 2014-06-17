@@ -184,7 +184,8 @@ struct l4sc_configurator {
 	BFC_OBJHDR(l4sc_configurator_class_ptr_t,l4sc_configurator_ptr_t)
 };
 
-l4sc_objptr_t l4sc_default_init_object(void *buf, size_t bufsize);
+l4sc_objptr_t l4sc_default_init_object(void *buf, size_t bufsize,
+						struct mempool *pool);
 void l4sc_default_destroy_object(l4sc_objptr_t obj);
 l4sc_objptr_t l4sc_default_clone_object(l4sc_objcptr_t obj,
 					void *buf, size_t bufsize);

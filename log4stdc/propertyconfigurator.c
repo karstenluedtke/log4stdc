@@ -8,8 +8,8 @@
 
 #include "logobjects.h"
 
-static l4sc_configurator_ptr_t init_property_configurator(void *buf,
-							size_t bufsize);
+static l4sc_configurator_ptr_t init_property_configurator(void *, size_t,
+							  struct mempool *);
 static size_t get_property_configurator_size(l4sc_configurator_cptr_t obj);
 
 static int config_from_property_line(const char *buf, int loop);
@@ -26,10 +26,10 @@ const struct l4sc_configurator_class l4sc_property_configurator_class = {
 };
 
 static l4sc_configurator_ptr_t
-init_property_configurator(void *buf, size_t bufsize)
+init_property_configurator(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_configurator_class_ptr_t,
-			  l4sc_configurator_ptr_t, configurator, buf, bufsize,
+			  l4sc_configurator_ptr_t,configurator,buf,bufsize,pool,
 			  &l4sc_property_configurator_class);
 	configurator->name = "Property configurator";
 	return ((l4sc_configurator_ptr_t) configurator);
@@ -197,7 +197,7 @@ l4sc_configure_from_property_file(const char *path)
 	int rc;
 	struct l4sc_configurator obj;
 
-	init_property_configurator(&obj, sizeof(obj));
+	init_property_configurator(&obj, sizeof(obj), NULL);
 	rc = VMETHCALL(&obj, configure_from_file, (&obj, path), -ENOSYS);
 	VMETHCALL(&obj, destroy, (&obj), (void) 0);
 
@@ -212,7 +212,7 @@ l4sc_configure_from_property_string(const char *buf, size_t len)
 	int rc;
 	struct l4sc_configurator obj;
 
-	init_property_configurator(&obj, sizeof(obj));
+	init_property_configurator(&obj, sizeof(obj), NULL);
 	rc = VMETHCALL(&obj, configure, (&obj, buf, len), -ENOSYS);
 	VMETHCALL(&obj, destroy, (&obj), (void) 0);
 

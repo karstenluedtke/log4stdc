@@ -18,6 +18,7 @@
 #endif
 
 #include "logobjects.h"
+#include "barefootc/mempool.h"
 
 struct appender_lock;
 
@@ -156,7 +157,9 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 			LOGINFO(("%s: File set to \"%s\"",
 				__FUNCTION__, obj->filename));
 		} else {
-			char *p = malloc(n+20);
+			struct mempool *pool = obj->pool? obj->pool:
+							get_default_mempool();
+			char *p = mempool_alloc(pool, n+20);
 			if (p != NULL) {
 				merge_path(p, n+20, initial_working_directory, 
 								value, vallen);
@@ -171,7 +174,7 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 	} else if ((namelen == 11)
 		&& (strncasecmp(name, "MaxFileSize", 11) == 0)) {
 		char *unit = NULL;
-		obj->maxfilesize = strtoul(value, &unit, 10);
+		unsigned long maxsize = strtoul(value, &unit, 10);
 		if (unit != NULL) {
 			while ((unit < value+vallen) && (unit[0] == ' ')) {
 				unit++;
@@ -179,13 +182,13 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 			if (unit < value+vallen) {
 				switch (unit[0]) {
 				case 'k':
-				case 'K': obj->maxfilesize <<= 10;
+				case 'K': maxsize <<= 10;
 					  break;
 				case 'm':
-				case 'M': obj->maxfilesize <<= 20;
+				case 'M': maxsize <<= 20;
 					  break;
 				case 'g':
-				case 'G': obj->maxfilesize <<= 30;
+				case 'G': maxsize <<= 30;
 					  break;
 				default:
 					LOGERROR(("%s: unknown unit in"
@@ -195,13 +198,12 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 				}
 			}
 		}
-		if (obj->maxfilesize < 50) {
-			/* assume size in MB */
-			obj->maxfilesize <<= 20;
-		} else if (obj->maxfilesize < 1000) {
-			/* assume size in kB */
-			obj->maxfilesize <<= 10;
+		if (maxsize < 50) {
+			maxsize <<= 20;	/* assume size in MB */
+		} else if (maxsize < 1000) {
+			maxsize <<= 10;	/* assume size in kB */
 		}
+		obj->maxfilesize = maxsize;
 		LOGINFO(("%s: MaxFileSize set to %lu",
 			__FUNCTION__, obj->maxfilesize));
 		

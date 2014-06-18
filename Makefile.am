@@ -45,7 +45,7 @@ liblog4stdc_a_SOURCES+= mempools/stdcpool.c
 liblog4stdc_a_SOURCES+= mempools/defaultpool.c
 
 testlink_SOURCES = testlink.cpp
-testlink_LDADD = liblog4stdc.a -lexpat
+testlink_LDADD = liblog4stdc.a -lexpat -lpthread
 testlink_DEPENDENCIES = liblog4stdc.a
 
 vector_test_SOURCES = containers/vector_test.c

@@ -95,7 +95,7 @@ init_appender(void *buf, size_t bufsize, struct mempool *pool)
 
 	appender->name = "file appender";
 	lock = (struct appender_lock *) &appender->lockbuf;
-	if (sizeof(*lock) <= sizeof(&appender->lockbuf)) {
+	if (sizeof(*lock) <= sizeof(appender->lockbuf)) {
 #ifdef L4SC_WINDOWS_LOCKS
 		InitializeCriticalSection(&lock->critsection);
 #else

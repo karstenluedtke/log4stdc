@@ -414,6 +414,9 @@ complete_rollover(l4sc_appender_ptr_t appender)
 	bufsize = fnlen + 10;
 	from = alloca(bufsize);
 	to   = alloca(bufsize);
+	memcpy(from, appender->filename, fnlen);
+	memcpy(to,   appender->filename, fnlen);
+	to[fnlen] = from[fnlen] = '\0';
 
 	/*
 	 * Remove last backup file

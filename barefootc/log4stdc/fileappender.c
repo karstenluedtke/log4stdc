@@ -223,27 +223,6 @@ get_appender_option(l4sc_appender_cptr_t obj, const char *name, size_t namelen,
 	return (0);
 }
 
-#if defined(L4SC_WINDOWS_FILES)
-#define WRITEFH(a,s,l)	WriteFile((HANDLE)(a)->fu.fh,(s),(l),NULL,NULL)
-#else
-static int write_and_retry(int fd, const char *s, int len)
-{
-	int rc, err, written = 0;
-	while (written < len) {
-		if ((rc = write(fd, s+written, len-written)) > 0) {
-			written += rc;
-		} else if (rc < 0) {
-			err = errno;
-			if ((err != EAGAIN) && (err != EINTR)) {
-				return (-err);
-			}
-		}
-	}
-	return (written);
-}
-#define WRITEFH(a,s,l)	write_and_retry((a)->fu.fd,(s),(l))
-#endif
-
 static void
 append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
@@ -252,33 +231,44 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 	int rolling = 0;
 	struct appender_lock *lock;
 	if (msg && ((len = msg->msglen) > 0)) {
-		size_t bufsize = len + 100;
+		size_t bufsize = len + 200;
 		char *buf = alloca(bufsize);
 		len = VMETHCALL(layout,format,(layout,msg,buf,bufsize), 0);
 		if (len > 0) {
-			if (is_open(appender) && !need_rollover(appender,len)) {
-				WRITEFH(appender, buf, len);
+			lock = lock_appender(appender);
+
+			if (!is_open(appender)) {
+				open_appender(appender);
+			}
+			if (need_rollover(appender, len)) {
+				rolling = start_rollover(appender);
+			}
+			if (is_open(appender)) {
+#if defined(L4SC_WINDOWS_FILES)
+				WriteFile((HANDLE) appender->fu.fh,
+						buf, len, NULL, NULL);
 				appender->filesize += len;
-			} else {
+#else
+				int rc;
+				size_t written = 0;
+				do {
+					if ((rc = write(appender->fu.fd,
+							buf + written,
+							len - written)) > 0) {
+						written += rc;
+					} else if ((errno != EINTR)
+						&& (errno != EAGAIN)) {
+						break;
+					}
+				} while (written < len);
+				appender->filesize += written;
+#endif
+			}
 
-				lock = lock_appender(appender);
-
-				if (!is_open(appender)) {
-					open_appender(appender);
-				}
-				if (need_rollover(appender, len)) {
-					rolling = start_rollover(appender);
-				}
-				if (is_open(appender)) {
-					WRITEFH(appender, buf, len);
-					appender->filesize += len;
-				}
-
-				unlock_appender(appender, lock);
-			
-				if (rolling) {
-					complete_rollover(appender);
-				}
+			unlock_appender(appender, lock);
+		
+			if (rolling) {
+				complete_rollover(appender);
 			}
 		}
 	}

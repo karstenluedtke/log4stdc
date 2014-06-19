@@ -71,6 +71,18 @@ StartElementHandler(void *userData, const XML_Char *name,
 	int i, nslen;
 	struct element_values values;
 
+	if (ps->depth == 0) {
+		for (i=0; attrs[2*i]; i++) {
+			const char *a = attrs[2*i];
+			const char *v = attrs[2*i+1];
+			if ((strncasecmp(a, "debug", 5) == 0)
+			 || (strncasecmp(a, "internalDebug", 13) == 0)
+			 || (strncasecmp(a, "configDebug",   11) == 0)) {
+				l4sc_set_internal_logging(v, strlen(v));
+				break;
+			}
+		}
+	}
 	if ((nm = strchr(name, NS_DELIMITER)) == NULL) {
 		nm = name;
 		LOGDEBUG(("%s: <%s>", __FUNCTION__, nm));

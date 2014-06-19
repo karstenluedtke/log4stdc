@@ -82,13 +82,22 @@ static struct l4sc_logger rootlogger = {
 	.vptr = &rootloggercls,
 	.name = "rootlogger",
 	.refc = 10000,
-	.level = DEBUG_LEVEL, // ERROR_LEVEL,
+	.level = ERROR_LEVEL,
+};
+
+static struct l4sc_logger l4sclogger = {
+	.vptr = &rootloggercls,
+	.name = "l4sclog",
+	.refc = 10000,
+	.level = ERROR_LEVEL,
+	.parent = &rootlogger,
+	.additivity = 0,
 };
 
 #define MAX_LOGGERS   50
 int l4sc_configured  = 0;
-int l4sc_num_loggers = 1;
-l4sc_logger_ptr_t l4sc_loggers[MAX_LOGGERS] = { &rootlogger, NULL };
+int l4sc_num_loggers = 2;
+l4sc_logger_ptr_t l4sc_loggers[MAX_LOGGERS] = {&rootlogger, &l4sclogger, NULL};
 
 static l4sc_logger_ptr_t
 init_logger(void *buf, size_t bufsize, struct mempool *pool)
@@ -415,6 +424,26 @@ l4sc_logprintf(l4sc_logger_ptr_t logger, int level,
 }
 
 void
+l4sc_set_internal_logging(const char *value, int vallen)
+{
+	if (value && (vallen > 0)) {
+		switch (value[0]) {
+		case 'T': case 't': case '1': /* TRUE */
+		case '2': case '3': case '4': case '5':
+		case '6': case '7': case '8': case '9':
+			l4sclogger.level = DEBUG_LEVEL;
+			break;
+		case 'F': case 'f': case '0': /* FALSE */
+			l4sclogger.level = ERROR_LEVEL;
+			break;
+		default:
+			l4sclogger.level = l4sc_to_level(value, vallen,
+							 l4sclogger.level);
+		}
+	}
+}
+
+void
 l4sc_logerror(const char *fmt, ...)
 {
 	int len;
@@ -429,9 +458,29 @@ l4sc_logerror(const char *fmt, ...)
 	}
 	va_end(ap);
 
-	VMETHCALL(&rootlogger, log, (&rootlogger, ERROR_LEVEL,
-			buf, len, __FILE__, __LINE__, __FUNCTION__),
-			(void) 0);
+	(*l4sclogger.vptr->log)(&l4sclogger, ERROR_LEVEL,
+				buf, len, __FILE__, __LINE__, __FUNCTION__);
+}
+
+void
+l4sc_logwarn(const char *fmt, ...)
+{
+	int len;
+	va_list ap;
+	char buf[200];
+
+	if (IS_LEVEL_ENABLED(WARN_LEVEL, l4sclogger.level)) {
+		va_start(ap, fmt);
+		memcpy (buf, "WARN > ", 8);
+		len = 7 + vsnprintf(buf+7, sizeof(buf)-7, fmt, ap);
+		if ((len < 7) || (len >= sizeof(buf))) {
+			len = strlen(buf);
+		}
+		va_end(ap);
+
+		(*l4sclogger.vptr->log)(&l4sclogger, WARN_LEVEL,
+				buf, len, __FILE__, __LINE__, __FUNCTION__);
+	}
 }
 
 void
@@ -441,7 +490,7 @@ l4sc_loginfo(const char *fmt, ...)
 	va_list ap;
 	char buf[200];
 
-	if (VMETHCALL(&rootlogger, is_enabled, (&rootlogger, INFO_LEVEL), 0)) {
+	if (IS_LEVEL_ENABLED(INFO_LEVEL, l4sclogger.level)) {
 		va_start(ap, fmt);
 		memcpy (buf, "INFO > ", 8);
 		len = 7 + vsnprintf(buf+7, sizeof(buf)-7, fmt, ap);
@@ -450,9 +499,29 @@ l4sc_loginfo(const char *fmt, ...)
 		}
 		va_end(ap);
 
-		VMETHCALL(&rootlogger, log, (&rootlogger, INFO_LEVEL,
-				buf, len, __FILE__, __LINE__, __FUNCTION__),
-				(void) 0);
+		(*l4sclogger.vptr->log)(&l4sclogger, INFO_LEVEL,
+				buf, len, __FILE__, __LINE__, __FUNCTION__);
+	}
+}
+
+void
+l4sc_logdebug(const char *fmt, ...)
+{
+	int len;
+	va_list ap;
+	char buf[200];
+
+	if (IS_LEVEL_ENABLED(DEBUG_LEVEL, l4sclogger.level)) {
+		va_start(ap, fmt);
+		memcpy (buf, "DEBUG> ", 8);
+		len = 7 + vsnprintf(buf+7, sizeof(buf)-7, fmt, ap);
+		if ((len < 7) || (len >= sizeof(buf))) {
+			len = strlen(buf);
+		}
+		va_end(ap);
+
+		(*l4sclogger.vptr->log)(&l4sclogger, DEBUG_LEVEL,
+				buf, len, __FILE__, __LINE__, __FUNCTION__);
 	}
 }
 

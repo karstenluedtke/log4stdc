@@ -112,6 +112,10 @@ config_from_property_line(const char *buf, int loop)
 		return (0);
 	}
 	nodetype = trim_front(++cp, ep);
+	if (strncasecmp(nodetype, "debug", 5) == 0) {
+		l4sc_set_internal_logging(v, vallen);
+		return (1);
+	}
 	if ((cp = memchr(cp, '.', ep-cp)) == NULL) {
 		return (0);
 	}

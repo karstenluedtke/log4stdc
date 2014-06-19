@@ -216,20 +216,23 @@ l4sc_logmessage_ptr_t l4sc_init_logmessage(void *buf, size_t bufsize,
 		l4sc_logger_cptr_t, int level, const char *msg, size_t msglen,
 		const char *file, int line, const char *func);
 
-#if !defined(PRINTF_ATTR)
-#if defined(__GNUC__) && __GNUC__ >= 3
-#define PRINTF_ATTR  __attribute__((format(printf,1,2)))
-#else
-#define PRINTF_ATTR
-#endif
-#endif
+void l4sc_set_internal_logging(const char *value, int vallen);
 
-void l4sc_logerror(const char *fmt, ...) PRINTF_ATTR;
-void l4sc_loginfo (const char *fmt, ...) PRINTF_ATTR;
-void l4sc_logdebug(const char *fmt, ...) PRINTF_ATTR;
+#if defined(__GNUC__) && (__GNUC__ >= 3)
+void l4sc_logerror(const char *fmt, ...) __attribute__((format(printf,1,2)));
+void l4sc_logwarn (const char *fmt, ...) __attribute__((format(printf,1,2)));
+void l4sc_loginfo (const char *fmt, ...) __attribute__((format(printf,1,2)));
+void l4sc_logdebug(const char *fmt, ...) __attribute__((format(printf,1,2)));
+#else
+void l4sc_logerror(const char *fmt, ...);
+void l4sc_logwarn (const char *fmt, ...);
+void l4sc_loginfo (const char *fmt, ...);
+void l4sc_logdebug(const char *fmt, ...);
+#endif
 #define LOGERROR(x)	l4sc_logerror x
+#define LOGWARN(x)	l4sc_logwarn  x
 #define LOGINFO(x)	l4sc_loginfo  x
-#define LOGDEBUG(x)	l4sc_loginfo  x
+#define LOGDEBUG(x)	l4sc_logdebug x
 
 #ifdef __cplusplus
 }	/* C++ */

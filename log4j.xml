@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="1">
     <appender class="org.apache.log4j.ConsoleAppender" name="Console">
 		<layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>

@@ -110,6 +110,7 @@ init_logger(void *buf, size_t bufsize, struct mempool *pool)
 
 	logger->name = "logger";
 	logger->additivity = 1;
+	logger->level = ERROR_LEVEL;
 	for (i=0; i < l4sc_num_loggers; i++) {
 		if (l4sc_loggers[i] == NULL) {
 			l4sc_loggers[i] = logger;

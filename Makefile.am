@@ -13,9 +13,14 @@ libbarefootc_a_SOURCES = containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
+libbarefootc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
+libbarefootc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjects.h
 liblog4stdc_a_SOURCES+= barefootc/object.h
+
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 
 
 liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c log4stdc/fileappender.c

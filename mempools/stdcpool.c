@@ -8,6 +8,8 @@
 #include "barefootc/object.h"
 #include "barefootc/mempool.h"
 
+#include "log4stdc.h"
+
 static struct mempool *init_pool(void *buf,size_t bufsize,struct mempool *pool);
 static void destroy_pool(struct mempool *pool);
 static struct mempool *clone_pool(const struct mempool *pool,
@@ -35,6 +37,8 @@ stdc_pool_realloc (struct mempool *pool, void *ptr, size_t size,
 static void
 stdc_pool_free (struct mempool *pool, void *ptr,
 		  const char *file, int line, const char *func);
+static void
+stdc_pool_dump (struct mempool *pool, int depth, struct l4sc_logger *logger);
 
 struct stdc_mempool {
 	BFC_OBJHDR(bfc_mempool_class_ptr_t, struct mempool *)
@@ -55,6 +59,7 @@ const struct bfc_mempool_class bfc_stdc_mempool_class = {
 	.calloc = stdc_pool_calloc,
 	.realloc = stdc_pool_realloc,
 	.free = stdc_pool_free,
+	.dump = stdc_pool_dump,
 };
 
 struct stdc_mempool bfc_stdc_mempool = {
@@ -178,3 +183,10 @@ bfc_get_stdc_mempool(const char *file, int line, const char *func)
 {
 	return ((struct mempool *) &bfc_stdc_mempool);
 }
+
+static void
+stdc_pool_dump (struct mempool *pool, int depth, struct l4sc_logger *logger)
+{
+	L4SC_INFO(logger, "Cannot dump standard \"C\" mempool");
+}
+

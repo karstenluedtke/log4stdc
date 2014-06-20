@@ -46,9 +46,6 @@ struct bfc_mempool_class {
 	int 		(*info)   (struct mempool *pool, int depth,
 		  		   struct mempool_info *buf, int maxentries);
 
-	void 		(*dump)   (struct mempool *pool, int depth,
-		  		   struct l4sc_logger *log);
-
 	void *		spare[10];
 };
 

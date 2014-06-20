@@ -80,6 +80,11 @@ struct vecname {							\
 	unsigned	elem_direct;					\
 									\
 	/**								\
+	 * Element class.						\
+	 */								\
+	unsigned	elem_class;					\
+									\
+	/**								\
 	 * Size of each element.					\
 	 */								\
 	unsigned short	elem_size;					\

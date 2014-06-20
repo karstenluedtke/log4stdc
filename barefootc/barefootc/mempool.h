@@ -16,6 +16,8 @@ typedef const struct bfc_mempool_class *bfc_mempool_class_ptr_t;
 struct mempool;
 struct mempool_info;
 
+struct l4sc_logger;
+
 struct bfc_mempool_class {
 	BFC_CLASSHDR(bfc_mempool_class_ptr_t,
 			struct mempool *, const struct mempool *)
@@ -44,7 +46,8 @@ struct bfc_mempool_class {
 	int 		(*info)   (struct mempool *pool, int depth,
 		  		   struct mempool_info *buf, int maxentries);
 
-	void 		(*dump)   (struct mempool *pool, int depth);
+	void 		(*dump)   (struct mempool *pool, int depth,
+		  		   struct l4sc_logger *log);
 
 	void *		spare[10];
 };

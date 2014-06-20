@@ -29,6 +29,7 @@ typedef struct bfc_classhdr bfc_class_t;
 typedef const struct bfc_classhdr *bfc_classptr_t;
 
 struct mempool;
+struct l4sc_logger;
 
 #define BFC_OBJHDR(classptrT,objptrT) \
 	classptrT	vptr;	  /**< virtual methods */	\
@@ -56,7 +57,7 @@ struct bfc_objhdr {
 	int	      (*equals)   (cobjptrT, cobjptrT);			     \
 	int	      (*length)   (cobjptrT);				     \
 	int	      (*tostring) (cobjptrT, char *, size_t);		     \
-	void *		spare12;					     \
+	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);     \
 	void *		spare13;					     \
 	void *		spare14;					     \
 	void *		spare15;
@@ -122,14 +123,41 @@ struct bfc_classhdr {
 		}							\
 		obj->vptr = (cls);					\
 		obj->name = #obj;					\
-		obj->refc = 1;						\
 	}
 
 #define BFC_DESTROY_EPILOGUE(obj,cls)					\
 	if ((cls)->super && ((cls)->super != (cls))) {			\
 		obj->vptr = (void *) (cls)->super;			\
 		CMETHCALL((cls)->super, destroy,(obj), (void) 0);	\
+	} else {							\
+		obj->vptr = NULL;					\
 	}
+
+
+bfc_objptr_t bfc_new(bfc_classptr_t, struct mempool *);
+bfc_objptr_t bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
+bfc_objptr_t bfc_clone_object(const void *, void *, size_t);
+void bfc_destroy(void *);
+void bfc_delete(void *);
+
+size_t bfc_object_size(const void *);
+unsigned bfc_object_hashcode(const void *);
+int  bfc_equal_object(const void *, const void *);
+int  bfc_object_length(const void *);
+int  bfc_object_tostring(const void *, char *, size_t);
+void bfc_object_dump(const void *, int, struct l4sc_logger *);
+
+size_t bfc_get_base_object_size(bfc_cobjptr_t);
+
+bfc_objptr_t bfc_default_init_object(void *, size_t, struct mempool *);
+bfc_objptr_t bfc_default_clone_object(bfc_cobjptr_t, void *, size_t);
+void bfc_default_destroy_object(bfc_objptr_t);
+
+unsigned bfc_default_get_object_hashcode(bfc_cobjptr_t);
+int  bfc_default_is_equal_object(bfc_cobjptr_t, bfc_cobjptr_t);
+int  bfc_default_get_object_length(bfc_cobjptr_t);
+int  bfc_default_object_tostring(bfc_cobjptr_t, char *, size_t);
+void bfc_default_dump_object(bfc_cobjptr_t, int, struct l4sc_logger *);
 
 #ifdef __cplusplus
 }	/* C++ */

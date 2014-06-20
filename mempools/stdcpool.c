@@ -55,11 +55,11 @@ const struct bfc_mempool_class bfc_stdc_mempool_class = {
 	.equals = is_equal_pool,
 	.length = get_pool_size,
 	.tostring = pool_tostring,
+	.dump = stdc_pool_dump,
 	.alloc = stdc_pool_malloc,
 	.calloc = stdc_pool_calloc,
 	.realloc = stdc_pool_realloc,
 	.free = stdc_pool_free,
-	.dump = stdc_pool_dump,
 };
 
 struct stdc_mempool bfc_stdc_mempool = {
@@ -144,6 +144,11 @@ pool_tostring(const struct mempool *pool, char *buf, size_t bufsize)
 	return (0);
 }
 
+static void
+stdc_pool_dump (struct mempool *pool, int depth, struct l4sc_logger *logger)
+{
+	L4SC_INFO(logger, "Cannot dump standard \"C\" mempool");
+}
 
 /*
  *  Standard "C" mempool.
@@ -184,9 +189,4 @@ bfc_get_stdc_mempool(const char *file, int line, const char *func)
 	return ((struct mempool *) &bfc_stdc_mempool);
 }
 
-static void
-stdc_pool_dump (struct mempool *pool, int depth, struct l4sc_logger *logger)
-{
-	L4SC_INFO(logger, "Cannot dump standard \"C\" mempool");
-}
 

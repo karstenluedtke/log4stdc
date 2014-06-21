@@ -10,10 +10,9 @@
 
 #include "log4stdc.h"
 
-static struct mempool *init_pool(void *buf,size_t bufsize,struct mempool *pool);
+static int  init_pool(void *buf,size_t bufsize,struct mempool *pool);
 static void destroy_pool(struct mempool *pool);
-static struct mempool *clone_pool(const struct mempool *pool,
-				  void *buf, size_t bufsize);
+static int  clone_pool(const struct mempool *pool, void *buf, size_t bufsize);
 static size_t get_pool_object_size(const struct mempool *pool);
 static unsigned get_pool_hashcode(const struct mempool *pool);
 static int is_equal_pool(const struct mempool *obj,const struct mempool *other);
@@ -38,7 +37,7 @@ static void
 stdc_pool_free (struct mempool *pool, void *ptr,
 		  const char *file, int line, const char *func);
 static void
-stdc_pool_dump (struct mempool *pool, int depth, struct l4sc_logger *logger);
+stdc_pool_dump (const struct mempool *pool, int depth, struct l4sc_logger *log);
 
 struct stdc_mempool {
 	BFC_OBJHDR(bfc_mempool_class_ptr_t, struct mempool *)
@@ -68,37 +67,37 @@ struct stdc_mempool bfc_stdc_mempool = {
 	.refc = 20000, 
 };
 
-static struct mempool *
+static int
 init_pool(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(bfc_mempool_class_ptr_t,
 			  struct stdc_mempool *, stdcpool, buf, bufsize, pool,
 			  &bfc_stdc_mempool_class);
-	return ((struct mempool *) stdcpool);
+	return (BFC_SUCCESS);
 }
 
 static void
 destroy_pool(struct mempool *pool)
 {
 	struct stdc_mempool *obj = (struct stdc_mempool *) pool;
-	bfc_classptr_t cls;
+	bfc_mempool_class_ptr_t cls;
 
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
 		BFC_DESTROY_EPILOGUE(obj, cls);
 	}
 }
 
-static struct mempool *
+static int
 clone_pool(const struct mempool *pool, void *buf, size_t bufsize)
 {
 	struct stdc_mempool *obj = (struct stdc_mempool *) pool;
 	bfc_objptr_t object = (bfc_objptr_t) buf;
-	size_t size = VMETHCALL(obj, clonesize, (obj), sizeof(*object));
+	size_t size = VMETHCALL(obj, clonesize, (pool), sizeof(*object));
 	if (bufsize < size) {
-		return (NULL);
+		return (-ENOSPC);
 	}
 	memcpy(object, pool, size);
-	return ((struct mempool *) object);
+	return (BFC_SUCCESS);
 }
 
 static size_t
@@ -145,9 +144,9 @@ pool_tostring(const struct mempool *pool, char *buf, size_t bufsize)
 }
 
 static void
-stdc_pool_dump (struct mempool *pool, int depth, struct l4sc_logger *logger)
+stdc_pool_dump (const struct mempool *pool, int depth, struct l4sc_logger *log)
 {
-	L4SC_INFO(logger, "Cannot dump standard \"C\" mempool");
+	L4SC_INFO(log, "Cannot dump standard \"C\" mempool");
 }
 
 /*

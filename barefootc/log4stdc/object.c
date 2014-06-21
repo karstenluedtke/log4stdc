@@ -30,13 +30,13 @@ const struct l4sc_object_class l4sc_object_class = {
 	.close = l4sc_default_close_object,
 };
 
-l4sc_objptr_t
+int
 l4sc_default_init_object(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(const struct l4sc_object_class *,
 			  l4sc_objptr_t, object, buf, bufsize, pool,
 			  &l4sc_object_class);
-	return ((l4sc_objptr_t) object);
+	return (BFC_SUCCESS);
 }
 
 void
@@ -49,16 +49,16 @@ l4sc_default_destroy_object(l4sc_objptr_t obj)
 	}
 }
 
-l4sc_objptr_t
+int
 l4sc_default_clone_object(l4sc_objcptr_t obj, void *buf, size_t bufsize)
 {
 	l4sc_objptr_t object = (l4sc_objptr_t) buf;
 	size_t size = VMETHCALL(obj, clonesize, (obj), sizeof(*object));
 	if (bufsize < size) {
-		return (NULL);
+		return (-ENOSPC);
 	}
 	memcpy(object, obj, size);
-	return ((l4sc_objptr_t) object);
+	return (BFC_SUCCESS);
 }
 
 size_t

@@ -53,10 +53,10 @@ extern const struct bfc_mutex_class bfc_win32_mutex_class;
 #define bfc_mutex_unlock(mutex)	\
 	(*BFC_CLASS(mutex)->lock)(mutex,__FILE__,__LINE__,__FUNCTION__)
 
-bfc_mutex_ptr_t bfc_new_posix_mutex(struct mempool *,
-				    const char *, int, const char *);
-bfc_mutex_ptr_t bfc_new_win32_mutex(struct mempool *,
-				    const char *, int, const char *);
+int bfc_new_posix_mutex(struct bfc_mutex **, struct mempool *,
+			const char *, int, const char *);
+int bfc_new_win32_mutex(struct bfc_mutex **, struct mempool *,
+			const char *, int, const char *);
 
 #ifdef __cplusplus
 }	/* C++ */

@@ -14,7 +14,7 @@
 
 #define MAX_APPENDERS_PER_LOGGER 4
 
-static l4sc_logger_ptr_t init_logger(void *, size_t, struct mempool *);
+static int init_logger(void *, size_t, struct mempool *);
 static void destroy_logger(l4sc_logger_ptr_t logger);
 static void do_not_destroy(l4sc_logger_ptr_t logger);
 static size_t	  get_logger_size(l4sc_logger_cptr_t obj);
@@ -110,7 +110,7 @@ struct loggerpool {
 
 struct loggerpool l4sc_loggers = { &rootlogger, &l4sclogger };
 
-static l4sc_logger_ptr_t
+static int
 init_logger(void *buf, size_t bufsize, struct mempool *pool)
 {
 	int i;
@@ -123,7 +123,7 @@ init_logger(void *buf, size_t bufsize, struct mempool *pool)
 	logger->additivity = 1;
 	logger->level = ERROR_LEVEL;
 	BFC_SLIST_APPEND(&l4sc_loggers, logger);
-	return ((l4sc_logger_ptr_t) logger);
+	return (BFC_SUCCESS);
 }
 
 static void
@@ -206,18 +206,17 @@ static void
 logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
 	   const char *file, int line, const char *func)
 {
-	int i;
+	int i, rc;
 	l4sc_logger_ptr_t p;
 	l4sc_appender_ptr_t a;
-	l4sc_logmessage_ptr_t m;
 	l4sc_logmessage_t mbuf;
 
-	m = l4sc_init_logmessage(&mbuf, sizeof(mbuf),
+	rc = l4sc_init_logmessage(&mbuf, sizeof(mbuf),
 				logger, level, msg, msglen, file, line, func);
-	if (m) {
+	if (rc >= 0) {
 		for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
 			if ((a = logger->appenders[i]) != NULL) {
-				VMETHCALL(a, append, (a, m), (void) 0);
+				VMETHCALL(a, append, (a, &mbuf), (void) 0);
 			}
 		}
 	}
@@ -302,7 +301,7 @@ l4sc_logger_ptr_t
 l4sc_get_logger(const char *name, int namelen)
 {
 	l4sc_logger_ptr_t logger = NULL;
-	int i, nlen = (namelen > 0)? namelen: strlen(name);
+	int i, rc, nlen = (namelen > 0)? namelen: strlen(name);
 	struct mempool *pool = get_default_mempool();
 
 	BFC_LIST_FOREACH(logger, &l4sc_loggers, next) {
@@ -314,12 +313,14 @@ l4sc_get_logger(const char *name, int namelen)
 
 	LOGINFO(("%s: logger %.*s not found, creating ...",
 				__FUNCTION__, nlen, name));
-
-	logger = (l4sc_logger_ptr_t) bfc_new((bfc_classptr_t)&loggercls, pool);
-	CMETHCALL(&loggercls, set_name, (logger, name, nlen), (void)0);
-	logger->pool = pool;
-	LOGINFO(("%s: created %s (class %s).",
+	logger = NULL;
+	rc = bfc_new((void **) &logger, (bfc_classptr_t)&loggercls, pool);
+	if ((rc >= 0) && logger) {
+		CMETHCALL(&loggercls, set_name, (logger, name, nlen), (void)0);
+		logger->pool = pool;
+		LOGINFO(("%s: created %s (class %s).",
 				__FUNCTION__, logger->name, loggercls.name));
+	}
 	return (logger);
 }
 

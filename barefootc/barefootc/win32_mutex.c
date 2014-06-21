@@ -32,8 +32,8 @@ struct win32_mutex {
 	} u;
 };
 	
-static bfc_mutex_ptr_t init_mutex(void *, size_t, struct mempool *);
-static bfc_mutex_ptr_t clone_mutex(bfc_mutex_ptr_t, void *, size_t);
+static int  init_mutex(void *, size_t, struct mempool *);
+static int  clone_mutex(bfc_mutex_ptr_t, void *, size_t);
 static void destroy_mutex(bfc_mutex_ptr_t);
 static size_t mutex_size(bfc_mutex_ptr_t);
 static void dump_mutex(bfc_mutex_ptr_t, int, struct l4sc_logger *);
@@ -60,7 +60,7 @@ const struct bfc_mutex_class bfc_win32_mutex_class = {
 #define	LeaveCriticalSection(s)
 #endif
 
-static bfc_mutex_ptr_t
+static int
 init_mutex(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(const struct bfc_object_class *,
@@ -69,7 +69,7 @@ init_mutex(void *buf, size_t bufsize, struct mempool *pool)
 	if (object) {
 		InitializeCriticalSection(&object->u.win32.critsection);
 	}
-	return ((bfc_mutex_ptr_t) object);
+	return (BFC_SUCCESS);
 }
 
 static void
@@ -84,7 +84,7 @@ destroy_mutex(bfc_mutex_ptr_t obj)
 	obj->vptr = 0;
 }
 
-static bfc_mutex_ptr_t
+static int
 clone_mutex(bfc_mutex_ptr_t obj, void *buf, size_t bufsize)
 {
 	return (init_mutex(buf, bufsize, obj->pool));
@@ -127,19 +127,21 @@ dump_mutex(bfc_mutex_ptr_t obj, int depth, struct l4sc_logger *log)
 	}
 }
 
-bfc_mutex_ptr_t
-bfc_new_win32_mutex(struct mempool *pool,
+int
+bfc_new_win32_mutex(struct bfc_mutex **objpp, struct mempool *pool,
 		    const char *file, int line, const char *func)
 {
-	struct win32_mutex *object;
+	struct win32_mutex *object = NULL;
+	int rc;
 
-	object = (struct win32_mutex *)
-		 bfc_new((bfc_classptr_t) &bfc_win32_mutex_class, pool);
-	if (object) {
+	rc = bfc_new((void **) &object,
+		     (bfc_classptr_t) &bfc_win32_mutex_class, pool);
+	if ((rc >= 0) && object) {
 		object->file = file;
 		object->line = line;
 		object->func = func;
+		*objpp = (struct bfc_mutex *) object;
 	}
-	return ((bfc_mutex_ptr_t) object);
+	return (rc);
 }
 

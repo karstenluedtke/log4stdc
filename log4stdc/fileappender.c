@@ -21,7 +21,7 @@
 #include "barefootc/mempool.h"
 #include "barefootc/synchronization.h"
 
-static l4sc_appender_ptr_t init_appender(void *, size_t, struct mempool *);
+static int init_appender(void *, size_t, struct mempool *);
 static void destroy_appender(l4sc_appender_ptr_t appender);
 static size_t get_appender_size(l4sc_appender_cptr_t obj);
 
@@ -69,20 +69,20 @@ const struct l4sc_appender_class l4sc_file_appender_class = {
 
 static char initial_working_directory[256] = { 0 };
 
-static l4sc_appender_ptr_t
+static int
 init_appender(void *buf, size_t bufsize, struct mempool *pool)
 {
-	bfc_mutex_ptr_t *lock;
-
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_file_appender_class);
 
 	appender->name = "file appender";
 #ifdef L4SC_WINDOWS_LOCKS
-	lock = bfc_new_win32_mutex(pool, __FILE__, __LINE__, __FUNCTION__);
+	bfc_new_win32_mutex(&appender->lock, pool,
+			__FILE__, __LINE__, __FUNCTION__);
 #else
-	lock = bfc_new_posix_mutex(pool, __FILE__, __LINE__, __FUNCTION__);
+	bfc_new_posix_mutex(&appender->lock, pool,
+			__FILE__, __LINE__, __FUNCTION__);
 #endif
 	if (initial_working_directory[0] == 0) {
 		if (getcwd(initial_working_directory,
@@ -91,7 +91,7 @@ init_appender(void *buf, size_t bufsize, struct mempool *pool)
 				__FUNCTION__, (int) errno));
 		}
 	}
-	return (appender);
+	return (BFC_SUCCESS);
 }
 
 static void

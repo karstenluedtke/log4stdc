@@ -18,6 +18,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include <errno.h>
 
 struct bfc_objhdr;
 typedef struct bfc_objhdr bfc_object_t;
@@ -52,9 +53,9 @@ struct bfc_objhdr {
 	const char *	name;	  /**< class name */			     \
 	void *		spare2;						     \
 	void *		spare3;						     \
-	objptrT	      (*init)     (void *, size_t, struct mempool *);	     \
+	int	      (*init)     (void *, size_t, struct mempool *);	     \
 	void	      (*destroy)  (objptrT);				     \
-	objptrT	      (*clone)    (cobjptrT, void *, size_t);		     \
+	int	      (*clone)    (cobjptrT, void *, size_t);		     \
 	size_t	      (*clonesize)(cobjptrT);				     \
 	unsigned      (*hashcode) (cobjptrT);				     \
 	int	      (*equals)   (cobjptrT, cobjptrT);			     \
@@ -71,6 +72,8 @@ struct bfc_classhdr {
 
 #define BFC_CLASS(obj)	((obj)->vptr)
 #define BFC_SUPER(obj)	(BFC_CLASS(obj)->super)
+
+#define BFC_SUCCESS	0
 
 #define CMETHOD(cls,vmeth)  \
 	(((cls)->vmeth)?			  \
@@ -116,13 +119,14 @@ struct bfc_classhdr {
 	(BFC_CLASS(obj)? CMETHCALL(BFC_CLASS(obj),vmeth,args,dflt): (dflt))
 
 #define BFC_INIT_PROLOGUE(classptrT,objptrT,obj,buf,size,pool,cls)	\
+	bfc_classptr_t super = (bfc_classptr_t) (cls)->super;		\
 	objptrT obj = (objptrT) (buf);					\
 	if (size < sizeof(*obj)) {					\
-		return (NULL);						\
+		return (-ENOSPC);					\
 	} else {							\
 		memset(obj, 0, sizeof(*obj));				\
-		if ((cls)->super) {					\
-		    CMETHCALL((cls)->super, init,(obj,size,pool), obj);	\
+		if (super) {						\
+			bfc_init_object(super, obj, size, pool);	\
 		}							\
 		obj->vptr = (cls);					\
 		obj->name = #obj;					\
@@ -131,15 +135,15 @@ struct bfc_classhdr {
 #define BFC_DESTROY_EPILOGUE(obj,cls)					\
 	if ((cls)->super && ((cls)->super != (cls))) {			\
 		obj->vptr = (void *) (cls)->super;			\
-		CMETHCALL((cls)->super, destroy,(obj), (void) 0);	\
+		bfc_destroy((bfc_objptr_t) obj);			\
 	} else {							\
 		obj->vptr = NULL;					\
 	}
 
 
-bfc_objptr_t bfc_new(bfc_classptr_t, struct mempool *);
-bfc_objptr_t bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
-bfc_objptr_t bfc_clone_object(const void *, void *, size_t);
+int  bfc_new(void **, bfc_classptr_t, struct mempool *);
+int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
+int  bfc_clone_object(const void *, void *, size_t);
 void bfc_destroy(void *);
 void bfc_delete(void *);
 
@@ -152,8 +156,8 @@ void bfc_object_dump(const void *, int, struct l4sc_logger *);
 
 size_t bfc_get_base_object_size(bfc_cobjptr_t);
 
-bfc_objptr_t bfc_default_init_object(void *, size_t, struct mempool *);
-bfc_objptr_t bfc_default_clone_object(bfc_cobjptr_t, void *, size_t);
+int  bfc_default_init_object(void *, size_t, struct mempool *);
+int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t);
 void bfc_default_destroy_object(bfc_objptr_t);
 
 unsigned bfc_default_get_object_hashcode(bfc_cobjptr_t);

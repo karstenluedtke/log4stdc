@@ -29,7 +29,7 @@
 
 #include "logobjects.h"
 
-static l4sc_logmessage_ptr_t init_logmessage(void *, size_t, struct mempool *);
+static int init_logmessage(void *, size_t, struct mempool *);
 static size_t get_logmessage_size(l4sc_logmessage_cptr_t obj);
 static unsigned get_logmessage_hashcode(l4sc_logmessage_cptr_t obj);
 static int  is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other);
@@ -47,14 +47,14 @@ const struct l4sc_logmessage_class l4sc_logmessage_class = {
 	.tostring = logmessage_tostring,
 };
 
-static l4sc_logmessage_ptr_t
+static int
 init_logmessage(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(const struct l4sc_logmessage_class *,
 			  l4sc_logmessage_ptr_t, logmessage, buf, bufsize, pool,
 			  &l4sc_logmessage_class);
 
-	return ((l4sc_logmessage_ptr_t) logmessage);
+	return (BFC_SUCCESS);
 }
 
 static size_t
@@ -110,14 +110,15 @@ logmessage_tostring(l4sc_logmessage_cptr_t obj, char *buf, size_t bufsize)
 }
 
 
-l4sc_logmessage_ptr_t
+int
 l4sc_init_logmessage(void *buf, size_t bufsize,
 	l4sc_logger_cptr_t logger, int level, const char *msg, size_t msglen,
 	const char *file, int line, const char *func)
 {
-	l4sc_logmessage_ptr_t m;
+	l4sc_logmessage_ptr_t m = (l4sc_logmessage_ptr_t) buf;
+	int rc;
 	
-	if ((m = init_logmessage(buf, bufsize, NULL)) != NULL) {
+	if ((rc = init_logmessage(buf, bufsize, NULL)) >= 0) {
 #if defined(L4SC_USE_WINDOWS_SYSTEMTIME)
 		FILETIME ft;
 		uint64_t tmp, secs;
@@ -156,6 +157,6 @@ l4sc_init_logmessage(void *buf, size_t bufsize,
 		} while (0 /*just once*/);
 #endif
 	}
-	return (m);
+	return (rc);
 }
 

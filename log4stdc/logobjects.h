@@ -183,11 +183,9 @@ struct l4sc_configurator {
 	BFC_OBJHDR(l4sc_configurator_class_ptr_t,l4sc_configurator_ptr_t)
 };
 
-l4sc_objptr_t l4sc_default_init_object(void *buf, size_t bufsize,
-						struct mempool *pool);
+int  l4sc_default_init_object(void *buf, size_t bufsize, struct mempool *pool);
 void l4sc_default_destroy_object(l4sc_objptr_t obj);
-l4sc_objptr_t l4sc_default_clone_object(l4sc_objcptr_t obj,
-					void *buf, size_t bufsize);
+int  l4sc_default_clone_object(l4sc_objcptr_t obj, void *buf, size_t bufsize);
 size_t l4sc_default_get_object_size(l4sc_objcptr_t obj);
 unsigned l4sc_default_get_object_hashcode(l4sc_objcptr_t obj);
 int l4sc_default_is_equal_object(l4sc_objcptr_t obj, l4sc_objcptr_t other);
@@ -211,7 +209,7 @@ int l4sc_set_object_option(l4sc_objptr_t obj,
 int l4sc_set_logger_appender(l4sc_logger_ptr_t logger,
 			     l4sc_appender_ptr_t appender);
 
-l4sc_logmessage_ptr_t l4sc_init_logmessage(void *buf, size_t bufsize,
+int l4sc_init_logmessage(void *buf, size_t bufsize,
 		l4sc_logger_cptr_t, int level, const char *msg, size_t msglen,
 		const char *file, int line, const char *func);
 

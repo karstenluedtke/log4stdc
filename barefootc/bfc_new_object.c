@@ -2,24 +2,25 @@
 #include "barefootc/object.h"
 #include "barefootc/mempool.h"
 
-bfc_objptr_t
-bfc_new(bfc_classptr_t cls, struct mempool *pool)
+int
+bfc_new(void **objpp, bfc_classptr_t cls, struct mempool *pool)
 {
 	bfc_objptr_t newobj = NULL;
 	size_t size;
-	void *buf;
+	int rc;
 
 	size = CMETHCALL(cls, clonesize, (NULL), 4*sizeof(struct bfc_objhdr));
-	buf  = mempool_alloc(pool, size);
-	if (buf == NULL) {
-		return (NULL);
-	}
-	newobj = bfc_init_object(cls, buf, size, pool);
+	newobj = mempool_alloc(pool, size);
 	if (newobj == NULL) {
-		mempool_free(pool, buf);
-		return (NULL);
+		return (-ENOMEM);
+	}
+	rc = bfc_init_object(cls, newobj, size, pool);
+	if (rc < 0) {
+		mempool_free(pool, newobj);
+		return (rc);
 	}
 	newobj->pool = pool;
-	return (newobj);
+	*objpp = newobj;
+	return (BFC_SUCCESS);
 }
 

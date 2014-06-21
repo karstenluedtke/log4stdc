@@ -17,7 +17,7 @@ errno_t _localtime64_s(struct tm *, const __time64_t *);
 
 #include "logobjects.h"
 
-static l4sc_layout_ptr_t init_patternlayout(void *, size_t, struct mempool *);
+static int init_patternlayout(void *, size_t, struct mempool *);
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
 static unsigned get_layout_hashcode(l4sc_layout_cptr_t obj);
 static int  is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other);
@@ -58,7 +58,7 @@ const struct l4sc_layout_class l4sc_patternlayout_class = {
 	.format = format_by_pattern,
 };
 
-static l4sc_layout_ptr_t
+static int
 init_patternlayout(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t,
@@ -66,7 +66,7 @@ init_patternlayout(void *buf, size_t bufsize, struct mempool *pool)
 			  &l4sc_patternlayout_class);
 	layout->name = "pattern layout";
 	strncpy(layout->pattern, "%m%n", sizeof(layout->pattern));
-	return ((l4sc_layout_ptr_t) layout);
+	return (BFC_SUCCESS);
 }
 
 static size_t

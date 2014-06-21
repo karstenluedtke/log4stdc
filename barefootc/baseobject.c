@@ -25,13 +25,13 @@ const struct bfc_classhdr bfc_object_class = {
 	.dump = bfc_default_dump_object,
 };
 
-bfc_objptr_t
+int
 bfc_default_init_object(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(const struct bfc_object_class *,
 			  bfc_objptr_t, object, buf, bufsize, pool,
 			  &bfc_object_class);
-	return ((bfc_objptr_t) object);
+	return (BFC_SUCCESS);
 }
 
 void
@@ -50,7 +50,7 @@ bfc_destroy_base_object(bfc_objptr_t obj)
 	obj->vptr = 0;
 }
 
-bfc_objptr_t
+int
 bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
 {
 	bfc_objptr_t object = (bfc_objptr_t) buf;
@@ -60,7 +60,7 @@ bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
 	}
 	memcpy(object, obj, size);
 	object->refc = 0;
-	return ((bfc_objptr_t) object);
+	return (BFC_SUCCESS);
 }
 
 size_t

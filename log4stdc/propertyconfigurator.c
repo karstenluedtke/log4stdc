@@ -8,8 +8,7 @@
 
 #include "logobjects.h"
 
-static l4sc_configurator_ptr_t init_property_configurator(void *, size_t,
-							  struct mempool *);
+static int init_property_configurator(void *, size_t, struct mempool *);
 static size_t get_property_configurator_size(l4sc_configurator_cptr_t obj);
 
 static int config_from_property_line(const char *buf, int loop);
@@ -25,14 +24,14 @@ const struct l4sc_configurator_class l4sc_property_configurator_class = {
 	.configure_from_file = configure_from_file,
 };
 
-static l4sc_configurator_ptr_t
+static int
 init_property_configurator(void *buf, size_t bufsize, struct mempool *pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_configurator_class_ptr_t,
 			  l4sc_configurator_ptr_t,configurator,buf,bufsize,pool,
 			  &l4sc_property_configurator_class);
 	configurator->name = "Property configurator";
-	return ((l4sc_configurator_ptr_t) configurator);
+	return (BFC_SUCCESS);
 }
 
 static size_t

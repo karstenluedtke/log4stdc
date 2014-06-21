@@ -12,7 +12,7 @@
 #include "barefootc/mempool.h"
 #include "barefootc/linkedlist.h"
 
-static l4sc_appender_ptr_t init_appender(void *, size_t, struct mempool *);
+static int init_appender(void *, size_t, struct mempool *);
 static void destroy_appender(l4sc_appender_ptr_t appender);
 static size_t get_appender_size(l4sc_appender_cptr_t obj);
 
@@ -57,22 +57,18 @@ struct appenderpool {
 struct appenderpool l4sc_appenders = { NULL, NULL };
 
 
-static l4sc_appender_ptr_t
+static int
 init_appender(void *buf, size_t bufsize, struct mempool *pool)
 {
-	l4sc_layout_ptr_t layout;
-	int i;
-
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_sysout_appender_class);
 
 	appender->name = "sysout appender";
-	layout = &appender->layout;
-	CMETHCALL(&l4sc_patternlayout_class,
-		  init, (layout, sizeof(appender->layout), pool), layout);
+	bfc_init_object((bfc_classptr_t) &l4sc_patternlayout_class,
+			&appender->layout, sizeof(appender->layout), pool);
 	BFC_SLIST_INSERT_FIRST(&l4sc_appenders, appender, next);
-	return (appender);
+	return (BFC_SUCCESS);
 }
 
 static void
@@ -180,7 +176,7 @@ l4sc_append(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 l4sc_appender_ptr_t
 l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 {
-	int i;
+	int i, rc;
 	l4sc_appender_ptr_t appender = NULL;
 	l4sc_appender_class_ptr_t clazz = &l4sc_sysout_appender_class;
 	struct mempool *pool = get_default_mempool();
@@ -203,11 +199,14 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 
 	LOGINFO(("%s: appender %.*s not found, creating %.*s ...",
 				__FUNCTION__, nlen, name, klen, kind));
-	appender = (l4sc_appender_ptr_t) bfc_new((bfc_classptr_t) clazz, pool);
-	CMETHCALL(clazz, set_name, (appender, name, nlen), (void)0);
-	appender->pool = pool;
-	LOGINFO(("%s: created %s (class %s).",
+	appender = NULL;
+	rc = bfc_new((void **) &appender, (bfc_classptr_t) clazz, pool);
+	if ((rc >= 0) && appender) {
+		CMETHCALL(clazz, set_name, (appender, name, nlen), (void)0);
+		appender->pool = pool;
+		LOGINFO(("%s: created %s (class %s).",
 				__FUNCTION__, appender->name, clazz->name));
+	}
 	return (appender);
 }
 

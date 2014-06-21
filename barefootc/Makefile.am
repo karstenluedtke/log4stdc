@@ -5,6 +5,7 @@ include_HEADERS = log4stdc/log4stdc.h
 nobase_include_HEADERS = barefootc/object.h
 nobase_include_HEADERS+= barefootc/mempool.h
 nobase_include_HEADERS+= barefootc/vector.h
+nobase_include_HEADERS+= barefootc/linkedlist.h
 
 noinst_PROGRAMS = testlink
 noinst_PROGRAMS+= vector_test
@@ -30,6 +31,7 @@ libbarefootc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjects.h
 liblog4stdc_a_SOURCES+= barefootc/object.h
+liblog4stdc_a_SOURCES+= barefootc/linkedlist.h
 
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 

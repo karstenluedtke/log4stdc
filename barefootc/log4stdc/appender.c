@@ -9,6 +9,7 @@
 
 #include "logobjects.h"
 #include "barefootc/mempool.h"
+#include "barefootc/linkedlist.h"
 
 static l4sc_appender_ptr_t init_appender(void *, size_t, struct mempool *);
 static void destroy_appender(l4sc_appender_ptr_t appender);
@@ -48,9 +49,11 @@ const struct l4sc_appender_class l4sc_sysout_appender_class = {
 	.ref_layout = ref_appender_layout,
 };
 
-#define MAX_APPENDERS	50
-int l4sc_num_appenders = 0;
-l4sc_appender_ptr_t l4sc_appenders[MAX_APPENDERS] = { NULL };
+struct appenderpool {
+	BFC_LIST_HEAD(l4sc_appender_ptr_t)
+};
+
+struct appenderpool l4sc_appenders = { NULL, NULL };
 
 
 static l4sc_appender_ptr_t
@@ -67,15 +70,7 @@ init_appender(void *buf, size_t bufsize, struct mempool *pool)
 	layout = &appender->layout;
 	CMETHCALL(&l4sc_patternlayout_class,
 		  init, (layout, sizeof(appender->layout), pool), layout);
-	for (i=0; i < l4sc_num_appenders; i++) {
-		if (l4sc_appenders[i] == NULL) {
-			l4sc_appenders[i] = appender;
-			return (appender);
-		}
-	}
-	if (l4sc_num_appenders < MAX_APPENDERS) {
-		l4sc_appenders[l4sc_num_appenders++] = appender;
-	}
+	BFC_SLIST_INSERT_FIRST(&l4sc_appenders, appender, next);
 	return (appender);
 }
 
@@ -85,16 +80,7 @@ destroy_appender(l4sc_appender_ptr_t appender)
 	int i;
 	l4sc_layout_ptr_t layout = &appender->layout;
 
-	for (i=0; i < l4sc_num_appenders; i++) {
-		if (l4sc_appenders[i] == appender) {
-			l4sc_appenders[i] = NULL;
-			if (i == l4sc_num_appenders-1) {
-				l4sc_num_appenders = i;
-			}
-			break;
-		}
-	}
-
+	BFC_SLIST_REMOVE(&l4sc_appenders, appender, l4sc_appender_ptr_t, next);
 	VMETHCALL(layout, destroy, (layout), (void) 0);
 	BFC_DESTROY_EPILOGUE(appender, &l4sc_sysout_appender_class);
 }
@@ -198,12 +184,10 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 	l4sc_appender_class_ptr_t clazz = &l4sc_sysout_appender_class;
 	struct mempool *pool = get_default_mempool();
 
-	for (i=0; i < l4sc_num_appenders; i++) {
-		if ((appender = l4sc_appenders[i]) != NULL) {
-			if ((strncasecmp(appender->name, name, nlen) == 0)
-			 && (appender->name[nlen] == '\0')) {
-				return (appender);
-			}
+	BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
+		if ((strncasecmp(appender->name, name, nlen) == 0)
+		 && (appender->name[nlen] == '\0')) {
+			return (appender);
 		}
 	}
 

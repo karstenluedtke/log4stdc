@@ -9,6 +9,7 @@
 
 #include "logobjects.h"
 #include "barefootc/mempool.h"
+#include "barefootc/linkedlist.h"
 
 #define MAX_APPENDERS_PER_LOGGER 4
 
@@ -78,26 +79,35 @@ static const struct l4sc_logger_class rootloggercls = {
 	.set_appender = set_logger_appender,
 };
 
-static struct l4sc_logger rootlogger = {
+#define rootlogger predefined_loggers[0]
+#define l4sclogger predefined_loggers[1]
+
+static struct l4sc_logger predefined_loggers[] = {
+    {
 	.vptr = &rootloggercls,
 	.name = "rootlogger",
+	.next = &l4sclogger,
 	.refc = 10000,
 	.level = ERROR_LEVEL,
-};
-
-static struct l4sc_logger l4sclogger = {
+    },
+    {
 	.vptr = &rootloggercls,
 	.name = "l4sclog",
+	.prev = &rootlogger,
 	.refc = 10000,
 	.level = ERROR_LEVEL,
 	.parent = &rootlogger,
 	.additivity = 0,
+    }
 };
 
-#define MAX_LOGGERS   50
 int l4sc_configured  = 0;
-int l4sc_num_loggers = 2;
-l4sc_logger_ptr_t l4sc_loggers[MAX_LOGGERS] = {&rootlogger, &l4sclogger, NULL};
+
+struct loggerpool {
+	BFC_LIST_HEAD(l4sc_logger_ptr_t)
+};
+
+struct loggerpool l4sc_loggers = { &rootlogger, &l4sclogger };
 
 static l4sc_logger_ptr_t
 init_logger(void *buf, size_t bufsize, struct mempool *pool)
@@ -111,15 +121,7 @@ init_logger(void *buf, size_t bufsize, struct mempool *pool)
 	logger->name = "logger";
 	logger->additivity = 1;
 	logger->level = ERROR_LEVEL;
-	for (i=0; i < l4sc_num_loggers; i++) {
-		if (l4sc_loggers[i] == NULL) {
-			l4sc_loggers[i] = logger;
-			return (logger);
-		}
-	}
-	if (l4sc_num_loggers < MAX_LOGGERS) {
-		l4sc_loggers[l4sc_num_loggers++] = logger;
-	}
+	BFC_SLIST_APPEND(&l4sc_loggers, logger);
 	return ((l4sc_logger_ptr_t) logger);
 }
 
@@ -128,15 +130,7 @@ destroy_logger(l4sc_logger_ptr_t logger)
 {
 	int i;
 
-	for (i=0; i < l4sc_num_loggers; i++) {
-		if (l4sc_loggers[i] == logger) {
-			l4sc_loggers[i] = NULL;
-			if (i == l4sc_num_loggers-1) {
-				l4sc_num_loggers = i;
-			}
-			break;
-		}
-	}
+	BFC_SLIST_REMOVE(&l4sc_loggers, logger, l4sc_logger_ptr_t, next);
 
 	BFC_DESTROY_EPILOGUE(logger, &loggercls);
 }
@@ -310,12 +304,10 @@ l4sc_get_logger(const char *name, int namelen)
 	int i, nlen = (namelen > 0)? namelen: strlen(name);
 	struct mempool *pool = get_default_mempool();
 
-	for (i=0; i < l4sc_num_loggers; i++) {
-		if ((logger = l4sc_loggers[i]) != NULL) {
-			if ((strncasecmp(logger->name, name, nlen) == 0)
-			 && (logger->name[nlen] == '\0')) {
-				return (logger);
-			}
+	BFC_LIST_FOREACH(logger, &l4sc_loggers, next) {
+		if ((strncasecmp(logger->name, name, nlen) == 0)
+		 && (logger->name[nlen] == '\0')) {
+			return (logger);
 		}
 	}
 

@@ -123,7 +123,6 @@ struct l4sc_appender {
 	unsigned long filesize;
 	unsigned long maxfilesize;
 	unsigned maxbackupindex;
-	union { void *p[8]; long l[8]; } lockbuf;
 	const char *filename;
 	char namebuf[40];
 	char pathbuf[160];

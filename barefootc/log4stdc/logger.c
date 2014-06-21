@@ -8,6 +8,7 @@
 #include <errno.h>
 
 #include "logobjects.h"
+#include "barefootc/object.h"
 #include "barefootc/mempool.h"
 #include "barefootc/linkedlist.h"
 
@@ -313,8 +314,8 @@ l4sc_get_logger(const char *name, int namelen)
 
 	LOGINFO(("%s: logger %.*s not found, creating ...",
 				__FUNCTION__, nlen, name));
-	logger = bfc_mempool_alloc(pool, sizeof(*logger));
-	CMETHCALL(&loggercls, init, (logger, sizeof(*logger), pool), logger);
+
+	logger = (l4sc_logger_ptr_t) bfc_new((bfc_classptr_t)&loggercls, pool);
 	CMETHCALL(&loggercls, set_name, (logger, name, nlen), (void)0);
 	logger->pool = pool;
 	LOGINFO(("%s: created %s (class %s).",

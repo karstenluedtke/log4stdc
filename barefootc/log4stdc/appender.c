@@ -8,6 +8,7 @@
 #endif
 
 #include "logobjects.h"
+#include "barefootc/object.h"
 #include "barefootc/mempool.h"
 #include "barefootc/linkedlist.h"
 
@@ -202,8 +203,7 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 
 	LOGINFO(("%s: appender %.*s not found, creating %.*s ...",
 				__FUNCTION__, nlen, name, klen, kind));
-	appender = bfc_mempool_alloc(pool, sizeof(*appender));
-	CMETHCALL(clazz, init, (appender, sizeof(*appender), pool), appender);
+	appender = (l4sc_appender_ptr_t) bfc_new((bfc_classptr_t) clazz, pool);
 	CMETHCALL(clazz, set_name, (appender, name, nlen), (void)0);
 	appender->pool = pool;
 	LOGINFO(("%s: created %s (class %s).",

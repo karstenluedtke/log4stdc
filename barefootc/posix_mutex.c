@@ -17,7 +17,8 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD_H
+#define __USE_UNIX98 1
 #include <pthread.h>
 #endif
 
@@ -27,7 +28,7 @@ struct posix_mutex {
 	int		line;
 	const char *	func;
 	union {
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD_H
 		struct {
 			pthread_mutex_t	mutex;
 			pthread_t	owner;
@@ -58,7 +59,7 @@ const struct bfc_mutex_class bfc_posix_mutex_class = {
 	.unlock = mutex_unlock,
 };
 
-#ifndef HAVE_LIBPTHREAD
+#ifndef HAVE_PTHREAD_MUTEX_INIT
 #define pthread_mutex_init(m,a)		assert(!"pthread")
 #define pthread_mutex_destroy(m)
 #define pthread_mutex_lock(m)

@@ -12,7 +12,7 @@ AC_CHECK_LIB([pthread], [pthread_mutexattr_settype])
 AC_CHECK_LIB([expat], [XML_ParseBuffer])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h inttypes.h malloc.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h malloc.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h pthread.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -25,7 +25,7 @@ AC_TYPE_UINT64_T
 AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([getcwd gettimeofday localtime_r memchr memset strchr strerror strncasecmp strtoul])
+AC_CHECK_FUNCS([getcwd gettimeofday localtime_r memchr memset strchr strerror strncasecmp strtoul pthread_mutex_init pthread_mutexattr_settype])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])

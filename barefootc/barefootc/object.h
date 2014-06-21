@@ -28,14 +28,17 @@ struct bfc_classhdr;
 typedef struct bfc_classhdr bfc_class_t;
 typedef const struct bfc_classhdr *bfc_classptr_t;
 
+extern const struct bfc_classhdr bfc_object_class;
+
 struct mempool;
+struct bfc_mutex;
 struct l4sc_logger;
 
 #define BFC_OBJHDR(classptrT,objptrT) \
 	classptrT	vptr;	  /**< virtual methods */	\
 	const char *	name;					\
 	struct mempool *pool;					\
-	void *		lock;					\
+	struct bfc_mutex *lock;					\
 	objptrT 	next;					\
 	objptrT 	prev;					\
 	unsigned	refc;

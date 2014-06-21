@@ -1,5 +1,8 @@
 
+#include <stddef.h>
+
 #include "barefootc/object.h"
+#include "barefootc/mempool.h"
 
 void
 bfc_delete(void *obj)

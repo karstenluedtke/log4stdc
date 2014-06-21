@@ -19,8 +19,7 @@
 
 #include "logobjects.h"
 #include "barefootc/mempool.h"
-
-struct appender_lock;
+#include "barefootc/synchronization.h"
 
 static l4sc_appender_ptr_t init_appender(void *, size_t, struct mempool *);
 static void destroy_appender(l4sc_appender_ptr_t appender);
@@ -35,9 +34,8 @@ static int  get_appender_option(l4sc_appender_cptr_t obj,
 static void apply_appender_options(l4sc_appender_ptr_t obj);
 static void append_to_output(l4sc_appender_ptr_t appender,
 			     l4sc_logmessage_cptr_t msg);
-static struct appender_lock *lock_appender(l4sc_appender_ptr_t appender);
-static void unlock_appender(l4sc_appender_ptr_t appender,
-					struct appender_lock *lock);
+static bfc_mutex_ptr_t lock_appender(l4sc_appender_ptr_t appender);
+static void unlock_appender(l4sc_appender_ptr_t appender,bfc_mutex_ptr_t lock);
 static void open_appender(l4sc_appender_ptr_t appender);
 static void close_appender(l4sc_appender_ptr_t appender);
 static int  start_rollover(l4sc_appender_ptr_t appender);
@@ -69,48 +67,23 @@ const struct l4sc_appender_class l4sc_file_appender_class = {
 	.append = append_to_output,
 };
 
-struct appender_lock {
-#ifdef L4SC_WINDOWS_LOCKS
-	CRITICAL_SECTION critsection;
-#else
-	pthread_mutex_t mutex;
-#endif
-};
-
-int
-l4sc_appender_lock_size(void)
-{
-	return (sizeof(struct appender_lock));
-}
-
 static char initial_working_directory[256] = { 0 };
 
 static l4sc_appender_ptr_t
 init_appender(void *buf, size_t bufsize, struct mempool *pool)
 {
-	struct appender_lock *lock;
+	bfc_mutex_ptr_t *lock;
 
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_file_appender_class);
 
 	appender->name = "file appender";
-	lock = (struct appender_lock *) &appender->lockbuf;
-	if (sizeof(*lock) <= sizeof(appender->lockbuf)) {
 #ifdef L4SC_WINDOWS_LOCKS
-		InitializeCriticalSection(&lock->critsection);
+	lock = bfc_new_win32_mutex(pool, __FILE__, __LINE__, __FUNCTION__);
 #else
-		static pthread_mutexattr_t attr;
-		pthread_mutexattr_init (&attr);
-		pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE);
-		pthread_mutex_init(&lock->mutex, &attr);
+	lock = bfc_new_posix_mutex(pool, __FILE__, __LINE__, __FUNCTION__);
 #endif
-		appender->lock = lock;
-	} else {
-		LOGERROR(("%s: too few space for lock, need %d, have %d",
-			__FUNCTION__, (int) sizeof(*lock),
-			(int) sizeof(appender->lockbuf)));
-	}
 	if (initial_working_directory[0] == 0) {
 		if (getcwd(initial_working_directory,
 				sizeof(initial_working_directory)) == NULL) {
@@ -124,14 +97,11 @@ init_appender(void *buf, size_t bufsize, struct mempool *pool)
 static void
 destroy_appender(l4sc_appender_ptr_t appender)
 {
-	struct appender_lock *lock = appender->lock;
+	bfc_mutex_ptr_t lock = appender->lock;
 	close_appender(appender);
 	if (lock) {
-#ifdef L4SC_WINDOWS_LOCKS
-		DeleteCriticalSection(&lock->critsection);
-#else
-		pthread_mutex_destroy(&lock->mutex);
-#endif
+		appender->lock = NULL;
+		bfc_delete((bfc_objptr_t) lock);
 	}
 	BFC_DESTROY_EPILOGUE(appender, &l4sc_file_appender_class);
 }
@@ -229,7 +199,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 	l4sc_layout_cptr_t layout = &appender->layout;
 	size_t len = 0;
 	int rolling = 0;
-	struct appender_lock *lock;
+	bfc_mutex_ptr_t lock;
 	if (msg && ((len = msg->msglen) > 0)) {
 		size_t bufsize = len + 200;
 		char *buf = alloca(bufsize);
@@ -279,31 +249,22 @@ apply_appender_options(l4sc_appender_ptr_t obj)
 {
 }
 
-static struct appender_lock *
+static bfc_mutex_ptr_t
 lock_appender(l4sc_appender_ptr_t appender)
 {
-	struct appender_lock *lock = appender->lock;
+	bfc_mutex_ptr_t lock = appender->lock;
 	if (lock) {
-#ifdef L4SC_WINDOWS_LOCKS
-		EnterCriticalSection(&lock->critsection);
-#else
-		pthread_mutex_lock(&lock->mutex);
-#endif
+		bfc_mutex_lock(lock);
 		return (lock);
 	}
 	return (NULL);
 }
 
 static void
-unlock_appender(l4sc_appender_ptr_t appender, struct appender_lock *lock)
+unlock_appender(l4sc_appender_ptr_t appender, bfc_mutex_ptr_t lock)
 {
-	
 	if (lock) {
-#ifdef L4SC_WINDOWS_LOCKS
-		LeaveCriticalSection(&lock->critsection);
-#else
-		pthread_mutex_unlock(&lock->mutex);
-#endif
+		bfc_mutex_unlock(lock);
 	}
 }
 

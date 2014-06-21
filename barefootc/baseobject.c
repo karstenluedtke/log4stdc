@@ -7,6 +7,7 @@
 #include <errno.h>
 
 #include "object.h"
+#include "log4stdc.h"
 
 static void bfc_destroy_base_object(bfc_objptr_t obj);
 

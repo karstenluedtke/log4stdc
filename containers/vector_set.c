@@ -10,7 +10,6 @@
 
 #include <stddef.h>
 #include <string.h>
-#include <malloc.h>
 
 #define BFC_VECTOR_ENABLE_TRIPLE_INDIRECT	1
 #define CV_ELEMSIZE_FACTOR(vec)		((vec)->elem_size / sizeof(char))

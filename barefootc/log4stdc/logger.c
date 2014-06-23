@@ -113,8 +113,6 @@ struct loggerpool l4sc_loggers = { &rootlogger, &l4sclogger };
 static int
 init_logger(void *buf, size_t bufsize, struct mempool *pool)
 {
-	int i;
-
 	BFC_INIT_PROLOGUE(l4sc_logger_class_ptr_t,
 			  l4sc_logger_ptr_t, logger, buf, bufsize, pool,
 			  &loggercls);
@@ -129,8 +127,6 @@ init_logger(void *buf, size_t bufsize, struct mempool *pool)
 static void
 destroy_logger(l4sc_logger_ptr_t logger)
 {
-	int i;
-
 	BFC_SLIST_REMOVE(&l4sc_loggers, logger, l4sc_logger_ptr_t, next);
 
 	BFC_DESTROY_EPILOGUE(logger, &loggercls);
@@ -301,7 +297,7 @@ l4sc_logger_ptr_t
 l4sc_get_logger(const char *name, int namelen)
 {
 	l4sc_logger_ptr_t logger = NULL;
-	int i, rc, nlen = (namelen > 0)? namelen: strlen(name);
+	int rc, nlen = (namelen > 0)? namelen: strlen(name);
 	struct mempool *pool = get_default_mempool();
 
 	BFC_LIST_FOREACH(logger, &l4sc_loggers, next) {

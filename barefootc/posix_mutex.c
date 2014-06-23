@@ -126,9 +126,6 @@ mutex_unlock(bfc_mutex_ptr_t obj, const char *file, int line, const char *func)
 static void
 dump_mutex(bfc_mutex_ptr_t obj, int depth, struct l4sc_logger *log)
 {
-	size_t size;
-	const unsigned char *p, *lim;
-
 	if (obj && obj->name && BFC_CLASS(obj)) {
 		L4SC_DEBUG(log, "object \"%s\" @%p", obj->name, obj);
 		L4SC_DEBUG(log, " class \"%s\", pool %p, lock %p, refc %d",

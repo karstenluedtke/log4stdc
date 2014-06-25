@@ -60,6 +60,9 @@ int l4sc_configure_from_property_string(const char *buf, size_t len);
 
 int l4sc_is_configured(void);
 void l4sc_set_configured(int newval);
+int l4sc_set_base_directory_name(const char *path);
+int l4sc_merge_base_directory_path (char *buf, int bufsize,
+	  			    const char *relpath, int rellen);
 
 l4sc_logger_ptr_t l4sc_get_root_logger(void);
 l4sc_logger_ptr_t l4sc_get_logger(const char *name, int namelen);

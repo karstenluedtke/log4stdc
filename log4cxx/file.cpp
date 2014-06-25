@@ -4,6 +4,8 @@
 #include <log4cxx/helpers/transcoder.h>
 #include <log4cxx/helpers/pool.h>
 
+#include "log4stdc.h"
+
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 
@@ -154,3 +156,19 @@ LogString File::getParent(Pool&) const {
 bool File::mkdirs(Pool& p) const {
 	return false;
 }
+
+/*
+ * Private extension for FMCC PalService
+ */
+namespace log4cxx {
+	void setBaseDirectoryName(const char *path)
+	{
+		l4sc_set_base_directory_name(path);
+	}
+
+	void setBaseDirectoryName(std::string path)
+	{
+		l4sc_set_base_directory_name(path.c_str());
+	}
+}
+

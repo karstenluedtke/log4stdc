@@ -432,3 +432,34 @@ merge_path(char *buf, int bufsize,
 	return (dirlen + rellen + 1);
 }
 
+int
+l4sc_merge_base_directory_path (char *buf, int bufsize,
+	  			const char *relpath, int rellen)
+{
+	if (initial_working_directory[0] == 0) {
+		if (getcwd(initial_working_directory,
+				sizeof(initial_working_directory)) == NULL) {
+			LOGERROR(("%s: cannot store initial working dir: %d",
+				__FUNCTION__, (int) errno));
+		}
+	}
+	return (merge_path(buf, bufsize,
+			   initial_working_directory, relpath, rellen));
+}
+
+int
+l4sc_set_base_directory_name(const char *path)
+{
+	const int len = strlen(path);
+
+	if (len < (int) sizeof(initial_working_directory)) {
+		memcpy(initial_working_directory, path, len);
+		initial_working_directory[len] = 0;
+	} else {
+		LOGERROR(("%s: cannot store base directory %s: too long %d",
+						__FUNCTION__, path, len));
+		return (-ENOSPC);
+	}
+	return (BFC_SUCCESS);
+}
+

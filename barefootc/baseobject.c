@@ -12,17 +12,22 @@
 static void bfc_destroy_base_object(bfc_objptr_t obj);
 
 const struct bfc_classhdr bfc_object_class = {
-	.super = NULL,
-	.name = "object",
-	.init = bfc_default_init_object,
-	.destroy = bfc_destroy_base_object,
-	.clone = bfc_default_clone_object,
-	.clonesize = bfc_get_base_object_size,
-	.hashcode = bfc_default_get_object_hashcode,
-	.equals = bfc_default_is_equal_object,
-	.length = bfc_default_get_object_length,
-	.tostring = bfc_default_object_tostring,
-	.dump = bfc_default_dump_object,
+	/* .super 	*/ NULL,
+	/* .name 	*/ "object",
+	/* .spare2 	*/ NULL,
+	/* .spare3 	*/ NULL,
+	/* .init 	*/ bfc_default_init_object,
+	/* .destroy 	*/ bfc_destroy_base_object,
+	/* .clone 	*/ bfc_default_clone_object,
+	/* .clonesize 	*/ bfc_get_base_object_size,
+	/* .hashcode 	*/ bfc_default_get_object_hashcode,
+	/* .equals 	*/ bfc_default_is_equal_object,
+	/* .length 	*/ bfc_default_get_object_length,
+	/* .tostring 	*/ bfc_default_object_tostring,
+	/* .dump 	*/ bfc_default_dump_object,
+	/* .spare13 	*/ NULL,
+	/* .spare14 	*/ NULL,
+	/* .spare15 	*/ NULL,
 };
 
 int

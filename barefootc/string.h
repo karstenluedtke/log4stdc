@@ -41,7 +41,7 @@ typedef const struct bfc_string *bfc_cstrptr_t;
 #define BFC_CHAR_TRAITS_METHODS(charT,intT) \
 	int	(*eq)(charT c, charT d);	/* c == d */		\
 	int	(*lt)(charT c, charT d);	/* c <  d */		\
-	size_t	(*strlen)(const charT *s);	/* strlen, wcslen */	\
+	size_t	(*szlen)(const charT *s);	/* strlen, wcslen */	\
 	charT	(*assign)(charT *p, size_t n, charT c); /* memset */	\
 	int	(*compare)(const charT *p, const charT *q, size_t n);	\
 	const charT* (*find)(const charT *p, size_t n, charT c);	\

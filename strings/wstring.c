@@ -4,16 +4,34 @@
 #include <string.h>
 #include <wchar.h>
 
+#include <inttypes.h>
+
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+
+#define iterptrT void *
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
 int	bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool);
+int	bfc_init_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_cwstrptr_t str);
+int	bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_wstrptr_t str);
+int	bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_cwstrptr_t str, size_t pos, size_t n);
+int	bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
+				const wchar_t* s, size_t n);
+int	bfc_init_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
+				const wchar_t* s);
+int	bfc_init_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
+				size_t n, wchar_t c);
+int	bfc_init_wstring_range(void *buf, size_t bufsize, struct mempool *pool,
+				iterptrT begin, iterptrT end);
 void	bfc_destroy_wstring(bfc_wstrptr_t obj);
 size_t	bfc_wstring_objsize(bfc_cwstrptr_t obj);
 // capacity:
-size_t	bfc_wstring_length(bfc_cwstrptr_t s);	
+size_t	bfc_wstring_length(bfc_cwstrptr_t s);
 size_t	bfc_wstring_max_size(bfc_cwstrptr_t s);
 int	bfc_wstring_resize(bfc_wstrptr_t s, size_t n, wchar_t c);
 size_t	bfc_wstring_capacity(bfc_cwstrptr_t s);
@@ -46,6 +64,13 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .spare14 	*/ NULL,
 	/* .spare15 	*/ NULL,
 	/* .traits	*/ (void *) &bfc_wchar_traits_class,
+	/* .init_bfstr	*/ bfc_init_wstring_bfstr,
+	/* .init_move	*/ bfc_init_wstring_move,
+	/* .init_substr	*/ bfc_init_wstring_substr,
+	/* .init_buffer	*/ bfc_init_wstring_buffer,
+	/* .init_c_str	*/ bfc_init_wstring_c_str,
+	/* .init_fill	*/ bfc_init_wstring_fill,
+	/* .init_range	*/ bfc_init_wstring_range,
 	/* .size 	*/ bfc_wstring_length,
 	/* .max_size	*/ bfc_wstring_max_size,
 	/* .resize	*/ bfc_wstring_resize,
@@ -64,6 +89,81 @@ bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool)
 			  &bfc_wstring_class);
 	s->buf = L"";
 	return (BFC_SUCCESS);
+}
+
+int
+bfc_init_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_cwstrptr_t str)
+{
+	int rc;
+	rc = bfc_init_wstring(buf, bufsize, pool);
+	return (rc);
+}
+
+int
+bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_wstrptr_t str)
+{
+	int rc;
+	rc = bfc_init_wstring(buf, bufsize, pool);
+	return (rc);
+}
+
+int
+bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_cwstrptr_t str, size_t pos, size_t n)
+{
+	int rc;
+	rc = bfc_init_wstring(buf, bufsize, pool);
+	return (rc);
+}
+
+int
+bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
+				const wchar_t* s, size_t n)
+{
+	bfc_wstrptr_t obj = (bfc_wstrptr_t) buf;
+	int rc;
+	
+	if ((rc = bfc_init_wstring(obj, bufsize, pool)) < 0) {
+		return(rc);
+	}
+	obj->buf = (wchar_t *) (intptr_t) s;
+	obj->bufsize = obj->len = n;
+	return (rc);
+}
+
+int
+bfc_init_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
+				const wchar_t* s)
+{
+	bfc_wstrptr_t obj = (bfc_wstrptr_t) buf;
+	int rc;
+	
+	if ((rc = bfc_init_wstring(obj, bufsize, pool)) < 0) {
+		return(rc);
+	}
+	obj->buf = (wchar_t *) (intptr_t) s;
+	obj->bufsize = obj->len = (*obj->vptr->traits->szlen)(s);
+	return (rc);
+}
+
+int
+bfc_init_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
+				size_t n, wchar_t c)
+{
+	int rc;
+	rc = bfc_init_wstring(buf, bufsize, pool);
+	return (rc);
+}
+
+int
+bfc_init_wstring_range(void *buf, size_t bufsize, struct mempool *pool,
+				iterptrT begin, iterptrT end)
+{
+	int rc;
+	rc = bfc_init_wstring(buf, bufsize, pool);
+	return (rc);
 }
 
 void

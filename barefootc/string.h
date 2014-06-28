@@ -67,18 +67,39 @@ typedef const struct bfc_wstring *bfc_cwstrptr_t;
 #define BFC_STRING_CLASS_DATA(charT) \
 	const struct {							\
 		BFC_CLASSHDR(struct bfc_classhdr*, void*, const void*)	\
-		BFC_CHAR_TRAITS_METHODS(char, int)			\
+		BFC_CHAR_TRAITS_METHODS(charT, int)			\
 	} *	traits;
 
 #define BFC_STRING_METHODS(strptrT,cstrptrT,charT,iterptrT) \
+	/* Additional allocators */					\
+	int	(*init_bfstr)(void *buf, size_t bufsize,		\
+				struct mempool *pool, cstrptrT str);	\
+	int	(*init_move)(void *buf, size_t bufsize,			\
+				struct mempool *pool, strptrT str);	\
+	int	(*init_substr)(void *buf, size_t bufsize,		\
+				struct mempool *pool,			\
+				cstrptrT str, size_t pos, size_t n);	\
+	int	(*init_buffer)(void *buf, size_t bufsize,		\
+				struct mempool *pool,			\
+				const charT* s, size_t n);		\
+	int	(*init_c_str)(void *buf, size_t bufsize,		\
+				struct mempool *pool, const charT* s);	\
+	int	(*init_fill)(void *buf, size_t bufsize,			\
+				struct mempool *pool,size_t n,charT c);	\
+	int	(*init_range)(void *buf, size_t bufsize,		\
+				struct mempool *pool,			\
+				iterptrT begin, iterptrT end);		\
+	/* Capacity */							\
 	size_t	(*size)(cstrptrT s);		/* == length */		\
 	size_t	(*max_size)(cstrptrT s);				\
 	int	(*resize)(strptrT s, size_t n, charT c);		\
 	size_t	(*capacity)(cstrptrT s);				\
 	int	(*reserve)(strptrT s, size_t n);			\
+	/* Element access */						\
 	charT	(*at)(cstrptrT s, size_t pos);				\
 	charT *	(*ref)(strptrT s, size_t pos);				\
 	const charT* (*data)(cstrptrT s);  /* not zero terminated */	\
+	/* Modifiers */							\
 	strptrT	(*assign_bfstr)(strptrT s, cstrptrT s2);		\
 	strptrT	(*assign_substr)(strptrT s, cstrptrT s2,		\
 				 size_t subpos, size_t sublen);		\
@@ -132,6 +153,7 @@ typedef const struct bfc_wstring *bfc_cwstrptr_t;
 				iterptrT j1, iterptrT j2);		\
 	size_t	(*copy)(strptrT s, charT* s2, size_t n, size_t pos);	\
 	void	(*swap)(strptrT s, strptrT str);			\
+	/* String operations */						\
 	size_t	(*find_bfstr)(strptrT s, cstrptrT str, size_t pos);	\
 	size_t	(*find_buffer)(strptrT s, const charT* s2,		\
 				size_t pos, size_t n);			\

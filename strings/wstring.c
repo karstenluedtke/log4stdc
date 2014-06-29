@@ -11,6 +11,10 @@
 
 #define iterptrT void *
 
+#ifndef STRING_CLASS_NAME
+#define STRING_CLASS_NAME "wstring"
+#endif
+
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
 
@@ -25,7 +29,7 @@ struct bfc_string_class bfc_wstring_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ NULL,
-	/* .name 	*/ "wstring",
+	/* .name 	*/ STRING_CLASS_NAME,
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ bfc_init_wstring,
@@ -139,10 +143,12 @@ struct bfc_string_class bfc_wstring_class = {
 int
 bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
+	static const long zbuf = 0;
+
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
 			  bfc_wstrptr_t, s, buf, bufsize, pool,
 			  &bfc_wstring_class);
-	s->buf = L"";
+	s->buf = (wchar_t *) &zbuf;
 	return (BFC_SUCCESS);
 }
 

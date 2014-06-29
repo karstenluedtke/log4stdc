@@ -26,7 +26,7 @@ struct charraits_class {
 	BFC_CHAR_TRAITS_METHODS(char, int)
 };
 
-struct charraits_class bfc_charraits_class = {
+struct charraits_class bfc_char_traits_class = {
 	.super	= NULL,
 	.name	= "charraits",
 	.eq	= bfc_char_eq,

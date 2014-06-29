@@ -12,6 +12,8 @@
 static void bfc_destroy_base_object(bfc_objptr_t obj);
 
 const struct bfc_classhdr bfc_object_class = {
+	/* intentionally not using selective initialization for base class: */
+	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ NULL,
 	/* .name 	*/ "object",
 	/* .spare2 	*/ NULL,

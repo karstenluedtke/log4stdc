@@ -10,6 +10,7 @@ nobase_include_HEADERS+= barefootc/synchronization.h
 
 noinst_PROGRAMS = testlink
 noinst_PROGRAMS+= vector_test
+noinst_PROGRAMS+= string_test
 
 libbarefootc_a_SOURCES = barefootc/baseobject.c
 libbarefootc_a_SOURCES+= barefootc/bfc_new_object.c
@@ -25,6 +26,9 @@ libbarefootc_a_SOURCES+= barefootc/bfc_object_tostring.c
 libbarefootc_a_SOURCES+= barefootc/bfc_object_dump.c
 libbarefootc_a_SOURCES+= barefootc/posix_mutex.c
 libbarefootc_a_SOURCES+= barefootc/win32_mutex.c
+libbarefootc_a_SOURCES+= strings/char_traits.c
+libbarefootc_a_SOURCES+= strings/wstring.c
+libbarefootc_a_SOURCES+= strings/wchar_traits.c
 libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
@@ -77,6 +81,10 @@ liblog4stdc_a_SOURCES+= mempools/defaultpool.c
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a
 testlink_DEPENDENCIES = liblog4stdc.a
+
+string_test_SOURCES = strings/string_test.c
+string_test_LDADD = libbarefootc.a
+string_test_DEPENDENCIES = libbarefootc.a
 
 vector_test_SOURCES = containers/vector_test.c
 vector_test_LDADD = libbarefootc.a

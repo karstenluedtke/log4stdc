@@ -227,9 +227,31 @@ typedef const struct bfc_wstring *bfc_cwstrptr_t;
 	}
 
 /*
- * bfc_wstring_t
+ * bfc_string_t
  */
 #define iterptrT void *
+/* Allocators */
+int	bfc_init_string(void *buf, size_t bufsize, struct mempool *pool);
+int	bfc_init_string_bfstr(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_cstrptr_t str);
+int	bfc_init_string_move(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_strptr_t str);
+int	bfc_init_string_substr(void *buf, size_t bufsize, struct mempool *pool,
+				bfc_cstrptr_t str, size_t pos, size_t n);
+int	bfc_init_string_buffer(void *buf, size_t bufsize, struct mempool *pool,
+				const char* s, size_t n);
+int	bfc_init_string_c_str(void *buf, size_t bufsize, struct mempool *pool,
+				const char* s);
+int	bfc_init_string_fill(void *buf, size_t bufsize, struct mempool *pool,
+				size_t n, char c);
+int	bfc_init_string_range(void *buf, size_t bufsize, struct mempool *pool,
+				iterptrT begin, iterptrT end);
+void	bfc_destroy_string(bfc_strptr_t obj);
+size_t	bfc_string_objsize(bfc_cstrptr_t obj);
+
+/*
+ * bfc_wstring_t
+ */
 /* Allocators */
 int	bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
@@ -380,5 +402,11 @@ int	bfc_wstring_compare_buffer(bfc_wstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2);
 #ifdef __cplusplus
 }	/* C++ */
+namespace barefootc {
+	int init_string(void *buf, size_t bufsize,
+			struct mempool *pool, char *s, size_t n);
+	int init_string(void *buf, size_t bufsize,
+			struct mempool *pool, wchar_t *s, size_t n);
+}
 #endif
 #endif /* _BFC_STRING_H_ */

@@ -154,56 +154,56 @@ typedef const struct bfc_wstring *bfc_cwstrptr_t;
 	size_t	(*copy)(strptrT s, charT* s2, size_t n, size_t pos);	\
 	void	(*swap)(strptrT s, strptrT str);			\
 	/* String operations */						\
-	size_t	(*find_bfstr)(strptrT s, cstrptrT str, size_t pos);	\
-	size_t	(*find_buffer)(strptrT s, const charT* s2,		\
+	size_t	(*find_bfstr)(cstrptrT s, cstrptrT str, size_t pos);	\
+	size_t	(*find_buffer)(cstrptrT s, const charT* s2,		\
 				size_t pos, size_t n);			\
-	size_t	(*find_c_str)(strptrT s, const charT* s2, size_t pos);	\
-	size_t	(*find_char)(strptrT s, charT c, size_t pos);		\
-	size_t	(*rfind_bfstr)(strptrT s, cstrptrT str, size_t pos);	\
-	size_t	(*rfind_buffer)(strptrT s, const charT* s2,		\
+	size_t	(*find_c_str)(cstrptrT s, const charT* s2, size_t pos);	\
+	size_t	(*find_char)(cstrptrT s, charT c, size_t pos);		\
+	size_t	(*rfind_bfstr)(cstrptrT s, cstrptrT str, size_t pos);	\
+	size_t	(*rfind_buffer)(cstrptrT s, const charT* s2,		\
 				size_t pos, size_t n);			\
-	size_t	(*rfind_c_str)(strptrT s, const charT* s2, size_t pos);	\
-	size_t	(*rfind_char)(strptrT s, charT c, size_t pos);		\
-	size_t	(*find_first_of_bfstr)(strptrT s, cstrptrT str,		\
+	size_t	(*rfind_c_str)(cstrptrT s, const charT* s2,size_t pos);	\
+	size_t	(*rfind_char)(cstrptrT s, charT c, size_t pos);		\
+	size_t	(*find_first_of_bfstr)(cstrptrT s, cstrptrT str,	\
 				size_t pos);				\
-	size_t	(*find_first_of_buffer)(strptrT s, const charT* s2,	\
+	size_t	(*find_first_of_buffer)(cstrptrT s, const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_first_of_c_str)(strptrT s, const charT* s2,	\
+	size_t	(*find_first_of_c_str)(cstrptrT s, const charT* s2,	\
 				size_t pos);				\
-	size_t	(*find_first_of_char)(strptrT s, charT c, size_t pos);	\
-	size_t	(*find_last_of_bfstr)(strptrT s, cstrptrT str,		\
+	size_t	(*find_first_of_char)(cstrptrT s, charT c, size_t pos);	\
+	size_t	(*find_last_of_bfstr)(cstrptrT s, cstrptrT str,		\
 				size_t pos);				\
-	size_t	(*find_last_of_buffer)(strptrT s, const charT* s2,	\
+	size_t	(*find_last_of_buffer)(cstrptrT s, const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_last_of_c_str)(strptrT s, const charT* s2,	\
+	size_t	(*find_last_of_c_str)(cstrptrT s, const charT* s2,	\
 				size_t pos);				\
-	size_t	(*find_last_of_char)(strptrT s, charT c, size_t pos);	\
-	size_t	(*find_first_not_of_bfstr)(strptrT s, cstrptrT str,	\
+	size_t	(*find_last_of_char)(cstrptrT s, charT c, size_t pos);	\
+	size_t	(*find_first_not_of_bfstr)(cstrptrT s, cstrptrT str,	\
 				size_t pos);				\
-	size_t	(*find_first_not_of_buffer)(strptrT s, const charT* s2,	\
+	size_t	(*find_first_not_of_buffer)(cstrptrT s,const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_first_not_of_c_str)(strptrT s, const charT* s2,	\
+	size_t	(*find_first_not_of_c_str)(cstrptrT s, const charT* s2,	\
 				size_t pos);				\
-	size_t	(*find_first_not_of_char)(strptrT s, charT c,		\
+	size_t	(*find_first_not_of_char)(cstrptrT s, charT c,		\
 				size_t pos);				\
-	size_t	(*find_last_not_of_bfstr)(strptrT s, cstrptrT str,	\
+	size_t	(*find_last_not_of_bfstr)(cstrptrT s, cstrptrT str,	\
 				size_t pos);				\
-	size_t	(*find_last_not_of_buffer)(strptrT s, const charT* s2,	\
+	size_t	(*find_last_not_of_buffer)(cstrptrT s, const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_last_not_of_c_str)(strptrT s, const charT* s2,	\
+	size_t	(*find_last_not_of_c_str)(cstrptrT s, const charT* s2,	\
 				size_t pos);				\
-	size_t	(*find_last_not_of_char)(strptrT s, charT c,		\
+	size_t	(*find_last_not_of_char)(cstrptrT s, charT c,		\
 				size_t pos);				\
-	strptrT	(*substr)(strptrT s, size_t pos, size_t n, strptrT buf);\
-	int	(*compare_bfstr)(strptrT s, cstrptrT str);		\
-	int	(*compare_substr)(strptrT s, size_t pos1, size_t n1,	\
+	strptrT	(*substr)(cstrptrT s, size_t pos,size_t n, strptrT buf);\
+	int	(*compare_bfstr)(cstrptrT s, cstrptrT str);		\
+	int	(*compare_substr)(cstrptrT s, size_t pos1, size_t n1,	\
 				cstrptrT str);				\
-	int	(*compare_substrs)(strptrT s, size_t pos1, size_t n1,	\
+	int	(*compare_substrs)(cstrptrT s, size_t pos1, size_t n1,	\
 				cstrptrT str, size_t pos2, size_t n2);	\
-	int	(*compare_c_str)(strptrT s, const charT* s2);		\
-	int	(*compare_substr_c_str)(strptrT s, size_t pos1,		\
+	int	(*compare_c_str)(cstrptrT s, const charT* s2);		\
+	int	(*compare_substr_c_str)(cstrptrT s, size_t pos1,	\
 				size_t n1, const charT* s2);		\
-	int	(*compare_buffer)(strptrT s, size_t pos1, size_t n1,	\
+	int	(*compare_buffer)(cstrptrT s, size_t pos1, size_t n1,	\
 				const charT* s2, size_t n2);		\
 	/* Check nothing is missing */					\
 	void	(*last_method)(void);
@@ -326,57 +326,57 @@ size_t	bfc_string_copy(bfc_strptr_t s, char* s2, size_t n, size_t pos);
 void	bfc_string_swap(bfc_strptr_t s, bfc_strptr_t str);
 
 /* String operations */
-size_t	bfc_string_find_bfstr(bfc_strptr_t s,bfc_cstrptr_t str, size_t pos);
-size_t	bfc_string_find_buffer(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str, size_t pos);
+size_t	bfc_string_find_buffer(bfc_cstrptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_c_str(bfc_strptr_t s, const char* s2, size_t pos);
-size_t	bfc_string_find_char(bfc_strptr_t s, char c, size_t pos);
-size_t	bfc_string_rfind_bfstr(bfc_strptr_t s,bfc_cstrptr_t str,size_t pos);
-size_t	bfc_string_rfind_buffer(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_c_str(bfc_cstrptr_t s, const char* s2, size_t pos);
+size_t	bfc_string_find_char(bfc_cstrptr_t s, char c, size_t pos);
+size_t	bfc_string_rfind_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str,size_t pos);
+size_t	bfc_string_rfind_buffer(bfc_cstrptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_string_rfind_c_str(bfc_strptr_t s, const char* s2,size_t pos);
-size_t	bfc_string_rfind_char(bfc_strptr_t s, char c, size_t pos);
-size_t	bfc_string_find_first_of_bfstr(bfc_strptr_t s, bfc_cstrptr_t str,
+size_t	bfc_string_rfind_c_str(bfc_cstrptr_t s, const char* s2,size_t pos);
+size_t	bfc_string_rfind_char(bfc_cstrptr_t s, char c, size_t pos);
+size_t	bfc_string_find_first_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
 					size_t pos);
-size_t	bfc_string_find_first_of_buffer(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_first_of_buffer(bfc_cstrptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_first_of_c_str(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_first_of_c_str(bfc_cstrptr_t s, const char* s2,
 					size_t pos);
-size_t	bfc_string_find_first_of_char(bfc_strptr_t s, char c, size_t pos);
-size_t	bfc_string_find_last_of_bfstr(bfc_strptr_t s, bfc_cstrptr_t str,
+size_t	bfc_string_find_first_of_char(bfc_cstrptr_t s, char c, size_t pos);
+size_t	bfc_string_find_last_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
 					size_t pos);
-size_t	bfc_string_find_last_of_buffer(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_last_of_buffer(bfc_cstrptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_last_of_c_str(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_last_of_c_str(bfc_cstrptr_t s, const char* s2,
 					size_t pos);
-size_t	bfc_string_find_last_of_char(bfc_strptr_t s, char c, size_t pos);
-size_t	bfc_string_find_first_not_of_bfstr(bfc_strptr_t s,bfc_cstrptr_t str,
+size_t	bfc_string_find_last_of_char(bfc_cstrptr_t s, char c, size_t pos);
+size_t	bfc_string_find_first_not_of_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str,
 					size_t pos);
-size_t	bfc_string_find_first_not_of_buffer(bfc_strptr_t s,const char* s2,
+size_t	bfc_string_find_first_not_of_buffer(bfc_cstrptr_t s,const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_first_not_of_c_str(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_first_not_of_c_str(bfc_cstrptr_t s, const char* s2,
 					size_t pos);
-size_t	bfc_string_find_first_not_of_char(bfc_strptr_t s, char c,
+size_t	bfc_string_find_first_not_of_char(bfc_cstrptr_t s, char c,
 					size_t pos);
-size_t	bfc_string_find_last_not_of_bfstr(bfc_strptr_t s, bfc_cstrptr_t str,
+size_t	bfc_string_find_last_not_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
 					size_t pos);
-size_t	bfc_string_find_last_not_of_buffer(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_last_not_of_buffer(bfc_cstrptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_last_not_of_c_str(bfc_strptr_t s, const char* s2,
+size_t	bfc_string_find_last_not_of_c_str(bfc_cstrptr_t s, const char* s2,
 					size_t pos);
-size_t	bfc_string_find_last_not_of_char(bfc_strptr_t s, char c,
+size_t	bfc_string_find_last_not_of_char(bfc_cstrptr_t s, char c,
 					size_t pos);
-bfc_strptr_t bfc_string_substr(bfc_strptr_t s, size_t pos, size_t n,
+bfc_strptr_t bfc_string_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 					bfc_strptr_t buf);
-int	bfc_string_compare_bfstr(bfc_strptr_t s, bfc_cstrptr_t str);
-int	bfc_string_compare_substr(bfc_strptr_t s, size_t pos1, size_t n1,
+int	bfc_string_compare_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str);
+int	bfc_string_compare_substr(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					bfc_cstrptr_t str);
-int	bfc_string_compare_substrs(bfc_strptr_t s, size_t pos1, size_t n1,
+int	bfc_string_compare_substrs(bfc_cstrptr_t s, size_t pos1, size_t n1,
 				 bfc_cstrptr_t str, size_t pos2, size_t n2);
-int	bfc_string_compare_c_str(bfc_strptr_t s, const char* s2);
-int	bfc_string_compare_substr_c_str(bfc_strptr_t s, size_t pos1,
+int	bfc_string_compare_c_str(bfc_cstrptr_t s, const char* s2);
+int	bfc_string_compare_substr_c_str(bfc_cstrptr_t s, size_t pos1,
 					size_t n1, const char* s2);
-int	bfc_string_compare_buffer(bfc_strptr_t s, size_t pos1, size_t n1,
+int	bfc_string_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					const char* s2, size_t n2);
 
 /*
@@ -478,65 +478,65 @@ size_t	bfc_wstring_copy(bfc_wstrptr_t s, wchar_t* s2, size_t n, size_t pos);
 void	bfc_wstring_swap(bfc_wstrptr_t s, bfc_wstrptr_t str);
 
 /* String operations */
-size_t	bfc_wstring_find_bfstr(bfc_wstrptr_t s,bfc_cwstrptr_t str, size_t pos);
-size_t	bfc_wstring_find_buffer(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str, size_t pos);
+size_t	bfc_wstring_find_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_c_str(bfc_wstrptr_t s, const wchar_t* s2, size_t pos);
-size_t	bfc_wstring_find_char(bfc_wstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_rfind_bfstr(bfc_wstrptr_t s,bfc_cwstrptr_t str,size_t pos);
-size_t	bfc_wstring_rfind_buffer(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_c_str(bfc_cwstrptr_t s, const wchar_t* s2, size_t pos);
+size_t	bfc_wstring_find_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
+size_t	bfc_wstring_rfind_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,size_t pos);
+size_t	bfc_wstring_rfind_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_rfind_c_str(bfc_wstrptr_t s, const wchar_t* s2,size_t pos);
-size_t	bfc_wstring_rfind_char(bfc_wstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_find_first_of_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t str,
+size_t	bfc_wstring_rfind_c_str(bfc_cwstrptr_t s, const wchar_t* s2,size_t pos);
+size_t	bfc_wstring_rfind_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
+size_t	bfc_wstring_find_first_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
 					size_t pos);
-size_t	bfc_wstring_find_first_of_buffer(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_first_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_first_of_c_str(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_first_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos);
-size_t	bfc_wstring_find_first_of_char(bfc_wstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_find_last_of_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t str,
+size_t	bfc_wstring_find_first_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
+size_t	bfc_wstring_find_last_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
 					size_t pos);
-size_t	bfc_wstring_find_last_of_buffer(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_last_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_last_of_c_str(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_last_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos);
-size_t	bfc_wstring_find_last_of_char(bfc_wstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_find_first_not_of_bfstr(bfc_wstrptr_t s,bfc_cwstrptr_t str,
+size_t	bfc_wstring_find_last_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
+size_t	bfc_wstring_find_first_not_of_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,
 					size_t pos);
-size_t	bfc_wstring_find_first_not_of_buffer(bfc_wstrptr_t s,const wchar_t* s2,
+size_t	bfc_wstring_find_first_not_of_buffer(bfc_cwstrptr_t s,const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_first_not_of_c_str(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_first_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos);
-size_t	bfc_wstring_find_first_not_of_char(bfc_wstrptr_t s, wchar_t c,
+size_t	bfc_wstring_find_first_not_of_char(bfc_cwstrptr_t s, wchar_t c,
 					size_t pos);
-size_t	bfc_wstring_find_last_not_of_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t str,
+size_t	bfc_wstring_find_last_not_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
 					size_t pos);
-size_t	bfc_wstring_find_last_not_of_buffer(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_last_not_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_last_not_of_c_str(bfc_wstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_last_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos);
-size_t	bfc_wstring_find_last_not_of_char(bfc_wstrptr_t s, wchar_t c,
+size_t	bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c,
 					size_t pos);
-bfc_wstrptr_t bfc_wstring_substr(bfc_wstrptr_t s, size_t pos, size_t n,
+bfc_wstrptr_t bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
 					bfc_wstrptr_t buf);
-int	bfc_wstring_compare_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t str);
-int	bfc_wstring_compare_substr(bfc_wstrptr_t s, size_t pos1, size_t n1,
+int	bfc_wstring_compare_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str);
+int	bfc_wstring_compare_substr(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					bfc_cwstrptr_t str);
-int	bfc_wstring_compare_substrs(bfc_wstrptr_t s, size_t pos1, size_t n1,
+int	bfc_wstring_compare_substrs(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 				 bfc_cwstrptr_t str, size_t pos2, size_t n2);
-int	bfc_wstring_compare_c_str(bfc_wstrptr_t s, const wchar_t* s2);
-int	bfc_wstring_compare_substr_c_str(bfc_wstrptr_t s, size_t pos1,
+int	bfc_wstring_compare_c_str(bfc_cwstrptr_t s, const wchar_t* s2);
+int	bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1,
 					size_t n1, const wchar_t* s2);
-int	bfc_wstring_compare_buffer(bfc_wstrptr_t s, size_t pos1, size_t n1,
+int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2);
 #ifdef __cplusplus
 }	/* C++ */
 namespace barefootc {
 	int init_string(void *buf, size_t bufsize,
-			struct mempool *pool, char *s, size_t n);
+			struct mempool *pool, const char *s, size_t n);
 	int init_string(void *buf, size_t bufsize,
-			struct mempool *pool, wchar_t *s, size_t n);
+			struct mempool *pool, const wchar_t *s, size_t n);
 }
 #endif
 #endif /* _BFC_STRING_H_ */

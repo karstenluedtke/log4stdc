@@ -1,11 +1,11 @@
 /**
- * @file      string.h
+ * @file      cxxwrapper.h
  *
- * @brief     A generic string implementation.
+ * @brief     C++ access to barefootc string implementation.
  *
  * @author    Karsten Luedtke
  *
- * @date      2014-06-26
+ * @date      2014-06-29
  *
  * Copyright (c)  2014  Karsten Luedtke, Berlin, Germany.
  */
@@ -20,6 +20,7 @@
 
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "barefootc/mempool.h"
 
 #define noexcept
 
@@ -58,22 +59,23 @@ namespace barefootc {
 		typedef struct wrapped_string *strptrT;
 		typedef const struct wrapped_string *cstrptrT;
 
-		struct wrapped_string_class {
-			BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-				bfc_wstrptr_t, bfc_cwstrptr_t, wchar_t)
-		};
-		typedef const struct wrap_string_class *classptrT;
+		struct wrapped_string_class;
+		typedef const struct wrapped_string_class *classptrT;
 
 		struct wrapped_string {
 			BFC_STRINGHDR(classptrT,charT)
 		};
 
+		struct wrapped_string_class {
+			BFC_STRING_CLASS_DEF(classptrT,strptrT,cstrptrT,charT)
+		};
+
 		struct wrapped_string bfcstr;
-		const Allocator *saved_allocator;
+		Allocator saved_allocator;
 		
 	public:
 		// 21.4.2, construct/copy/destroy:
-		basic_string(): saved_allocator(0)
+		basic_string(): saved_allocator()
 		{
 			init_string(&bfcstr, sizeof(bfcstr), 0, bfcstr.buf, 0);
 		}
@@ -88,7 +90,7 @@ namespace barefootc {
 		basic_string(const basic_string& str, size_type pos, size_type n = npos, const Allocator& a = Allocator());
 
 		basic_string(const charT* s, size_type n):
-			saved_allocator(0)
+			saved_allocator()
 		{
 			init_string(&bfcstr, sizeof(bfcstr), 0, s, n);
 		}
@@ -100,7 +102,7 @@ namespace barefootc {
 		}
 
 		basic_string(const charT* s):
-			saved_allocator(0)
+			saved_allocator()
 		{
 			init_string(&bfcstr, sizeof(bfcstr), 0,
 					s, chrtraits::length(s));
@@ -145,15 +147,36 @@ namespace barefootc {
 		const_reverse_iterator crend() const noexcept;
 		
 		// 21.4.4, capacity:
-		size_type size() const noexcept;
-		size_type length() const noexcept;
-		size_type max_size() const noexcept;
+		size_type size() const noexcept
+		{
+			return (VMETHCALL(&bfcstr, size, (&bfcstr), 0));
+		}
+
+		size_type length() const noexcept
+		{
+			return (VMETHCALL(&bfcstr, size, (&bfcstr), 0));
+		}
+
+		size_type max_size() const noexcept
+		{
+			return (VMETHCALL(&bfcstr, max_size, (&bfcstr), 0));
+		}
+
 		void resize(size_type n, charT c);
 		void resize(size_type n);
-		size_type capacity() const noexcept;
+		size_type capacity() const noexcept
+		{
+			return (VMETHCALL(&bfcstr, capacity, (&bfcstr), 0));
+		}
+
 		void reserve(size_type res_arg = 0);
 		void shrink_to_fit();
-		void clear() noexcept;
+
+		void clear() noexcept
+		{
+			VMETHCALL(&bfcstr, resize, (&bfcstr, 0, 0), 0);
+		}
+
 		bool empty() const noexcept;
 		
 		// 21.4.5, element access:
@@ -167,24 +190,86 @@ namespace barefootc {
 		charT& back() noexcept;
 		
 		// 21.4.6, modifiers:
-		basic_string& operator+=(const basic_string& str);
-		basic_string& operator+=(const charT* s);
-		basic_string& operator+=(charT c);
+		basic_string& operator+=(const basic_string& str)
+		{
+			VMETHCALL(&bfcstr, append_bfstr, (&bfcstr, str),
+				  &bfcstr);
+		}
+
+		basic_string& operator+=(const charT* s)
+		{
+			VMETHCALL(&bfcstr, append_c_str, (&bfcstr, s),
+				  &bfcstr);
+		}
+
+		basic_string& operator+=(charT c)
+		{
+			VMETHCALL(&bfcstr, push_back, (&bfcstr, c), 0);
+		}
+
 		// basic_string& operator+=(initializer_list<charT>);
-		basic_string& append(const basic_string& str);
+
+		basic_string& append(const basic_string& str)
+		{
+			VMETHCALL(&bfcstr, append_bfstr, (&bfcstr, str),
+				  &bfcstr);
+		}
+
 		basic_string& append(const basic_string& str, size_type pos, size_type n);
-		basic_string& append(const charT* s, size_type n);
-		basic_string& append(const charT* s);
-		basic_string& append(size_type n, charT c);
+
+		basic_string& append(const charT* s, size_type n)
+		{
+			VMETHCALL(&bfcstr, append_buffer, (&bfcstr, s, n),
+				  &bfcstr);
+		}
+
+		basic_string& append(const charT* s)
+		{
+			VMETHCALL(&bfcstr, append_c_str, (&bfcstr, s),
+				  &bfcstr);
+		}
+
+		basic_string& append(size_type n, charT c)
+		{
+			VMETHCALL(&bfcstr, append_fill, (&bfcstr, n, c),
+				  &bfcstr);
+		}
+
 		template<class InputIterator> basic_string& append(InputIterator first, InputIterator last);
 		// basic_string& append(initializer_list<charT>);
-		void push_back(charT c);
-		basic_string& assign(const basic_string& str);
+
+		void push_back(charT c)
+		{
+			VMETHCALL(&bfcstr, push_back, (&bfcstr, c), 0);
+		}
+
+		basic_string& assign(const basic_string& str)
+		{
+			VMETHCALL(&bfcstr, assign_bfstr, (&bfcstr,&str.bfcstr),
+				  &bfcstr);
+		}
+
 		// basic_string& assign(basic_string&& str) noexcept;
 		basic_string& assign(const basic_string& str, size_type pos, size_type n);
-		basic_string& assign(const charT* s, size_type n);
-		basic_string& assign(const charT* s);
-		basic_string& assign(size_type n, charT c);
+
+		basic_string& assign(const charT* s, size_type n)
+		{
+			VMETHCALL(&bfcstr, assign_buffer, (&bfcstr, s, n),
+				  &bfcstr);
+		}
+
+		basic_string& assign(const charT* s)
+		{
+			VMETHCALL(&bfcstr, assign_c_str, (&bfcstr, s),
+				  &bfcstr);
+		}
+
+		basic_string& assign(size_type n, charT c)
+		{
+			VMETHCALL(&bfcstr, assign_char, (&bfcstr, c),
+				  &bfcstr);
+		}
+
 		template<class InputIterator> basic_string& assign(InputIterator first, InputIterator last);
 		// basic_string& assign(initializer_list<charT>);
 		basic_string& insert(size_type pos1, const basic_string& str);
@@ -217,7 +302,11 @@ namespace barefootc {
 		// 21.4.7, string operations:
 		const charT* c_str() const noexcept;
 		const charT* data() const noexcept;
-		allocator_type get_allocator() const noexcept;
+		allocator_type get_allocator() const noexcept
+		{
+			return (saved_allocator);
+		}
+
 		size_type find (const basic_string& str, size_type pos = 0) const noexcept;
 		size_type find (const charT* s, size_type pos, size_type n) const noexcept;
 		size_type find (const charT* s, size_type pos = 0) const noexcept;
@@ -243,13 +332,172 @@ namespace barefootc {
 		size_type find_last_not_of (const charT* s, size_type pos = npos) const noexcept;
 		size_type find_last_not_of (charT c, size_type pos = npos) const noexcept;
 		basic_string substr(size_type pos = 0, size_type n = npos) const;
-		int compare(const basic_string& str) const noexcept;
+		int compare(const basic_string& str) const noexcept
+		{
+			return (VMETHCALL(&bfcstr,
+				compare_bfstr, (&bfcstr, &str.bfcstr),
+				-1));
+		}
+
+
 		int compare(size_type pos1, size_type n1, const basic_string& str) const;
 		int compare(size_type pos1, size_type n1, const basic_string& str, size_type pos2, size_type n2) const;
-		int compare(const charT* s) const noexcept;
+		int compare(const charT* s) const noexcept
+		{
+			return (VMETHCALL(&bfcstr,
+				compare_c_str, (&bfcstr, s),
+				-1));
+		}
+
 		int compare(size_type pos1, size_type n1, const charT* s) const;
 		int compare(size_type pos1, size_type n1, const charT* s, size_type n2) const;
 	};
+
+	/*
+	 * Non-members
+	 */
+
+	/* operator+ string */
+	template <class charT, class traits, class Alloc>
+	basic_string<charT,traits,Alloc>
+	operator+(const basic_string<charT,traits,Alloc>& lhs,
+		  const basic_string<charT,traits,Alloc>& rhs)
+	{
+		size_t len = lhs.length() + rhs.length() + 1;
+		charT *buf = lhs.get_allocator().allocate(len);
+		basic_string<charT> res(buf, len, lhs.get_allocator());
+		res.clear();
+		res.assign(lhs);
+		res.append(rhs);
+		return (res);
+	}
+
+	/* operator+ c-string */
+	template <class charT, class traits, class Alloc>
+	basic_string<charT,traits,Alloc>
+	operator+(const basic_string<charT,traits,Alloc>& lhs, const charT* rhs)
+	{
+		size_t len = lhs.length() + traits::length(rhs) + 1;
+		charT *buf = lhs.get_allocator().allocate(len);
+		basic_string<charT> res(buf, len, lhs.get_allocator());
+		res.clear();
+		res.assign(lhs);
+		res.append(rhs);
+		return (res);
+	}
+
+	template <class charT, class traits, class Alloc>
+	basic_string<charT,traits,Alloc>
+	operator+(const charT* lhs, const basic_string<charT,traits,Alloc>& rhs)
+	{
+		size_t len = traits::length(lhs) + rhs.length() + 1;
+		charT *buf = rhs.get_allocator().allocate(len);
+		basic_string<charT> res(buf, len, rhs.get_allocator());
+		res.clear();
+		res.assign(lhs);
+		res.append(rhs);
+		return (res);
+	}
+
+
+	/* operator+ character */
+	template <class charT, class traits, class Alloc>
+	basic_string<charT,traits,Alloc>
+	operator+(const basic_string<charT,traits,Alloc>& lhs, charT rhs)
+	{
+		size_t len = lhs.length() + 2;
+		charT *buf = lhs.get_allocator().allocate(len);
+		basic_string<charT> res(buf, len, lhs.get_allocator());
+		res.clear();
+		res.assign(lhs);
+		res.append(rhs);
+		return (res);
+	}
+
+	template <class charT, class traits, class Alloc>
+	basic_string<charT,traits,Alloc>
+	operator+(charT lhs, const basic_string<charT,traits,Alloc>& rhs)
+	{
+		size_t len = rhs.length() + 2;
+		charT *buf = rhs.get_allocator().allocate(len);
+		basic_string<charT> res(buf, len, rhs.get_allocator());
+		res.clear();
+		res.assign(lhs);
+		res.append(rhs);
+		return (res);
+	}
+
+
+	template <class charT, class traits, class Alloc>
+	bool
+	operator== (const basic_string<charT,traits,Alloc>& lhs,
+                    const basic_string<charT,traits,Alloc>& rhs)
+	{
+		return (lhs.compare(rhs) == 0);
+	}
+
+	template <class charT, class traits, class Alloc>
+	bool
+	operator== (const charT* lhs,
+		    const basic_string<charT,traits,Alloc>& rhs)
+	{
+		return (rhs.compare(lhs) == 0);
+	}
+
+	template <class charT, class traits, class Alloc>
+	bool
+	operator== (const basic_string<charT,traits,Alloc>& lhs,
+		    const charT* rhs)
+	{
+		return (lhs.compare(rhs) == 0);
+	}
+
+
+
+	template <class charT, class traits, class Alloc>
+	bool operator!= (const basic_string<charT,traits,Alloc>& lhs,
+                   const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator!= (const charT* lhs, const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator!= (const basic_string<charT,traits,Alloc>& lhs, const charT* rhs);
+
+
+	template <class charT, class traits, class Alloc>
+	bool operator<  (const basic_string<charT,traits,Alloc>& lhs,
+                   const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator<  (const charT* lhs, const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator<  (const basic_string<charT,traits,Alloc>& lhs, const charT* rhs);
+
+
+	template <class charT, class traits, class Alloc>
+	bool operator<= (const basic_string<charT,traits,Alloc>& lhs,
+                   const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator<= (const charT* lhs, const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator<= (const basic_string<charT,traits,Alloc>& lhs, const charT* rhs);
+
+
+	template <class charT, class traits, class Alloc>
+	bool operator>  (const basic_string<charT,traits,Alloc>& lhs,
+                   const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator>  (const charT* lhs, const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator>  (const basic_string<charT,traits,Alloc>& lhs, const charT* rhs);
+
+
+	template <class charT, class traits, class Alloc>
+	bool operator>= (const basic_string<charT,traits,Alloc>& lhs,
+                   const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator>= (const charT* lhs, const basic_string<charT,traits,Alloc>& rhs);
+	template <class charT, class traits, class Alloc>
+	bool operator>= (const basic_string<charT,traits,Alloc>& lhs, const charT* rhs);
+
 }
 
 #endif /* __cplusplus */

@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <wchar.h>
 
 #include <inttypes.h>
@@ -259,7 +260,25 @@ bfc_wstring_max_size(bfc_cwstrptr_t s)
 int
 bfc_wstring_resize(bfc_wstrptr_t s, size_t n, wchar_t c)
 {
-	return (0);
+	wchar_t *data = s->buf + s->offs;
+	wchar_t *limit = s->buf + s->bufsize;
+	if (n <= s->len) {
+		s->len = n;
+		data[n] = '\0';
+		return ((int) n);
+	} else if (data + n < limit) {
+		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
+		data[n] = '\0';
+		return ((int) n);
+	} else if (s->buf + n < limit) {
+		data = limit - (n+1);
+		s->offs = data - s->buf;
+		(*s->vptr->traits->move)(data, s->buf + s->offs, s->len);
+		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
+		data[n] = '\0';
+		return ((int) n);
+	}
+	return (-ENOSPC);
 }
 
 size_t
@@ -306,12 +325,26 @@ bfc_wstrptr_t bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 
 bfc_wstrptr_t bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
-	return (NULL);
+	size_t n = (*s->vptr->traits->szlen)(s2);
+	return (bfc_wstring_assign_buffer(s, s2, n));
 }
 
 bfc_wstrptr_t bfc_wstring_assign_buffer(bfc_wstrptr_t s,
 					const wchar_t *s2, size_t n)
 {
+	wchar_t *data = s->buf + s->offs;
+	wchar_t *limit = s->buf + s->bufsize;
+	if (data + n < limit) {
+		(*s->vptr->traits->copy)(data, s2, n);
+		data[n] = '\0';
+		return (s);
+	} else if (s->buf + n < limit) {
+		data = limit - (n+1);
+		s->offs = data - s->buf;
+		(*s->vptr->traits->copy)(data, s2, n);
+		data[n] = '\0';
+		return (s);
+	}
 	return (NULL);
 }
 
@@ -649,9 +682,34 @@ bfc_wstrptr_t bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
 	return (0);
 }
 
+int	bfc_wstring_compare_buffers(bfc_cwstrptr_t s,
+				    const wchar_t *s1, size_t n1,
+				    const wchar_t *s2, size_t n2)
+{
+	if (n1 == n2) {
+		return ((*s->vptr->traits->compare)(s1, s2, n1));
+	} else if (n1 == 0) {
+		return (-1);
+	} else if (n2 == 0) {
+		return (1);
+	} else if (n1 < n2) {
+		int rc = (*s->vptr->traits->compare)(s1, s2, n1);
+		return ((rc != 0)? rc: -1);
+	} else {
+		int rc = (*s->vptr->traits->compare)(s1, s2, n2);
+		return ((rc != 0)? rc: 1);
+	}
+}
+
 int	bfc_wstring_compare_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str)
 {
-	return (0);
+	const wchar_t *s1 = VMETHCALL(s, data, (s), s->buf);
+	size_t l1 = VMETHCALL(s, size, (s), s->len);
+
+	const wchar_t *s2 = VMETHCALL(str, data, (str), str->buf);
+	size_t l2 = VMETHCALL(str, size, (str), str->len);
+
+	return (bfc_wstring_compare_buffers(s, s1, l1, s2, l2));
 }
 
 int	bfc_wstring_compare_substr(bfc_cwstrptr_t s, size_t pos1, size_t n1,
@@ -680,6 +738,9 @@ int	bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1,
 int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2)
 {
-	return (0);
+	const wchar_t *s1 = VMETHCALL(s, data, (s), s->buf);
+	size_t len = VMETHCALL(s, size, (s), s->len);
+	size_t l1  = (pos1 >= len)? 0: (n1 <= len - pos1)? n1: len - pos1;
+	return (bfc_wstring_compare_buffers(s, s1+pos1, l1, s2, n2));
 }
 

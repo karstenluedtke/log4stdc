@@ -10,6 +10,8 @@ int main (int argc, char *argv[])
 {
 	barefootc::basic_string<char> str1("ABCD");
 	barefootc::basic_string<char> str2 = str1 + "1234";
+	assert (str1.length() == 4);
+	assert (str2.length() == 8);
 	assert (str2 == barefootc::basic_string<char>("ABCD1234"));
 
 	// barefootc::basic_string<wchar_t> wstr1;

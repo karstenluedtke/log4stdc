@@ -9,12 +9,15 @@
 
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "log4stdc.h"
 
 #define iterptrT void *
 
 #ifndef STRING_CLASS_NAME
 #define STRING_CLASS_NAME "wstring"
 #endif
+
+#define LOGGERNAME "barefootc.string", 16
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
@@ -141,14 +144,67 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .last_method	*/ last_method
 };
 
+extern inline size_t
+bfc_wstrlen(bfc_cwstrptr_t s)
+{
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->size) {
+			return (*cls->size)(s);
+		}
+	} while ((cls = cls->super) != NULL);
+	return (0);
+}
+
+extern inline wchar_t *
+bfc_wstrbuf(bfc_cwstrptr_t s)
+{
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->data) {
+			return (wchar_t *)(uintptr_t) (*cls->data)(s);
+		}
+	} while ((cls = cls->super) != NULL);
+	return (s->buf);
+}
+
+extern inline const wchar_t *
+bfc_wstrdata(bfc_cwstrptr_t s)
+{
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->data) {
+			return (*cls->data)(s);
+		}
+	} while ((cls = cls->super) != NULL);
+	return (s->buf);
+}
+
+extern inline size_t
+bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n)
+{
+	size_t remain, len = bfc_wstrlen(s);
+	if (pos >= len) {
+		return (0);
+	} else if (n > (remain = len - pos)) {
+		return (remain);
+	}
+	return (n);
+}
+
 int
 bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
 	static const long zbuf = 0;
-
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
 			  bfc_wstrptr_t, s, buf, bufsize, pool,
 			  &bfc_wstring_class);
+
+	L4SC_TRACE(logger, "%s(%p, %ld, pool %p)",
+		__FUNCTION__, buf, (long) bufsize, pool);
+
 	s->buf = (wchar_t *) &zbuf;
 	return (BFC_SUCCESS);
 }
@@ -158,6 +214,10 @@ bfc_init_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str)
 {
 	int rc;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
+		__FUNCTION__, buf, (long) bufsize, pool, str);
 	rc = bfc_init_wstring(buf, bufsize, pool);
 	return (rc);
 }
@@ -167,6 +227,10 @@ bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_wstrptr_t str)
 {
 	int rc;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
+		__FUNCTION__, buf, (long) bufsize, pool, str);
 	rc = bfc_init_wstring(buf, bufsize, pool);
 	return (rc);
 }
@@ -176,7 +240,12 @@ bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str, size_t pos, size_t n)
 {
 	int rc;
-	rc = bfc_init_wstring(buf, bufsize, pool);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
+		__FUNCTION__, buf, (long) bufsize, pool, str);
+	rc = bfc_init_wstring_buffer(buf, bufsize, pool,
+		bfc_wstrdata(str) + pos, bfc_wstring_sublen(str, pos, n));
 	return (rc);
 }
 
@@ -186,6 +255,10 @@ bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 {
 	bfc_wstrptr_t obj = (bfc_wstrptr_t) buf;
 	int rc;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, s %p, n %ld)",
+		__FUNCTION__, buf, (long) bufsize, pool, s, (long) n);
 
 	if ((rc = bfc_init_wstring(obj, bufsize, pool)) < 0) {
 		return(rc);
@@ -314,18 +387,40 @@ const wchar_t* bfc_wstring_data(bfc_cwstrptr_t s)  /* not zero terminated */
 /* Modifiers */
 bfc_wstrptr_t bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 {
-	return (NULL);
+	const wchar_t *data = bfc_wstrdata(s2);
+	size_t len = bfc_wstrlen(s2);
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->assign_buffer) {
+			return (*cls->assign_buffer)(s, data, len);
+		}
+	} while ((cls = cls->super) != NULL);
+	return bfc_wstring_assign_buffer(s, data, len);
 }
 
 bfc_wstrptr_t bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			 		size_t subpos, size_t sublen)
 {
-	return (NULL);
+	const wchar_t *data = bfc_wstrdata(s2) + subpos;
+	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->assign_buffer) {
+			return (*cls->assign_buffer)(s, data, len);
+		}
+	} while ((cls = cls->super) != NULL);
+	return bfc_wstring_assign_buffer(s, data, len);
 }
 
 bfc_wstrptr_t bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->assign_buffer) {
+			return (*cls->assign_buffer)(s, s2, n);
+		}
+	} while ((cls = cls->super) != NULL);
 	return (bfc_wstring_assign_buffer(s, s2, n));
 }
 
@@ -334,16 +429,28 @@ bfc_wstrptr_t bfc_wstring_assign_buffer(bfc_wstrptr_t s,
 {
 	wchar_t *data = s->buf + s->offs;
 	wchar_t *limit = s->buf + s->bufsize;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
 	if (data + n < limit) {
+		L4SC_DEBUG(logger, "%s: data %p + %ld < limit %p",
+				__FUNCTION__, data, (long) n, limit);
 		(*s->vptr->traits->copy)(data, s2, n);
 		data[n] = '\0';
+		s->len = n;
 		return (s);
 	} else if (s->buf + n < limit) {
+		L4SC_DEBUG(logger, "%s: buf %p + %ld < limit %p",
+				__FUNCTION__, s->buf, (long) n, limit);
 		data = limit - (n+1);
 		s->offs = data - s->buf;
 		(*s->vptr->traits->copy)(data, s2, n);
 		data[n] = '\0';
+		s->len = n;
 		return (s);
+	} else {
+		L4SC_ERROR(logger, "%s: data %p + %ld >= limit %p",
+				__FUNCTION__, data, (long) n, limit);
 	}
 	return (NULL);
 }
@@ -361,23 +468,63 @@ bfc_wstrptr_t bfc_wstring_assign_range(bfc_wstrptr_t s,
 
 bfc_wstrptr_t bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 {
-	return (NULL);
+	const wchar_t *data = bfc_wstrdata(s2);
+	size_t len = bfc_wstrlen(s2);
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->append_buffer) {
+			return (*cls->append_buffer)(s, data, len);
+		}
+	} while ((cls = cls->super) != NULL);
+	return bfc_wstring_append_buffer(s, data, len);
 }
 
 bfc_wstrptr_t bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			 		size_t subpos, size_t sublen)
 {
-	return (NULL);
+	const wchar_t *data = bfc_wstrdata(s2) + subpos;
+	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->append_buffer) {
+			return (*cls->append_buffer)(s, data, len);
+		}
+	} while ((cls = cls->super) != NULL);
+	return bfc_wstring_append_buffer(s, data, len);
 }
 
 bfc_wstrptr_t bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
-	return (NULL);
+	size_t n = (*s->vptr->traits->szlen)(s2);
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->append_buffer) {
+			return (*cls->append_buffer)(s, s2, n);
+		}
+	} while ((cls = cls->super) != NULL);
+	return (bfc_wstring_append_buffer(s, s2, n));
 }
 
 bfc_wstrptr_t bfc_wstring_append_buffer(bfc_wstrptr_t s,
 					const wchar_t *s2, size_t n)
 {
+	wchar_t *data = s->buf + s->offs + s->len;
+	wchar_t *limit = s->buf + s->bufsize;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
+	if (data + n < limit) {
+		L4SC_DEBUG(logger, "%s: data %p + %ld < limit %p",
+				__FUNCTION__, data, (long) n, limit);
+		(*s->vptr->traits->copy)(data, s2, n);
+		data[n] = '\0';
+		s->len += n;
+		L4SC_DEBUG(logger, "%s: len %ld", __FUNCTION__, (long) s->len);
+		return (s);
+	} else {
+		L4SC_ERROR(logger, "%s: data %p + %ld >= limit %p",
+				__FUNCTION__, data, (long) n, limit);
+	}
 	return (NULL);
 }
 
@@ -687,7 +834,7 @@ int	bfc_wstring_compare_buffers(bfc_cwstrptr_t s,
 				    const wchar_t *s2, size_t n2)
 {
 	if (n1 == n2) {
-		return ((*s->vptr->traits->compare)(s1, s2, n1));
+		return ((n1 > 0)? (*s->vptr->traits->compare)(s1, s2, n1): 0);
 	} else if (n1 == 0) {
 		return (-1);
 	} else if (n2 == 0) {
@@ -703,11 +850,11 @@ int	bfc_wstring_compare_buffers(bfc_cwstrptr_t s,
 
 int	bfc_wstring_compare_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str)
 {
-	const wchar_t *s1 = VMETHCALL(s, data, (s), s->buf);
-	size_t l1 = VMETHCALL(s, size, (s), s->len);
+	const wchar_t *s1 = bfc_wstrdata(s);
+	size_t l1 = bfc_wstrlen(s);
 
-	const wchar_t *s2 = VMETHCALL(str, data, (str), str->buf);
-	size_t l2 = VMETHCALL(str, size, (str), str->len);
+	const wchar_t *s2 = bfc_wstrdata(str);
+	size_t l2 = bfc_wstrlen(str);
 
 	return (bfc_wstring_compare_buffers(s, s1, l1, s2, l2));
 }
@@ -738,9 +885,9 @@ int	bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1,
 int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2)
 {
-	const wchar_t *s1 = VMETHCALL(s, data, (s), s->buf);
-	size_t len = VMETHCALL(s, size, (s), s->len);
-	size_t l1  = (pos1 >= len)? 0: (n1 <= len - pos1)? n1: len - pos1;
+	const wchar_t *s1 = bfc_wstrdata(s);
+	size_t len = bfc_wstrlen(s);
+	size_t l1  = bfc_wstring_sublen(s, pos1, n1);
 	return (bfc_wstring_compare_buffers(s, s1+pos1, l1, s2, n2));
 }
 

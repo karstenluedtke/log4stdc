@@ -5,9 +5,12 @@
 #include <assert.h>
 
 #include "cxxwrapper.h"
+#include "log4stdc.h"
 
 int main (int argc, char *argv[])
 {
+	l4sc_configure_from_xml_file("log4j.xml");
+
 	barefootc::basic_string<char> str1("ABCD");
 	barefootc::basic_string<char> str2 = str1 + "1234";
 	assert (str1.length() == 4);

@@ -87,12 +87,12 @@ testlink_LDADD = liblog4stdc.a
 testlink_DEPENDENCIES = liblog4stdc.a
 
 string_test_SOURCES = strings/string_test.c
-string_test_LDADD = libbarefootc.a
-string_test_DEPENDENCIES = libbarefootc.a
+string_test_LDADD = libbarefootc.a liblog4stdc.a
+string_test_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 
 cxxwrapper_test_SOURCES = strings/cxxwrapper_test.cpp
-cxxwrapper_test_LDADD = libbarefootc.a
-cxxwrapper_test_DEPENDENCIES = libbarefootc.a
+cxxwrapper_test_LDADD = libbarefootc.a liblog4stdc.a
+cxxwrapper_test_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 
 vector_test_SOURCES = containers/vector_test.c
 vector_test_LDADD = libbarefootc.a

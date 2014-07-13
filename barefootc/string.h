@@ -530,6 +530,13 @@ int	bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1,
 					size_t n1, const wchar_t* s2);
 int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2);
+
+size_t bfc_strlen(bfc_cstrptr_t s);
+const char *bfc_strdata(bfc_cstrptr_t s);
+
+size_t bfc_wstrlen(bfc_cwstrptr_t s);
+const wchar_t *bfc_wstrdata(bfc_cwstrptr_t s);
+
 #ifdef __cplusplus
 }	/* C++ */
 namespace barefootc {

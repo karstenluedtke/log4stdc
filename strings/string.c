@@ -107,5 +107,10 @@
 #define	bfc_wstring_compare_substr_c_str	bfc_string_compare_substr_c_str
 #define	bfc_wstring_compare_buffer		bfc_string_compare_buffer
 
+#define	bfc_wstrlen				bfc_strlen
+#define	bfc_wstrbuf				bfc_strbuf
+#define	bfc_wstrdata				bfc_strdata
+#define	bfc_wstring_sublen			bfc_string_sublen
+
 #include "wstring.c"
 

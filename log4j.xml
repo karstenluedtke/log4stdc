@@ -5,6 +5,14 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="bfclog">
+        <param name="File" value="bfc.log"/>
+        <param name="MaxBackupIndex" value="9"/>
+        <param name="MaxFileSize" value="10MB"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p&gt; %m%n"/>
+        </layout>
+    </appender>
     <appender class="org.apache.log4j.RollingFileAppender" name="pallog">
         <param name="File" value="pal.log"/>
         <param name="MaxBackupIndex" value="9"/>
@@ -28,6 +36,15 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
+	
+	<logger additivity="false" name="barefootc">
+		<level value="INFO"/>
+		<appender-ref ref="bfclog"/>
+	</logger>
+	
+	<logger name="barefootc.string">
+		<level value="TRACE"/>
+	</logger>
 	
 	
 	<logger name="com.teles.softphone.app">

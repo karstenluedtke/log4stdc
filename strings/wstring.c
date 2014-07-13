@@ -144,7 +144,7 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .last_method	*/ last_method
 };
 
-extern inline size_t
+/*extern inline*/ size_t
 bfc_wstrlen(bfc_cwstrptr_t s)
 {
 	bfc_string_classptr_t cls = s->vptr;
@@ -156,7 +156,7 @@ bfc_wstrlen(bfc_cwstrptr_t s)
 	return (0);
 }
 
-extern inline wchar_t *
+/*extern inline*/ wchar_t *
 bfc_wstrbuf(bfc_cwstrptr_t s)
 {
 	bfc_string_classptr_t cls = s->vptr;
@@ -168,7 +168,7 @@ bfc_wstrbuf(bfc_cwstrptr_t s)
 	return (s->buf);
 }
 
-extern inline const wchar_t *
+/*extern inline*/ const wchar_t *
 bfc_wstrdata(bfc_cwstrptr_t s)
 {
 	bfc_string_classptr_t cls = s->vptr;
@@ -180,7 +180,7 @@ bfc_wstrdata(bfc_cwstrptr_t s)
 	return (s->buf);
 }
 
-extern inline size_t
+/*extern inline*/ size_t
 bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n)
 {
 	size_t remain, len = bfc_wstrlen(s);
@@ -190,6 +190,18 @@ bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n)
 		return (remain);
 	}
 	return (n);
+}
+
+/*extern inline*/ int
+bfc_wstr_reserve(bfc_wstrptr_t s, size_t n)
+{
+	bfc_string_classptr_t cls = s->vptr;
+	do {
+		if (cls->reserve) {
+			return (*cls->reserve)(s, n);
+		}
+	} while ((cls = cls->super) != NULL);
+	return bfc_wstring_reserve(s, n);
 }
 
 int
@@ -327,7 +339,7 @@ bfc_wstring_length(bfc_cwstrptr_t s)
 size_t
 bfc_wstring_max_size(bfc_cwstrptr_t s)
 {
-	return (bfc_wstring_capacity(s));
+	return ((0x7FFFuL << 8*(sizeof(wchar_t*)-2)) / sizeof(wchar_t));
 }
 
 int
@@ -363,7 +375,25 @@ bfc_wstring_capacity(bfc_cwstrptr_t s)
 int
 bfc_wstring_reserve(bfc_wstrptr_t s, size_t n)
 {
-	return (0);
+	if (n >= bfc_wstring_max_size(s)) {
+		return (-EINVAL);
+	}
+	if (s->offs + n < s->bufsize) {
+		return (BFC_SUCCESS);
+	}
+	if (n < s->bufsize) {
+		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		L4SC_DEBUG(logger, "%s: buf %p + %ld < limit %p",
+			__FUNCTION__, s->buf, (long) n, s->buf + s->bufsize);
+		wchar_t *p = s->buf + s->bufsize - (n+1);
+		if (s->len > 0) {
+			(*s->vptr->traits->move)(p, s->buf+s->offs, s->len);
+		}
+		p[s->len] = '\0';
+		s->offs = p - s->buf;
+		return (BFC_SUCCESS);
+	}
+	return (-ENOSYS);
 }
 
 // element access:
@@ -427,36 +457,44 @@ bfc_wstrptr_t bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 bfc_wstrptr_t bfc_wstring_assign_buffer(bfc_wstrptr_t s,
 					const wchar_t *s2, size_t n)
 {
-	wchar_t *data = s->buf + s->offs;
-	wchar_t *limit = s->buf + s->bufsize;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
 	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
-	if (data + n < limit) {
-		L4SC_DEBUG(logger, "%s: data %p + %ld < limit %p",
-				__FUNCTION__, data, (long) n, limit);
-		(*s->vptr->traits->copy)(data, s2, n);
-		data[n] = '\0';
-		s->len = n;
-		return (s);
-	} else if (s->buf + n < limit) {
-		L4SC_DEBUG(logger, "%s: buf %p + %ld < limit %p",
-				__FUNCTION__, s->buf, (long) n, limit);
-		data = limit - (n+1);
-		s->offs = data - s->buf;
-		(*s->vptr->traits->copy)(data, s2, n);
+
+	if (bfc_wstr_reserve(s, n) == BFC_SUCCESS) {
+		wchar_t *data = bfc_wstrbuf(s);
+		if (n > 0) {
+			(*s->vptr->traits->copy)(data, s2, n);
+		}
 		data[n] = '\0';
 		s->len = n;
 		return (s);
 	} else {
-		L4SC_ERROR(logger, "%s: data %p + %ld >= limit %p",
-				__FUNCTION__, data, (long) n, limit);
+		L4SC_ERROR(logger, "%s: no space for %ld characters",
+						__FUNCTION__, (long) n);
 	}
 	return (NULL);
 }
 
 bfc_wstrptr_t bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
 {
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %ld, %02x)", __FUNCTION__, s, (long) n, c);
+
+	if (bfc_wstr_reserve(s, n) == BFC_SUCCESS) {
+		wchar_t *data = bfc_wstrbuf(s);
+		if (n > 0) {
+			(*s->vptr->traits->assign)(data, n, c);
+		}
+		data[n] = '\0';
+		s->len = n;
+		return (s);
+	} else {
+		L4SC_ERROR(logger, "%s: no space for %ld characters",
+						__FUNCTION__, (long) n);
+	}
+	return (NULL);
 	return (NULL);
 }
 
@@ -496,6 +534,9 @@ bfc_wstrptr_t bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 bfc_wstrptr_t bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	L4SC_TRACE(logger, "%s(%p, %p, %ld): %s, %s", __FUNCTION__,
+		s, s2, (long) n, s->vptr->name, s->vptr->traits->name);
 	bfc_string_classptr_t cls = s->vptr;
 	do {
 		if (cls->append_buffer) {
@@ -508,22 +549,22 @@ bfc_wstrptr_t bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 bfc_wstrptr_t bfc_wstring_append_buffer(bfc_wstrptr_t s,
 					const wchar_t *s2, size_t n)
 {
-	wchar_t *data = s->buf + s->offs + s->len;
-	wchar_t *limit = s->buf + s->bufsize;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
 	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
-	if (data + n < limit) {
-		L4SC_DEBUG(logger, "%s: data %p + %ld < limit %p",
-				__FUNCTION__, data, (long) n, limit);
-		(*s->vptr->traits->copy)(data, s2, n);
+
+	if (bfc_wstr_reserve(s, s->len + n) == BFC_SUCCESS) {
+		wchar_t *data = bfc_wstrbuf(s) + s->len;
+		if (n > 0) {
+			(*s->vptr->traits->copy)(data, s2, n);
+		}
 		data[n] = '\0';
 		s->len += n;
 		L4SC_DEBUG(logger, "%s: len %ld", __FUNCTION__, (long) s->len);
 		return (s);
 	} else {
-		L4SC_ERROR(logger, "%s: data %p + %ld >= limit %p",
-				__FUNCTION__, data, (long) n, limit);
+		L4SC_ERROR(logger, "%s: no space for %ld+%ld characters",
+				__FUNCTION__, (long) s->len, (long) n);
 	}
 	return (NULL);
 }

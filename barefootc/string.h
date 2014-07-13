@@ -41,6 +41,11 @@ typedef struct bfc_string bfc_string_t;
 typedef struct bfc_string *bfc_strptr_t;
 typedef const struct bfc_string *bfc_cstrptr_t;
 
+struct bfc_basic_string;
+typedef struct bfc_basic_string bfc_basic_string_t;
+typedef struct bfc_basic_string *bfc_basic_strptr_t;
+typedef const struct bfc_basic_string *bfc_basic_cstrptr_t;
+
 struct bfc_wstring {
 	BFC_STRINGHDR(bfc_string_classptr_t, wchar_t)
 };
@@ -48,6 +53,11 @@ struct bfc_wstring {
 typedef struct bfc_wstring bfc_wstring_t;
 typedef struct bfc_wstring *bfc_wstrptr_t;
 typedef const struct bfc_wstring *bfc_cwstrptr_t;
+
+struct bfc_basic_wstring;
+typedef struct bfc_basic_wstring bfc_basic_wstring_t;
+typedef struct bfc_basic_wstring *bfc_basic_wstrptr_t;
+typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 
 #define BFC_CHAR_TRAITS_METHODS(charT,intT) \
 	int	(*eq)(charT c, charT d);	/* c == d */		\
@@ -532,16 +542,80 @@ int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2);
 
 size_t bfc_strlen(bfc_cstrptr_t s);
+size_t bfc_string_sublen(bfc_cstrptr_t s, size_t pos, size_t n);
 const char *bfc_strdata(bfc_cstrptr_t s);
+int bfc_str_reserve(bfc_strptr_t s, size_t n);
 
 size_t bfc_wstrlen(bfc_cwstrptr_t s);
+size_t bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n);
 const wchar_t *bfc_wstrdata(bfc_cwstrptr_t s);
+int bfc_wstr_reserve(bfc_wstrptr_t s, size_t n);
+
+/*
+ * bfc_basic_string_t
+ */
+/* Allocators */
+int	bfc_init_basic_string(void *buf, size_t bufsize, struct mempool *pool);
+int	bfc_init_basic_string_bfstr(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cstrptr_t str);
+int	bfc_init_basic_string_move(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_basic_strptr_t str);
+int	bfc_init_basic_string_substr(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
+int	bfc_init_basic_string_buffer(void *buf, size_t bufsize,
+		struct mempool *pool, const char* s, size_t n);
+int	bfc_init_basic_string_c_str(void *buf, size_t bufsize,
+		struct mempool *pool, const char* s);
+int	bfc_init_basic_string_fill(void *buf, size_t bufsize,
+		struct mempool *pool, size_t n, char c);
+int	bfc_init_basic_string_range(void *buf, size_t bufsize,
+		struct mempool *pool, iterptrT begin, iterptrT end);
+void	bfc_destroy_basic_string(bfc_basic_strptr_t obj);
+size_t	bfc_basic_string_objsize(bfc_basic_cstrptr_t obj);
+
+/* Capacity */
+size_t	bfc_basic_string_length(bfc_basic_cstrptr_t s);
+size_t	bfc_basic_string_max_size(bfc_basic_cstrptr_t s);
+int	bfc_basic_string_resize(bfc_basic_strptr_t s, size_t n, char c);
+size_t	bfc_basic_string_capacity(bfc_basic_cstrptr_t s);
+int	bfc_basic_string_reserve(bfc_basic_strptr_t s, size_t n);
+
+/*
+ * bfc_basic_wstring_t
+ */
+/* Allocators */
+int	bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool);
+int	bfc_init_basic_wstring_bfstr(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cwstrptr_t str);
+int	bfc_init_basic_wstring_move(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_basic_wstrptr_t str);
+int	bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cwstrptr_t str, size_t pos, size_t n);
+int	bfc_init_basic_wstring_buffer(void *buf, size_t bufsize,
+		struct mempool *pool, const wchar_t* s, size_t n);
+int	bfc_init_basic_wstring_c_str(void *buf, size_t bufsize,
+		struct mempool *pool, const wchar_t* s);
+int	bfc_init_basic_wstring_fill(void *buf, size_t bufsize,
+		struct mempool *pool, size_t n, wchar_t c);
+int	bfc_init_basic_wstring_range(void *buf, size_t bufsize,
+		struct mempool *pool, iterptrT begin, iterptrT end);
+void	bfc_destroy_basic_wstring(bfc_basic_wstrptr_t obj);
+size_t	bfc_basic_wstring_objsize(bfc_basic_cwstrptr_t obj);
+
+/* Capacity */
+size_t	bfc_basic_wstring_length(bfc_basic_cwstrptr_t s);
+size_t	bfc_basic_wstring_max_size(bfc_basic_cwstrptr_t s);
+int	bfc_basic_wstring_resize(bfc_basic_wstrptr_t s, size_t n, wchar_t c);
+size_t	bfc_basic_wstring_capacity(bfc_basic_cwstrptr_t s);
+int	bfc_basic_wstring_reserve(bfc_basic_wstrptr_t s, size_t n);
 
 #ifdef __cplusplus
 }	/* C++ */
 namespace barefootc {
+	int init_string(void *buf, size_t bufsize, const char *s, size_t n);
 	int init_string(void *buf, size_t bufsize,
 			struct mempool *pool, const char *s, size_t n);
+	int init_string(void *buf, size_t bufsize, const wchar_t *s, size_t n);
 	int init_string(void *buf, size_t bufsize,
 			struct mempool *pool, const wchar_t *s, size_t n);
 }

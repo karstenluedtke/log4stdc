@@ -64,6 +64,7 @@ namespace barefootc {
 
 		struct wrapped_string {
 			BFC_STRINGHDR(classptrT,charT)
+			void *_lib_spare[4];
 		};
 
 		struct wrapped_string_class {

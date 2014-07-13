@@ -345,20 +345,13 @@ bfc_wstring_max_size(bfc_cwstrptr_t s)
 int
 bfc_wstring_resize(bfc_wstrptr_t s, size_t n, wchar_t c)
 {
-	wchar_t *data = s->buf + s->offs;
-	wchar_t *limit = s->buf + s->bufsize;
 	if (n <= s->len) {
+		wchar_t *data = bfc_wstrbuf(s);
 		s->len = n;
 		data[n] = '\0';
 		return ((int) n);
-	} else if (data + n < limit) {
-		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
-		data[n] = '\0';
-		return ((int) n);
-	} else if (s->buf + n < limit) {
-		data = limit - (n+1);
-		s->offs = data - s->buf;
-		(*s->vptr->traits->move)(data, s->buf + s->offs, s->len);
+	} else if (bfc_str_reserve == BFC_SUCCESS) {
+		wchar_t *data = bfc_wstrbuf(s);
 		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
 		data[n] = '\0';
 		return ((int) n);

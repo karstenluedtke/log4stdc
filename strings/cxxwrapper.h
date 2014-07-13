@@ -78,12 +78,14 @@ namespace barefootc {
 		// 21.4.2, construct/copy/destroy:
 		basic_string(): saved_allocator()
 		{
-			init_string(&bfcstr, sizeof(bfcstr), 0, bfcstr.buf, 0);
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), bfcstr.buf, 0);
 		}
 
 		explicit basic_string(const Allocator& a): saved_allocator(a)
 		{
-			init_string(&bfcstr, sizeof(bfcstr), 0, bfcstr.buf, 0);
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), bfcstr.buf, 0);
 		}
 
 		basic_string(const basic_string& str);
@@ -93,27 +95,28 @@ namespace barefootc {
 		basic_string(const charT* s, size_type n):
 			saved_allocator()
 		{
-			init_string(&bfcstr, sizeof(bfcstr), 0, s, n);
+			init_string(&bfcstr, sizeof(bfcstr), s, n);
 		}
 
 		basic_string(const charT* s, size_type n, const Allocator& a):
 			saved_allocator(a)
 		{
-			init_string(&bfcstr, sizeof(bfcstr), 0, s, n);
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), s, n);
 		}
 
 		basic_string(const charT* s):
 			saved_allocator()
 		{
-			init_string(&bfcstr, sizeof(bfcstr), 0,
-					s, chrtraits::length(s));
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), s, chrtraits::length(s));
 		}
 
 		basic_string(const charT* s, const Allocator& a):
 			saved_allocator(a)
 		{
-			init_string(&bfcstr, sizeof(bfcstr), 0,
-					s, chrtraits::length(s));
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), s, chrtraits::length(s));
 		}
 
 		basic_string(size_type n, charT c, const Allocator& a = Allocator());

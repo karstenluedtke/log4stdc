@@ -39,6 +39,7 @@ liblog4stdc_a_SOURCES+= barefootc/synchronization.h
 
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c 
 
 liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c log4stdc/fileappender.c

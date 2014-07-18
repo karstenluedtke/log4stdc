@@ -518,6 +518,23 @@ bfc_wstrptr_t bfc_wstring_append_buffer(bfc_wstrptr_t s,
 
 bfc_wstrptr_t bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
 {
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %ld, %02x)", __FUNCTION__, s, (long) n, c);
+
+	if (bfc_wstr_reserve(s, s->len + n) == BFC_SUCCESS) {
+		wchar_t *data = bfc_wstrbuf(s) + s->len;
+		if (n > 0) {
+			(*s->vptr->traits->assign)(data, n, c);
+		}
+		data[n] = '\0';
+		s->len += n;
+		L4SC_DEBUG(logger, "%s: len %ld", __FUNCTION__, (long) s->len);
+		return (s);
+	} else {
+		L4SC_ERROR(logger, "%s: no space for %ld+%ld characters",
+				__FUNCTION__, (long) s->len, (long) n);
+	}
 	return (NULL);
 }
 
@@ -527,9 +544,24 @@ bfc_wstrptr_t bfc_wstring_append_range(bfc_wstrptr_t s,
 	return (NULL);
 }
 
-int	bfc_wstring_push_back(bfc_wstrptr_t s, wchar_t c)
+int
+bfc_wstring_push_back(bfc_wstrptr_t s, wchar_t c)
 {
-	return (0);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %02x)", __FUNCTION__, s, c);
+
+	if (bfc_wstr_reserve(s, s->len + 1) == BFC_SUCCESS) {
+		wchar_t *data = bfc_wstrbuf(s) + s->len;
+		data[0] = c;
+		data[1] = '\0';
+		s->len += 1;
+		return (c);
+	} else {
+		L4SC_ERROR(logger, "%s: no space for %ld+1 characters",
+						__FUNCTION__, (long) s->len);
+	}
+	return (-1);
 }
 
 bfc_wstrptr_t bfc_wstring_insert_bfstr(bfc_wstrptr_t s, size_t pos,
@@ -680,20 +712,47 @@ size_t	bfc_wstring_find_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str, size_t pos)
 	return (0);
 }
 
-size_t	bfc_wstring_find_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
+size_t
+bfc_wstring_find_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n)
 {
-	return (0);
+	if (n == 0) {
+		return (0);
+	} else if (pos < bfc_wstrlen(s)) {
+		const wchar_t *cp, *data = bfc_wstrdata(s);
+		const wchar_t *limit = data + bfc_wstrlen(s);
+		const wchar_t c = s2[0];
+		for (cp = data + pos; cp < limit; cp++) {
+			cp = (*s->vptr->traits->find)(cp, limit-cp, c);
+			if ((cp == NULL) || (cp+n > limit)) {
+				break;
+			}
+			if ((*s->vptr->traits->compare)(cp, s2, n) == 0) {
+				return (cp - data);
+			}
+		}
+	}
+	return (BFC_NPOS);
 }
 
-size_t	bfc_wstring_find_c_str(bfc_cwstrptr_t s, const wchar_t* s2, size_t pos)
+size_t
+bfc_wstring_find_c_str(bfc_cwstrptr_t s, const wchar_t* s2, size_t pos)
 {
-	return (0);
+	size_t n = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s, find_buffer, (s, s2, pos, n),
+			bfc_wstring_find_buffer(s, s2, pos, n));
 }
 
-size_t	bfc_wstring_find_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+size_t
+bfc_wstring_find_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
 {
-	return (0);
+	const int len = bfc_wstrlen(s);
+	const wchar_t *cp = NULL, *data = bfc_wstrdata(s);
+	if (pos < len) {
+		cp = (*s->vptr->traits->find)(data+pos, len-pos, c);
+	}
+	return (cp? cp - data: BFC_NPOS);
 }
 
 size_t	bfc_wstring_rfind_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,size_t pos)

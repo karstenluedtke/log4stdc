@@ -78,7 +78,7 @@ destroy_appender(l4sc_appender_ptr_t appender)
 	l4sc_layout_ptr_t layout = &appender->layout;
 
 	BFC_SLIST_REMOVE(&l4sc_appenders, appender, l4sc_appender_ptr_t, next);
-	VMETHCALL(layout, destroy, (layout), (void) 0);
+	VOID_METHCALL(l4sc_layout_class_ptr_t, layout, destroy, (layout));
 	BFC_DESTROY_EPILOGUE(appender, &l4sc_sysout_appender_class);
 }
 
@@ -121,7 +121,6 @@ get_appender_option(l4sc_appender_cptr_t obj, const char *name, size_t namelen,
 	return (0);
 }
 
-
 static void
 append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
@@ -132,7 +131,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 		int fd = IS_AT_LEAST_WARN_LEVEL(msg->level)? 2: 1;
 		size_t bufsize = len + 100;
 		char *buf = alloca(bufsize);
-		len = VMETHCALL(layout,format,(layout,msg,buf,bufsize), 0);
+		len = l4sc_formatmsg(layout, msg, buf, bufsize);
 		while (len > written) {
 			if ((rc = write(fd, buf, len)) > 0) {
 				written += rc;
@@ -170,7 +169,8 @@ ref_appender_layout(l4sc_appender_ptr_t appender)
 void
 l4sc_append(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
-	VMETHCALL(appender,append, (appender, msg), (void) 0);
+	VOID_METHCALL(l4sc_appender_class_ptr_t,
+			appender, append, (appender, msg));
 }
 
 l4sc_appender_ptr_t
@@ -212,9 +212,7 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 
 l4sc_layout_ptr_t l4sc_get_appender_layout(l4sc_appender_ptr_t appender)
 {
-	l4sc_layout_ptr_t layout;
-
-	layout = VMETHCALL(appender, ref_layout, (appender), &appender->layout);
-	return (layout);
+	RETURN_METHCALL(l4sc_appender_class_ptr_t, appender,
+			ref_layout, (appender), &appender->layout);
 }
 

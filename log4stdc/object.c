@@ -53,7 +53,7 @@ int
 l4sc_default_clone_object(l4sc_objcptr_t obj, void *buf, size_t bufsize)
 {
 	l4sc_objptr_t object = (l4sc_objptr_t) buf;
-	size_t size = VMETHCALL(obj, clonesize, (obj), sizeof(*object));
+	size_t size = bfc_object_size(obj);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
@@ -141,13 +141,14 @@ l4sc_set_object_option(l4sc_objptr_t obj,
 			const char *name, size_t namelen,
 			const char *value, size_t vallen)
 {
-	int rc, nmlen = (namelen > 0)? namelen: strlen(name);
+	int nmlen = (namelen > 0)? namelen: strlen(name);
 
 	if ((name == NULL) || (nmlen < 1)) {
 		LOGERROR(("%s: no name", __FUNCTION__));
 		return (-EFAULT);
 	}
 
-	rc = VMETHCALL(obj, set_opt, (obj, name, nmlen, value, vallen), 0);
-	return (rc);
+	RETURN_METHCALL(l4sc_class_ptr_t, obj,
+			set_opt, (obj, name, nmlen, value, vallen),
+			0);
 }

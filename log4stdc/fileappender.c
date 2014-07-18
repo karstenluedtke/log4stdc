@@ -203,7 +203,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 	if (msg && ((len = msg->msglen) > 0)) {
 		size_t bufsize = len + 200;
 		char *buf = alloca(bufsize);
-		len = VMETHCALL(layout,format,(layout,msg,buf,bufsize), 0);
+		len = l4sc_formatmsg(layout, msg, buf, bufsize);
 		if (len > 0) {
 			lock = lock_appender(appender);
 

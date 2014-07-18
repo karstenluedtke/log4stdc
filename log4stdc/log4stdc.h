@@ -67,6 +67,13 @@ int l4sc_merge_base_directory_path (char *buf, int bufsize,
 l4sc_logger_ptr_t l4sc_get_root_logger(void);
 l4sc_logger_ptr_t l4sc_get_logger(const char *name, int namelen);
 
+int l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level);
+int l4sc_error_enabled(l4sc_logger_cptr_t logger);
+int l4sc_warn_enabled(l4sc_logger_cptr_t logger);
+int l4sc_info_enabled(l4sc_logger_cptr_t logger);
+int l4sc_debug_enabled(l4sc_logger_cptr_t logger);
+int l4sc_trace_enabled(l4sc_logger_cptr_t logger);
+
 #if !defined(L4SC_LOGPRINTF_ATTR)
 #if defined(__GNUC__) && ( __GNUC__ >= 3 )
 #define L4SC_LOGPRINTF_ATTR  __attribute__((format(printf,6,7)))

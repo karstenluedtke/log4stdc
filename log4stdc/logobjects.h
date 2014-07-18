@@ -212,6 +212,8 @@ int l4sc_set_logger_appender(l4sc_logger_ptr_t logger,
 int l4sc_init_logmessage(void *buf, size_t bufsize,
 		l4sc_logger_cptr_t, int level, const char *msg, size_t msglen,
 		const char *file, int line, const char *func);
+int l4sc_formatmsg(l4sc_layout_cptr_t layout,
+	  	l4sc_logmessage_cptr_t msg, char *buf, size_t bufsize);
 
 void l4sc_set_internal_logging(const char *value, int vallen);
 

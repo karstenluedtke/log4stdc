@@ -41,6 +41,8 @@ libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
 libbarefootc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
 libbarefootc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 
+libbarefootc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c 
+libbarefootc_a_SOURCES+= log4stdc/l4sc_formatmsg.c 
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjects.h
 liblog4stdc_a_SOURCES+= barefootc/object.h
@@ -49,6 +51,8 @@ liblog4stdc_a_SOURCES+= barefootc/synchronization.h
 
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c 
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_formatmsg.c 
 
 liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c log4stdc/fileappender.c
@@ -78,6 +82,7 @@ liblog4stdc_a_SOURCES+= barefootc/bfc_new_object.c
 liblog4stdc_a_SOURCES+= barefootc/bfc_init_object.c
 liblog4stdc_a_SOURCES+= barefootc/bfc_destroy_object.c
 liblog4stdc_a_SOURCES+= barefootc/bfc_delete_object.c
+liblog4stdc_a_SOURCES+= barefootc/bfc_object_size.c
 liblog4stdc_a_SOURCES+= barefootc/baseobject.c
 liblog4stdc_a_SOURCES+= barefootc/posix_mutex.c
 liblog4stdc_a_SOURCES+= barefootc/win32_mutex.c

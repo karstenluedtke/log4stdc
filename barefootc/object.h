@@ -118,6 +118,34 @@ struct bfc_classhdr {
 #define VMETHCALL(obj,vmeth,args,dflt) \
 	(BFC_CLASS(obj)? CMETHCALL(BFC_CLASS(obj),vmeth,args,dflt): (dflt))
 
+#define RETURN_CMETHCALL(classT,cls,vmeth,args,dflt)			\
+	if (cls) {							\
+		classT __cls = cls;					\
+		do {							\
+			if (__cls->vmeth) {				\
+				return (*__cls->vmeth) args;		\
+			}						\
+		} while ((__cls = __cls->super) != NULL);		\
+	}								\
+	return (dflt)
+
+#define RETURN_METHCALL(classT,obj,vmeth,args,dflt)			\
+	RETURN_CMETHCALL(classT,BFC_CLASS(obj),vmeth,args,dflt)
+
+#define VOID_CMETHCALL(classT,cls,vmeth,args)				\
+	if (cls) {							\
+		classT __cls = cls;					\
+		do {							\
+			if (__cls->vmeth) {				\
+				(*__cls->vmeth) args;			\
+				break;					\
+			}						\
+		} while ((__cls = __cls->super) != NULL);		\
+	}
+
+#define VOID_METHCALL(classT,obj,vmeth,args)				\
+	VOID_CMETHCALL(classT,BFC_CLASS(obj),vmeth,args)
+
 #define BFC_INIT_PROLOGUE(classptrT,objptrT,obj,buf,size,pool,cls)	\
 	bfc_classptr_t super = (bfc_classptr_t) (cls)->super;		\
 	objptrT obj = (objptrT) (buf);					\

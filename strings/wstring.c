@@ -144,43 +144,25 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .last_method	*/ last_method
 };
 
-/*extern inline*/ size_t
+size_t
 bfc_wstrlen(bfc_cwstrptr_t s)
 {
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->size) {
-			return (*cls->size)(s);
-		}
-	} while ((cls = cls->super) != NULL);
-	return (0);
+	RETURN_METHCALL(bfc_string_classptr_t, s, size, (s), 0); 
 }
 
-/*extern inline*/ wchar_t *
+wchar_t *
 bfc_wstrbuf(bfc_cwstrptr_t s)
 {
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->data) {
-			return (wchar_t *)(uintptr_t) (*cls->data)(s);
-		}
-	} while ((cls = cls->super) != NULL);
-	return (s->buf);
+	return (wchar_t *)(uintptr_t) bfc_wstrdata(s);
 }
 
-/*extern inline*/ const wchar_t *
+const wchar_t *
 bfc_wstrdata(bfc_cwstrptr_t s)
 {
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->data) {
-			return (*cls->data)(s);
-		}
-	} while ((cls = cls->super) != NULL);
-	return (s->buf);
+	RETURN_METHCALL(bfc_string_classptr_t, s, data, (s), s->buf); 
 }
 
-/*extern inline*/ size_t
+size_t
 bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n)
 {
 	size_t remain, len = bfc_wstrlen(s);
@@ -192,16 +174,11 @@ bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n)
 	return (n);
 }
 
-/*extern inline*/ int
+int
 bfc_wstr_reserve(bfc_wstrptr_t s, size_t n)
 {
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->reserve) {
-			return (*cls->reserve)(s, n);
-		}
-	} while ((cls = cls->super) != NULL);
-	return bfc_wstring_reserve(s, n);
+	RETURN_METHCALL(bfc_string_classptr_t, s, reserve, (s, n),
+			bfc_wstring_reserve(s, n)); 
 }
 
 int
@@ -412,13 +389,9 @@ bfc_wstrptr_t bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 {
 	const wchar_t *data = bfc_wstrdata(s2);
 	size_t len = bfc_wstrlen(s2);
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->assign_buffer) {
-			return (*cls->assign_buffer)(s, data, len);
-		}
-	} while ((cls = cls->super) != NULL);
-	return bfc_wstring_assign_buffer(s, data, len);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s, assign_buffer, (s,data,len),
+			bfc_wstring_assign_buffer(s, data, len));
 }
 
 bfc_wstrptr_t bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
@@ -426,25 +399,17 @@ bfc_wstrptr_t bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 {
 	const wchar_t *data = bfc_wstrdata(s2) + subpos;
 	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->assign_buffer) {
-			return (*cls->assign_buffer)(s, data, len);
-		}
-	} while ((cls = cls->super) != NULL);
-	return bfc_wstring_assign_buffer(s, data, len);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s, assign_buffer, (s,data,len),
+			bfc_wstring_assign_buffer(s, data, len));
 }
 
 bfc_wstrptr_t bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->assign_buffer) {
-			return (*cls->assign_buffer)(s, s2, n);
-		}
-	} while ((cls = cls->super) != NULL);
-	return (bfc_wstring_assign_buffer(s, s2, n));
+
+	RETURN_METHCALL(bfc_string_classptr_t, s, assign_buffer, (s, s2, n),
+			bfc_wstring_assign_buffer(s, s2, n));
 }
 
 bfc_wstrptr_t bfc_wstring_assign_buffer(bfc_wstrptr_t s,
@@ -501,13 +466,9 @@ bfc_wstrptr_t bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 {
 	const wchar_t *data = bfc_wstrdata(s2);
 	size_t len = bfc_wstrlen(s2);
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->append_buffer) {
-			return (*cls->append_buffer)(s, data, len);
-		}
-	} while ((cls = cls->super) != NULL);
-	return bfc_wstring_append_buffer(s, data, len);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s, append_buffer, (s,data,len),
+			bfc_wstring_append_buffer(s, data, len));
 }
 
 bfc_wstrptr_t bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
@@ -515,28 +476,21 @@ bfc_wstrptr_t bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 {
 	const wchar_t *data = bfc_wstrdata(s2) + subpos;
 	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->append_buffer) {
-			return (*cls->append_buffer)(s, data, len);
-		}
-	} while ((cls = cls->super) != NULL);
-	return bfc_wstring_append_buffer(s, data, len);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s, append_buffer, (s,data,len),
+			bfc_wstring_append_buffer(s, data, len));
 }
 
 bfc_wstrptr_t bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+
 	L4SC_TRACE(logger, "%s(%p, %p, %ld): %s, %s", __FUNCTION__,
 		s, s2, (long) n, s->vptr->name, s->vptr->traits->name);
-	bfc_string_classptr_t cls = s->vptr;
-	do {
-		if (cls->append_buffer) {
-			return (*cls->append_buffer)(s, s2, n);
-		}
-	} while ((cls = cls->super) != NULL);
-	return (bfc_wstring_append_buffer(s, s2, n));
+
+	RETURN_METHCALL(bfc_string_classptr_t, s, append_buffer, (s, s2, n),
+			bfc_wstring_append_buffer(s, s2, n));
 }
 
 bfc_wstrptr_t bfc_wstring_append_buffer(bfc_wstrptr_t s,

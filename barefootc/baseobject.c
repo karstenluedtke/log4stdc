@@ -61,7 +61,7 @@ int
 bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
 {
 	bfc_objptr_t object = (bfc_objptr_t) buf;
-	size_t size = VMETHCALL(obj, clonesize, (obj), sizeof(*object));
+	size_t size = bfc_object_size(obj);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
@@ -117,7 +117,7 @@ bfc_default_dump_object(bfc_cobjptr_t obj, int depth, struct l4sc_logger *log)
 		L4SC_DEBUG(log, "object \"%s\" @%p", obj->name, obj);
 		L4SC_DEBUG(log, " class \"%s\", pool %p, lock %p, refc %d",
 			BFC_CLASS(obj)->name, obj->pool, obj->lock, obj->refc);
-		size = VMETHCALL(obj, clonesize, (obj), 0);
+		size = bfc_object_size(obj);
 		lim  = ((const unsigned char *) obj) + size;
 		for (p = (const unsigned char *) &obj->next; p < lim; p += 8) {
 			L4SC_DEBUG(log,

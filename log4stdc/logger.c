@@ -212,14 +212,15 @@ logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
 	if (rc >= 0) {
 		for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
 			if ((a = logger->appenders[i]) != NULL) {
-				VMETHCALL(a, append, (a, &mbuf), (void) 0);
+				VOID_METHCALL(l4sc_appender_class_ptr_t,
+						a, append, (a, &mbuf));
 			}
 		}
 	}
 
 	if (logger->additivity && (p = logger->parent)) {
-		VMETHCALL(p, log, (p, level, msg, msglen, file, line, func),
-			  (void) 0);
+		VOID_METHCALL(l4sc_logger_class_ptr_t, p,
+			      log, (p, level, msg, msglen, file, line, func));
 	}
 }
 
@@ -323,10 +324,8 @@ l4sc_get_logger(const char *name, int namelen)
 int
 l4sc_set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
 {
-	int rc;
-
-	rc = VMETHCALL(logger, set_appender, (logger, appender), 0);
-	return (rc);
+	RETURN_METHCALL(l4sc_logger_class_ptr_t, logger,
+			set_appender, (logger, appender), 0);
 }
 
 int

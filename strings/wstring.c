@@ -207,7 +207,9 @@ bfc_init_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
 	
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
 		__FUNCTION__, buf, (long) bufsize, pool, str);
-	rc = bfc_init_wstring(buf, bufsize, pool);
+
+	rc = bfc_init_wstring_buffer(buf, bufsize, pool,
+				     bfc_wstrdata(str), bfc_wstrlen(str));
 	return (rc);
 }
 
@@ -216,11 +218,20 @@ bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_wstrptr_t str)
 {
 	int rc;
+	bfc_wstrptr_t obj = (bfc_wstrptr_t) buf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
 		__FUNCTION__, buf, (long) bufsize, pool, str);
-	rc = bfc_init_wstring(buf, bufsize, pool);
+	if ((rc = bfc_init_wstring(obj, bufsize, pool)) < 0) {
+		return(rc);
+	}
+	obj->buf = str->buf;
+	obj->len = str->len;
+	obj->bufsize = str->bufsize;
+	str->bufsize = 0;
+	str->len = 0;
+	str->buf = NULL;
 	return (rc);
 }
 
@@ -379,13 +390,15 @@ bfc_wstring_ref(bfc_wstrptr_t s, size_t pos)
 	return (s->buf + s->offs + pos);
 }
 
-const wchar_t* bfc_wstring_data(bfc_cwstrptr_t s)  /* not zero terminated */
+const wchar_t*
+bfc_wstring_data(bfc_cwstrptr_t s)  /* not zero terminated */
 {
 	return (s->buf + s->offs);
 }
 
 /* Modifiers */
-bfc_wstrptr_t bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
+bfc_wstrptr_t
+bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 {
 	const wchar_t *data = bfc_wstrdata(s2);
 	size_t len = bfc_wstrlen(s2);
@@ -394,7 +407,8 @@ bfc_wstrptr_t bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 			bfc_wstring_assign_buffer(s, data, len));
 }
 
-bfc_wstrptr_t bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
+bfc_wstrptr_t
+bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			 		size_t subpos, size_t sublen)
 {
 	const wchar_t *data = bfc_wstrdata(s2) + subpos;
@@ -404,7 +418,8 @@ bfc_wstrptr_t bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			bfc_wstring_assign_buffer(s, data, len));
 }
 
-bfc_wstrptr_t bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2)
+bfc_wstrptr_t
+bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
 
@@ -412,8 +427,8 @@ bfc_wstrptr_t bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 			bfc_wstring_assign_buffer(s, s2, n));
 }
 
-bfc_wstrptr_t bfc_wstring_assign_buffer(bfc_wstrptr_t s,
-					const wchar_t *s2, size_t n)
+bfc_wstrptr_t
+bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
@@ -434,7 +449,8 @@ bfc_wstrptr_t bfc_wstring_assign_buffer(bfc_wstrptr_t s,
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
+bfc_wstrptr_t
+bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
@@ -453,16 +469,16 @@ bfc_wstrptr_t bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
 						__FUNCTION__, (long) n);
 	}
 	return (NULL);
-	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_assign_range(bfc_wstrptr_t s,
-					iterptrT first, iterptrT last)
+bfc_wstrptr_t
+bfc_wstring_assign_range(bfc_wstrptr_t s, iterptrT first, iterptrT last)
 {
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
+bfc_wstrptr_t
+bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 {
 	const wchar_t *data = bfc_wstrdata(s2);
 	size_t len = bfc_wstrlen(s2);
@@ -471,8 +487,9 @@ bfc_wstrptr_t bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2)
 			bfc_wstring_append_buffer(s, data, len));
 }
 
-bfc_wstrptr_t bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
-			 		size_t subpos, size_t sublen)
+bfc_wstrptr_t
+bfc_wstring_append_substr(bfc_wstrptr_t s,
+			  bfc_cwstrptr_t s2, size_t subpos, size_t sublen)
 {
 	const wchar_t *data = bfc_wstrdata(s2) + subpos;
 	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
@@ -481,7 +498,8 @@ bfc_wstrptr_t bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			bfc_wstring_append_buffer(s, data, len));
 }
 
-bfc_wstrptr_t bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2)
+bfc_wstrptr_t
+bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
@@ -493,8 +511,8 @@ bfc_wstrptr_t bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2)
 			bfc_wstring_append_buffer(s, s2, n));
 }
 
-bfc_wstrptr_t bfc_wstring_append_buffer(bfc_wstrptr_t s,
-					const wchar_t *s2, size_t n)
+bfc_wstrptr_t
+bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
@@ -516,7 +534,8 @@ bfc_wstrptr_t bfc_wstring_append_buffer(bfc_wstrptr_t s,
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
+bfc_wstrptr_t
+bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
@@ -538,8 +557,8 @@ bfc_wstrptr_t bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_append_range(bfc_wstrptr_t s,
-					iterptrT first, iterptrT last)
+bfc_wstrptr_t
+bfc_wstring_append_range(bfc_wstrptr_t s, iterptrT first, iterptrT last)
 {
 	return (NULL);
 }
@@ -564,106 +583,212 @@ bfc_wstring_push_back(bfc_wstrptr_t s, wchar_t c)
 	return (-1);
 }
 
-bfc_wstrptr_t bfc_wstring_insert_bfstr(bfc_wstrptr_t s, size_t pos,
-					bfc_cwstrptr_t s2)
+bfc_wstrptr_t
+bfc_wstring_insert_bfstr(bfc_wstrptr_t s, size_t pos, bfc_cwstrptr_t s2)
 {
-	return (NULL);
+	const wchar_t *data = bfc_wstrdata(s2);
+	size_t len = bfc_wstrlen(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, 0, data, len),
+			bfc_wstring_replace_buffer(s, pos, 0, data, len));
 }
 
-bfc_wstrptr_t bfc_wstring_insert_substr(bfc_wstrptr_t s, size_t pos,
+bfc_wstrptr_t
+bfc_wstring_insert_substr(bfc_wstrptr_t s, size_t pos,
 			bfc_cwstrptr_t s2, size_t subpos, size_t sublen)
 {
+	const wchar_t *data = bfc_wstrdata(s2) + subpos;
+	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, 0, data, len),
+			bfc_wstring_replace_buffer(s, pos, 0, data, len));
+}
+
+bfc_wstrptr_t
+bfc_wstring_insert_c_str(bfc_wstrptr_t s, size_t pos, const wchar_t *s2)
+{
+	size_t n = (*s->vptr->traits->szlen)(s2);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+
+	L4SC_TRACE(logger, "%s(%p, %p, %ld): %s, %s", __FUNCTION__,
+		s, s2, (long) n, s->vptr->name, s->vptr->traits->name);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, 0, s2, n),
+			bfc_wstring_replace_buffer(s, pos, 0, s2, n));
+}
+
+bfc_wstrptr_t
+bfc_wstring_insert_buffer(bfc_wstrptr_t s, size_t pos,
+			  const wchar_t *s2, size_t n)
+{
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, 0, s2, n),
+			bfc_wstring_replace_buffer(s, pos, 0, s2, n));
+}
+
+bfc_wstrptr_t
+bfc_wstring_insert_fill(bfc_wstrptr_t s, size_t pos, size_t n, wchar_t c)
+{
+	wchar_t *data = alloca(4*n+1);
+	if (n > 0) {
+		(*s->vptr->traits->assign)(data, n, c);
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, 0, data, n),
+			bfc_wstring_replace_buffer(s, pos, 0, data, n));
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_insert_c_str(bfc_wstrptr_t s, size_t pos,
-					const wchar_t *s2)
+bfc_wstrptr_t
+bfc_wstring_insert_fillit(bfc_wstrptr_t s, iterptrT p, size_t n, wchar_t c)
 {
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_insert_buffer(bfc_wstrptr_t s, size_t pos,
-			 		const wchar_t *s2, size_t n)
+iterptrT
+bfc_wstring_insert_char(bfc_wstrptr_t s, iterptrT p, wchar_t c)
 {
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_insert_fill(bfc_wstrptr_t s, size_t pos,
-					size_t n, wchar_t c)
+bfc_wstrptr_t
+bfc_wstring_insert_range(bfc_wstrptr_t s, iterptrT p,
+			 iterptrT first, iterptrT last)
 {
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_insert_fillit(bfc_wstrptr_t s, iterptrT p,
-					size_t n, wchar_t c)
+bfc_wstrptr_t
+bfc_wstring_erase_seq(bfc_wstrptr_t s, size_t pos, size_t len)
+{
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, len, NULL, 0),
+			bfc_wstring_replace_buffer(s, pos, len, NULL, 0));
+}
+
+bfc_wstrptr_t
+bfc_wstring_erase_tail(bfc_wstrptr_t s, size_t pos)
+{
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, BFC_NPOS, NULL, 0),
+			bfc_wstring_replace_buffer(s, pos, BFC_NPOS, NULL, 0));
+}
+
+iterptrT
+bfc_wstring_erase_char(bfc_wstrptr_t s, iterptrT p)
 {
 	return (NULL);
 }
 
-iterptrT      bfc_wstring_insert_char(bfc_wstrptr_t s, iterptrT p, wchar_t c)
+bfc_wstrptr_t
+bfc_wstring_erase_range(bfc_wstrptr_t s, iterptrT first, iterptrT last)
 {
 	return (NULL);
 }
 
-bfc_wstrptr_t bfc_wstring_insert_range(bfc_wstrptr_t s, iterptrT p,
-					iterptrT first, iterptrT last)
+void
+bfc_wstring_pop_back(bfc_wstrptr_t s)
 {
-	return (NULL);
+	if (bfc_wstrlen(s) > 0) {
+		wchar_t *data = bfc_wstrbuf(s);
+		data[--(s->len)] = '\0';
+	}
 }
 
-bfc_wstrptr_t bfc_wstring_erase_seq(bfc_wstrptr_t s, size_t pos, size_t len)
+bfc_wstrptr_t
+bfc_wstring_replace_bfstr(bfc_wstrptr_t s, size_t pos1, size_t n1,
+			  bfc_cwstrptr_t str)
 {
-	return (NULL);
-}
+	const wchar_t *data = bfc_wstrdata(str);
+	size_t len = bfc_wstrlen(str);
 
-bfc_wstrptr_t bfc_wstring_erase_tail(bfc_wstrptr_t s, size_t pos)
-{
-	return (NULL);
-}
-
-iterptrT      bfc_wstring_erase_char(bfc_wstrptr_t s, iterptrT p)
-{
-	return (NULL);
-}
-
-bfc_wstrptr_t bfc_wstring_erase_range(bfc_wstrptr_t s,
-					iterptrT first, iterptrT last)
-{
-	return (NULL);
-}
-
-void          bfc_wstring_pop_back(bfc_wstrptr_t s)
-{
-}
-
-bfc_wstrptr_t bfc_wstring_replace_bfstr(bfc_wstrptr_t s, size_t pos1,size_t n1,
-					bfc_cwstrptr_t str)
-{
-	return (NULL);
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos1, n1, data, len),
+			bfc_wstring_replace_buffer(s, pos1, n1, data, len));
 }
 
 bfc_wstrptr_t bfc_wstring_replace_substr(bfc_wstrptr_t s,size_t pos1,size_t n1,
 	 			bfc_cwstrptr_t str, size_t pos2, size_t n2)
 {
-	return (NULL);
+	const wchar_t *data = bfc_wstrdata(str) + pos2;
+	size_t len = bfc_wstring_sublen(str, pos2, n2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos1, n1, data, len),
+			bfc_wstring_replace_buffer(s, pos1, n1, data, len));
 }
 
-bfc_wstrptr_t bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos,size_t n1,
-					const wchar_t* s2, size_t n2)
+bfc_wstrptr_t
+bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos, size_t n1,
+			   const wchar_t* s2, size_t n2)
 {
+	size_t nkill = bfc_wstring_sublen(s, pos, n1);
+	size_t ntail = 0;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	L4SC_TRACE(logger, "%s(%p, %ld, %ld, %p, %ld)",
+		__FUNCTION__, s, (long) pos, (long) n1, s2, (long) n2);
+
+	if ((n2 > nkill)
+	 && (bfc_wstr_reserve(s, s->len + n2 - nkill) != BFC_SUCCESS)) {
+		L4SC_ERROR(logger, "%s: no space for %ld-%ld+%ld characters",
+			__FUNCTION__, (long) s->len, (long) nkill, (long) n2);
+		return (NULL);
+	} else {
+		const size_t len = bfc_wstrlen(s);
+		wchar_t *data = bfc_wstrbuf(s);
+		wchar_t *dest = data + len;
+		wchar_t *tail = data + len;
+		if ((pos != BFC_NPOS) && (pos < len)) {
+			dest = data + pos;
+			tail = dest + nkill;
+			if (pos + nkill < len) {
+				ntail = len - (pos + nkill);
+			}
+		}
+		if ((ntail > 0) && (n2 != nkill)) {
+			wchar_t *taildest = tail + n2 - nkill;
+			L4SC_DEBUG(logger, "%s: move tail: %ld @%p -> %p",
+				__FUNCTION__, (long) ntail, tail, taildest);
+			(*s->vptr->traits->move)(taildest, tail, ntail);
+			taildest[ntail] = '\0';
+		}
+		if (n2 > 0) {
+			L4SC_DEBUG(logger, "%s: copy str2: %ld @%p -> %p",
+				__FUNCTION__, (long) n2, s2, dest);
+			(*s->vptr->traits->copy)(dest, s2, n2);
+		}
+		dest[n2+ntail] = '\0';
+		s->len = dest + n2 + ntail - data;
+		L4SC_DEBUG(logger, "%s: len %ld", __FUNCTION__, (long) s->len);
+		return (s);
+	}
 	return (NULL);
 }
 
 bfc_wstrptr_t bfc_wstring_replace_c_str(bfc_wstrptr_t s, size_t pos, size_t n1,
 					const wchar_t* s2)
 {
-	return (NULL);
+	size_t n = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, n1, s2, n),
+			bfc_wstring_replace_buffer(s, pos, n1, s2, n));
 }
 
 bfc_wstrptr_t bfc_wstring_replace_fill(bfc_wstrptr_t s, size_t pos, size_t n1,
 					size_t n2, wchar_t c)
 {
-	return (NULL);
+	wchar_t *data = alloca(4*n2+1);
+	if (n2 > 0) {
+		(*s->vptr->traits->assign)(data, n2, c);
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, n1, data, n2),
+			bfc_wstring_replace_buffer(s, pos, n1, data, n2));
 }
 
 bfc_wstrptr_t bfc_wstring_replace_range_bfstr(bfc_wstrptr_t s, iterptrT i1,

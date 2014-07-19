@@ -141,8 +141,10 @@ struct bfc_classhdr {
 				break;					\
 			}						\
 		} while ((__cls = __cls->super) != NULL);		\
-	}								\
-	var = (dflt)
+		if (__cls == NULL) {					\
+			var = (dflt);					\
+		}							\
+	}
 
 #define RETVAR_METHCALL(var,classT,obj,vmeth,args,dflt)			\
 	RETVAR_CMETHCALL(var,classT,BFC_CLASS(obj),vmeth,args,dflt)

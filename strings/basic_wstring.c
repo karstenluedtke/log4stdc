@@ -111,17 +111,17 @@ bfc_init_basic_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_basic_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
 				bfc_cwstrptr_t str, size_t pos, size_t n)
 {
 	int rc;
+	bfc_basic_cwstrptr_t s = (bfc_basic_cwstrptr_t) str;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
-	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p, pos %ld, n %ld)",
-		__FUNCTION__, buf, (long) bufsize, pool,
-		str, (long) pos, (long) n);
+	L4SC_TRACE(logger, "%s(%p, %ld, str %p, pos %ld, n %ld)",
+		__FUNCTION__, buf, (long) bufsize, str, (long) pos, (long) n);
 
-	return bfc_init_basic_wstring_buffer(buf, bufsize, pool,
+	return bfc_init_basic_wstring_buffer(buf, bufsize, s->pool,
 		bfc_wstrdata(str) + pos, bfc_wstring_sublen(str, pos, n));
 }
 

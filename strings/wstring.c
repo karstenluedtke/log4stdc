@@ -166,7 +166,7 @@ size_t
 bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n)
 {
 	size_t remain, len = bfc_wstrlen(s);
-	if (pos >= len) {
+	if ((pos == BFC_NPOS) || (pos >= len)) {
 		return (0);
 	} else if (n > (remain = len - pos)) {
 		return (remain);
@@ -225,15 +225,15 @@ bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_wstring_substr(void *buf, size_t bufsize,
 				bfc_cwstrptr_t str, size_t pos, size_t n)
 {
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
-	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
-		__FUNCTION__, buf, (long) bufsize, pool, str);
-	rc = bfc_init_wstring_buffer(buf, bufsize, pool,
+	L4SC_TRACE(logger, "%s(%p, %ld, str %p, pos %ld, n %ld)",
+		__FUNCTION__, buf, (long) bufsize, str, (long) pos, (long) n);
+	rc = bfc_init_wstring_buffer(buf, bufsize, NULL,
 		bfc_wstrdata(str) + pos, bfc_wstring_sublen(str, pos, n));
 	return (rc);
 }
@@ -707,9 +707,15 @@ void	bfc_wstring_swap(bfc_wstrptr_t s, bfc_wstrptr_t str)
 
 
 /* String operations */
-size_t	bfc_wstring_find_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str, size_t pos)
+size_t
+bfc_wstring_find_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str, size_t pos)
 {
-	return (0);
+	const wchar_t *pattern = bfc_wstrdata(str);
+	size_t len = bfc_wstrlen(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_buffer, (s, pattern, pos, len),
+			bfc_wstring_find_buffer(s, pattern, pos, len));
 }
 
 size_t
@@ -718,6 +724,8 @@ bfc_wstring_find_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 {
 	if (n == 0) {
 		return (0);
+	} else if (n > bfc_wstrlen(s)) {
+		return (BFC_NPOS);
 	} else if (pos < bfc_wstrlen(s)) {
 		const wchar_t *cp, *data = bfc_wstrdata(s);
 		const wchar_t *limit = data + bfc_wstrlen(s);
@@ -755,186 +763,390 @@ bfc_wstring_find_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
 	return (cp? cp - data: BFC_NPOS);
 }
 
-size_t	bfc_wstring_rfind_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,size_t pos)
+size_t
+bfc_wstring_rfind_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,size_t pos)
 {
-	return (0);
+	const wchar_t *pattern = bfc_wstrdata(str);
+	size_t patlen = bfc_wstrlen(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			rfind_buffer, (s, pattern, pos, patlen),
+			bfc_wstring_rfind_buffer(s, pattern, pos, patlen));
 }
 
-size_t	bfc_wstring_rfind_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
+size_t
+bfc_wstring_rfind_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n)
 {
-	return (0);
-}
+	const size_t len = bfc_wstrlen(s);
+	const wchar_t *cp, *data = bfc_wstrdata(s);
 
-size_t	bfc_wstring_rfind_c_str(bfc_cwstrptr_t s, const wchar_t* s2,size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_rfind_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos, size_t n)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos, size_t n)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_not_of_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_not_of_buffer(bfc_cwstrptr_t s,const wchar_t* s2,
-					size_t pos, size_t n)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_first_not_of_char(bfc_cwstrptr_t s, wchar_t c,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_not_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_not_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos, size_t n)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos)
-{
-	return (0);
-}
-
-size_t	bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c,
-					size_t pos)
-{
-	return (0);
-}
-
-bfc_wstrptr_t bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
-					bfc_wstrptr_t buf)
-{
-	return (0);
-}
-
-int	bfc_wstring_compare_buffers(bfc_cwstrptr_t s,
-				    const wchar_t *s1, size_t n1,
-				    const wchar_t *s2, size_t n2)
-{
-	if (n1 == n2) {
-		return ((n1 > 0)? (*s->vptr->traits->compare)(s1, s2, n1): 0);
-	} else if (n1 == 0) {
-		return (-1);
-	} else if (n2 == 0) {
-		return (1);
-	} else if (n1 < n2) {
-		int rc = (*s->vptr->traits->compare)(s1, s2, n1);
-		return ((rc != 0)? rc: -1);
-	} else {
-		int rc = (*s->vptr->traits->compare)(s1, s2, n2);
-		return ((rc != 0)? rc: 1);
+	if (n == 0) {
+		return (len);
+	} else if (len >= n) {
+		cp = data + len - n;
+		if ((pos != BFC_NPOS) && (pos < len - n)) {
+			cp = data + pos;
+		}
+		for (; cp >= data; cp--) {
+			if ((*s->vptr->traits->compare)(cp, s2, n) == 0) {
+				return (cp - data);
+			}
+		}
 	}
+	return (BFC_NPOS);
 }
 
-int	bfc_wstring_compare_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str)
+size_t
+bfc_wstring_rfind_c_str(bfc_cwstrptr_t s, const wchar_t* s2, size_t pos)
 {
-	const wchar_t *s1 = bfc_wstrdata(s);
-	size_t l1 = bfc_wstrlen(s);
+	size_t n = (*s->vptr->traits->szlen)(s2);
 
-	const wchar_t *s2 = bfc_wstrdata(str);
-	size_t l2 = bfc_wstrlen(str);
-
-	return (bfc_wstring_compare_buffers(s, s1, l1, s2, l2));
+	RETURN_METHCALL(bfc_string_classptr_t, s, rfind_buffer, (s, s2, pos, n),
+			bfc_wstring_rfind_buffer(s, s2, pos, n));
 }
 
-int	bfc_wstring_compare_substr(bfc_cwstrptr_t s, size_t pos1, size_t n1,
+size_t
+bfc_wstring_rfind_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+{
+	const size_t len = bfc_wstrlen(s);
+	const wchar_t *cp, *data = bfc_wstrdata(s);
+
+	if (len > 0) {
+		cp = data + len - 1;
+		if ((pos != BFC_NPOS) && (pos < len - 1)) {
+			cp = data + pos;
+		}
+		for (; cp >= data; cp--) {
+			if ((*s->vptr->traits->eq)(*cp, c) == 0) {
+				return (cp - data);
+			}
+		}
+	}
+	return (BFC_NPOS);
+}
+
+size_t
+bfc_wstring_find_first_of_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,size_t pos)
+{
+	const wchar_t *pattern = bfc_wstrdata(str);
+	size_t patlen = bfc_wstrlen(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_first_of_buffer, (s, pattern, pos, patlen),
+			bfc_wstring_find_first_of_buffer(s,pattern,pos,patlen));
+}
+
+size_t
+bfc_wstring_find_first_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
+						size_t pos, size_t n)
+{
+	const wchar_t *cp, *data = bfc_wstrdata(s);
+	const wchar_t *limit = data + bfc_wstrlen(s);
+
+	if ((pos < bfc_wstrlen(s)) && (n > 0)) {
+		for (cp = data + pos; cp < limit; cp++) {
+			if ((*s->vptr->traits->find)(s2, n, *cp) != NULL) {
+				return (cp - data);
+			}
+		}
+	}
+	return (BFC_NPOS);
+}
+
+size_t
+bfc_wstring_find_first_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2, size_t pos)
+{
+	size_t n = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_first_of_buffer, (s, s2, pos, n),
+			bfc_wstring_find_first_of_buffer(s, s2, pos, n));
+}
+
+size_t
+bfc_wstring_find_first_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+{
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_char, (s, c, pos),
+			bfc_wstring_find_char(s, c, pos));
+}
+
+size_t
+bfc_wstring_find_last_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str, size_t pos)
+{
+	const wchar_t *pattern = bfc_wstrdata(str);
+	size_t patlen = bfc_wstrlen(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_last_of_buffer, (s, pattern, pos, patlen),
+			bfc_wstring_find_last_of_buffer(s,pattern,pos,patlen));
+}
+
+size_t
+bfc_wstring_find_last_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
+						size_t pos, size_t n)
+{
+	const size_t len = bfc_wstrlen(s);
+	const wchar_t *cp, *data = bfc_wstrdata(s);
+
+	if ((len > 0) && (n > 0)) {
+		cp = data + len - 1;
+		if ((pos != BFC_NPOS) && (pos < len - 1)) {
+			cp = data + pos;
+		}
+		for (; cp >= data; cp--) {
+			if ((*s->vptr->traits->find)(s2, n, *cp) != NULL) {
+				return (cp - data);
+			}
+		}
+	}
+	return (BFC_NPOS);
+}
+
+size_t
+bfc_wstring_find_last_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2, size_t pos)
+{
+	size_t n = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_last_of_buffer, (s, s2, pos, n),
+			bfc_wstring_find_last_of_buffer(s, s2, pos, n));
+}
+
+size_t
+bfc_wstring_find_last_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+{
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			rfind_char, (s, c, pos),
+			bfc_wstring_rfind_char(s, c, pos));
+}
+
+size_t
+bfc_wstring_find_first_not_of_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,
+					size_t pos)
+{
+	const wchar_t *pattern = bfc_wstrdata(str);
+	size_t patlen = bfc_wstrlen(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_first_not_of_buffer, (s, pattern, pos, patlen),
+			bfc_wstring_find_first_not_of_buffer(s, pattern,
+								pos, patlen));
+}
+
+size_t
+bfc_wstring_find_first_not_of_buffer(bfc_cwstrptr_t s,const wchar_t* s2,
+					size_t pos, size_t n)
+{
+	const wchar_t *cp, *data = bfc_wstrdata(s);
+	const wchar_t *limit = data + bfc_wstrlen(s);
+
+	if (pos < bfc_wstrlen(s)) {
+		if (n < 1) {
+			return (pos);
+		}
+		for (cp = data + pos; cp < limit; cp++) {
+			if ((*s->vptr->traits->find)(s2, n, *cp) == NULL) {
+				return (cp - data);
+			}
+		}
+	}
+	return (BFC_NPOS);
+}
+
+size_t
+bfc_wstring_find_first_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
+					size_t pos)
+{
+	size_t n = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_first_not_of_buffer, (s, s2, pos, n),
+			bfc_wstring_find_first_not_of_buffer(s, s2, pos, n));
+}
+
+size_t
+bfc_wstring_find_first_not_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+{
+	const wchar_t *cp, *data = bfc_wstrdata(s);
+	const wchar_t *limit = data + bfc_wstrlen(s);
+
+	if (pos < bfc_wstrlen(s)) {
+		for (cp = data + pos; cp < limit; cp++) {
+			if (!(*s->vptr->traits->eq)(c, *cp)) {
+				return (cp - data);
+			}
+		}
+	}
+	return (BFC_NPOS);
+}
+
+size_t
+bfc_wstring_find_last_not_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
+					size_t pos)
+{
+	const wchar_t *pattern = bfc_wstrdata(str);
+	size_t patlen = bfc_wstrlen(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_last_not_of_buffer, (s, pattern, pos, patlen),
+			bfc_wstring_find_last_not_of_buffer(s, pattern,
+								pos, patlen));
+}
+
+size_t
+bfc_wstring_find_last_not_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
+					size_t pos, size_t n)
+{
+	const size_t len = bfc_wstrlen(s);
+	const wchar_t *cp, *data = bfc_wstrdata(s);
+
+	if (len > 0) {
+		cp = data + len - 1;
+		if ((pos != BFC_NPOS) && (pos < len - 1)) {
+			cp = data + pos;
+		}
+		if (n < 1) {
+			return (cp - data);
+		}
+		for (; cp >= data; cp--) {
+			if ((*s->vptr->traits->find)(s2, n, *cp) == NULL) {
+				return (cp - data);
+			}
+		}
+	}
+	return (BFC_NPOS);
+}
+
+size_t
+bfc_wstring_find_last_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
+					size_t pos)
+{
+	size_t n = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			find_last_not_of_buffer, (s, s2, pos, n),
+			bfc_wstring_find_last_not_of_buffer(s, s2, pos, n));
+}
+
+size_t
+bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+{
+	const size_t len = bfc_wstrlen(s);
+	const wchar_t *cp, *data = bfc_wstrdata(s);
+
+	if (len > 0) {
+		cp = data + len - 1;
+		if ((pos != BFC_NPOS) && (pos < len - 1)) {
+			cp = data + pos;
+		}
+		for (; cp >= data; cp--) {
+			if (!(*s->vptr->traits->eq)(c, *cp)) {
+				return (cp - data);
+			}
+		}
+	}
+	return (0);
+}
+
+bfc_wstrptr_t
+bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
+		   bfc_wstrptr_t buf, size_t bufsize)
+{
+	int rc;
+	RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
+			init_substr, (buf, bufsize, s, pos, n),
+			bfc_init_wstring_substr(buf, bufsize, s, pos, n));
+	if (rc < 0) {
+		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		L4SC_ERROR(logger, "%s(%p, %ld, %ld): init error %d",
+				__FUNCTION__, s, (long) pos, (long) n, rc);
+		return (NULL);
+	}
+	return (buf);
+}
+
+int
+bfc_wstring_compare_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str)
+{
+	size_t n1 = bfc_wstrlen(s);
+	size_t n2 = bfc_wstrlen(str);
+	const wchar_t *s2 = bfc_wstrdata(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			compare_buffer, (s, 0, n1, s2, n2),
+			bfc_wstring_compare_buffer(s, 0, n1, s2, n2));
+}
+
+int
+bfc_wstring_compare_substr(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					bfc_cwstrptr_t str)
 {
-	return (0);
+	size_t n2 = bfc_wstrlen(str);
+	const wchar_t *s2 = bfc_wstrdata(str);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			compare_buffer, (s, pos1, n1, s2, n2),
+			bfc_wstring_compare_buffer(s, pos1, n1, s2, n2));
 }
 
-int	bfc_wstring_compare_substrs(bfc_cwstrptr_t s, size_t pos1, size_t n1,
+int
+bfc_wstring_compare_substrs(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 				 bfc_cwstrptr_t str, size_t pos2, size_t n2)
 {
-	return (0);
+	const size_t l2 = bfc_wstring_sublen(str, pos2, n2);
+	const wchar_t *s2 = bfc_wstrdata(str) + ((l2 > 0)? pos2: 0);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			compare_buffer, (s, pos1, n1, s2, l2),
+			bfc_wstring_compare_buffer(s, pos1, n1, s2, l2));
 }
 
-int	bfc_wstring_compare_c_str(bfc_cwstrptr_t s, const wchar_t* s2)
+int
+bfc_wstring_compare_c_str(bfc_cwstrptr_t s, const wchar_t* s2)
 {
-	return (0);
+	size_t n1 = bfc_wstrlen(s);
+	size_t n2 = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			compare_buffer, (s, 0, n1, s2, n2),
+			bfc_wstring_compare_buffer(s, 0, n1, s2, n2));
 }
 
-int	bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1,
-					size_t n1, const wchar_t* s2)
+int
+bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1, size_t n1,
+				 const wchar_t* s2)
 {
-	return (0);
+	size_t n2 = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			compare_buffer, (s, pos1, n1, s2, n2),
+			bfc_wstring_compare_buffer(s, pos1, n1, s2, n2));
 }
 
-int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
-					const wchar_t* s2, size_t n2)
+int
+bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
+			   const wchar_t* s2, size_t n2)
 {
-	const wchar_t *s1 = bfc_wstrdata(s);
-	size_t len = bfc_wstrlen(s);
-	size_t l1  = bfc_wstring_sublen(s, pos1, n1);
-	return (bfc_wstring_compare_buffers(s, s1+pos1, l1, s2, n2));
+	const size_t l1 = bfc_wstring_sublen(s, pos1, n1);
+
+	if ((l1 > 0) && (n2 > 0)) {
+		const wchar_t *s1 = bfc_wstrdata(s) + pos1;
+		if (l1 == n2) {
+			return ((*s->vptr->traits->compare)(s1, s2, l1));
+		} else if (l1 < n2) {
+			int rc = (*s->vptr->traits->compare)(s1, s2, l1);
+			return ((rc != 0)? rc: -1);
+		} else {
+			int rc = (*s->vptr->traits->compare)(s1, s2, n2);
+			return ((rc != 0)? rc: 1);
+		}
+	} else if (l1 > 0) {
+		return (1);
+	} else if (n2 > 0) {
+		return (-1);
+	}
+	return (0);
 }
 

@@ -132,6 +132,21 @@ struct bfc_classhdr {
 #define RETURN_METHCALL(classT,obj,vmeth,args,dflt)			\
 	RETURN_CMETHCALL(classT,BFC_CLASS(obj),vmeth,args,dflt)
 
+#define RETVAR_CMETHCALL(var,classT,cls,vmeth,args,dflt)		\
+	if (cls) {							\
+		classT __cls = cls;					\
+		do {							\
+			if (__cls->vmeth) {				\
+				var = (*__cls->vmeth) args;		\
+				break;					\
+			}						\
+		} while ((__cls = __cls->super) != NULL);		\
+	}								\
+	var = (dflt)
+
+#define RETVAR_METHCALL(var,classT,obj,vmeth,args,dflt)			\
+	RETVAR_CMETHCALL(var,classT,BFC_CLASS(obj),vmeth,args,dflt)
+
 #define VOID_CMETHCALL(classT,cls,vmeth,args)				\
 	if (cls) {							\
 		classT __cls = cls;					\

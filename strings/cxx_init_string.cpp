@@ -15,3 +15,10 @@ barefootc::init_string(void *buf, size_t bufsize,
 	return bfc_init_basic_string_buffer(buf, bufsize, pool, s, n);
 }
 
+int
+barefootc::init_string(void *buf, size_t bufsize,
+	struct mempool *pool, size_t n, char c)
+{
+	return bfc_init_basic_string_fill(buf, bufsize, pool, n, c);
+}
+

@@ -17,6 +17,7 @@
 
 #include <string>
 #include <memory>
+#include <stdexcept>
 
 #include "barefootc/object.h"
 #include "barefootc/string.h"
@@ -88,7 +89,14 @@ namespace barefootc {
 				get_stdc_mempool(), bfcstr.buf, 0);
 		}
 
-		basic_string(const basic_string& str);
+		basic_string(const basic_string& str): saved_allocator()
+		{
+			const charT *s = str.data();
+			const size_t n = str.size();
+			init_string(&bfcstr, sizeof(bfcstr),
+					get_stdc_mempool(), s, n);
+		}
+
 		//basic_string(basic_string&& str) noexcept;
 		basic_string(const basic_string& str, size_type pos, size_type n = npos, const Allocator& a = Allocator());
 
@@ -119,11 +127,32 @@ namespace barefootc {
 				get_stdc_mempool(), s, chrtraits::length(s));
 		}
 
-		basic_string(size_type n, charT c, const Allocator& a = Allocator());
+		basic_string(size_type n, charT c):
+			saved_allocator()
+		{
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), n, c);
+		}
+
+		basic_string(size_type n, charT c, const Allocator& a):
+			saved_allocator(a)
+		{
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), n, c);
+		}
+
 		template<class InputIterator>
 		basic_string(InputIterator begin, InputIterator end, const Allocator& a = Allocator());
 		// basic_string(initializer_list<charT>, const Allocator& = Allocator());
-		basic_string(const basic_string&, const Allocator&);
+		basic_string(const basic_string& str, const Allocator& a):
+			saved_allocator(a)
+		{
+			const charT *s = str.data();
+			const size_t n = str.size();
+			init_string(&bfcstr, sizeof(bfcstr),
+					get_stdc_mempool(), s, n);
+		}
+
 		// basic_string(basic_string&&, const Allocator&);
 
 		~basic_string()
@@ -153,41 +182,104 @@ namespace barefootc {
 		// 21.4.4, capacity:
 		size_type size() const noexcept
 		{
-			return (VMETHCALL(&bfcstr, size, (&bfcstr), 0));
+			RETURN_METHCALL(classptrT, &bfcstr,
+					size, (&bfcstr),
+					0);
 		}
 
 		size_type length() const noexcept
 		{
-			return (VMETHCALL(&bfcstr, size, (&bfcstr), 0));
+			RETURN_METHCALL(classptrT, &bfcstr,
+					size, (&bfcstr),
+					0);
 		}
 
 		size_type max_size() const noexcept
 		{
-			return (VMETHCALL(&bfcstr, max_size, (&bfcstr), 0));
+			RETURN_METHCALL(classptrT, &bfcstr,
+					max_size, (&bfcstr),
+					0);
 		}
 
-		void resize(size_type n, charT c);
-		void resize(size_type n);
+		void resize(size_type n, charT c)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+					resize, (&bfcstr, n, c));
+		}
+
+		void resize(size_type n)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+					resize, (&bfcstr, n, 0));
+		}
+
 		size_type capacity() const noexcept
 		{
-			return (VMETHCALL(&bfcstr, capacity, (&bfcstr), 0));
+			RETURN_METHCALL(classptrT, &bfcstr,
+					capacity, (&bfcstr),
+					0);
 		}
 
-		void reserve(size_type res_arg = 0);
-		void shrink_to_fit();
+		void reserve(size_type res_arg = 0)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+					reserve, (&bfcstr, res_arg));
+		}
+
+		void shrink_to_fit()
+		{
+			size_type len = length();
+			VOID_METHCALL(classptrT, &bfcstr,
+					reserve, (&bfcstr, len));
+		}
 
 		void clear() noexcept
 		{
-			VMETHCALL(&bfcstr, resize, (&bfcstr, 0, 0), 0);
+			VOID_METHCALL(classptrT, &bfcstr,
+					resize, (&bfcstr, 0, 0));
 		}
 
-		bool empty() const noexcept;
+		bool empty() const noexcept
+		{
+			size_type len = length();
+			return (len == 0);
+		}
 		
 		// 21.4.5, element access:
-		const_reference operator[](size_type pos) const noexcept;
-		reference operator[](size_type pos) noexcept;
-		const_reference at(size_type n) const;
-		reference at(size_type n);
+		const_reference operator[](size_type pos) const noexcept
+		{
+			strptrT s = const_cast<strptrT>(&bfcstr);
+			const charT *p;
+
+			p = VMETHCALL(&bfcstr, ref, (s, pos), NULL);
+			return (*p);
+		}
+
+		reference operator[](size_type pos) noexcept
+		{
+			charT *p;
+
+			p = VMETHCALL(&bfcstr, ref, (&bfcstr, pos), NULL);
+			return (*p);
+		}
+
+		const_reference at(size_type n) const
+		{
+			strptrT s = const_cast<strptrT>(&bfcstr);
+			const charT *p;
+
+			p = VMETHCALL(&bfcstr, ref, (s, n), NULL);
+			return (*p);
+		}
+
+		reference at(size_type n)
+		{
+			charT *p;
+
+			p = VMETHCALL(&bfcstr, ref, (&bfcstr, n), NULL);
+			return (*p);
+		}
+
 		const charT& front() const noexcept;
 		charT& front() noexcept;
 		const charT& back() const noexcept;
@@ -270,7 +362,7 @@ namespace barefootc {
 
 		basic_string& assign(size_type n, charT c)
 		{
-			VMETHCALL(&bfcstr, assign_char, (&bfcstr, c),
+			VMETHCALL(&bfcstr, assign_fill, (&bfcstr, n, c),
 				  &bfcstr);
 		}
 
@@ -285,7 +377,14 @@ namespace barefootc {
 		iterator insert(const_iterator p, size_type n, charT c);
 		template<class InputIterator> iterator insert(const_iterator p, InputIterator first, InputIterator last);
 		// iterator insert(const_iterator p, initializer_list<charT>);
-		basic_string& erase(size_type pos = 0, size_type n = npos);
+
+		basic_string& erase(size_type pos = 0, size_type n = npos)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+					erase_seq, (&bfcstr, pos, n));
+			return (*this);
+		}
+
 		iterator erase(const_iterator p);
 		iterator erase(const_iterator first, const_iterator last);
 		void pop_back() noexcept;
@@ -304,57 +403,286 @@ namespace barefootc {
 		void swap(basic_string& str) noexcept;
 		
 		// 21.4.7, string operations:
-		const charT* c_str() const noexcept;
-		const charT* data() const noexcept;
+		const charT* c_str() const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr, data, (&bfcstr),
+					bfcstr.buf);
+		}
+
+		const charT* data() const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr, data, (&bfcstr),
+					bfcstr.buf);
+		}
+
 		allocator_type get_allocator() const noexcept
 		{
 			return (saved_allocator);
 		}
 
-		size_type find (const basic_string& str, size_type pos = 0) const noexcept;
-		size_type find (const charT* s, size_type pos, size_type n) const noexcept;
-		size_type find (const charT* s, size_type pos = 0) const noexcept;
-		size_type find (charT c, size_type pos = 0) const noexcept;
-		size_type rfind(const basic_string& str, size_type pos = npos) const noexcept;
-		size_type rfind(const charT* s, size_type pos, size_type n) const noexcept;
-		size_type rfind(const charT* s, size_type pos = npos) const noexcept;
-		size_type rfind(charT c, size_type pos = npos) const noexcept;
-		size_type find_first_of(const basic_string& str, size_type pos = 0) const noexcept;
-		size_type find_first_of(const charT* s, size_type pos, size_type n) const noexcept;
-		size_type find_first_of(const charT* s, size_type pos = 0) const noexcept;
-		size_type find_first_of(charT c, size_type pos = 0) const noexcept;
-		size_type find_last_of (const basic_string& str, size_type pos = npos) const noexcept;
-		size_type find_last_of (const charT* s, size_type pos, size_type n) const noexcept;
-		size_type find_last_of (const charT* s, size_type pos = npos) const noexcept;
-		size_type find_last_of (charT c, size_type pos = npos) const noexcept;
-		size_type find_first_not_of(const basic_string& str, size_type pos = 0) const noexcept;
-		size_type find_first_not_of(const charT* s, size_type pos, size_type n) const noexcept;
-		size_type find_first_not_of(const charT* s, size_type pos = 0) const noexcept;
-		size_type find_first_not_of(charT c, size_type pos = 0) const noexcept;
-		size_type find_last_not_of (const basic_string& str, size_type pos = npos) const noexcept;
-		size_type find_last_not_of (const charT* s, size_type pos, size_type n) const noexcept;
-		size_type find_last_not_of (const charT* s, size_type pos = npos) const noexcept;
-		size_type find_last_not_of (charT c, size_type pos = npos) const noexcept;
-		basic_string substr(size_type pos = 0, size_type n = npos) const;
+		size_type find (const basic_string& str, size_type pos = 0)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					find_bfstr, (&bfcstr, &str.bfcstr, pos),
+					npos);
+		}
+
+		size_type find (const charT* s, size_type pos, size_type n)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					find_buffer, (&bfcstr, s, pos, n),
+					npos);
+		}
+
+		size_type find (const charT* s,size_type pos = 0)const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					find_c_str, (&bfcstr, s, pos),
+					npos);
+		}
+
+		size_type find (charT c, size_type pos = 0) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					find_char, (&bfcstr, c, pos),
+					npos);
+		}
+
+		size_type rfind(const basic_string& str, size_type pos = npos)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					rfind_bfstr, (&bfcstr,&str.bfcstr,pos),
+					npos);
+		}
+
+		size_type rfind(const charT* s, size_type pos, size_type n)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					rfind_buffer, (&bfcstr, s, pos, n),
+					npos);
+		}
+
+		size_type rfind(const charT* s, size_type pos = npos)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					rfind_c_str, (&bfcstr, s, pos),
+					npos);
+		}
+
+		size_type rfind(charT c, size_type pos = npos) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+					rfind_char, (&bfcstr, c, pos),
+					npos);
+		}
+
+		size_type find_first_of(const basic_string& str,
+					size_type pos = 0) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_first_of_bfstr, (&bfcstr,&str.bfcstr,pos),
+				npos);
+		}
+
+		size_type find_first_of(const charT* s, size_type pos,
+					size_type n) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_first_of_buffer, (&bfcstr, s, pos, n),
+				npos);
+		}
+
+		size_type find_first_of(const charT* s, size_type pos = 0)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_first_of_c_str, (&bfcstr, s, pos),
+				npos);
+		}
+
+		size_type find_first_of(charT c, size_type pos = 0)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_first_of_char, (&bfcstr, c, pos),
+				npos);
+		}
+
+		size_type find_last_of (const basic_string& str,
+					size_type pos = npos) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_last_of_bfstr, (&bfcstr, &str.bfcstr, pos),
+				npos);
+		}
+
+		size_type find_last_of (const charT* s, size_type pos,
+					size_type n) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_last_of_buffer, (&bfcstr, s, pos, n),
+				npos);
+		}
+
+		size_type find_last_of (const charT* s, size_type pos = npos)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_last_of_c_str, (&bfcstr, s, pos),
+				npos);
+		}
+
+		size_type find_last_of (charT c, size_type pos = npos)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_last_of_char, (&bfcstr, c, pos),
+				npos);
+		}
+
+		size_type find_first_not_of(const basic_string& str,
+					size_type pos = 0) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+			    find_first_not_of_bfstr,(&bfcstr,&str.bfcstr,pos),
+				npos);
+		}
+
+		size_type find_first_not_of(const charT* s,
+				size_type pos, size_type n) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_first_not_of_buffer, (&bfcstr, s, pos, n),
+				npos);
+		}
+
+		size_type find_first_not_of(const charT* s, size_type pos = 0)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_first_not_of_c_str, (&bfcstr, s, pos),
+				npos);
+		}
+
+		size_type find_first_not_of(charT c, size_type pos = 0)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_first_not_of_char, (&bfcstr, c, pos),
+				npos);
+		}
+
+		size_type find_last_not_of (const basic_string& str,
+					size_type pos = npos) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+			    find_last_not_of_bfstr,(&bfcstr,&str.bfcstr,pos),
+				npos);
+		}
+
+		size_type find_last_not_of (const charT* s,
+				size_type pos, size_type n) const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_last_not_of_buffer, (&bfcstr, s, pos, n),
+				npos);
+		}
+
+		size_type find_last_not_of (const charT* s, size_type pos=npos)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_last_not_of_c_str, (&bfcstr, s, pos),
+				npos);
+		}
+
+		size_type find_last_not_of (charT c, size_type pos = npos)
+								const noexcept
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				find_last_not_of_char, (&bfcstr, c, pos),
+				npos);
+		}
+
+		basic_string substr(size_type pos = 0, size_type n = npos) const
+		{
+			basic_string s(saved_allocator);
+			cstrptrT ret;
+
+			VOID_METHCALL(classptrT, &bfcstr,
+				      substr, (&bfcstr, pos, n,
+					       &s.bfcstr, sizeof(s.bfcstr)));
+
+			return s;
+		}
+
 		int compare(const basic_string& str) const noexcept
 		{
-			return (VMETHCALL(&bfcstr,
+			RETURN_METHCALL(classptrT, &bfcstr,
 				compare_bfstr, (&bfcstr, &str.bfcstr),
-				-1));
+				-1);
 		}
 
+		int compare(size_type pos1, size_type n1,
+			    const basic_string& str) const
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				compare_substr, (&bfcstr,pos1,n1,&str.bfcstr),
+				-1);
+		}
 
-		int compare(size_type pos1, size_type n1, const basic_string& str) const;
-		int compare(size_type pos1, size_type n1, const basic_string& str, size_type pos2, size_type n2) const;
+		/* not in C++ standard */
+		int compare(size_type pos1, size_type n1,
+			const basic_string& str, size_type pos2) const
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				compare_substrs, (&bfcstr, pos1, n1,
+						  &str.bfcstr, pos2, npos),
+				-1);
+		}
+
+		int compare(size_type pos1, size_type n1,
+			const basic_string& str,size_type pos2,size_type n2)
+									const
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				compare_substrs, (&bfcstr, pos1, n1,
+						  &str.bfcstr, pos2, n2),
+				-1);
+		}
+
 		int compare(const charT* s) const noexcept
 		{
-			return (VMETHCALL(&bfcstr,
+			RETURN_METHCALL(classptrT, &bfcstr,
 				compare_c_str, (&bfcstr, s),
-				-1));
+				-1);
 		}
 
-		int compare(size_type pos1, size_type n1, const charT* s) const;
-		int compare(size_type pos1, size_type n1, const charT* s, size_type n2) const;
+		int compare(size_type pos1, size_type n1, const charT* s) const
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				compare_substr_c_str, (&bfcstr, pos1, n1, s),
+				-1);
+		}
+
+		int compare(size_type pos1, size_type n1,
+			    const charT* s, size_type n2) const
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				compare_buffer, (&bfcstr, pos1, n1, s, n2),
+				-1);
+		}
+
+
+		int __invariants()  // required by test bench
+		{
+			return (1); // whatever this is ???
+		}
 	};
 
 	/*

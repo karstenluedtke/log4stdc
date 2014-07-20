@@ -617,9 +617,13 @@ namespace barefootc {
 	int init_string(void *buf, size_t bufsize, const char *s, size_t n);
 	int init_string(void *buf, size_t bufsize,
 			struct mempool *pool, const char *s, size_t n);
+	int init_string(void *buf, size_t bufsize,
+			struct mempool *pool, size_t n, char c);
 	int init_string(void *buf, size_t bufsize, const wchar_t *s, size_t n);
 	int init_string(void *buf, size_t bufsize,
 			struct mempool *pool, const wchar_t *s, size_t n);
+	int init_string(void *buf, size_t bufsize,
+			struct mempool *pool, size_t n, wchar_t c);
 }
 #endif
 #endif /* _BFC_STRING_H_ */

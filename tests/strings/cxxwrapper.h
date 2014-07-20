@@ -75,6 +75,52 @@ namespace barefootc {
 		struct wrapped_string bfcstr;
 		Allocator saved_allocator;
 		
+		static int
+		init_string(void *buf, size_t bufsize,
+			    const char *s, size_t n)
+		{
+			return bfc_init_string_buffer(buf, bufsize, 0, s, n);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const char *s, size_t n)
+		{
+			return bfc_init_basic_string_buffer(buf, bufsize,
+								pool, s, n);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, size_t n, char c)
+		{
+			return bfc_init_basic_string_fill(buf, bufsize,
+								pool, n, c);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    const wchar_t *s, size_t n)
+		{
+			return bfc_init_wstring_buffer(buf, bufsize, 0, s, n);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const wchar_t *s, size_t n)
+		{
+			return bfc_init_basic_wstring_buffer(buf, bufsize,
+								pool, s, n);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, size_t n, wchar_t c)
+		{
+			return bfc_init_basic_wstring_fill(buf, bufsize,
+								pool, n, c);
+		}
+
 	public:
 		// 21.4.2, construct/copy/destroy:
 		basic_string(): saved_allocator()

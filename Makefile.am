@@ -37,8 +37,6 @@ libbarefootc_a_SOURCES+= strings/basic_wstring.c
 libbarefootc_a_SOURCES+= strings/string.c
 libbarefootc_a_SOURCES+= strings/basic_string.c
 libbarefootc_a_SOURCES+= strings/char_traits.c
-libbarefootc_a_SOURCES+= strings/cxx_init_string.cpp
-libbarefootc_a_SOURCES+= strings/cxx_init_wstring.cpp
 libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
@@ -116,12 +114,6 @@ strings_basic_string_string_ops_string_accessors_data_pass_SOURCES = tests/strin
 strings_basic_string_string_ops_string_accessors_data_pass_LDADD = libbarefootc.a liblog4stdc.a
 strings_basic_string_string_ops_string_accessors_data_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += strings/basic.string/string.ops/string.accessors/data.pass
-
-check_PROGRAMS += strings/basic.string/string.ops/string.accessors/get_allocator.pass
-strings_basic_string_string_ops_string_accessors_get_allocator_pass_SOURCES = tests/strings/basic.string/string.ops/string.accessors/get_allocator.pass.cpp
-strings_basic_string_string_ops_string_accessors_get_allocator_pass_LDADD = libbarefootc.a liblog4stdc.a
-strings_basic_string_string_ops_string_accessors_get_allocator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-TESTS += strings/basic.string/string.ops/string.accessors/get_allocator.pass
 
 check_PROGRAMS += strings/basic.string/string.ops/string.accessors/c_str.pass
 strings_basic_string_string_ops_string_accessors_c_str_pass_SOURCES = tests/strings/basic.string/string.ops/string.accessors/c_str.pass.cpp

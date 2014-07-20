@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-#include "cxxwrapper.h"
+#include "tests/strings/cxxwrapper.h"
 #include "log4stdc.h"
 
 int main (int argc, char *argv[])

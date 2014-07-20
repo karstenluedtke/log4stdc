@@ -237,13 +237,17 @@ bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 
 int
 bfc_init_wstring_substr(void *buf, size_t bufsize,
-				bfc_cwstrptr_t str, size_t pos, size_t n)
+			bfc_cwstrptr_t str, size_t pos, size_t n)
 {
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
 	L4SC_TRACE(logger, "%s(%p, %ld, str %p, pos %ld, n %ld)",
 		__FUNCTION__, buf, (long) bufsize, str, (long) pos, (long) n);
+
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(str))) {
+		return (-ERANGE);
+	}
 	rc = bfc_init_wstring_buffer(buf, bufsize, NULL,
 		bfc_wstrdata(str) + pos, bfc_wstring_sublen(str, pos, n));
 	return (rc);
@@ -333,18 +337,25 @@ bfc_wstring_max_size(bfc_cwstrptr_t s)
 int
 bfc_wstring_resize(bfc_wstrptr_t s, size_t n, wchar_t c)
 {
+	int rc;
+
 	if (n <= s->len) {
 		wchar_t *data = bfc_wstrbuf(s);
 		s->len = n;
 		data[n] = '\0';
-		return ((int) n);
-	} else if (bfc_str_reserve == BFC_SUCCESS) {
+		return (BFC_SUCCESS);
+	}
+	RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
+			reserve, (s, n),
+			-ENOSYS);
+	if (rc == BFC_SUCCESS) {
 		wchar_t *data = bfc_wstrbuf(s);
 		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
+		s->len = n;
 		data[n] = '\0';
-		return ((int) n);
+		return (BFC_SUCCESS);
 	}
-	return (-ENOSPC);
+	return (rc);
 }
 
 size_t
@@ -848,7 +859,7 @@ bfc_wstring_find_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n)
 {
 	if (n == 0) {
-		return (0);
+		return ((pos <= bfc_wstrlen(s))? pos: BFC_NPOS);
 	} else if (n > bfc_wstrlen(s)) {
 		return (BFC_NPOS);
 	} else if (pos < bfc_wstrlen(s)) {
@@ -907,7 +918,7 @@ bfc_wstring_rfind_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 	const wchar_t *cp, *data = bfc_wstrdata(s);
 
 	if (n == 0) {
-		return (len);
+		return ((pos < len)? pos: len);
 	} else if (len >= n) {
 		cp = data + len - n;
 		if ((pos != BFC_NPOS) && (pos < len - n)) {
@@ -943,7 +954,7 @@ bfc_wstring_rfind_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
 			cp = data + pos;
 		}
 		for (; cp >= data; cp--) {
-			if ((*s->vptr->traits->eq)(*cp, c) == 0) {
+			if ((*s->vptr->traits->eq)(*cp, c)) {
 				return (cp - data);
 			}
 		}
@@ -1172,24 +1183,19 @@ bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
 			}
 		}
 	}
-	return (0);
+	return (BFC_NPOS);
 }
 
-bfc_wstrptr_t
+int
 bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
-		   bfc_wstrptr_t buf, size_t bufsize)
+		   void *buf, size_t bufsize)
 {
-	int rc;
-	RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
 			init_substr, (buf, bufsize, s, pos, n),
 			bfc_init_wstring_substr(buf, bufsize, s, pos, n));
-	if (rc < 0) {
-		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
-		L4SC_ERROR(logger, "%s(%p, %ld, %ld): init error %d",
-				__FUNCTION__, s, (long) pos, (long) n, rc);
-		return (NULL);
-	}
-	return (buf);
 }
 
 int
@@ -1211,6 +1217,9 @@ bfc_wstring_compare_substr(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 	size_t n2 = bfc_wstrlen(str);
 	const wchar_t *s2 = bfc_wstrdata(str);
 
+	if ((pos1 == BFC_NPOS) || (pos1 > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			compare_buffer, (s, pos1, n1, s2, n2),
 			bfc_wstring_compare_buffer(s, pos1, n1, s2, n2));
@@ -1223,6 +1232,12 @@ bfc_wstring_compare_substrs(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 	const size_t l2 = bfc_wstring_sublen(str, pos2, n2);
 	const wchar_t *s2 = bfc_wstrdata(str) + ((l2 > 0)? pos2: 0);
 
+	if ((pos1 == BFC_NPOS) || (pos1 > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
+	if ((pos2 == BFC_NPOS) || (pos2 > bfc_wstrlen(str))) {
+		return (-ERANGE);
+	}
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			compare_buffer, (s, pos1, n1, s2, l2),
 			bfc_wstring_compare_buffer(s, pos1, n1, s2, l2));
@@ -1245,6 +1260,9 @@ bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 {
 	size_t n2 = (*s->vptr->traits->szlen)(s2);
 
+	if ((pos1 == BFC_NPOS) || (pos1 > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			compare_buffer, (s, pos1, n1, s2, n2),
 			bfc_wstring_compare_buffer(s, pos1, n1, s2, n2));
@@ -1256,16 +1274,20 @@ bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 {
 	const size_t l1 = bfc_wstring_sublen(s, pos1, n1);
 
+	if ((pos1 == BFC_NPOS) || (pos1 > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
 	if ((l1 > 0) && (n2 > 0)) {
 		const wchar_t *s1 = bfc_wstrdata(s) + pos1;
 		if (l1 == n2) {
-			return ((*s->vptr->traits->compare)(s1, s2, l1));
+			int rc = (*s->vptr->traits->compare)(s1, s2, l1);
+			return ((rc > 0)? 1: (rc < 0)? -1: 0);
 		} else if (l1 < n2) {
 			int rc = (*s->vptr->traits->compare)(s1, s2, l1);
-			return ((rc != 0)? rc: -1);
+			return ((rc > 0)? 1: -1);
 		} else {
 			int rc = (*s->vptr->traits->compare)(s1, s2, n2);
-			return ((rc != 0)? rc: 1);
+			return ((rc < 0)? -1: 1);
 		}
 	} else if (l1 > 0) {
 		return (1);

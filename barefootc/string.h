@@ -205,8 +205,8 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 				size_t pos);				\
 	size_t	(*find_last_not_of_char)(cstrptrT s, charT c,		\
 				size_t pos);				\
-	strptrT	(*substr)(cstrptrT s, size_t pos, size_t n,		\
-				strptrT buf, size_t bufsize);		\
+	int	(*substr)(cstrptrT s, size_t pos, size_t n,		\
+				void *buf, size_t bufsize);		\
 	int	(*compare_bfstr)(cstrptrT s, cstrptrT str);		\
 	int	(*compare_substr)(cstrptrT s, size_t pos1, size_t n1,	\
 				cstrptrT str);				\
@@ -378,8 +378,8 @@ size_t	bfc_string_find_last_not_of_c_str(bfc_cstrptr_t s, const char* s2,
 					size_t pos);
 size_t	bfc_string_find_last_not_of_char(bfc_cstrptr_t s, char c,
 					size_t pos);
-bfc_strptr_t bfc_string_substr(bfc_cstrptr_t s, size_t pos, size_t n,
-					bfc_strptr_t buf, size_t bufsize);
+int	bfc_string_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
 int	bfc_string_compare_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str);
 int	bfc_string_compare_substr(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					bfc_cstrptr_t str);
@@ -530,8 +530,8 @@ size_t	bfc_wstring_find_last_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos);
 size_t	bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c,
 					size_t pos);
-bfc_wstrptr_t bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
-					bfc_wstrptr_t buf, size_t bufsize);
+int	bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
 int	bfc_wstring_compare_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str);
 int	bfc_wstring_compare_substr(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					bfc_cwstrptr_t str);

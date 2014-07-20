@@ -1,4 +1,5 @@
 #include "tests/strings/cxxwrapper.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -38,6 +39,9 @@ test(const S& s, typename S::value_type c, typename S::size_type x)
 
 int main()
 {
+  l4sc_configure_from_xml_file("log4j.xml");
+  l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 0);
+  L4SC_TRACE(logger, "tests/strings/basic.string/string.ops/string_find.last.of/char_size.pass starting");
     {
     typedef barefootc::basic_string<char> S;
     test(S(""), 'm', 0, S::npos);

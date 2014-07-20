@@ -1,4 +1,5 @@
 #include "tests/strings/cxxwrapper.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -34,9 +35,14 @@ test2(const S& s)
 {
     S s2(s);
     const size_t sz = s2.max_size();
+    l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 0);
+    L4SC_DEBUG(logger, "%s: trying %ld chars", __FUNCTION__, (long) sz);
     try { s2.resize(sz, 'x'); }
     catch ( const std::bad_alloc & ) { return ; }
-    assert ( s.size() ==  sz );
+    L4SC_DEBUG(logger, "%s: s.size %ld, s2.size %ld, expect %ld",
+		__FUNCTION__, (long) s.size(), (long) s2.size(), (long) sz);
+    // original llvm source: assert ( s.size() ==  sz );
+    assert ( s2.size() ==  sz );
 }
 
 template <class S>
@@ -62,6 +68,10 @@ test(const S& s)
 
 int main()
 {
+  l4sc_configure_from_xml_file("log4j.xml");
+  l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 0);
+  L4SC_TRACE(logger,
+    "tests/strings/basic.string/string.capacity/max_size.pass starting");
     {
     typedef barefootc::basic_string<char> S;
     test(S());

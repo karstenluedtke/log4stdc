@@ -75,6 +75,31 @@ namespace barefootc {
 		struct wrapped_string bfcstr;
 		Allocator saved_allocator;
 		
+		static void throw_resize_error(int rc)
+		{
+			switch (rc) {
+			case EINVAL:
+				throw(std::length_error("bad length"));
+				return;
+			case ENOMEM:
+				throw(std::bad_alloc());
+				return;
+			default:
+				throw(std::runtime_error("substr error " + rc));
+			}
+		}
+
+		static void throw_substr_error(int rc)
+		{
+			switch (rc) {
+			case ERANGE:
+				throw(std::out_of_range("bad substr position"));
+				return;
+			default:
+				throw(std::runtime_error("substr error " + rc));
+			}
+		}
+
 		static int
 		init_string(void *buf, size_t bufsize,
 			    const char *s, size_t n)
@@ -249,14 +274,24 @@ namespace barefootc {
 
 		void resize(size_type n, charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-					resize, (&bfcstr, n, c));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					resize, (&bfcstr, n, c),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_resize_error(-rc);
+			}
 		}
 
 		void resize(size_type n)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-					resize, (&bfcstr, n, 0));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					resize, (&bfcstr, n, 0),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_resize_error(-rc);
+			}
 		}
 
 		size_type capacity() const noexcept
@@ -268,8 +303,13 @@ namespace barefootc {
 
 		void reserve(size_type res_arg = 0)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-					reserve, (&bfcstr, res_arg));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					reserve, (&bfcstr, res_arg),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_resize_error(-rc);
+			}
 		}
 
 		void shrink_to_fit()
@@ -658,70 +698,108 @@ namespace barefootc {
 		basic_string substr(size_type pos = 0, size_type n = npos) const
 		{
 			basic_string s(saved_allocator);
-			cstrptrT ret;
+			int rc;
 
-			VOID_METHCALL(classptrT, &bfcstr,
-				      substr, (&bfcstr, pos, n,
-					       &s.bfcstr, sizeof(s.bfcstr)));
-
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					substr, (&bfcstr, pos, n,
+					         &s.bfcstr, sizeof(s.bfcstr)),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_substr_error(-rc);
+			}
 			return s;
 		}
 
 		int compare(const basic_string& str) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				compare_bfstr, (&bfcstr, &str.bfcstr),
-				-1);
+				-ENOSYS);
+			if (rc < -1) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
 		}
 
 		int compare(size_type pos1, size_type n1,
 			    const basic_string& str) const
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				compare_substr, (&bfcstr,pos1,n1,&str.bfcstr),
-				-1);
+				-ENOSYS);
+			if (rc < -1) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
 		}
 
 		/* not in C++ standard */
 		int compare(size_type pos1, size_type n1,
 			const basic_string& str, size_type pos2) const
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				compare_substrs, (&bfcstr, pos1, n1,
 						  &str.bfcstr, pos2, npos),
-				-1);
+				-ENOSYS);
+			if (rc < -1) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
 		}
 
 		int compare(size_type pos1, size_type n1,
 			const basic_string& str,size_type pos2,size_type n2)
 									const
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				compare_substrs, (&bfcstr, pos1, n1,
 						  &str.bfcstr, pos2, n2),
-				-1);
+				-ENOSYS);
+			if (rc < -1) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
 		}
 
 		int compare(const charT* s) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				compare_c_str, (&bfcstr, s),
-				-1);
+				-ENOSYS);
+			if (rc < -1) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
 		}
 
 		int compare(size_type pos1, size_type n1, const charT* s) const
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				compare_substr_c_str, (&bfcstr, pos1, n1, s),
-				-1);
+				-ENOSYS);
+			if (rc < -1) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
 		}
 
 		int compare(size_type pos1, size_type n1,
 			    const charT* s, size_type n2) const
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				compare_buffer, (&bfcstr, pos1, n1, s, n2),
-				-1);
+				-ENOSYS);
+			if (rc < -1) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
 		}
 
 

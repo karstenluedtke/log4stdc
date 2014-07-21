@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <errno.h>
 
+#if defined(__ANDROID__)
+#include <android/log.h>
+#endif
+
 #include "logobjects.h"
 #include "barefootc/object.h"
 #include "barefootc/mempool.h"
@@ -280,10 +284,22 @@ rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
 {
 	int rc;
 	if (msg && (msglen > 0)) {
+#if defined(__ANDROID__)
+		const char *tag = logger->name;
+		android_LogPriority prio =
+			IS_AT_LEAST_FATAL_LEVEL(level)?	ANDROID_LOG_FATAL:
+			IS_AT_LEAST_ERROR_LEVEL(level)?	ANDROID_LOG_ERROR:
+			IS_AT_LEAST_WARN_LEVEL(level)?	ANDROID_LOG_WARN:
+			IS_AT_LEAST_INFO_LEVEL(level)?	ANDROID_LOG_INFO:
+			IS_AT_LEAST_DEBUG_LEVEL(level)?	ANDROID_LOG_DEBUG:
+							ANDROID_LOG_VERBOSE;
+		__android_log_print(prio, tag, "%.*s", (int) msglen, msg);
+#else
 		rc = write(2, msg, msglen);
 		if ((rc > 0) && (msg[msglen-1] != '\n')) {
 			rc = write(2, "\r\n", 2);
 		}
+#endif
 	}
 }
 

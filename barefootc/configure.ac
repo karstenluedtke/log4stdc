@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([barefootc], [0.3.3], [bug-barefootc@example.org])
+AC_INIT([barefootc], [0.3.4], [bug-barefootc@example.org])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CC
 AC_PROG_CXX
@@ -9,6 +9,7 @@ AC_PROG_INSTALL
 
 # Checks for libraries.
 AC_CHECK_LIB([pthread], [pthread_mutexattr_settype])
+AC_CHECK_LIB([log], [__android_log_print])
 AC_CHECK_LIB([expat], [XML_ParseBuffer])
 
 # Checks for header files.

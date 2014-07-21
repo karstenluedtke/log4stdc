@@ -6,6 +6,9 @@
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <malloc.h>  /* for alloca */
 #endif
+#if defined(__ANDROID__)
+#include <android/log.h>
+#endif
 
 #include "logobjects.h"
 #include "barefootc/object.h"
@@ -129,10 +132,24 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 	size_t len = 0;
 	int rc, written = 0;
 	if (msg && ((len = msg->msglen) > 0)) {
-		int fd = IS_AT_LEAST_WARN_LEVEL(msg->level)? 2: 1;
+		int level = msg->level;
+		int fd = IS_AT_LEAST_WARN_LEVEL(level)? 2: 1;
 		size_t bufsize = len + 100;
 		char *buf = alloca(bufsize);
 		len = VMETHCALL(layout,format,(layout,msg,buf,bufsize), 0);
+#if defined(__ANDROID__)
+		const char *tag = msg->logger?	msg->logger->name:
+						appender->name;
+		android_LogPriority prio =
+			IS_AT_LEAST_FATAL_LEVEL(level)?	ANDROID_LOG_FATAL:
+			IS_AT_LEAST_ERROR_LEVEL(level)?	ANDROID_LOG_ERROR:
+			IS_AT_LEAST_WARN_LEVEL(level)?	ANDROID_LOG_WARN:
+			IS_AT_LEAST_INFO_LEVEL(level)?	ANDROID_LOG_INFO:
+			IS_AT_LEAST_DEBUG_LEVEL(level)?	ANDROID_LOG_DEBUG:
+							ANDROID_LOG_VERBOSE;
+		__android_log_write(prio, tag, buf);
+		written = len;
+#else
 		while (len > written) {
 			if ((rc = write(fd, buf, len)) > 0) {
 				written += rc;
@@ -140,6 +157,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 				break;
 			}
 		}
+#endif
 	}
 }
 

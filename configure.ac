@@ -9,6 +9,7 @@ AC_PROG_INSTALL
 
 # Checks for libraries.
 AC_CHECK_LIB([pthread], [pthread_mutexattr_settype])
+AC_CHECK_LIB([log], [__android_log_print])
 AC_CHECK_LIB([expat], [XML_ParseBuffer])
 
 # Checks for header files.

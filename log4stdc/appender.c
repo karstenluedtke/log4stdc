@@ -146,6 +146,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 			IS_AT_LEAST_INFO_LEVEL(level)?	ANDROID_LOG_INFO:
 			IS_AT_LEAST_DEBUG_LEVEL(level)?	ANDROID_LOG_DEBUG:
 							ANDROID_LOG_VERBOSE;
+		buf[(len < bufsize)? len: bufsize-1] = '\0';
 		__android_log_write(prio, tag, buf);
 		written = len;
 #else
@@ -213,6 +214,13 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 	} else if ((klen >= 12)
 		&& (strncasecmp(kind+klen-12, "FileAppender", 12) == 0)) {
 		clazz = &l4sc_file_appender_class;
+	}
+	BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
+		if (BFC_CLASS(appender) && BFC_CLASS(appender)->name
+		 && (strncasecmp(BFC_CLASS(appender)->name, kind, klen) == 0)
+		 && (BFC_CLASS(appender)->name[klen] == '\0')) {
+			clazz = BFC_CLASS(appender);
+		}
 	}
 
 	LOGINFO(("%s: appender %.*s not found, creating %.*s ...",

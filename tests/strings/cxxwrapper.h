@@ -374,47 +374,55 @@ namespace barefootc {
 		// 21.4.6, modifiers:
 		basic_string& operator+=(const basic_string& str)
 		{
-			VMETHCALL(&bfcstr, append_bfstr, (&bfcstr, str),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_bfstr, (&bfcstr, str));
+			return(*this);
 		}
 
 		basic_string& operator+=(const charT* s)
 		{
-			VMETHCALL(&bfcstr, append_c_str, (&bfcstr, s),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_c_str, (&bfcstr, s));
+			return(*this);
 		}
 
 		basic_string& operator+=(charT c)
 		{
-			VMETHCALL(&bfcstr, push_back, (&bfcstr, c), 0);
+			VOID_METHCALL(classptrT, &bfcstr,
+				push_back, (&bfcstr, c));
+			return(*this);
 		}
 
 		// basic_string& operator+=(initializer_list<charT>);
 
 		basic_string& append(const basic_string& str)
 		{
-			VMETHCALL(&bfcstr, append_bfstr, (&bfcstr, str),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_bfstr, (&bfcstr, str));
+			return(*this);
 		}
 
 		basic_string& append(const basic_string& str, size_type pos, size_type n);
 
 		basic_string& append(const charT* s, size_type n)
 		{
-			VMETHCALL(&bfcstr, append_buffer, (&bfcstr, s, n),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_buffer, (&bfcstr, s, n));
+			return(*this);
 		}
 
 		basic_string& append(const charT* s)
 		{
-			VMETHCALL(&bfcstr, append_c_str, (&bfcstr, s),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_c_str, (&bfcstr, s));
+			return(*this);
 		}
 
 		basic_string& append(size_type n, charT c)
 		{
-			VMETHCALL(&bfcstr, append_fill, (&bfcstr, n, c),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_fill, (&bfcstr, n, c));
+			return(*this);
 		}
 
 		template<class InputIterator> basic_string& append(InputIterator first, InputIterator last);
@@ -422,13 +430,15 @@ namespace barefootc {
 
 		void push_back(charT c)
 		{
-			VMETHCALL(&bfcstr, push_back, (&bfcstr, c), 0);
+			VOID_METHCALL(classptrT, &bfcstr,
+				push_back, (&bfcstr, c));
 		}
 
 		basic_string& assign(const basic_string& str)
 		{
-			VMETHCALL(&bfcstr, assign_bfstr, (&bfcstr,&str.bfcstr),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				assign_bfstr, (&bfcstr, &str.bfcstr));
+			return(*this);
 		}
 
 		// basic_string& assign(basic_string&& str) noexcept;
@@ -436,20 +446,23 @@ namespace barefootc {
 
 		basic_string& assign(const charT* s, size_type n)
 		{
-			VMETHCALL(&bfcstr, assign_buffer, (&bfcstr, s, n),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				assign_buffer, (&bfcstr, s, n));
+			return(*this);
 		}
 
 		basic_string& assign(const charT* s)
 		{
-			VMETHCALL(&bfcstr, assign_c_str, (&bfcstr, s),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				assign_c_str, (&bfcstr, s));
+			return(*this);
 		}
 
 		basic_string& assign(size_type n, charT c)
 		{
-			VMETHCALL(&bfcstr, assign_fill, (&bfcstr, n, c),
-				  &bfcstr);
+			VOID_METHCALL(classptrT, &bfcstr,
+				assign_fill, (&bfcstr, n, c));
+			return(*this);
 		}
 
 		template<class InputIterator> basic_string& assign(InputIterator first, InputIterator last);

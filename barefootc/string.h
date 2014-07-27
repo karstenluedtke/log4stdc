@@ -111,56 +111,56 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	charT *	(*ref)(strptrT s, size_t pos);				\
 	const charT* (*data)(cstrptrT s);  /* not zero terminated */	\
 	/* Modifiers */							\
-	strptrT	(*assign_bfstr)(strptrT s, cstrptrT s2);		\
-	strptrT	(*assign_substr)(strptrT s, cstrptrT s2,		\
+	int	(*assign_bfstr)(strptrT s, cstrptrT s2);		\
+	int	(*assign_substr)(strptrT s, cstrptrT s2,		\
 				 size_t subpos, size_t sublen);		\
-	strptrT	(*assign_c_str)(strptrT s, const charT *s2);		\
-	strptrT	(*assign_buffer)(strptrT s, const charT *s2, size_t n);	\
-	strptrT	(*assign_fill)(strptrT s, size_t n, charT c);		\
-	strptrT	(*assign_range)(strptrT s,iterptrT first,iterptrT last);\
-	strptrT	(*append_bfstr)(strptrT s, cstrptrT s2);		\
-	strptrT	(*append_substr)(strptrT s, cstrptrT s2,		\
+	int	(*assign_c_str)(strptrT s, const charT *s2);		\
+	int	(*assign_buffer)(strptrT s, const charT *s2, size_t n);	\
+	int	(*assign_fill)(strptrT s, size_t n, charT c);		\
+	int	(*assign_range)(strptrT s,iterptrT first,iterptrT last);\
+	int	(*append_bfstr)(strptrT s, cstrptrT s2);		\
+	int	(*append_substr)(strptrT s, cstrptrT s2,		\
 				 size_t subpos, size_t sublen);		\
-	strptrT	(*append_c_str)(strptrT s, const charT *s2);		\
-	strptrT	(*append_buffer)(strptrT s, const charT *s2, size_t n);	\
-	strptrT	(*append_fill)(strptrT s, size_t n, charT c);		\
-	strptrT	(*append_range)(strptrT s,iterptrT first,iterptrT last);\
+	int	(*append_c_str)(strptrT s, const charT *s2);		\
+	int	(*append_buffer)(strptrT s, const charT *s2, size_t n);	\
+	int	(*append_fill)(strptrT s, size_t n, charT c);		\
+	int	(*append_range)(strptrT s,iterptrT first,iterptrT last);\
 	int	(*push_back)(strptrT s, charT c);			\
-	strptrT	(*insert_bfstr)(strptrT s, size_t pos, cstrptrT s2);	\
-	strptrT	(*insert_substr)(strptrT s, size_t pos, cstrptrT s2,	\
+	int	(*insert_bfstr)(strptrT s, size_t pos, cstrptrT s2);	\
+	int	(*insert_substr)(strptrT s, size_t pos, cstrptrT s2,	\
 				 size_t subpos, size_t sublen);		\
-	strptrT	(*insert_c_str)(strptrT s, size_t pos, const charT *s2);\
-	strptrT	(*insert_buffer)(strptrT s, size_t pos,			\
+	int	(*insert_c_str)(strptrT s, size_t pos, const charT *s2);\
+	int	(*insert_buffer)(strptrT s, size_t pos,			\
 				 const charT *s2, size_t n);		\
-	strptrT	(*insert_fill)(strptrT s,size_t pos, size_t n,charT c);	\
-	strptrT	(*insert_fillit)(strptrT s,iterptrT p,size_t n,charT c);\
-	iterptrT(*insert_char)(strptrT s, iterptrT p, charT c);		\
-	strptrT	(*insert_range)(strptrT s, iterptrT p,			\
+	int	(*insert_fill)(strptrT s,size_t pos, size_t n,charT c);	\
+	int	(*insert_fillit)(strptrT s,iterptrT p,size_t n,charT c);\
+	int	(*insert_char)(strptrT s, iterptrT p, charT c);		\
+	int	(*insert_range)(strptrT s, iterptrT p,			\
 				iterptrT first, iterptrT last);		\
-	strptrT	(*erase_seq)(strptrT s, size_t pos, size_t len);	\
-	strptrT	(*erase_tail)(strptrT s, size_t pos);			\
-	iterptrT(*erase_char)(strptrT s, iterptrT p);			\
-	strptrT	(*erase_range)(strptrT s,iterptrT first,iterptrT last);	\
+	int	(*erase_seq)(strptrT s, size_t pos, size_t len);	\
+	int	(*erase_tail)(strptrT s, size_t pos);			\
+	int	(*erase_char)(strptrT s, iterptrT p);			\
+	int	(*erase_range)(strptrT s,iterptrT first,iterptrT last);	\
 	void	(*pop_back)(strptrT s);					\
-	strptrT (*replace_bfstr)(strptrT s, size_t pos1, size_t n1,	\
+	int	(*replace_bfstr)(strptrT s, size_t pos1, size_t n1,	\
 				cstrptrT str);				\
-	strptrT (*replace_substr)(strptrT s, size_t pos1, size_t n1,	\
+	int	(*replace_substr)(strptrT s, size_t pos1, size_t n1,	\
 		 		cstrptrT str, size_t pos2, size_t n2);	\
-	strptrT (*replace_buffer)(strptrT s, size_t pos, size_t n1,	\
+	int	(*replace_buffer)(strptrT s, size_t pos, size_t n1,	\
 				const charT* s2, size_t n2);		\
-	strptrT (*replace_c_str)(strptrT s, size_t pos, size_t n1,	\
+	int	(*replace_c_str)(strptrT s, size_t pos, size_t n1,	\
 				const charT* s2);			\
-	strptrT (*replace_fill)(strptrT s, size_t pos, size_t n1,	\
+	int	(*replace_fill)(strptrT s, size_t pos, size_t n1,	\
 				size_t n2, charT c);			\
-	strptrT (*replace_range_bfstr)(strptrT s, iterptrT i1,		\
+	int	(*replace_range_bfstr)(strptrT s, iterptrT i1,		\
 				iterptrT i2, cstrptrT s2);		\
-	strptrT (*replace_range_buffer)(strptrT s, iterptrT i1,		\
+	int	(*replace_range_buffer)(strptrT s, iterptrT i1,		\
 				iterptrT i2, const charT* s2, size_t n);\
-	strptrT (*replace_range_c_str)(strptrT s, iterptrT i1,		\
+	int	(*replace_range_c_str)(strptrT s, iterptrT i1,		\
 				iterptrT i2, const charT* s2);		\
-	strptrT (*replace_range_fill)(strptrT s, iterptrT i1,		\
+	int	(*replace_range_fill)(strptrT s, iterptrT i1,		\
 				iterptrT i2, size_t n, charT c);	\
-	strptrT (*replace_ranges)(strptrT s, iterptrT i1, iterptrT i2,	\
+	int	(*replace_ranges)(strptrT s, iterptrT i1, iterptrT i2,	\
 				iterptrT j1, iterptrT j2);		\
 	size_t	(*copy)(strptrT s, charT* s2, size_t n, size_t pos);	\
 	void	(*swap)(strptrT s, strptrT str);			\
@@ -274,65 +274,56 @@ char *bfc_string_ref(bfc_strptr_t s, size_t pos);
 const char *bfc_string_data(bfc_cstrptr_t s);  /* not zero terminated */
 
 /* Modifiers */
-bfc_strptr_t bfc_string_assign_bfstr(bfc_strptr_t s, bfc_cstrptr_t s2);
-bfc_strptr_t bfc_string_assign_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
+int     bfc_string_assign_bfstr(bfc_strptr_t s, bfc_cstrptr_t s2);
+int     bfc_string_assign_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
 			 		size_t subpos, size_t sublen);
-bfc_strptr_t bfc_string_assign_c_str(bfc_strptr_t s, const char *s2);
-bfc_strptr_t bfc_string_assign_buffer(bfc_strptr_t s,
-					const char *s2, size_t n);
-bfc_strptr_t bfc_string_assign_fill(bfc_strptr_t s, size_t n, char c);
-bfc_strptr_t bfc_string_assign_range(bfc_strptr_t s,
-					iterptrT first, iterptrT last);
-bfc_strptr_t bfc_string_append_bfstr(bfc_strptr_t s, bfc_cstrptr_t s2);
-bfc_strptr_t bfc_string_append_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
+int     bfc_string_assign_c_str(bfc_strptr_t s, const char *s2);
+int     bfc_string_assign_buffer(bfc_strptr_t s, const char *s2, size_t n);
+int     bfc_string_assign_fill(bfc_strptr_t s, size_t n, char c);
+int     bfc_string_assign_range(bfc_strptr_t s, iterptrT first, iterptrT last);
+int     bfc_string_append_bfstr(bfc_strptr_t s, bfc_cstrptr_t s2);
+int     bfc_string_append_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
 			 		size_t subpos, size_t sublen);
-bfc_strptr_t bfc_string_append_c_str(bfc_strptr_t s, const char *s2);
-bfc_strptr_t bfc_string_append_buffer(bfc_strptr_t s,
-					const char *s2, size_t n);
-bfc_strptr_t bfc_string_append_fill(bfc_strptr_t s, size_t n, char c);
-bfc_strptr_t bfc_string_append_range(bfc_strptr_t s,
-					iterptrT first, iterptrT last);
+int     bfc_string_append_c_str(bfc_strptr_t s, const char *s2);
+int     bfc_string_append_buffer(bfc_strptr_t s, const char *s2, size_t n);
+int     bfc_string_append_fill(bfc_strptr_t s, size_t n, char c);
+int     bfc_string_append_range(bfc_strptr_t s, iterptrT first, iterptrT last);
 int	bfc_string_push_back(bfc_strptr_t s, char c);
-bfc_strptr_t bfc_string_insert_bfstr(bfc_strptr_t s, size_t pos,
-					bfc_cstrptr_t s2);
-bfc_strptr_t bfc_string_insert_substr(bfc_strptr_t s, size_t pos,
+int     bfc_string_insert_bfstr(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2);
+int     bfc_string_insert_substr(bfc_strptr_t s, size_t pos,
 			bfc_cstrptr_t s2, size_t subpos, size_t sublen);
-bfc_strptr_t bfc_string_insert_c_str(bfc_strptr_t s, size_t pos,
-					const char *s2);
-bfc_strptr_t bfc_string_insert_buffer(bfc_strptr_t s, size_t pos,
+int     bfc_string_insert_c_str(bfc_strptr_t s, size_t pos, const char *s2);
+int     bfc_string_insert_buffer(bfc_strptr_t s, size_t pos,
 			 		const char *s2, size_t n);
-bfc_strptr_t bfc_string_insert_fill(bfc_strptr_t s, size_t pos,
-					size_t n, char c);
-bfc_strptr_t bfc_string_insert_fillit(bfc_strptr_t s, iterptrT p,
-					size_t n, char c);
-iterptrT      bfc_string_insert_char(bfc_strptr_t s, iterptrT p, char c);
-bfc_strptr_t bfc_string_insert_range(bfc_strptr_t s, iterptrT p,
+int     bfc_string_insert_fill(bfc_strptr_t s, size_t pos, size_t n, char c);
+int     bfc_string_insert_fillit(bfc_strptr_t s, iterptrT p, size_t n, char c);
+int     bfc_string_insert_char(bfc_strptr_t s, iterptrT p, char c);
+int     bfc_string_insert_range(bfc_strptr_t s, iterptrT p,
 					iterptrT first, iterptrT last);
-bfc_strptr_t bfc_string_erase_seq(bfc_strptr_t s, size_t pos, size_t len);
-bfc_strptr_t bfc_string_erase_tail(bfc_strptr_t s, size_t pos);
-iterptrT      bfc_string_erase_char(bfc_strptr_t s, iterptrT p);
-bfc_strptr_t bfc_string_erase_range(bfc_strptr_t s,
-					iterptrT first, iterptrT last);
-void          bfc_string_pop_back(bfc_strptr_t s);
-bfc_strptr_t bfc_string_replace_bfstr(bfc_strptr_t s, size_t pos1,size_t n1,
+int     bfc_string_erase_seq(bfc_strptr_t s, size_t pos, size_t len);
+int     bfc_string_erase_tail(bfc_strptr_t s, size_t pos);
+int     bfc_string_erase_char(bfc_strptr_t s, iterptrT p);
+int     bfc_string_erase_range(bfc_strptr_t s, iterptrT first, iterptrT last);
+void    bfc_string_pop_back(bfc_strptr_t s);
+int     bfc_string_replace_bfstr(bfc_strptr_t s, size_t pos1,size_t n1,
 					bfc_cstrptr_t str);
-bfc_strptr_t bfc_string_replace_substr(bfc_strptr_t s,size_t pos1,size_t n1,
+int     bfc_string_replace_substr(bfc_strptr_t s,size_t pos1,size_t n1,
 	 			bfc_cstrptr_t str, size_t pos2, size_t n2);
-bfc_strptr_t bfc_string_replace_buffer(bfc_strptr_t s, size_t pos,size_t n1,
+int     bfc_string_replace_buffer(bfc_strptr_t s, size_t pos,size_t n1,
 					const char* s2, size_t n2);
-bfc_strptr_t bfc_string_replace_c_str(bfc_strptr_t s, size_t pos, size_t n1,
+int     bfc_string_replace_c_str(bfc_strptr_t s, size_t pos, size_t n1,
 					const char* s2);
-bfc_strptr_t bfc_string_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
+int     bfc_string_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
 					size_t n2, char c);
-bfc_strptr_t bfc_string_replace_range_bfstr(bfc_strptr_t s, iterptrT i1,
+int     bfc_string_replace_range_bfstr(bfc_strptr_t s, iterptrT i1,
 					iterptrT i2, bfc_cstrptr_t s2);
-bfc_strptr_t bfc_string_replace_range_buffer(bfc_strptr_t s, iterptrT i1,
+int     bfc_string_replace_range_buffer(bfc_strptr_t s, iterptrT i1,
 				iterptrT i2, const char* s2, size_t n);
-bfc_strptr_t bfc_string_replace_range_c_str(bfc_strptr_t s, iterptrT i1,
+int     bfc_string_replace_range_c_str(bfc_strptr_t s, iterptrT i1,
 					iterptrT i2, const char* s2);
-bfc_strptr_t bfc_string_replace_range_fill(bfc_strptr_t s, iterptrT i1,
+int     bfc_string_replace_range_fill(bfc_strptr_t s, iterptrT i1,
 					iterptrT i2, size_t n, char c);
-bfc_strptr_t bfc_string_replace_ranges(bfc_strptr_t s, iterptrT i1,
+int     bfc_string_replace_ranges(bfc_strptr_t s, iterptrT i1,
 					iterptrT i2, iterptrT j1, iterptrT j2);
 size_t	bfc_string_copy(bfc_strptr_t s, char* s2, size_t n, size_t pos);
 void	bfc_string_swap(bfc_strptr_t s, bfc_strptr_t str);
@@ -426,65 +417,57 @@ wchar_t *bfc_wstring_ref(bfc_wstrptr_t s, size_t pos);
 const wchar_t *bfc_wstring_data(bfc_cwstrptr_t s);  /* not zero terminated */
 
 /* Modifiers */
-bfc_wstrptr_t bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
-bfc_wstrptr_t bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
+int     bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
+int     bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			 		size_t subpos, size_t sublen);
-bfc_wstrptr_t bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2);
-bfc_wstrptr_t bfc_wstring_assign_buffer(bfc_wstrptr_t s,
-					const wchar_t *s2, size_t n);
-bfc_wstrptr_t bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
-bfc_wstrptr_t bfc_wstring_assign_range(bfc_wstrptr_t s,
-					iterptrT first, iterptrT last);
-bfc_wstrptr_t bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
-bfc_wstrptr_t bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
+int     bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2);
+int     bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2,size_t n);
+int     bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
+int     bfc_wstring_assign_range(bfc_wstrptr_t s,iterptrT first,iterptrT last);
+int     bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
+int     bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			 		size_t subpos, size_t sublen);
-bfc_wstrptr_t bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2);
-bfc_wstrptr_t bfc_wstring_append_buffer(bfc_wstrptr_t s,
-					const wchar_t *s2, size_t n);
-bfc_wstrptr_t bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
-bfc_wstrptr_t bfc_wstring_append_range(bfc_wstrptr_t s,
-					iterptrT first, iterptrT last);
+int     bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2);
+int     bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n);
+int     bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
+int     bfc_wstring_append_range(bfc_wstrptr_t s,iterptrT first,iterptrT last);
 int	bfc_wstring_push_back(bfc_wstrptr_t s, wchar_t c);
-bfc_wstrptr_t bfc_wstring_insert_bfstr(bfc_wstrptr_t s, size_t pos,
-					bfc_cwstrptr_t s2);
-bfc_wstrptr_t bfc_wstring_insert_substr(bfc_wstrptr_t s, size_t pos,
+int     bfc_wstring_insert_bfstr(bfc_wstrptr_t s,size_t pos,bfc_cwstrptr_t s2);
+int     bfc_wstring_insert_substr(bfc_wstrptr_t s, size_t pos,
 			bfc_cwstrptr_t s2, size_t subpos, size_t sublen);
-bfc_wstrptr_t bfc_wstring_insert_c_str(bfc_wstrptr_t s, size_t pos,
-					const wchar_t *s2);
-bfc_wstrptr_t bfc_wstring_insert_buffer(bfc_wstrptr_t s, size_t pos,
+int     bfc_wstring_insert_c_str(bfc_wstrptr_t s,size_t pos,const wchar_t *s2);
+int     bfc_wstring_insert_buffer(bfc_wstrptr_t s, size_t pos,
 			 		const wchar_t *s2, size_t n);
-bfc_wstrptr_t bfc_wstring_insert_fill(bfc_wstrptr_t s, size_t pos,
+int     bfc_wstring_insert_fill(bfc_wstrptr_t s,size_t pos,size_t n,wchar_t c);
+int     bfc_wstring_insert_fillit(bfc_wstrptr_t s, iterptrT p,
 					size_t n, wchar_t c);
-bfc_wstrptr_t bfc_wstring_insert_fillit(bfc_wstrptr_t s, iterptrT p,
-					size_t n, wchar_t c);
-iterptrT      bfc_wstring_insert_char(bfc_wstrptr_t s, iterptrT p, wchar_t c);
-bfc_wstrptr_t bfc_wstring_insert_range(bfc_wstrptr_t s, iterptrT p,
+int     bfc_wstring_insert_char(bfc_wstrptr_t s, iterptrT p, wchar_t c);
+int     bfc_wstring_insert_range(bfc_wstrptr_t s, iterptrT p,
 					iterptrT first, iterptrT last);
-bfc_wstrptr_t bfc_wstring_erase_seq(bfc_wstrptr_t s, size_t pos, size_t len);
-bfc_wstrptr_t bfc_wstring_erase_tail(bfc_wstrptr_t s, size_t pos);
-iterptrT      bfc_wstring_erase_char(bfc_wstrptr_t s, iterptrT p);
-bfc_wstrptr_t bfc_wstring_erase_range(bfc_wstrptr_t s,
-					iterptrT first, iterptrT last);
-void          bfc_wstring_pop_back(bfc_wstrptr_t s);
-bfc_wstrptr_t bfc_wstring_replace_bfstr(bfc_wstrptr_t s, size_t pos1,size_t n1,
+int     bfc_wstring_erase_seq(bfc_wstrptr_t s, size_t pos, size_t len);
+int     bfc_wstring_erase_tail(bfc_wstrptr_t s, size_t pos);
+int     bfc_wstring_erase_char(bfc_wstrptr_t s, iterptrT p);
+int     bfc_wstring_erase_range(bfc_wstrptr_t s, iterptrT first, iterptrT last);
+void    bfc_wstring_pop_back(bfc_wstrptr_t s);
+int     bfc_wstring_replace_bfstr(bfc_wstrptr_t s, size_t pos1,size_t n1,
 					bfc_cwstrptr_t str);
-bfc_wstrptr_t bfc_wstring_replace_substr(bfc_wstrptr_t s,size_t pos1,size_t n1,
+int     bfc_wstring_replace_substr(bfc_wstrptr_t s,size_t pos1,size_t n1,
 	 			bfc_cwstrptr_t str, size_t pos2, size_t n2);
-bfc_wstrptr_t bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos,size_t n1,
+int     bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos,size_t n1,
 					const wchar_t* s2, size_t n2);
-bfc_wstrptr_t bfc_wstring_replace_c_str(bfc_wstrptr_t s, size_t pos, size_t n1,
+int     bfc_wstring_replace_c_str(bfc_wstrptr_t s, size_t pos, size_t n1,
 					const wchar_t* s2);
-bfc_wstrptr_t bfc_wstring_replace_fill(bfc_wstrptr_t s, size_t pos, size_t n1,
+int     bfc_wstring_replace_fill(bfc_wstrptr_t s, size_t pos, size_t n1,
 					size_t n2, wchar_t c);
-bfc_wstrptr_t bfc_wstring_replace_range_bfstr(bfc_wstrptr_t s, iterptrT i1,
+int     bfc_wstring_replace_range_bfstr(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, bfc_cwstrptr_t s2);
-bfc_wstrptr_t bfc_wstring_replace_range_buffer(bfc_wstrptr_t s, iterptrT i1,
+int     bfc_wstring_replace_range_buffer(bfc_wstrptr_t s, iterptrT i1,
 				iterptrT i2, const wchar_t* s2, size_t n);
-bfc_wstrptr_t bfc_wstring_replace_range_c_str(bfc_wstrptr_t s, iterptrT i1,
+int     bfc_wstring_replace_range_c_str(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, const wchar_t* s2);
-bfc_wstrptr_t bfc_wstring_replace_range_fill(bfc_wstrptr_t s, iterptrT i1,
+int     bfc_wstring_replace_range_fill(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, size_t n, wchar_t c);
-bfc_wstrptr_t bfc_wstring_replace_ranges(bfc_wstrptr_t s, iterptrT i1,
+int     bfc_wstring_replace_ranges(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, iterptrT j1, iterptrT j2);
 size_t	bfc_wstring_copy(bfc_wstrptr_t s, wchar_t* s2, size_t n, size_t pos);
 void	bfc_wstring_swap(bfc_wstrptr_t s, bfc_wstrptr_t str);

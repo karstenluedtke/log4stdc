@@ -48,7 +48,7 @@ struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
 };
 
-#define BFC_CLASSHDR(classptrT,objptrT,cobjptrT) \
+#define BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,elemT) \
 	classptrT	super;	  /**< possible super class */		     \
 	const char *	name;	  /**< class name */			     \
 	void *		spare2;						     \
@@ -59,12 +59,15 @@ struct bfc_objhdr {
 	size_t	      (*clonesize)(cobjptrT);				     \
 	unsigned      (*hashcode) (cobjptrT);				     \
 	int	      (*equals)   (cobjptrT, cobjptrT);			     \
-	int	      (*length)   (cobjptrT);				     \
+	size_t	      (*length)   (cobjptrT);				     \
 	int	      (*tostring) (cobjptrT, char *, size_t);		     \
 	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);     \
-	void *		spare13;					     \
-	void *		spare14;					     \
-	void *		spare15;
+	const elemT * (*first)    (cobjptrT);				     \
+	elemT *	      (*data)     (objptrT, size_t);			     \
+	elemT	      (*get)      (cobjptrT, size_t);
+
+#define BFC_CLASSHDR(classptrT,objptrT,cobjptrT) \
+	BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,void)
 
 struct bfc_classhdr {
 	BFC_CLASSHDR(bfc_classptr_t,bfc_objptr_t,bfc_cobjptr_t)
@@ -207,7 +210,7 @@ void bfc_default_destroy_object(bfc_objptr_t);
 
 unsigned bfc_default_get_object_hashcode(bfc_cobjptr_t);
 int  bfc_default_is_equal_object(bfc_cobjptr_t, bfc_cobjptr_t);
-int  bfc_default_get_object_length(bfc_cobjptr_t);
+size_t bfc_default_get_object_length(bfc_cobjptr_t);
 int  bfc_default_object_tostring(bfc_cobjptr_t, char *, size_t);
 void bfc_default_dump_object(bfc_cobjptr_t, int, struct l4sc_logger *);
 

@@ -12,8 +12,6 @@
 #include "barefootc/mempool.h"
 #include "log4stdc.h"
 
-#define iterptrT void *
-
 #ifndef STRING_CLASS_NAME
 #define STRING_CLASS_NAME "basic_wstring"
 #endif

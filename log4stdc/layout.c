@@ -21,7 +21,7 @@ static int init_patternlayout(void *, size_t, struct mempool *);
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
 static unsigned get_layout_hashcode(l4sc_layout_cptr_t obj);
 static int  is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other);
-static int  get_layout_length(l4sc_layout_cptr_t obj);
+static size_t get_layout_length(l4sc_layout_cptr_t obj);
 static int  layout_tostring(l4sc_layout_cptr_t obj, char *buf, size_t bufsize);
 
 static void set_layout_name(l4sc_layout_ptr_t obj, const char *name, int len);
@@ -97,7 +97,7 @@ is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other)
 	return (0);
 }
 
-static int
+static size_t
 get_layout_length(l4sc_layout_cptr_t obj)
 {
 	return (0);

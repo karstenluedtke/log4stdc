@@ -19,6 +19,9 @@ extern "C" {
 
 #include <stddef.h>
 
+#include "barefootc/object.h"
+#include "barefootc/iterator.h"
+
 struct mempool;
 struct bfc_mutex;
 struct l4sc_logger;
@@ -106,10 +109,6 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	int	(*resize)(strptrT s, size_t n, charT c);		\
 	size_t	(*capacity)(cstrptrT s);				\
 	int	(*reserve)(strptrT s, size_t n);			\
-	/* Element access */						\
-	charT	(*at)(cstrptrT s, size_t pos);				\
-	charT *	(*ref)(strptrT s, size_t pos);				\
-	const charT* (*data)(cstrptrT s);  /* not zero terminated */	\
 	/* Modifiers */							\
 	int	(*assign_bfstr)(strptrT s, cstrptrT s2);		\
 	int	(*assign_substr)(strptrT s, cstrptrT s2,		\
@@ -162,7 +161,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 				iterptrT i2, size_t n, charT c);	\
 	int	(*replace_ranges)(strptrT s, iterptrT i1, iterptrT i2,	\
 				iterptrT j1, iterptrT j2);		\
-	size_t	(*copy)(strptrT s, charT* s2, size_t n, size_t pos);	\
+	size_t	(*copy)(cstrptrT s, charT* s2, size_t n, size_t pos);	\
 	void	(*swap)(strptrT s, strptrT str);			\
 	/* String operations */						\
 	size_t	(*find_bfstr)(cstrptrT s, cstrptrT str, size_t pos);	\
@@ -221,9 +220,9 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	void	(*last_method)(void);
 
 #define BFC_STRING_CLASS_DEF(classptrT,strptrT,cstrptrT,charT) \
-	BFC_CLASSHDR(classptrT, strptrT, cstrptrT)			\
+	BFC_CONTAINER_CLASSHDR(classptrT, strptrT, cstrptrT, charT)	\
 	BFC_STRING_CLASS_DATA(charT)					\
-	BFC_STRING_METHODS(strptrT,cstrptrT,charT,void *)
+	BFC_STRING_METHODS(strptrT,cstrptrT,charT,bfc_iterptr_t)
 
 #define BFC_STRING_INIT_PROLOGUE(classptrT,objptrT,obj,buf,size,pool,cls)\
 	bfc_classptr_t super = (bfc_classptr_t) (cls)->super;		\
@@ -241,7 +240,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 /*
  * bfc_string_t
  */
-#define iterptrT void *
+#define iterptrT bfc_iterptr_t
 /* Allocators */
 int	bfc_init_string(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_string_bfstr(void *buf, size_t bufsize, struct mempool *pool,
@@ -325,7 +324,7 @@ int     bfc_string_replace_range_fill(bfc_strptr_t s, iterptrT i1,
 					iterptrT i2, size_t n, char c);
 int     bfc_string_replace_ranges(bfc_strptr_t s, iterptrT i1,
 					iterptrT i2, iterptrT j1, iterptrT j2);
-size_t	bfc_string_copy(bfc_strptr_t s, char* s2, size_t n, size_t pos);
+size_t	bfc_string_copy(bfc_cstrptr_t s, char* s2, size_t n, size_t pos);
 void	bfc_string_swap(bfc_strptr_t s, bfc_strptr_t str);
 
 /* String operations */
@@ -469,7 +468,7 @@ int     bfc_wstring_replace_range_fill(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, size_t n, wchar_t c);
 int     bfc_wstring_replace_ranges(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, iterptrT j1, iterptrT j2);
-size_t	bfc_wstring_copy(bfc_wstrptr_t s, wchar_t* s2, size_t n, size_t pos);
+size_t	bfc_wstring_copy(bfc_cwstrptr_t s, wchar_t* s2, size_t n, size_t pos);
 void	bfc_wstring_swap(bfc_wstrptr_t s, bfc_wstrptr_t str);
 
 /* String operations */

@@ -92,7 +92,7 @@ bfc_default_is_equal_object(bfc_cobjptr_t obj, bfc_cobjptr_t other)
 	return (obj == other);
 }
 
-int
+size_t
 bfc_default_get_object_length(bfc_cobjptr_t obj)
 {
 	return (0);

@@ -21,14 +21,152 @@
 
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "barefootc/iterator.h"
 #include "barefootc/mempool.h"
 
 #define noexcept
 
 namespace barefootc {
+	template<class stringT, class charT> class iterator {
+	public:
+		typedef size_t size_type;
+		typedef ptrdiff_t difference_type;
+
+		iterator()
+		{
+		}
+
+		iterator(const iterator& it)
+		{
+		}
+
+		iterator(const stringT *s, size_t p)
+		{
+		}
+
+		iterator(stringT *s, size_t p)
+		{
+		}
+
+		~iterator()
+		{
+		}
+
+		void operator=(const iterator& rhs)
+		{
+		}
+
+		int equals(const iterator& rhs) const
+		{
+			bfc_iterptr_t l=const_cast<bfc_iterptr_t>(&bfcit);
+			bfc_iterptr_t r=const_cast<bfc_iterptr_t>(&rhs.bfcit);
+			RETURN_METHCALL(bfc_iterator_classptr_t, &bfcit,
+					equals, (l, r), 0);
+		}
+
+		int operator==(const iterator& rhs) const
+		{
+			return (equals(rhs));
+		}
+
+		int operator!=(const iterator& rhs) const
+		{
+			return (!equals(rhs));
+		}
+
+		const charT& operator*() const
+		{
+			static charT c = 0;
+			return (c);
+		}
+		
+		charT& operator*()
+		{
+			static charT c = 0;
+			return (c);
+		}
+		
+		void advance(ptrdiff_t n)
+		{
+			VOID_METHCALL(bfc_iterator_classptr_t, &bfcit,
+					advance, (&bfcit, n));
+		}
+
+		ptrdiff_t distance(const iterator& last) const
+		{
+			bfc_iterptr_t f=const_cast<bfc_iterptr_t>(&bfcit);
+			bfc_iterptr_t l=const_cast<bfc_iterptr_t>(&last.bfcit);
+			RETURN_METHCALL(bfc_iterator_classptr_t, &bfcit,
+					distance, (f, l), 0);
+		}
+
+		iterator& operator++()
+		{
+			advance(1);
+			return (*this);
+		}
+
+		iterator operator++(int postincr)
+		{
+			iterator it(*this);
+			advance(1);
+			return (it);
+		}
+
+		iterator& operator--()
+		{
+			advance(-1);
+			return (*this);
+		}
+
+		iterator operator--(int postdecr)
+		{
+			iterator it(*this);
+			advance(-1);
+			return (it);
+		}
+
+		bfc_iterptr_t bfciter()
+		{
+			return (&bfcit);
+		}
+
+	private:
+		struct bfc_iterator bfcit;
+	};
+
+	template<class stringT, class charT>
+	int
+	operator-(const iterator<stringT,charT>& lhs,
+		  const iterator<stringT,charT>& rhs)
+	{
+		return (rhs.distance(lhs));
+	}
+
+	template<class stringT, class charT>
+	iterator<stringT,charT>
+	operator+(const iterator<stringT,charT>& iter, ptrdiff_t n)
+	{
+		iterator<stringT,charT> it(iter);
+		it.advance(n);
+		return (iter);
+	}
+
+	template<class stringT, class charT>
+	iterator<stringT,charT>
+	operator-(const iterator<stringT,charT>& iter, ptrdiff_t n)
+	{
+		iterator<stringT,charT> it(iter);
+		it.advance(-n);
+		return (iter);
+	}
+
+	/****************************************************************/
+
 	template<class charT,
 		class chrtraits = std::char_traits<charT>,
-		class Allocator = std::allocator<charT> > class basic_string {
+		class Allocator = std::allocator<charT> >
+	class basic_string {
 	public:
 		// types:
 		typedef chrtraits traits_type;
@@ -45,8 +183,7 @@ namespace barefootc {
 		//typedef typename allocator_traits<Allocator>::pointer pointer;
 		//typedef typename allocator_traits<Allocator>::const_pointer
 		//	const_pointer;
-		class iterator {
-		};
+		typedef barefootc::iterator<basic_string,charT> iterator;
 		typedef iterator const_iterator;
 		typedef std::reverse_iterator<iterator>
 			reverse_iterator;
@@ -214,7 +351,11 @@ namespace barefootc {
 
 		template<class InputIterator>
 		basic_string(InputIterator begin, InputIterator end, const Allocator& a = Allocator());
+
+#if __cplusplus >= 201103L
 		// basic_string(initializer_list<charT>, const Allocator& = Allocator());
+#endif
+
 		basic_string(const basic_string& str, const Allocator& a):
 			saved_allocator(a)
 		{
@@ -234,19 +375,52 @@ namespace barefootc {
 		// basic_string& operator=(basic_string&& str) noexcept ;
 		basic_string& operator=(const charT* s);
 		basic_string& operator=(charT c);
+#if __cplusplus >= 201103L
 		// basic_string& operator=(initializer_list<charT>);
+#endif
 		
 		// 21.4.3, iterators:
-		iterator begin() noexcept;
-		const_iterator begin() const noexcept;
-		iterator end() noexcept;
-		const_iterator end() const noexcept;
+		iterator begin() noexcept
+		{
+			barefootc::iterator<basic_string,charT> it(this,0);
+			return (it);
+		}
+
+		const_iterator begin() const noexcept
+		{
+			barefootc::iterator<basic_string,charT> it(this,0);
+			return (it);
+		}
+
+		iterator end() noexcept
+		{
+			barefootc::iterator<basic_string,charT> it(this,npos);
+			return (it);
+		}
+
+		const_iterator end() const noexcept
+		{
+			barefootc::iterator<basic_string,charT> it(this,npos);
+			return (it);
+		}
+
 		reverse_iterator rbegin() noexcept;
 		const_reverse_iterator rbegin() const noexcept;
 		reverse_iterator rend() noexcept;
 		const_reverse_iterator rend() const noexcept;
-		const_iterator cbegin() const noexcept;
-		const_iterator cend() const noexcept;
+
+		const_iterator cbegin() const noexcept
+		{
+			barefootc::iterator<basic_string,charT> it(this,0);
+			return (it);
+		}
+
+		const_iterator cend() const noexcept
+		{
+			barefootc::iterator<basic_string,charT> it(this,npos);
+			return (it);
+		}
+
 		const_reverse_iterator crbegin() const noexcept;
 		const_reverse_iterator crend() const noexcept;
 		
@@ -337,7 +511,7 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			p = VMETHCALL(&bfcstr, ref, (s, pos), NULL);
+			p = VMETHCALL(&bfcstr, data, (s, pos), NULL);
 			return (*p);
 		}
 
@@ -345,7 +519,7 @@ namespace barefootc {
 		{
 			charT *p;
 
-			p = VMETHCALL(&bfcstr, ref, (&bfcstr, pos), NULL);
+			p = VMETHCALL(&bfcstr, data, (&bfcstr, pos), NULL);
 			return (*p);
 		}
 
@@ -354,7 +528,7 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			p = VMETHCALL(&bfcstr, ref, (s, n), NULL);
+			p = VMETHCALL(&bfcstr, data, (s, n), NULL);
 			return (*p);
 		}
 
@@ -362,7 +536,7 @@ namespace barefootc {
 		{
 			charT *p;
 
-			p = VMETHCALL(&bfcstr, ref, (&bfcstr, n), NULL);
+			p = VMETHCALL(&bfcstr, data, (&bfcstr, n), NULL);
 			return (*p);
 		}
 
@@ -375,7 +549,7 @@ namespace barefootc {
 		basic_string& operator+=(const basic_string& str)
 		{
 			VOID_METHCALL(classptrT, &bfcstr,
-				append_bfstr, (&bfcstr, str));
+				append_bfstr, (&bfcstr, &str.bfcstr));
 			return(*this);
 		}
 
@@ -393,16 +567,24 @@ namespace barefootc {
 			return(*this);
 		}
 
+#if __cplusplus >= 201103L
 		// basic_string& operator+=(initializer_list<charT>);
+#endif
 
 		basic_string& append(const basic_string& str)
 		{
 			VOID_METHCALL(classptrT, &bfcstr,
-				append_bfstr, (&bfcstr, str));
+				append_bfstr, (&bfcstr, &str.bfcstr));
 			return(*this);
 		}
 
-		basic_string& append(const basic_string& str, size_type pos, size_type n);
+		basic_string& append(const basic_string& str,
+					size_type pos, size_type n = npos)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_substr, (&bfcstr, &str.bfcstr, pos, n));
+			return(*this);
+		}
 
 		basic_string& append(const charT* s, size_type n)
 		{
@@ -425,8 +607,20 @@ namespace barefootc {
 			return(*this);
 		}
 
-		template<class InputIterator> basic_string& append(InputIterator first, InputIterator last);
+		//template<class InputIterator>
+		//basic_string& append(InputIterator first, InputIterator last);
+
+		basic_string& append(const_iterator first, const_iterator last)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				append_range, (&bfcstr, first.bfciter(),
+							last.bfciter()));
+			return(*this);
+		}
+
+#if __cplusplus >= 201103L
 		// basic_string& append(initializer_list<charT>);
+#endif
 
 		void push_back(charT c)
 		{
@@ -442,7 +636,13 @@ namespace barefootc {
 		}
 
 		// basic_string& assign(basic_string&& str) noexcept;
-		basic_string& assign(const basic_string& str, size_type pos, size_type n);
+		basic_string& assign(const basic_string& str,
+					size_type pos, size_type n = npos)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				assign_substr, (&bfcstr, &str.bfcstr, pos, n));
+			return(*this);
+		}
 
 		basic_string& assign(const charT* s, size_type n)
 		{
@@ -466,16 +666,78 @@ namespace barefootc {
 		}
 
 		template<class InputIterator> basic_string& assign(InputIterator first, InputIterator last);
+#if __cplusplus >= 201103L
 		// basic_string& assign(initializer_list<charT>);
-		basic_string& insert(size_type pos1, const basic_string& str);
-		basic_string& insert(size_type pos1, const basic_string& str, size_type pos2, size_type n);
-		basic_string& insert(size_type pos, const charT* s, size_type n);
-		basic_string& insert(size_type pos, const charT* s);
-		basic_string& insert(size_type pos, size_type n, charT c);
-		iterator insert(const_iterator p, charT c);
-		iterator insert(const_iterator p, size_type n, charT c);
-		template<class InputIterator> iterator insert(const_iterator p, InputIterator first, InputIterator last);
+#endif
+		basic_string& insert(size_type pos1, const basic_string& str)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_bfstr, (&bfcstr, pos1, &str.bfcstr));
+			return(*this);
+		}
+
+		basic_string& insert(size_type pos1, const basic_string& str,
+					size_type pos2, size_type n = npos)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_substr, (&bfcstr, pos1,
+						&str.bfcstr, pos2, n));
+			return(*this);
+		}
+
+		basic_string& insert(size_type pos, const charT* s, size_type n)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_buffer, (&bfcstr, pos, s, n));
+			return(*this);
+		}
+
+		basic_string& insert(size_type pos, const charT* s)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_c_str, (&bfcstr, pos, s));
+			return(*this);
+		}
+
+		basic_string& insert(size_type pos, size_type n, charT c)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_fill, (&bfcstr, pos, n, c));
+			return(*this);
+		}
+
+		iterator insert(const_iterator p, charT c)
+		{
+			iterator it(p);
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_char, (&bfcstr, it.bfciter(), c));
+			return(it);
+		}
+
+		iterator insert(const_iterator p, size_type n, charT c)
+		{
+			iterator it(p);
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_fillit, (&bfcstr, it.bfciter(), n, c));
+			return(it);
+		}
+
+		//template<class InputIterator>
+		//iterator insert(const_iterator p,
+		//		InputIterator first, InputIterator last);
+		iterator insert(const_iterator p,
+				const_iterator first, const_iterator last)
+		{
+			iterator it(p);
+			VOID_METHCALL(classptrT, &bfcstr,
+				insert_range, (&bfcstr, it.bfciter(),
+					     first.bfciter(), last.bfciter()));
+			return(it);
+		}
+
+#if __cplusplus >= 201103L
 		// iterator insert(const_iterator p, initializer_list<charT>);
+#endif
 
 		basic_string& erase(size_type pos = 0, size_type n = npos)
 		{
@@ -484,33 +746,147 @@ namespace barefootc {
 			return (*this);
 		}
 
-		iterator erase(const_iterator p);
-		iterator erase(const_iterator first, const_iterator last);
-		void pop_back() noexcept;
-		basic_string& replace(size_type pos1, size_type n1, const basic_string& str);
-		basic_string& replace(size_type pos1, size_type n1, const basic_string& str, size_type pos2, size_type n2);
-		basic_string& replace(size_type pos, size_type n1, const charT* s, size_type n2);
-		basic_string& replace(size_type pos, size_type n1, const charT* s);
-		basic_string& replace(size_type pos, size_type n1, size_type n2, charT c);
-		basic_string& replace(const_iterator i1, const_iterator i2, const basic_string& str);
-		basic_string& replace(const_iterator i1, const_iterator i2, const charT* s, size_type n);
-		basic_string& replace(const_iterator i1, const_iterator i2, const charT* s);
-		basic_string& replace(const_iterator i1, const_iterator i2, size_type n, charT c);
-		template<class InputIterator> basic_string& replace(const_iterator i1, const_iterator i2, InputIterator j1, InputIterator j2);
+		iterator erase(const_iterator p)
+		{
+			iterator it(p);
+			VOID_METHCALL(classptrT, &bfcstr,
+					erase_char, (&bfcstr, it.bfciter()));
+			return (it);
+		}
+
+		iterator erase(const_iterator first, const_iterator last)
+		{
+			iterator f(first);
+			iterator l(last);
+			VOID_METHCALL(classptrT, &bfcstr,
+			     erase_range, (&bfcstr, f.bfciter(), l.bfciter()));
+			return (f);
+		}
+
+		void pop_back() noexcept
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+					pop_back, (&bfcstr));
+		}
+
+		basic_string& replace(size_type pos1, size_type n1,
+					const basic_string& str)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_bfstr, (&bfcstr,pos1,n1, &str.bfcstr));
+			return(*this);
+		}
+
+		basic_string& replace(size_type pos1, size_type n1,
+					const basic_string& str,
+					size_type pos2, size_type n2 = npos)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_substr, (&bfcstr, pos1, n1,
+						 &str.bfcstr, pos2, n2));
+			return(*this);
+		}
+
+		basic_string& replace(size_type pos, size_type n1,
+					const charT* s, size_type n2)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_buffer, (&bfcstr, pos, n1, s, n2));
+			return(*this);
+		}
+
+		basic_string& replace(size_type pos, size_type n1,
+					const charT* s)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_c_str, (&bfcstr, pos, n1, s));
+			return(*this);
+		}
+
+		basic_string& replace(size_type pos, size_type n1,
+					size_type n2, charT c)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_fill, (&bfcstr, pos, n1, n2, c));
+			return(*this);
+		}
+
+		basic_string& replace(const_iterator i1, const_iterator i2,
+					const basic_string& str)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_range_bfstr, (&bfcstr, 
+					i1.bfciter(), i2.bfciter(),
+					&str.bfcstr));
+			return(*this);
+		}
+
+		basic_string& replace(const_iterator i1, const_iterator i2,
+					const charT* s, size_type n)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_range_buffer, (&bfcstr,
+					i1.bfciter(), i2.bfciter(), s, n));
+			return(*this);
+		}
+
+		basic_string& replace(const_iterator i1, const_iterator i2,
+					const charT* s)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_range_c_str, (&bfcstr,
+					i1.bfciter(), i2.bfciter(), s));
+			return(*this);
+		}
+
+		basic_string& replace(const_iterator i1, const_iterator i2,
+					size_type n, charT c)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_range_fill, (&bfcstr,
+					i1.bfciter(), i2.bfciter(), n, c));
+			return(*this);
+		}
+
+		//template<class InputIterator>
+		//basic_string& replace(const_iterator i1, const_iterator i2,
+		//			InputIterator j1, InputIterator j2);
+
+		basic_string& replace(const_iterator i1, const_iterator i2,
+					const_iterator j1, const_iterator j2)
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				replace_ranges, (&bfcstr,
+					i1.bfciter(), i2.bfciter(),
+					j1.bfciter(), j2.bfciter()));
+			return(*this);
+		}
+#if __cplusplus >= 201103L
 		// basic_string& replace(const_iterator, const_iterator, initializer_list<charT>);
-		size_type copy(charT* s, size_type n, size_type pos = 0) const;
-		void swap(basic_string& str) noexcept;
+#endif
+
+		size_type copy(charT* s, size_type n, size_type pos = 0) const
+		{
+			RETURN_METHCALL(classptrT, &bfcstr,
+				      copy, (&bfcstr, s, n, pos), 0);
+		}
+
+		void swap(basic_string& str) noexcept
+		{
+			VOID_METHCALL(classptrT, &bfcstr,
+				      swap, (&bfcstr, &str.bfcstr));
+		}
 		
 		// 21.4.7, string operations:
 		const charT* c_str() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr, data, (&bfcstr),
+			RETURN_METHCALL(classptrT, &bfcstr, first, (&bfcstr),
 					bfcstr.buf);
 		}
 
 		const charT* data() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr, data, (&bfcstr),
+			RETURN_METHCALL(classptrT, &bfcstr, first, (&bfcstr),
 					bfcstr.buf);
 		}
 

@@ -9,9 +9,8 @@
 
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "barefootc/iterator.h"
 #include "log4stdc.h"
-
-#define iterptrT void *
 
 #ifndef STRING_CLASS_NAME
 #define STRING_CLASS_NAME "wstring"
@@ -42,12 +41,13 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .clonesize 	*/ bfc_wstring_objsize,
 	/* .hashcode 	*/ (void *) bfc_default_get_object_hashcode,
 	/* .equals 	*/ (void *) bfc_default_is_equal_object,
-	/* .length 	*/ (void *) bfc_wstring_length,
+	/* .length 	*/ bfc_wstring_length,
 	/* .tostring 	*/ (void *) bfc_default_object_tostring,
 	/* .dump 	*/ (void *) bfc_default_dump_object,
-	/* .spare13 	*/ NULL,
-	/* .spare14 	*/ NULL,
-	/* .spare15 	*/ NULL,
+	/* Element access */
+	/* .first	*/ bfc_wstring_data,
+	/* .data	*/ bfc_wstring_ref,
+	/* .get		*/ bfc_wstring_at,
 	/* Char traits	*/
 	/* .traits	*/ (void *) &bfc_wchar_traits_class,
 	/* Allocators 	*/
@@ -64,10 +64,6 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .resize	*/ bfc_wstring_resize,
 	/* .capacity	*/ bfc_wstring_capacity,
 	/* .reserve	*/ bfc_wstring_reserve,
-	/* Element access */
-	/* .at		*/ bfc_wstring_at,
-	/* .ref		*/ bfc_wstring_ref,
-	/* .data	*/ bfc_wstring_data,
 	/* Modifiers	*/
 	/* .assign_bfstr	*/ bfc_wstring_assign_bfstr,
 	/* .assign_substr	*/ bfc_wstring_assign_substr,
@@ -147,7 +143,7 @@ struct bfc_string_class bfc_wstring_class = {
 size_t
 bfc_wstrlen(bfc_cwstrptr_t s)
 {
-	RETURN_METHCALL(bfc_string_classptr_t, s, size, (s), 0); 
+	RETURN_METHCALL(bfc_string_classptr_t, s, length, (s), 0); 
 }
 
 wchar_t *
@@ -159,7 +155,7 @@ bfc_wstrbuf(bfc_cwstrptr_t s)
 const wchar_t *
 bfc_wstrdata(bfc_cwstrptr_t s)
 {
-	RETURN_METHCALL(bfc_string_classptr_t, s, data, (s), s->buf); 
+	RETURN_METHCALL(bfc_string_classptr_t, s, first, (s), s->buf); 
 }
 
 size_t
@@ -845,8 +841,14 @@ bfc_wstring_replace_ranges(bfc_wstrptr_t s, iterptrT i1,
 }
 
 size_t
-bfc_wstring_copy(bfc_wstrptr_t s, wchar_t* s2, size_t n, size_t pos)
+bfc_wstring_copy(bfc_cwstrptr_t s, wchar_t* s2, size_t n, size_t pos)
 {
+	const size_t len = bfc_wstring_sublen(s, pos, n);
+	if (len > 0) {
+		const wchar_t *data = bfc_wstrdata(s);
+		(*s->vptr->traits->copy)(s2, data+pos, len);
+		return (len);
+	}
 	return (0);
 }
 

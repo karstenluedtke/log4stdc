@@ -33,7 +33,7 @@ static int init_logmessage(void *, size_t, struct mempool *);
 static size_t get_logmessage_size(l4sc_logmessage_cptr_t obj);
 static unsigned get_logmessage_hashcode(l4sc_logmessage_cptr_t obj);
 static int  is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other);
-static int  get_logmessage_length(l4sc_logmessage_cptr_t obj);
+static size_t get_logmessage_length(l4sc_logmessage_cptr_t obj);
 static int  logmessage_tostring(l4sc_logmessage_cptr_t obj, char *buf, size_t bufsize);
 
 const struct l4sc_logmessage_class l4sc_logmessage_class = {
@@ -90,10 +90,10 @@ is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other)
 	return (0);
 }
 
-static int
+static size_t
 get_logmessage_length(l4sc_logmessage_cptr_t obj)
 {
-	return (obj? ((int) obj->msglen): 0);
+	return (obj? obj->msglen: 0);
 }
 
 static int

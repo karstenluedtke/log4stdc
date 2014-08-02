@@ -83,7 +83,7 @@ l4sc_default_is_equal_object(l4sc_objcptr_t obj, l4sc_objcptr_t other)
 	return (obj == other);
 }
 
-int
+size_t
 l4sc_default_get_object_length(l4sc_objcptr_t obj)
 {
 	return (0);

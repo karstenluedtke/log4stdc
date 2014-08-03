@@ -5,7 +5,7 @@
  *
  * @author    Karsten Luedtke
  *
- * @date      2014-06-26
+ * @date      2014-08-02
  *
  * Copyright (c)  2014  Karsten Luedtke, Berlin, Germany.
  */
@@ -21,12 +21,14 @@ extern "C" {
 
 #include "barefootc/object.h"
 
+#define BFC_NPOS	((size_t) -1)
+
 struct bfc_iterator_class;
 typedef const struct bfc_iterator_class *bfc_iterator_classptr_t;
 
-#define BFC_ITERATORHDR(classptrT,objectT) \
+#define BFC_ITERATORHDR(classptrT,objptrT) \
 	classptrT	vptr;	  /**< virtual methods */	\
-	objectT *	obj;					\
+	objptrT		obj;					\
 	size_t 		pos;
 
 struct bfc_iterator {
@@ -35,30 +37,36 @@ struct bfc_iterator {
 
 typedef struct bfc_iterator bfc_iterator_t;
 typedef struct bfc_iterator *bfc_iterptr_t;
+typedef const struct bfc_iterator *bfc_citerptr_t;
 
-#define BFC_ITERATOR_METHODS(iterptrT,objptrT,cobjptrT,elemT) \
+#define BFC_ITERATOR_METHODS(iterptrT,citerptrT,objptrT,cobjptrT,elemT) \
 	/* Additional allocators */					\
-	int	(*init_pos)(void *buf, size_t bufsize,			\
-				struct mempool *pool,			\
-				objptrT obj, size_t pos);		\
-	int	(*init_iter)(void *buf, size_t bufsize,			\
-				struct mempool *pool, iterptrT it);	\
-	int	(*init_move)(void *buf, size_t bufsize,			\
-				struct mempool *pool, iterptrT it);	\
+	int	(*initialize)(void *buf, size_t bufsize,		\
+					cobjptrT obj, size_t pos);	\
 	/* Iterator functions */					\
 	int	(*advance)(iterptrT it, ptrdiff_t n);			\
-	ptrdiff_t (*distance)(iterptrT first, iterptrT last);		\
+	ptrdiff_t (*distance)(citerptrT first, citerptrT last);		\
 	/* Check nothing is missing */					\
 	void	(*last_method)(void);
 
-#define BFC_ITERATOR_CLASS_DEF(classptrT,iterptrT,objptrT,cobjptrT,elemT) \
-	BFC_CONTAINER_CLASSHDR(classptrT, iterptrT, iterptrT, elemT)	\
-	BFC_ITERATOR_METHODS(iterptrT, objptrT, cobjptrT, elemT)
+#define BFC_ITERATOR_CLASS_DEF(classptrT,iterptrT,citerptrT,objptrT,cobjptrT,elemT) \
+	BFC_CONTAINER_CLASSHDR(classptrT, iterptrT, citerptrT, elemT)	\
+	BFC_ITERATOR_METHODS(iterptrT, citerptrT, objptrT, cobjptrT, elemT)
 
 struct bfc_iterator_class {
 	BFC_ITERATOR_CLASS_DEF(bfc_iterator_classptr_t,
-		bfc_iterptr_t, bfc_objptr_t, bfc_cobjptr_t, void)
+				bfc_iterptr_t, bfc_citerptr_t,
+				bfc_objptr_t, bfc_cobjptr_t, void)
 };
+
+int	bfc_init_iterator(void *buf, size_t bufsize,
+			  bfc_cobjptr_t obj, size_t pos);
+int	bfc_init_reverse_iterator(void *buf, size_t bufsize,
+			  bfc_cobjptr_t obj, size_t pos);
+void	bfc_destroy_iterator(bfc_iterptr_t it);
+size_t	bfc_iterator_objsize(bfc_citerptr_t it);
+int	bfc_iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
+size_t	bfc_iterator_length(bfc_citerptr_t it);
 
 #ifdef __cplusplus
 }	/* C++ */

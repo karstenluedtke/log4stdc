@@ -27,25 +27,45 @@
 #define noexcept
 
 namespace barefootc {
-	template<class stringT, class charT> class iterator {
+	template<class stringT, class charT>
+	class iterator {
 	public:
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
 
 		iterator()
 		{
+			bfc_init_iterator(&bfcit, sizeof(bfcit), NULL, 0);
 		}
 
 		iterator(const iterator& it)
 		{
+			bfc_init_iterator(&bfcit, sizeof(bfcit),
+					  it.bfcit.obj, it.bfcit.pos);
 		}
 
-		iterator(const stringT *s, size_t p)
+		iterator(const stringT *s, bfc_cobjptr_t bfcstr, size_t p)
 		{
+			bfc_init_iterator(&bfcit, sizeof(bfcit), bfcstr, p);
 		}
 
-		iterator(stringT *s, size_t p)
+		iterator(stringT *s, bfc_objptr_t bfcstr, size_t p)
 		{
+			bfc_init_iterator(&bfcit, sizeof(bfcit), bfcstr, p);
+		}
+
+		iterator(int reverse,
+			 const stringT *s, bfc_cobjptr_t bfcstr, size_t p)
+		{
+			bfc_init_reverse_iterator(&bfcit, sizeof(bfcit),
+								bfcstr, p);
+		}
+
+		iterator(int reverse,
+			 stringT *s, bfc_objptr_t bfcstr, size_t p)
+		{
+			bfc_init_reverse_iterator(&bfcit, sizeof(bfcit),
+								bfcstr, p);
 		}
 
 		~iterator()
@@ -185,10 +205,8 @@ namespace barefootc {
 		//	const_pointer;
 		typedef barefootc::iterator<basic_string,charT> iterator;
 		typedef iterator const_iterator;
-		typedef std::reverse_iterator<iterator>
-			reverse_iterator;
-		typedef std::reverse_iterator<const_iterator>
-			const_reverse_iterator;
+		typedef iterator reverse_iterator;
+		typedef iterator const_reverse_iterator;
 
 		static const size_type npos = -1;
 		
@@ -382,47 +400,89 @@ namespace barefootc {
 		// 21.4.3, iterators:
 		iterator begin() noexcept
 		{
-			barefootc::iterator<basic_string,charT> it(this,0);
+			barefootc::iterator<basic_string,charT>
+				it(this, (bfc_objptr_t) &this->bfcstr, 0);
 			return (it);
 		}
 
 		const_iterator begin() const noexcept
 		{
-			barefootc::iterator<basic_string,charT> it(this,0);
+			barefootc::iterator<basic_string,charT>
+				it(this, (bfc_cobjptr_t) &this->bfcstr, 0);
 			return (it);
 		}
 
 		iterator end() noexcept
 		{
-			barefootc::iterator<basic_string,charT> it(this,npos);
+			barefootc::iterator<basic_string,charT>
+				it(this, (bfc_objptr_t) &this->bfcstr, npos);
 			return (it);
 		}
 
 		const_iterator end() const noexcept
 		{
-			barefootc::iterator<basic_string,charT> it(this,npos);
+			barefootc::iterator<basic_string,charT>
+				it(this, (bfc_cobjptr_t) &this->bfcstr, npos);
 			return (it);
 		}
 
-		reverse_iterator rbegin() noexcept;
-		const_reverse_iterator rbegin() const noexcept;
-		reverse_iterator rend() noexcept;
-		const_reverse_iterator rend() const noexcept;
+		reverse_iterator rbegin() noexcept
+		{
+			barefootc::iterator<basic_string,charT>
+				it(1, this, (bfc_objptr_t) &this->bfcstr, npos);
+			return (it);
+		}
+
+		const_reverse_iterator rbegin() const noexcept
+		{
+			barefootc::iterator<basic_string,charT>
+				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
+			return (it);
+		}
+
+		reverse_iterator rend() noexcept
+		{
+			barefootc::iterator<basic_string,charT>
+				it(1, this, (bfc_objptr_t) &this->bfcstr, 0);
+			return (it);
+		}
+
+		const_reverse_iterator rend() const noexcept
+		{
+			barefootc::iterator<basic_string,charT>
+				it(1, this, (bfc_cobjptr_t) &this->bfcstr, 0);
+			return (it);
+		}
+
 
 		const_iterator cbegin() const noexcept
 		{
-			barefootc::iterator<basic_string,charT> it(this,0);
+			barefootc::iterator<basic_string,charT>
+				it(this, (bfc_cobjptr_t) &this->bfcstr, 0);
 			return (it);
 		}
 
 		const_iterator cend() const noexcept
 		{
-			barefootc::iterator<basic_string,charT> it(this,npos);
+			barefootc::iterator<basic_string,charT>
+				it(this, (bfc_cobjptr_t) &this->bfcstr, npos);
 			return (it);
 		}
 
-		const_reverse_iterator crbegin() const noexcept;
-		const_reverse_iterator crend() const noexcept;
+		const_reverse_iterator crbegin() const noexcept
+		{
+			barefootc::iterator<basic_string,charT>
+				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
+			return (it);
+		}
+
+		const_reverse_iterator crend() const noexcept
+		{
+			barefootc::iterator<basic_string,charT>
+				it(1, this, (bfc_cobjptr_t) &this->bfcstr, 0);
+			return (it);
+		}
+
 		
 		// 21.4.4, capacity:
 		size_type size() const noexcept

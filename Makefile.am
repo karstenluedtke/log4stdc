@@ -41,6 +41,7 @@ libbarefootc_a_SOURCES+= strings/basic_string.c
 libbarefootc_a_SOURCES+= strings/char_traits.c
 libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
+libbarefootc_a_SOURCES+= containers/iterator.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
 libbarefootc_a_SOURCES+= log4stdc/l4sc_logprintf.c 

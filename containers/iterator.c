@@ -12,15 +12,16 @@
 
 static int default_init_iterator(void *buf,size_t bufsize,struct mempool *pool);
 static unsigned bfc_iterator_hashcode(bfc_citerptr_t it);
+static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
 
 static const void *iterator_first(bfc_citerptr_t);
 static void *forward_data(bfc_iterptr_t, size_t pos);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
-static ptrdiff_t forward_distance(bfc_citerptr_t first, bfc_citerptr_t last);
+static ptrdiff_t forward_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
 static void *reverse_data(bfc_iterptr_t it, size_t pos);
 static int advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
-static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t last);
+static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 static void last_method(void) { }
 
 struct bfc_iterator_class bfc_forward_iterator_class = {
@@ -38,7 +39,7 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .equals 	*/ bfc_iterator_equals,
 	/* .length 	*/ bfc_iterator_length,
 	/* .tostring 	*/ (void *) bfc_default_object_tostring,
-	/* .dump 	*/ (void *) bfc_default_dump_object,
+	/* .dump 	*/ dump_iterator,
 	/* Element access */
 	/* .first	*/ iterator_first,
 	/* .data	*/ forward_data,
@@ -66,7 +67,7 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* .equals 	*/ bfc_iterator_equals,
 	/* .length 	*/ bfc_iterator_length,
 	/* .tostring 	*/ (void *) bfc_default_object_tostring,
-	/* .dump 	*/ (void *) bfc_default_dump_object,
+	/* .dump 	*/ dump_iterator,
 	/* Element access */
 	/* .first	*/ iterator_first,
 	/* .data	*/ reverse_data,
@@ -95,6 +96,9 @@ int
 bfc_init_iterator(void *buf, size_t bufsize, bfc_cobjptr_t obj, size_t pos)
 {
 	int rc;
+	l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 16);
+	L4SC_TRACE(logger, "%s(%p, %ld, %p, %ld)",
+		__FUNCTION__, buf, (long) bufsize, obj, (long) pos);
 
 	if ((rc = default_init_iterator(buf, bufsize, NULL)) == BFC_SUCCESS) {
 		bfc_iterptr_t it = (bfc_iterptr_t) buf;
@@ -109,6 +113,7 @@ bfc_init_iterator(void *buf, size_t bufsize, bfc_cobjptr_t obj, size_t pos)
 			it->pos = pos;
 		}
 	}
+	bfc_object_dump(buf, 1, logger);
 	return (rc);
 }
 
@@ -169,6 +174,16 @@ bfc_iterator_length(bfc_citerptr_t it)
 	return (1);
 }
 
+static void
+dump_iterator(bfc_citerptr_t it, int depth, struct l4sc_logger *log)
+{
+	if (it && BFC_CLASS(it)) {
+		L4SC_DEBUG(log, "%s @%p", BFC_CLASS(it)->name, it);
+		L4SC_DEBUG(log, "pos %ld in %p: %s", (long) it->pos, it->obj,
+				(it->obj && it->obj->name)? it->obj->name: "");
+	}
+}
+
 static const void *
 iterator_first(bfc_citerptr_t it)
 {
@@ -204,6 +219,8 @@ forward_data(bfc_iterptr_t it, size_t pos)
 static int
 advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 {
+	l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 16);
+	L4SC_TRACE(logger, "%s(%p, %ld)", __FUNCTION__, it, (long) n);
 	if (n > 0) {
 		size_t objlen = bfc_object_length(it->obj);
 		if (it->pos + n <= objlen) {
@@ -212,19 +229,21 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 	} else if (it->pos >= (-n)) {
 		it->pos += n;
 	}
+	bfc_object_dump(it, 1, logger);
+	return (BFC_SUCCESS);
 }
 
 static ptrdiff_t
-forward_distance(bfc_citerptr_t first, bfc_citerptr_t last)
+forward_distance(bfc_citerptr_t first, bfc_citerptr_t limit)
 {
-	if (bfc_iterator_equals(first, last)) {
+	if (bfc_iterator_equals(first, limit)) {
 		return (0);
 	}
-	if (last->obj == first->obj) {
-		if (last->pos == BFC_NPOS) {
-			return (bfc_object_length(last) - first->pos);
+	if (limit->obj == first->obj) {
+		if (limit->pos == BFC_NPOS) {
+			return (bfc_object_length(limit->obj) - first->pos);
 		}
-		return (last->pos - first->pos);
+		return (limit->pos - first->pos);
 	}
 	return (0);
 }
@@ -242,17 +261,31 @@ advance_reverse(bfc_iterptr_t it, ptrdiff_t n)
 }
 
 static ptrdiff_t
-reverse_distance(bfc_citerptr_t first, bfc_citerptr_t last)
+reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit)
 {
-	if (bfc_iterator_equals(first, last)) {
+	if (bfc_iterator_equals(first, limit)) {
 		return (0);
 	}
-	if (last->obj == first->obj) {
+	if (limit->obj == first->obj) {
 		if (first->pos == BFC_NPOS) {
-			return (last->pos - bfc_object_length(first));
+			return (limit->pos - bfc_object_length(first->obj));
 		}
-		return (last->pos - first->pos);
+		return (limit->pos - first->pos);
 	}
 	return (0);
+}
+
+size_t
+bfc_iterator_position(bfc_citerptr_t it)
+{
+	return (it->pos);
+}
+
+ptrdiff_t
+bfc_iterator_distance(bfc_citerptr_t first, bfc_citerptr_t limit)
+{
+	RETURN_METHCALL(bfc_iterator_classptr_t, first,
+			distance, (first, limit),
+			0);
 }
 

@@ -23,6 +23,7 @@
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
 #include "barefootc/mempool.h"
+#include "log4stdc.h"
 
 #define noexcept
 
@@ -35,6 +36,9 @@ namespace barefootc {
 
 		iterator()
 		{
+			l4sc_logger_ptr_t logger =
+				l4sc_get_logger("barefootc.string",16);
+			L4SC_WARN(logger, "%s()", __FUNCTION__);
 			bfc_init_iterator(&bfcit, sizeof(bfcit), NULL, 0);
 		}
 
@@ -96,14 +100,26 @@ namespace barefootc {
 
 		const charT& operator*() const
 		{
-			static charT c = 0;
-			return (c);
+			const void *p;
+			RETVAR_METHCALL(p, bfc_iterator_classptr_t, &bfcit,
+					first, (&bfcit), NULL);
+			if (p == NULL) {
+				throw(std::out_of_range("bad position"));
+			}
+			const charT *cp = (const charT *) p;
+			return (*cp);
 		}
 		
 		charT& operator*()
 		{
-			static charT c = 0;
-			return (c);
+			void *p;
+			RETVAR_METHCALL(p, bfc_iterator_classptr_t, &bfcit,
+					data, (&bfcit, 0), NULL);
+			if (p == NULL) {
+				throw(std::out_of_range("bad position"));
+			}
+			charT *cp = (charT *) p;
+			return (*cp);
 		}
 		
 		void advance(ptrdiff_t n)
@@ -169,7 +185,7 @@ namespace barefootc {
 	{
 		iterator<stringT,charT> it(iter);
 		it.advance(n);
-		return (iter);
+		return (it);
 	}
 
 	template<class stringT, class charT>
@@ -178,7 +194,7 @@ namespace barefootc {
 	{
 		iterator<stringT,charT> it(iter);
 		it.advance(-n);
-		return (iter);
+		return (it);
 	}
 
 	/****************************************************************/
@@ -644,37 +660,62 @@ namespace barefootc {
 
 		basic_string& append(const basic_string& str)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				append_bfstr, (&bfcstr, &str.bfcstr));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				append_bfstr, (&bfcstr, &str.bfcstr),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& append(const basic_string& str,
 					size_type pos, size_type n = npos)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				append_substr, (&bfcstr, &str.bfcstr, pos, n));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				append_substr, (&bfcstr, &str.bfcstr, pos, n),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& append(const charT* s, size_type n)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				append_buffer, (&bfcstr, s, n));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				append_buffer, (&bfcstr, s, n),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& append(const charT* s)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				append_c_str, (&bfcstr, s));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				append_c_str, (&bfcstr, s),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& append(size_type n, charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				append_fill, (&bfcstr, n, c));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				append_fill, (&bfcstr, n, c),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
@@ -683,9 +724,14 @@ namespace barefootc {
 
 		basic_string& append(const_iterator first, const_iterator last)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				append_range, (&bfcstr, first.bfciter(),
-							last.bfciter()));
+							last.bfciter()),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
@@ -695,14 +741,24 @@ namespace barefootc {
 
 		void push_back(charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				push_back, (&bfcstr, c));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				push_back, (&bfcstr, c),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 		}
 
 		basic_string& assign(const basic_string& str)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				assign_bfstr, (&bfcstr, &str.bfcstr));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				assign_bfstr, (&bfcstr, &str.bfcstr),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
@@ -710,29 +766,49 @@ namespace barefootc {
 		basic_string& assign(const basic_string& str,
 					size_type pos, size_type n = npos)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				assign_substr, (&bfcstr, &str.bfcstr, pos, n));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				assign_substr, (&bfcstr, &str.bfcstr, pos, n),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& assign(const charT* s, size_type n)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				assign_buffer, (&bfcstr, s, n));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				assign_buffer, (&bfcstr, s, n),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& assign(const charT* s)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				assign_c_str, (&bfcstr, s));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				assign_c_str, (&bfcstr, s),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& assign(size_type n, charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				assign_fill, (&bfcstr, n, c));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				assign_fill, (&bfcstr, n, c),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
@@ -742,54 +818,89 @@ namespace barefootc {
 #endif
 		basic_string& insert(size_type pos1, const basic_string& str)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_bfstr, (&bfcstr, pos1, &str.bfcstr));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				insert_bfstr, (&bfcstr, pos1, &str.bfcstr),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& insert(size_type pos1, const basic_string& str,
 					size_type pos2, size_type n = npos)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_substr, (&bfcstr, pos1,
-						&str.bfcstr, pos2, n));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					insert_substr, (&bfcstr, pos1,
+							&str.bfcstr, pos2, n),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& insert(size_type pos, const charT* s, size_type n)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_buffer, (&bfcstr, pos, s, n));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					insert_buffer, (&bfcstr, pos, s, n),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& insert(size_type pos, const charT* s)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_c_str, (&bfcstr, pos, s));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					insert_c_str, (&bfcstr, pos, s),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& insert(size_type pos, size_type n, charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_fill, (&bfcstr, pos, n, c));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					insert_fill, (&bfcstr, pos, n, c),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		iterator insert(const_iterator p, charT c)
 		{
 			iterator it(p);
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_char, (&bfcstr, it.bfciter(), c));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					insert_char, (&bfcstr, it.bfciter(), c),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(it);
 		}
 
 		iterator insert(const_iterator p, size_type n, charT c)
 		{
 			iterator it(p);
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_fillit, (&bfcstr, it.bfciter(), n, c));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				insert_fillit, (&bfcstr, it.bfciter(), n, c),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(it);
 		}
 
@@ -800,9 +911,14 @@ namespace barefootc {
 				const_iterator first, const_iterator last)
 		{
 			iterator it(p);
-			VOID_METHCALL(classptrT, &bfcstr,
-				insert_range, (&bfcstr, it.bfciter(),
-					     first.bfciter(), last.bfciter()));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					insert_range, (&bfcstr, it.bfciter(),
+					     first.bfciter(), last.bfciter()),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(it);
 		}
 
@@ -812,16 +928,26 @@ namespace barefootc {
 
 		basic_string& erase(size_type pos = 0, size_type n = npos)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-					erase_seq, (&bfcstr, pos, n));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					erase_seq, (&bfcstr, pos, n),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return (*this);
 		}
 
 		iterator erase(const_iterator p)
 		{
 			iterator it(p);
-			VOID_METHCALL(classptrT, &bfcstr,
-					erase_char, (&bfcstr, it.bfciter()));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					erase_char, (&bfcstr, it.bfciter()),
+					-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return (it);
 		}
 
@@ -829,13 +955,19 @@ namespace barefootc {
 		{
 			iterator f(first);
 			iterator l(last);
-			VOID_METHCALL(classptrT, &bfcstr,
-			     erase_range, (&bfcstr, f.bfciter(), l.bfciter()));
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+			     erase_range, (&bfcstr, f.bfciter(), l.bfciter()),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return (f);
 		}
 
 		void pop_back() noexcept
 		{
+			int rc;
 			VOID_METHCALL(classptrT, &bfcstr,
 					pop_back, (&bfcstr));
 		}
@@ -998,8 +1130,16 @@ namespace barefootc {
 
 		size_type copy(charT* s, size_type n, size_type pos = 0) const
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				      copy, (&bfcstr, s, n, pos), 0);
+			size_type rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+					copy, (&bfcstr, s, n, pos),
+					-ENOSYS);
+			if ((((ptrdiff_t)rc) < 0) || (rc > n)) {
+				short err = -rc;
+				rc = 0;
+				throw_replace_error(err);
+			}
+			return (rc);
 		}
 
 		void swap(basic_string& str) noexcept

@@ -421,6 +421,10 @@ bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 	const wchar_t *data = bfc_wstrdata(s2) + subpos;
 	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
 
+	if ((subpos == BFC_NPOS) || (subpos > bfc_wstrlen(s2))) {
+		return (-ERANGE);
+	}
+
 	RETURN_METHCALL(bfc_string_classptr_t, s, assign_buffer, (s,data,len),
 			bfc_wstring_assign_buffer(s, data, len));
 }
@@ -502,6 +506,10 @@ bfc_wstring_append_substr(bfc_wstrptr_t s,
 {
 	const wchar_t *data = bfc_wstrdata(s2) + subpos;
 	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
+
+	if ((subpos == BFC_NPOS) || (subpos > bfc_wstrlen(s2))) {
+		return (-ERANGE);
+	}
 
 	RETURN_METHCALL(bfc_string_classptr_t, s, append_buffer, (s,data,len),
 			bfc_wstring_append_buffer(s, data, len));
@@ -613,6 +621,10 @@ bfc_wstring_insert_substr(bfc_wstrptr_t s, size_t pos,
 	const wchar_t *data = bfc_wstrdata(s2) + subpos;
 	size_t len = bfc_wstring_sublen(s2, subpos, sublen);
 
+	if ((subpos == BFC_NPOS) || (subpos > bfc_wstrlen(s2))) {
+		return (-ERANGE);
+	}
+
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			replace_buffer, (s, pos, 0, data, len),
 			bfc_wstring_replace_buffer(s, pos, 0, data, len));
@@ -656,20 +668,46 @@ bfc_wstring_insert_fill(bfc_wstrptr_t s, size_t pos, size_t n, wchar_t c)
 int
 bfc_wstring_insert_fillit(bfc_wstrptr_t s, iterptrT p, size_t n, wchar_t c)
 {
-	return (-ENOSYS);
+	size_t pos;
+
+	if (p->obj != (bfc_objptr_t) s) {
+		return (-EFAULT);
+	}
+	pos = bfc_iterator_position(p);
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			insert_fill, (s, pos, n, c),
+			bfc_wstring_insert_fill(s, pos, n, c));
 }
 
 int
 bfc_wstring_insert_char(bfc_wstrptr_t s, iterptrT p, wchar_t c)
 {
-	return (-ENOSYS);
+	size_t pos;
+	wchar_t data[2];
+
+	if (p->obj != (bfc_objptr_t) s) {
+		return (-EFAULT);
+	}
+	pos = bfc_iterator_position(p);
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
+	data[0] = c; data[1] = '\0';
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, 0, data, 1),
+			bfc_wstring_replace_buffer(s, pos, 0, data, 1));
 }
 
 int
 bfc_wstring_insert_range(bfc_wstrptr_t s, iterptrT p,
 			 iterptrT first, iterptrT last)
 {
-	return (-ENOSYS);
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_ranges, (s, p, p, first, last),
+			bfc_wstring_replace_ranges(s, p, p, first, last));
 }
 
 int
@@ -691,13 +729,26 @@ bfc_wstring_erase_tail(bfc_wstrptr_t s, size_t pos)
 int
 bfc_wstring_erase_char(bfc_wstrptr_t s, iterptrT p)
 {
-	return (-ENOSYS);
+	size_t pos;
+
+	if (p->obj != (bfc_objptr_t) s) {
+		return (-EFAULT);
+	}
+	pos = bfc_iterator_position(p);
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, 1, NULL, 0),
+			bfc_wstring_replace_buffer(s, pos, 1, NULL, 0));
 }
 
 int
 bfc_wstring_erase_range(bfc_wstrptr_t s, iterptrT first, iterptrT last)
 {
-	return (-ENOSYS);
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_range_buffer, (s, first, last, NULL, 0),
+			bfc_wstring_replace_range_buffer(s,first,last,NULL,0));
 }
 
 void
@@ -727,6 +778,10 @@ bfc_wstring_replace_substr(bfc_wstrptr_t s,size_t pos1,size_t n1,
 {
 	const wchar_t *data = bfc_wstrdata(str) + pos2;
 	size_t len = bfc_wstring_sublen(str, pos2, n2);
+
+	if ((pos2 == BFC_NPOS) || (pos2 > bfc_wstrlen(str))) {
+		return (-ERANGE);
+	}
 
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			replace_buffer, (s, pos1, n1, data, len),
@@ -814,41 +869,98 @@ int
 bfc_wstring_replace_range_bfstr(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, bfc_cwstrptr_t s2)
 {
-	return (-ENOSYS);
+	const wchar_t *data = bfc_wstrdata(s2);
+	size_t len = bfc_wstrlen(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_range_buffer, (s, i1, i2, data, len),
+			bfc_wstring_replace_range_buffer(s, i1, i2, data, len));
 }
 
 int
 bfc_wstring_replace_range_buffer(bfc_wstrptr_t s, iterptrT i1,
 				iterptrT i2, const wchar_t* s2, size_t n)
 {
-	return (-ENOSYS);
+	size_t pos;
+	ptrdiff_t k;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	
+	if ((i1->obj != (bfc_objptr_t) s) || (i2->obj != (bfc_objptr_t) s)) {
+		return (-EFAULT);
+	}
+	pos = bfc_iterator_position(i1);
+	if ((k = bfc_iterator_distance(i1, i2)) < 0) {
+		return (-EINVAL);
+	}
+	L4SC_DEBUG(logger,"%s: pos %ld, k %ld",__FUNCTION__,(long)pos,(long)k);
+	bfc_object_dump(i1, 1, logger);
+	bfc_object_dump(i2, 1, logger);
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, k, s2, n),
+			bfc_wstring_replace_buffer(s, pos, k, s2, n));
 }
 
 int
 bfc_wstring_replace_range_c_str(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, const wchar_t* s2)
 {
-	return (-ENOSYS);
+	size_t n = (*s->vptr->traits->szlen)(s2);
+
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_range_buffer, (s, i1, i2, s2, n),
+			bfc_wstring_replace_range_buffer(s, i1, i2, s2, n));
 }
 
 int
 bfc_wstring_replace_range_fill(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, size_t n, wchar_t c)
 {
-	return (-ENOSYS);
+	wchar_t *data = alloca(4*n+1);
+	if (n > 0) {
+		(*s->vptr->traits->assign)(data, n, c);
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_range_buffer, (s, i1, i2, data, n),
+			bfc_wstring_replace_range_buffer(s, i1, i2, data, n));
 }
 
 int
-bfc_wstring_replace_ranges(bfc_wstrptr_t s, iterptrT i1,
-					iterptrT i2, iterptrT j1, iterptrT j2)
+bfc_wstring_replace_ranges(bfc_wstrptr_t s, iterptrT i1, iterptrT i2,
+					    iterptrT j1, iterptrT j2)
 {
-	return (-ENOSYS);
+	wchar_t *data;
+	const wchar_t *cp;
+	size_t n = 0;
+	ptrdiff_t d = bfc_iterator_distance(j1, j2);
+	bfc_iterator_t it;
+
+	if (d < 0) {
+		return (-EINVAL);
+	}
+	data = alloca(4*d+20);
+	bfc_clone_object(j1, &it, sizeof(it)); 
+	while ((n < (size_t) d) && !bfc_iterator_equals(&it, j2)) {
+		RETVAR_METHCALL(cp, bfc_iterator_classptr_t, &it,
+				first, (&it), NULL);
+		if (cp) {
+			data[n++] = *cp;
+		} else {
+			break;
+		}
+		VOID_METHCALL(bfc_iterator_classptr_t, &it, advance, (&it, 1));
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_range_buffer, (s, i1, i2, data, n),
+			bfc_wstring_replace_range_buffer(s, i1, i2, data, n));
 }
 
 size_t
 bfc_wstring_copy(bfc_cwstrptr_t s, wchar_t* s2, size_t n, size_t pos)
 {
 	const size_t len = bfc_wstring_sublen(s, pos, n);
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return ((size_t) -ERANGE);
+	}
 	if (len > 0) {
 		const wchar_t *data = bfc_wstrdata(s);
 		(*s->vptr->traits->copy)(s2, data+pos, len);

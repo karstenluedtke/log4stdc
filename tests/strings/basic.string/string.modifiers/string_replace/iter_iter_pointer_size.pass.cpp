@@ -1,4 +1,5 @@
 #include "tests/strings/cxxwrapper.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -948,6 +949,7 @@ void test8()
 
 int main()
 {
+  l4sc_configure_from_xml_file("log4j.xml");
     {
     typedef barefootc::basic_string<char> S;
     test0<S>();

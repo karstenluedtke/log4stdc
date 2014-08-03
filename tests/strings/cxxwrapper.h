@@ -255,6 +255,17 @@ namespace barefootc {
 			}
 		}
 
+		static void throw_replace_error(int rc)
+		{
+			switch (rc) {
+			case ERANGE:
+				throw(std::out_of_range("bad position"));
+				return;
+			default:
+				throw(std::runtime_error("substr error " + rc));
+			}
+		}
+
 		static int
 		init_string(void *buf, size_t bufsize,
 			    const char *s, size_t n)
@@ -832,8 +843,14 @@ namespace barefootc {
 		basic_string& replace(size_type pos1, size_type n1,
 					const basic_string& str)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				replace_bfstr, (&bfcstr,pos1,n1, &str.bfcstr));
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				replace_bfstr, (&bfcstr,pos1,n1, &str.bfcstr),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
@@ -841,70 +858,118 @@ namespace barefootc {
 					const basic_string& str,
 					size_type pos2, size_type n2 = npos)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				replace_substr, (&bfcstr, pos1, n1,
-						 &str.bfcstr, pos2, n2));
+						 &str.bfcstr, pos2, n2),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& replace(size_type pos, size_type n1,
 					const charT* s, size_type n2)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				replace_buffer, (&bfcstr, pos, n1, s, n2));
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				replace_buffer, (&bfcstr, pos, n1, s, n2),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& replace(size_type pos, size_type n1,
 					const charT* s)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				replace_c_str, (&bfcstr, pos, n1, s));
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				replace_c_str, (&bfcstr, pos, n1, s),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& replace(size_type pos, size_type n1,
 					size_type n2, charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				replace_fill, (&bfcstr, pos, n1, n2, c));
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				replace_fill, (&bfcstr, pos, n1, n2, c),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& replace(const_iterator i1, const_iterator i2,
 					const basic_string& str)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				replace_range_bfstr, (&bfcstr, 
 					i1.bfciter(), i2.bfciter(),
-					&str.bfcstr));
+					&str.bfcstr),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& replace(const_iterator i1, const_iterator i2,
 					const charT* s, size_type n)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				replace_range_buffer, (&bfcstr,
-					i1.bfciter(), i2.bfciter(), s, n));
+					i1.bfciter(), i2.bfciter(), s, n),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& replace(const_iterator i1, const_iterator i2,
 					const charT* s)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				replace_range_c_str, (&bfcstr,
-					i1.bfciter(), i2.bfciter(), s));
+					i1.bfciter(), i2.bfciter(), s),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
 		basic_string& replace(const_iterator i1, const_iterator i2,
 					size_type n, charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				replace_range_fill, (&bfcstr,
-					i1.bfciter(), i2.bfciter(), n, c));
+					i1.bfciter(), i2.bfciter(), n, c),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 
@@ -915,10 +980,16 @@ namespace barefootc {
 		basic_string& replace(const_iterator i1, const_iterator i2,
 					const_iterator j1, const_iterator j2)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
+			int rc;
+
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
 				replace_ranges, (&bfcstr,
 					i1.bfciter(), i2.bfciter(),
-					j1.bfciter(), j2.bfciter()));
+					j1.bfciter(), j2.bfciter()),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
 			return(*this);
 		}
 #if __cplusplus >= 201103L

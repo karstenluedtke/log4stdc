@@ -192,6 +192,7 @@ struct bfc_classhdr {
 int  bfc_new(void **, bfc_classptr_t, struct mempool *);
 int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
 int  bfc_clone_object(const void *, void *, size_t);
+int  bfc_swap_objects(void *, void *);
 void bfc_destroy(void *);
 void bfc_delete(void *);
 

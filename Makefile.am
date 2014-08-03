@@ -23,6 +23,7 @@ libbarefootc_a_SOURCES = barefootc/baseobject.c
 libbarefootc_a_SOURCES+= barefootc/bfc_new_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_init_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_clone_object.c
+libbarefootc_a_SOURCES+= barefootc/bfc_swap_objects.c
 libbarefootc_a_SOURCES+= barefootc/bfc_destroy_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_delete_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_object_size.c

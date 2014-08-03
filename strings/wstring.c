@@ -102,7 +102,7 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .replace_range_fill	*/ bfc_wstring_replace_range_fill,
 	/* .replace_ranges	*/ bfc_wstring_replace_ranges,
 	/* .copy		*/ bfc_wstring_copy,
-	/* .swap		*/ bfc_wstring_swap,
+	/* .swap		*/ (void *) bfc_swap_objects,
 
 	/* String operations */
 	/* .find_bfstr		*/ bfc_wstring_find_bfstr,
@@ -737,6 +737,7 @@ int
 bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos, size_t n1,
 			   const wchar_t* s2, size_t n2)
 {
+	const size_t len = bfc_wstrlen(s);
 	size_t nkill = bfc_wstring_sublen(s, pos, n1);
 	size_t ntail = 0;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
@@ -745,13 +746,17 @@ bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos, size_t n1,
 	L4SC_TRACE(logger, "%s(%p, %ld, %ld, %p, %ld)",
 		__FUNCTION__, s, (long) pos, (long) n1, s2, (long) n2);
 
+	if ((pos == BFC_NPOS) || (pos > len)) {
+		L4SC_ERROR(logger, "%s: pos %ld behind len %ld",
+			__FUNCTION__, (long) pos, (long) len);
+		return (-ERANGE);
+	}
 	if ((n2 > nkill)
 	 && ((rc = bfc_wstr_reserve(s, s->len + n2 - nkill)) != BFC_SUCCESS)) {
 		L4SC_ERROR(logger, "%s: no space for %ld-%ld+%ld characters",
 			__FUNCTION__, (long) s->len, (long) nkill, (long) n2);
 		return (rc);
 	} else {
-		const size_t len = bfc_wstrlen(s);
 		wchar_t *data = bfc_wstrbuf(s);
 		wchar_t *dest = data + len;
 		wchar_t *tail = data + len;
@@ -850,11 +855,6 @@ bfc_wstring_copy(bfc_cwstrptr_t s, wchar_t* s2, size_t n, size_t pos)
 		return (len);
 	}
 	return (0);
-}
-
-void
-bfc_wstring_swap(bfc_wstrptr_t s, bfc_wstrptr_t str)
-{
 }
 
 

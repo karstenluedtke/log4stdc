@@ -125,6 +125,10 @@ bfc_init_reverse_iterator(void *buf,size_t bufsize,bfc_cobjptr_t obj,size_t pos)
 
 	rc = bfc_init_iterator(buf, bufsize, obj, pos);
 	it->vptr = &bfc_reverse_iterator_class;
+	if (pos == BFC_NPOS) {
+		it->pos = pos; /* reverse end iterator */
+	}
+	return (rc);
 }
 
 void
@@ -221,13 +225,22 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 16);
 	L4SC_TRACE(logger, "%s(%p, %ld)", __FUNCTION__, it, (long) n);
+
 	if (n > 0) {
 		size_t objlen = bfc_object_length(it->obj);
-		if (it->pos + n <= objlen) {
+		if (it->pos == BFC_NPOS) {
+			it->pos = (n <= objlen)? (n-1): objlen;
+		} else if (it->pos + n <= objlen) {
 			it->pos += n;
+		} else {
+			it->pos = objlen;
 		}
-	} else if (it->pos >= (-n)) {
-		it->pos += n;
+	} else if (n < 0) {
+		if ((it->pos != BFC_NPOS) && (it->pos >= (-n))) {
+			it->pos += n;
+		} else {
+			it->pos = BFC_NPOS;
+		}
 	}
 	bfc_object_dump(it, 1, logger);
 	return (BFC_SUCCESS);
@@ -268,9 +281,12 @@ reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit)
 	}
 	if (limit->obj == first->obj) {
 		if (first->pos == BFC_NPOS) {
-			return (limit->pos - bfc_object_length(first->obj));
+			return (bfc_object_length(first->obj) - limit->pos);
 		}
-		return (limit->pos - first->pos);
+		if (limit->pos == BFC_NPOS) {
+			return (first->pos + 1);
+		}
+		return (first->pos - limit->pos);
 	}
 	return (0);
 }

@@ -455,29 +455,33 @@ namespace barefootc {
 
 		reverse_iterator rbegin() noexcept
 		{
+			size_t n = length();
+			size_t pos = (n > 0)? (n-1): npos;
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_objptr_t) &this->bfcstr, npos);
+				it(1, this, (bfc_objptr_t) &this->bfcstr, pos);
 			return (it);
 		}
 
 		const_reverse_iterator rbegin() const noexcept
 		{
+			size_t n = length();
+			size_t pos = (n > 0)? (n-1): npos;
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
+				it(1, this, (bfc_cobjptr_t)&this->bfcstr, pos);
 			return (it);
 		}
 
 		reverse_iterator rend() noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_objptr_t) &this->bfcstr, 0);
+				it(1, this, (bfc_objptr_t) &this->bfcstr, npos);
 			return (it);
 		}
 
 		const_reverse_iterator rend() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t) &this->bfcstr, 0);
+				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
 			return (it);
 		}
 
@@ -498,15 +502,17 @@ namespace barefootc {
 
 		const_reverse_iterator crbegin() const noexcept
 		{
+			size_t n = length();
+			size_t pos = (n > 0)? (n-1): npos;
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
+				it(1, this, (bfc_cobjptr_t)&this->bfcstr, pos);
 			return (it);
 		}
 
 		const_reverse_iterator crend() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t) &this->bfcstr, 0);
+				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
 			return (it);
 		}
 
@@ -627,10 +633,28 @@ namespace barefootc {
 			return (*p);
 		}
 
-		const charT& front() const noexcept;
-		charT& front() noexcept;
-		const charT& back() const noexcept;
-		charT& back() noexcept;
+		const charT& front() const noexcept
+		{
+			return at(0);
+		}
+
+		charT& front() noexcept
+		{
+			return at(0);
+		}
+
+		const charT& back() const noexcept
+		{
+			size_t n = length();
+			return at((n > 0)? (n-1): 0);
+		}
+
+		charT& back() noexcept
+		{
+			size_t n = length();
+			return at((n > 0)? (n-1): 0);
+		}
+
 		
 		// 21.4.6, modifiers:
 		basic_string& operator+=(const basic_string& str)

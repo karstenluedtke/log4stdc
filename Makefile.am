@@ -1307,102 +1307,102 @@ TESTS += tests/strings/basic.string/string.modifiers/string_append/pointer.pass
 #tests_strings_basic_string_string_nonmembers_string_special_swap_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/strings/basic.string/string.nonmembers/string.special/swap.pass
 #
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_8.pass
-#tests_strings_basic_string_string_iterators_db_iterators_8_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_8.pass.cpp
-#tests_strings_basic_string_string_iterators_db_iterators_8_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_db_iterators_8_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/db_iterators_8.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/end.pass
-#tests_strings_basic_string_string_iterators_end_pass_SOURCES = tests/strings/basic.string/string.iterators/end.pass.cpp
-#tests_strings_basic_string_string_iterators_end_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_end_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/end.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/crend.pass
-#tests_strings_basic_string_string_iterators_crend_pass_SOURCES = tests/strings/basic.string/string.iterators/crend.pass.cpp
-#tests_strings_basic_string_string_iterators_crend_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_crend_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/crend.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_3.pass
-#tests_strings_basic_string_string_iterators_db_iterators_3_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_3.pass.cpp
-#tests_strings_basic_string_string_iterators_db_iterators_3_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_db_iterators_3_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/db_iterators_3.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_6.pass
-#tests_strings_basic_string_string_iterators_db_iterators_6_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_6.pass.cpp
-#tests_strings_basic_string_string_iterators_db_iterators_6_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_db_iterators_6_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/db_iterators_6.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_4.pass
-#tests_strings_basic_string_string_iterators_db_iterators_4_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_4.pass.cpp
-#tests_strings_basic_string_string_iterators_db_iterators_4_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_db_iterators_4_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/db_iterators_4.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/rend.pass
-#tests_strings_basic_string_string_iterators_rend_pass_SOURCES = tests/strings/basic.string/string.iterators/rend.pass.cpp
-#tests_strings_basic_string_string_iterators_rend_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_rend_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/rend.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/cbegin.pass
-#tests_strings_basic_string_string_iterators_cbegin_pass_SOURCES = tests/strings/basic.string/string.iterators/cbegin.pass.cpp
-#tests_strings_basic_string_string_iterators_cbegin_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_cbegin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/cbegin.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_7.pass
-#tests_strings_basic_string_string_iterators_db_iterators_7_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_7.pass.cpp
-#tests_strings_basic_string_string_iterators_db_iterators_7_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_db_iterators_7_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/db_iterators_7.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/cend.pass
-#tests_strings_basic_string_string_iterators_cend_pass_SOURCES = tests/strings/basic.string/string.iterators/cend.pass.cpp
-#tests_strings_basic_string_string_iterators_cend_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_cend_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/cend.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_5.pass
-#tests_strings_basic_string_string_iterators_db_iterators_5_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_5.pass.cpp
-#tests_strings_basic_string_string_iterators_db_iterators_5_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_db_iterators_5_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/db_iterators_5.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/begin.pass
-#tests_strings_basic_string_string_iterators_begin_pass_SOURCES = tests/strings/basic.string/string.iterators/begin.pass.cpp
-#tests_strings_basic_string_string_iterators_begin_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_begin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/begin.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_2.pass
-#tests_strings_basic_string_string_iterators_db_iterators_2_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_2.pass.cpp
-#tests_strings_basic_string_string_iterators_db_iterators_2_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_db_iterators_2_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/db_iterators_2.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/iterators.pass
-#tests_strings_basic_string_string_iterators_iterators_pass_SOURCES = tests/strings/basic.string/string.iterators/iterators.pass.cpp
-#tests_strings_basic_string_string_iterators_iterators_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_iterators_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/iterators.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/rbegin.pass
-#tests_strings_basic_string_string_iterators_rbegin_pass_SOURCES = tests/strings/basic.string/string.iterators/rbegin.pass.cpp
-#tests_strings_basic_string_string_iterators_rbegin_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_rbegin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/rbegin.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.iterators/crbegin.pass
-#tests_strings_basic_string_string_iterators_crbegin_pass_SOURCES = tests/strings/basic.string/string.iterators/crbegin.pass.cpp
-#tests_strings_basic_string_string_iterators_crbegin_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_iterators_crbegin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.iterators/crbegin.pass
-#
+check_PROGRAMS += tests/strings/basic.string/string.iterators/begin.pass
+tests_strings_basic_string_string_iterators_begin_pass_SOURCES = tests/strings/basic.string/string.iterators/begin.pass.cpp
+tests_strings_basic_string_string_iterators_begin_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_begin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/begin.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/end.pass
+tests_strings_basic_string_string_iterators_end_pass_SOURCES = tests/strings/basic.string/string.iterators/end.pass.cpp
+tests_strings_basic_string_string_iterators_end_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_end_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/end.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/iterators.pass
+tests_strings_basic_string_string_iterators_iterators_pass_SOURCES = tests/strings/basic.string/string.iterators/iterators.pass.cpp
+tests_strings_basic_string_string_iterators_iterators_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_iterators_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/iterators.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_2.pass
+tests_strings_basic_string_string_iterators_db_iterators_2_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_2.pass.cpp
+tests_strings_basic_string_string_iterators_db_iterators_2_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_db_iterators_2_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/db_iterators_2.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_3.pass
+tests_strings_basic_string_string_iterators_db_iterators_3_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_3.pass.cpp
+tests_strings_basic_string_string_iterators_db_iterators_3_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_db_iterators_3_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/db_iterators_3.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_4.pass
+tests_strings_basic_string_string_iterators_db_iterators_4_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_4.pass.cpp
+tests_strings_basic_string_string_iterators_db_iterators_4_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_db_iterators_4_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/db_iterators_4.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_5.pass
+tests_strings_basic_string_string_iterators_db_iterators_5_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_5.pass.cpp
+tests_strings_basic_string_string_iterators_db_iterators_5_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_db_iterators_5_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/db_iterators_5.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_6.pass
+tests_strings_basic_string_string_iterators_db_iterators_6_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_6.pass.cpp
+tests_strings_basic_string_string_iterators_db_iterators_6_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_db_iterators_6_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/db_iterators_6.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_7.pass
+tests_strings_basic_string_string_iterators_db_iterators_7_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_7.pass.cpp
+tests_strings_basic_string_string_iterators_db_iterators_7_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_db_iterators_7_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/db_iterators_7.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/db_iterators_8.pass
+tests_strings_basic_string_string_iterators_db_iterators_8_pass_SOURCES = tests/strings/basic.string/string.iterators/db_iterators_8.pass.cpp
+tests_strings_basic_string_string_iterators_db_iterators_8_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_db_iterators_8_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/db_iterators_8.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/cbegin.pass
+tests_strings_basic_string_string_iterators_cbegin_pass_SOURCES = tests/strings/basic.string/string.iterators/cbegin.pass.cpp
+tests_strings_basic_string_string_iterators_cbegin_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_cbegin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/cbegin.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/cend.pass
+tests_strings_basic_string_string_iterators_cend_pass_SOURCES = tests/strings/basic.string/string.iterators/cend.pass.cpp
+tests_strings_basic_string_string_iterators_cend_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_cend_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/cend.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/rbegin.pass
+tests_strings_basic_string_string_iterators_rbegin_pass_SOURCES = tests/strings/basic.string/string.iterators/rbegin.pass.cpp
+tests_strings_basic_string_string_iterators_rbegin_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_rbegin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/rbegin.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/rend.pass
+tests_strings_basic_string_string_iterators_rend_pass_SOURCES = tests/strings/basic.string/string.iterators/rend.pass.cpp
+tests_strings_basic_string_string_iterators_rend_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_rend_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/rend.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/crbegin.pass
+tests_strings_basic_string_string_iterators_crbegin_pass_SOURCES = tests/strings/basic.string/string.iterators/crbegin.pass.cpp
+tests_strings_basic_string_string_iterators_crbegin_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_crbegin_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/crbegin.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.iterators/crend.pass
+tests_strings_basic_string_string_iterators_crend_pass_SOURCES = tests/strings/basic.string/string.iterators/crend.pass.cpp
+tests_strings_basic_string_string_iterators_crend_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_iterators_crend_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.iterators/crend.pass
+
 #check_PROGRAMS += tests/strings/basic.string/types.pass
 #tests_strings_basic_string_types_pass_SOURCES = tests/strings/basic.string/types.pass.cpp
 #tests_strings_basic_string_types_pass_LDADD = libbarefootc.a liblog4stdc.a

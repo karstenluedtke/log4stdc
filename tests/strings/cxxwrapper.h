@@ -78,6 +78,8 @@ namespace barefootc {
 
 		void operator=(const iterator& rhs)
 		{
+			VOID_METHCALL(bfc_iterator_classptr_t, &rhs.bfcit,
+				clone, (&rhs.bfcit, &bfcit, sizeof(bfcit)));
 		}
 
 		int equals(const iterator& rhs) const
@@ -307,6 +309,20 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const char *s,
+			    const basic_string& str, size_t pos, size_t n)
+		{
+			int rc;
+			rc = bfc_init_basic_string_substr(buf, bufsize,
+					(bfc_cstrptr_t) &str.bfcstr, pos, n);
+			if (rc < 0) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
 			    const wchar_t *s, size_t n)
 		{
 			return bfc_init_wstring_buffer(buf, bufsize, 0, s, n);
@@ -328,6 +344,20 @@ namespace barefootc {
 								pool, n, c);
 		}
 
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const wchar_t *s,
+			    const basic_string& str, size_t pos, size_t n)
+		{
+			int rc;
+			rc = bfc_init_basic_wstring_substr(buf, bufsize,
+					(bfc_cwstrptr_t) &str.bfcstr, pos, n);
+			if (rc < 0) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
+		}
+
 	public:
 		// 21.4.2, construct/copy/destroy:
 		basic_string(): saved_allocator()
@@ -342,7 +372,8 @@ namespace barefootc {
 				get_stdc_mempool(), bfcstr.buf, 0);
 		}
 
-		basic_string(const basic_string& str): saved_allocator()
+		basic_string(const basic_string& str):
+			saved_allocator(str.saved_allocator)
 		{
 			const charT *s = str.data();
 			const size_t n = str.size();
@@ -350,8 +381,34 @@ namespace barefootc {
 					get_stdc_mempool(), s, n);
 		}
 
+#if __cplusplus >= 201103L
 		//basic_string(basic_string&& str) noexcept;
-		basic_string(const basic_string& str, size_type pos, size_type n = npos, const Allocator& a = Allocator());
+#endif
+
+		basic_string(const basic_string& str,
+			size_type pos, size_type n = npos): saved_allocator()
+		{
+			const charT *s = str.data();
+			init_string(&bfcstr, sizeof(bfcstr),
+				    get_stdc_mempool(), s, str, pos, n);
+		}
+
+		basic_string(const basic_string& str,
+			size_type pos, size_type n,
+			const Allocator& a): saved_allocator(a)
+		{
+			const charT *s = str.data();
+			init_string(&bfcstr, sizeof(bfcstr),
+				    get_stdc_mempool(), s, str, pos, n);
+		}
+
+		basic_string(const basic_string& str,
+			size_type pos, const Allocator& a): saved_allocator(a)
+		{
+			const charT *s = str.data();
+			init_string(&bfcstr, sizeof(bfcstr),
+				    get_stdc_mempool(), s, str, pos, npos);
+		}
 
 		basic_string(const charT* s, size_type n):
 			saved_allocator()
@@ -394,8 +451,8 @@ namespace barefootc {
 				get_stdc_mempool(), n, c);
 		}
 
-		template<class InputIterator>
-		basic_string(InputIterator begin, InputIterator end, const Allocator& a = Allocator());
+		//template<class InputIterator>
+		//basic_string(InputIterator begin, InputIterator end, const Allocator& a = Allocator());
 
 #if __cplusplus >= 201103L
 		// basic_string(initializer_list<charT>, const Allocator& = Allocator());
@@ -416,11 +473,23 @@ namespace barefootc {
 		{
 		}
 
-		basic_string& operator=(const basic_string& str);
-		// basic_string& operator=(basic_string&& str) noexcept ;
-		basic_string& operator=(const charT* s);
-		basic_string& operator=(charT c);
+		basic_string& operator=(const basic_string& str)
+		{
+			return assign(str);
+		}
+
+		basic_string& operator=(const charT* s)
+		{
+			return assign(s);
+		}
+
+		basic_string& operator=(charT c)
+		{
+			return assign(1, c);
+		}
+
 #if __cplusplus >= 201103L
+		// basic_string& operator=(basic_string&& str) noexcept ;
 		// basic_string& operator=(initializer_list<charT>);
 #endif
 		
@@ -604,7 +673,8 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			p = VMETHCALL(&bfcstr, data, (s, pos), NULL);
+			RETVAR_METHCALL(p, classptrT, &bfcstr,
+					data, (s, pos), NULL);
 			return (*p);
 		}
 
@@ -612,7 +682,8 @@ namespace barefootc {
 		{
 			charT *p;
 
-			p = VMETHCALL(&bfcstr, data, (&bfcstr, pos), NULL);
+			RETVAR_METHCALL(p, classptrT, &bfcstr,
+					data, (&bfcstr, pos), NULL);
 			return (*p);
 		}
 
@@ -621,7 +692,11 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			p = VMETHCALL(&bfcstr, data, (s, n), NULL);
+			RETVAR_METHCALL(p, classptrT, &bfcstr,
+					data, (s, n), NULL);
+			if ((p == NULL) || (n >= length())) {
+				throw(std::out_of_range("bad position"));
+			}
 			return (*p);
 		}
 
@@ -629,7 +704,11 @@ namespace barefootc {
 		{
 			charT *p;
 
-			p = VMETHCALL(&bfcstr, data, (&bfcstr, n), NULL);
+			RETVAR_METHCALL(p, classptrT, &bfcstr,
+					data, (&bfcstr, n), NULL);
+			if ((p == NULL) || (n >= length())) {
+				throw(std::out_of_range("bad position"));
+			}
 			return (*p);
 		}
 

@@ -1408,187 +1408,187 @@ TESTS += tests/strings/basic.string/string.iterators/crend.pass
 #tests_strings_basic_string_types_pass_LDADD = libbarefootc.a liblog4stdc.a
 #tests_strings_basic_string_types_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/strings/basic.string/types.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/pointer_size_alloc.pass
-#tests_strings_basic_string_string_cons_pointer_size_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/pointer_size_alloc.pass.cpp
-#tests_strings_basic_string_string_cons_pointer_size_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_pointer_size_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/pointer_size_alloc.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/pointer_assignment.pass
-#tests_strings_basic_string_string_cons_pointer_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/pointer_assignment.pass.cpp
-#tests_strings_basic_string_string_cons_pointer_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_pointer_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/pointer_assignment.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/initializer_list_assignment.pass
-#tests_strings_basic_string_string_cons_initializer_list_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/initializer_list_assignment.pass.cpp
-#tests_strings_basic_string_string_cons_initializer_list_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_initializer_list_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/initializer_list_assignment.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/copy_assignment.pass
-#tests_strings_basic_string_string_cons_copy_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/copy_assignment.pass.cpp
-#tests_strings_basic_string_string_cons_copy_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_copy_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/copy_assignment.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/move.pass
-#tests_strings_basic_string_string_cons_move_pass_SOURCES = tests/strings/basic.string/string.cons/move.pass.cpp
-#tests_strings_basic_string_string_cons_move_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_move_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/move.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/copy.pass
-#tests_strings_basic_string_string_cons_copy_pass_SOURCES = tests/strings/basic.string/string.cons/copy.pass.cpp
-#tests_strings_basic_string_string_cons_copy_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_copy_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/copy.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/alloc.pass
-#tests_strings_basic_string_string_cons_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/alloc.pass.cpp
-#tests_strings_basic_string_string_cons_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/alloc.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/move_assign_noexcept.pass
-#tests_strings_basic_string_string_cons_move_assign_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/move_assign_noexcept.pass.cpp
-#tests_strings_basic_string_string_cons_move_assign_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_move_assign_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/move_assign_noexcept.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/initializer_list.pass
-#tests_strings_basic_string_string_cons_initializer_list_pass_SOURCES = tests/strings/basic.string/string.cons/initializer_list.pass.cpp
-#tests_strings_basic_string_string_cons_initializer_list_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_initializer_list_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/initializer_list.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/iter_alloc.pass
-#tests_strings_basic_string_string_cons_iter_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/iter_alloc.pass.cpp
-#tests_strings_basic_string_string_cons_iter_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_iter_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/iter_alloc.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/char_assignment.pass
-#tests_strings_basic_string_string_cons_char_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/char_assignment.pass.cpp
-#tests_strings_basic_string_string_cons_char_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_char_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/char_assignment.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/pointer_alloc.pass
-#tests_strings_basic_string_string_cons_pointer_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/pointer_alloc.pass.cpp
-#tests_strings_basic_string_string_cons_pointer_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_pointer_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/pointer_alloc.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/move_noexcept.pass
-#tests_strings_basic_string_string_cons_move_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/move_noexcept.pass.cpp
-#tests_strings_basic_string_string_cons_move_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_move_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/move_noexcept.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/move_assignment.pass
-#tests_strings_basic_string_string_cons_move_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/move_assignment.pass.cpp
-#tests_strings_basic_string_string_cons_move_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_move_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/move_assignment.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/dtor_noexcept.pass
-#tests_strings_basic_string_string_cons_dtor_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/dtor_noexcept.pass.cpp
-#tests_strings_basic_string_string_cons_dtor_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_dtor_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/dtor_noexcept.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/move_alloc.pass
-#tests_strings_basic_string_string_cons_move_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/move_alloc.pass.cpp
-#tests_strings_basic_string_string_cons_move_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_move_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/move_alloc.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/size_char_alloc.pass
-#tests_strings_basic_string_string_cons_size_char_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/size_char_alloc.pass.cpp
-#tests_strings_basic_string_string_cons_size_char_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_size_char_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/size_char_alloc.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/substr.pass
-#tests_strings_basic_string_string_cons_substr_pass_SOURCES = tests/strings/basic.string/string.cons/substr.pass.cpp
-#tests_strings_basic_string_string_cons_substr_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_substr_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/substr.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/default_noexcept.pass
-#tests_strings_basic_string_string_cons_default_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/default_noexcept.pass.cpp
-#tests_strings_basic_string_string_cons_default_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_default_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/default_noexcept.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.cons/copy_alloc.pass
-#tests_strings_basic_string_string_cons_copy_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/copy_alloc.pass.cpp
-#tests_strings_basic_string_string_cons_copy_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_cons_copy_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.cons/copy_alloc.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/back.pass
-#tests_strings_basic_string_string_access_back_pass_SOURCES = tests/strings/basic.string/string.access/back.pass.cpp
-#tests_strings_basic_string_string_access_back_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_back_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/back.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/at.pass
-#tests_strings_basic_string_string_access_at_pass_SOURCES = tests/strings/basic.string/string.access/at.pass.cpp
-#tests_strings_basic_string_string_access_at_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_at_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/at.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/db_cback.pass
-#tests_strings_basic_string_string_access_db_cback_pass_SOURCES = tests/strings/basic.string/string.access/db_cback.pass.cpp
-#tests_strings_basic_string_string_access_db_cback_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_db_cback_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/db_cback.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/db_back.pass
-#tests_strings_basic_string_string_access_db_back_pass_SOURCES = tests/strings/basic.string/string.access/db_back.pass.cpp
-#tests_strings_basic_string_string_access_db_back_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_db_back_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/db_back.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/db_cfront.pass
-#tests_strings_basic_string_string_access_db_cfront_pass_SOURCES = tests/strings/basic.string/string.access/db_cfront.pass.cpp
-#tests_strings_basic_string_string_access_db_cfront_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_db_cfront_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/db_cfront.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/db_cindex.pass
-#tests_strings_basic_string_string_access_db_cindex_pass_SOURCES = tests/strings/basic.string/string.access/db_cindex.pass.cpp
-#tests_strings_basic_string_string_access_db_cindex_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_db_cindex_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/db_cindex.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/db_index.pass
-#tests_strings_basic_string_string_access_db_index_pass_SOURCES = tests/strings/basic.string/string.access/db_index.pass.cpp
-#tests_strings_basic_string_string_access_db_index_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_db_index_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/db_index.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/front.pass
-#tests_strings_basic_string_string_access_front_pass_SOURCES = tests/strings/basic.string/string.access/front.pass.cpp
-#tests_strings_basic_string_string_access_front_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_front_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/front.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/index.pass
-#tests_strings_basic_string_string_access_index_pass_SOURCES = tests/strings/basic.string/string.access/index.pass.cpp
-#tests_strings_basic_string_string_access_index_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_index_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/index.pass
-#
-#check_PROGRAMS += tests/strings/basic.string/string.access/db_front.pass
-#tests_strings_basic_string_string_access_db_front_pass_SOURCES = tests/strings/basic.string/string.access/db_front.pass.cpp
-#tests_strings_basic_string_string_access_db_front_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_access_db_front_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.access/db_front.pass
-#
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/pointer_size_alloc.pass
+tests_strings_basic_string_string_cons_pointer_size_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/pointer_size_alloc.pass.cpp
+tests_strings_basic_string_string_cons_pointer_size_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_pointer_size_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/pointer_size_alloc.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/pointer_assignment.pass
+tests_strings_basic_string_string_cons_pointer_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/pointer_assignment.pass.cpp
+tests_strings_basic_string_string_cons_pointer_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_pointer_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/pointer_assignment.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/initializer_list_assignment.pass
+# tests_strings_basic_string_string_cons_initializer_list_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/initializer_list_assignment.pass.cpp
+# tests_strings_basic_string_string_cons_initializer_list_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_initializer_list_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/initializer_list_assignment.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/copy_assignment.pass
+tests_strings_basic_string_string_cons_copy_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/copy_assignment.pass.cpp
+tests_strings_basic_string_string_cons_copy_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_copy_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/copy_assignment.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/move.pass
+# tests_strings_basic_string_string_cons_move_pass_SOURCES = tests/strings/basic.string/string.cons/move.pass.cpp
+# tests_strings_basic_string_string_cons_move_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_move_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/move.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/copy.pass
+tests_strings_basic_string_string_cons_copy_pass_SOURCES = tests/strings/basic.string/string.cons/copy.pass.cpp
+tests_strings_basic_string_string_cons_copy_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_copy_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/copy.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/alloc.pass
+# tests_strings_basic_string_string_cons_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/alloc.pass.cpp
+# tests_strings_basic_string_string_cons_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/alloc.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/move_assign_noexcept.pass
+# tests_strings_basic_string_string_cons_move_assign_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/move_assign_noexcept.pass.cpp
+# tests_strings_basic_string_string_cons_move_assign_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_move_assign_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/move_assign_noexcept.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/initializer_list.pass
+# tests_strings_basic_string_string_cons_initializer_list_pass_SOURCES = tests/strings/basic.string/string.cons/initializer_list.pass.cpp
+# tests_strings_basic_string_string_cons_initializer_list_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_initializer_list_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/initializer_list.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/iter_alloc.pass
+# tests_strings_basic_string_string_cons_iter_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/iter_alloc.pass.cpp
+# tests_strings_basic_string_string_cons_iter_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_iter_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/iter_alloc.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/char_assignment.pass
+tests_strings_basic_string_string_cons_char_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/char_assignment.pass.cpp
+tests_strings_basic_string_string_cons_char_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_char_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/char_assignment.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/pointer_alloc.pass
+tests_strings_basic_string_string_cons_pointer_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/pointer_alloc.pass.cpp
+tests_strings_basic_string_string_cons_pointer_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_pointer_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/pointer_alloc.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/move_noexcept.pass
+# tests_strings_basic_string_string_cons_move_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/move_noexcept.pass.cpp
+# tests_strings_basic_string_string_cons_move_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_move_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/move_noexcept.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/move_assignment.pass
+# tests_strings_basic_string_string_cons_move_assignment_pass_SOURCES = tests/strings/basic.string/string.cons/move_assignment.pass.cpp
+# tests_strings_basic_string_string_cons_move_assignment_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_move_assignment_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/move_assignment.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/dtor_noexcept.pass
+# tests_strings_basic_string_string_cons_dtor_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/dtor_noexcept.pass.cpp
+# tests_strings_basic_string_string_cons_dtor_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_dtor_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/dtor_noexcept.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/move_alloc.pass
+# tests_strings_basic_string_string_cons_move_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/move_alloc.pass.cpp
+# tests_strings_basic_string_string_cons_move_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_move_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/move_alloc.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/size_char_alloc.pass
+tests_strings_basic_string_string_cons_size_char_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/size_char_alloc.pass.cpp
+tests_strings_basic_string_string_cons_size_char_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_size_char_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/size_char_alloc.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/substr.pass
+tests_strings_basic_string_string_cons_substr_pass_SOURCES = tests/strings/basic.string/string.cons/substr.pass.cpp
+tests_strings_basic_string_string_cons_substr_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_substr_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/substr.pass
+
+# check_PROGRAMS += tests/strings/basic.string/string.cons/default_noexcept.pass
+# tests_strings_basic_string_string_cons_default_noexcept_pass_SOURCES = tests/strings/basic.string/string.cons/default_noexcept.pass.cpp
+# tests_strings_basic_string_string_cons_default_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_cons_default_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.cons/default_noexcept.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.cons/copy_alloc.pass
+tests_strings_basic_string_string_cons_copy_alloc_pass_SOURCES = tests/strings/basic.string/string.cons/copy_alloc.pass.cpp
+tests_strings_basic_string_string_cons_copy_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_cons_copy_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.cons/copy_alloc.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/back.pass
+tests_strings_basic_string_string_access_back_pass_SOURCES = tests/strings/basic.string/string.access/back.pass.cpp
+tests_strings_basic_string_string_access_back_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_back_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/back.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/at.pass
+tests_strings_basic_string_string_access_at_pass_SOURCES = tests/strings/basic.string/string.access/at.pass.cpp
+tests_strings_basic_string_string_access_at_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_at_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/at.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/db_cback.pass
+tests_strings_basic_string_string_access_db_cback_pass_SOURCES = tests/strings/basic.string/string.access/db_cback.pass.cpp
+tests_strings_basic_string_string_access_db_cback_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_db_cback_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/db_cback.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/db_back.pass
+tests_strings_basic_string_string_access_db_back_pass_SOURCES = tests/strings/basic.string/string.access/db_back.pass.cpp
+tests_strings_basic_string_string_access_db_back_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_db_back_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/db_back.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/db_cfront.pass
+tests_strings_basic_string_string_access_db_cfront_pass_SOURCES = tests/strings/basic.string/string.access/db_cfront.pass.cpp
+tests_strings_basic_string_string_access_db_cfront_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_db_cfront_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/db_cfront.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/db_cindex.pass
+tests_strings_basic_string_string_access_db_cindex_pass_SOURCES = tests/strings/basic.string/string.access/db_cindex.pass.cpp
+tests_strings_basic_string_string_access_db_cindex_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_db_cindex_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/db_cindex.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/db_index.pass
+tests_strings_basic_string_string_access_db_index_pass_SOURCES = tests/strings/basic.string/string.access/db_index.pass.cpp
+tests_strings_basic_string_string_access_db_index_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_db_index_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/db_index.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/front.pass
+tests_strings_basic_string_string_access_front_pass_SOURCES = tests/strings/basic.string/string.access/front.pass.cpp
+tests_strings_basic_string_string_access_front_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_front_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/front.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/index.pass
+tests_strings_basic_string_string_access_index_pass_SOURCES = tests/strings/basic.string/string.access/index.pass.cpp
+tests_strings_basic_string_string_access_index_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_index_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/index.pass
+
+check_PROGRAMS += tests/strings/basic.string/string.access/db_front.pass
+tests_strings_basic_string_string_access_db_front_pass_SOURCES = tests/strings/basic.string/string.access/db_front.pass.cpp
+tests_strings_basic_string_string_access_db_front_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_access_db_front_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.access/db_front.pass
+
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp
 #tests_strings_version_pass_LDADD = libbarefootc.a liblog4stdc.a

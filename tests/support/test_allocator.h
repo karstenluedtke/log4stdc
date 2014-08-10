@@ -11,11 +11,16 @@
 #define TEST_ALLOCATOR_H
 
 #include <cstddef>
-#include <type_traits>
 #include <cstdlib>
 #include <new>
 #include <climits>
 #include <cassert>
+
+#if __cplusplus >= 201103L
+#include <type_traits>
+#else
+#define _LIBCPP_HAS_NO_RVALUE_REFERENCES 1
+#endif
 
 class test_alloc_base
 {
@@ -46,8 +51,13 @@ public:
     typedef T                                                          value_type;
     typedef value_type*                                                pointer;
     typedef const value_type*                                          const_pointer;
+#if __cplusplus >= 201103L
     typedef typename std::add_lvalue_reference<value_type>::type       reference;
     typedef typename std::add_lvalue_reference<const value_type>::type const_reference;
+#else
+    typedef T&                                                         reference;
+    typedef const T&                                                   const_reference;
+#endif
 
     template <class U> struct rebind {typedef test_allocator<U> other;};
 
@@ -106,8 +116,13 @@ public:
     typedef T                                                          value_type;
     typedef value_type*                                                pointer;
     typedef const value_type*                                          const_pointer;
+#if __cplusplus >= 201103L
     typedef typename std::add_lvalue_reference<value_type>::type       reference;
     typedef typename std::add_lvalue_reference<const value_type>::type const_reference;
+#else
+    typedef T&                                                         reference;
+    typedef const T&                                                   const_reference;
+#endif
 
     template <class U> struct rebind {typedef non_default_test_allocator<U> other;};
 
@@ -210,9 +225,11 @@ public:
     friend bool operator!=(const other_allocator& x, const other_allocator& y)
         {return !(x == y);}
 
+#if __cplusplus >= 201103L
     typedef std::true_type propagate_on_container_copy_assignment;
     typedef std::true_type propagate_on_container_move_assignment;
     typedef std::true_type propagate_on_container_swap;
+#endif
 
 #ifdef _LIBCPP_HAS_NO_ADVANCED_SFINAE
     std::size_t max_size() const

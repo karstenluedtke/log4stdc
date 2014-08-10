@@ -36,6 +36,7 @@
 #define	bfc_wstring_at				bfc_string_at
 #define	bfc_wstring_ref				bfc_string_ref
 #define	bfc_wstring_data			bfc_string_data
+#define	bfc_wstring_index			bfc_string_index
 #define	bfc_wstring_assign_bfstr		bfc_string_assign_bfstr
 #define	bfc_wstring_assign_substr		bfc_string_assign_substr
 #define	bfc_wstring_assign_c_str		bfc_string_assign_c_str

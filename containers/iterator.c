@@ -15,11 +15,11 @@ static unsigned bfc_iterator_hashcode(bfc_citerptr_t it);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
 
 static const void *iterator_first(bfc_citerptr_t);
-static void *forward_data(bfc_iterptr_t, size_t pos);
+static void *forward_index(bfc_iterptr_t, size_t pos);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t forward_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
-static void *reverse_data(bfc_iterptr_t it, size_t pos);
+static void *reverse_index(bfc_iterptr_t it, size_t pos);
 static int advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 static void last_method(void) { }
@@ -42,7 +42,7 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .dump 	*/ dump_iterator,
 	/* Element access */
 	/* .first	*/ iterator_first,
-	/* .data	*/ forward_data,
+	/* .index	*/ forward_index,
 	/* .get		*/ NULL,
 	/* Allocators 	*/
 	/* .initialize	*/ bfc_init_iterator,
@@ -70,7 +70,7 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* .dump 	*/ dump_iterator,
 	/* Element access */
 	/* .first	*/ iterator_first,
-	/* .data	*/ reverse_data,
+	/* .index	*/ reverse_index,
 	/* .get		*/ NULL,
 	/* Allocators 	*/
 	/* .initialize	*/ bfc_init_iterator,
@@ -192,32 +192,32 @@ static const void *
 iterator_first(bfc_citerptr_t it)
 {
 	RETURN_METHCALL(bfc_classptr_t, it->obj,
-			data, (it->obj, it->pos), NULL);
+			index, (it->obj, it->pos), NULL);
 }
 
 static inline void *
-iterator_data(bfc_iterptr_t it, ptrdiff_t n)
+iterator_index(bfc_iterptr_t it, ptrdiff_t n)
 {
 	if (n == 0) {
 		RETURN_METHCALL(bfc_classptr_t, it->obj,
-				data, (it->obj, it->pos), NULL);
+				index, (it->obj, it->pos), NULL);
 	} else if (n > 0) {
 		size_t objlen = bfc_object_length(it->obj);
 		if (it->pos + n < objlen) {
 			RETURN_METHCALL(bfc_classptr_t, it->obj,
-					data, (it->obj, it->pos + n), NULL);
+					index, (it->obj, it->pos + n), NULL);
 		}
 	} else if (it->pos >= (-n)) {
 		RETURN_METHCALL(bfc_classptr_t, it->obj,
-				data, (it->obj, it->pos + n), NULL);
+				index, (it->obj, it->pos + n), NULL);
 	}
 	return (NULL);
 }
 
 static void *
-forward_data(bfc_iterptr_t it, size_t pos)
+forward_index(bfc_iterptr_t it, size_t pos)
 {
-	return (iterator_data(it, (ptrdiff_t) pos));
+	return (iterator_index(it, (ptrdiff_t) pos));
 }
 
 static int
@@ -262,9 +262,9 @@ forward_distance(bfc_citerptr_t first, bfc_citerptr_t limit)
 }
 
 static void *
-reverse_data(bfc_iterptr_t it, size_t pos)
+reverse_index(bfc_iterptr_t it, size_t pos)
 {
-	return (iterator_data(it, 0 - (ptrdiff_t) pos));
+	return (iterator_index(it, 0 - (ptrdiff_t) pos));
 }
 
 static int

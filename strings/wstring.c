@@ -46,8 +46,8 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .dump 	*/ (void *) bfc_default_dump_object,
 	/* Element access */
 	/* .first	*/ bfc_wstring_data,
-	/* .data	*/ bfc_wstring_ref,
-	/* .get		*/ bfc_wstring_at,
+	/* .index	*/ bfc_wstring_index,
+	/* .spare15 	*/ NULL,
 	/* Char traits	*/
 	/* .traits	*/ (void *) &bfc_wchar_traits_class,
 	/* Allocators 	*/
@@ -385,14 +385,8 @@ bfc_wstring_reserve(bfc_wstrptr_t s, size_t n)
 }
 
 // element access:
-wchar_t
-bfc_wstring_at(bfc_cwstrptr_t s, size_t pos)
-{
-	return (s->buf[s->offs + pos]);
-}
-
 wchar_t *
-bfc_wstring_ref(bfc_wstrptr_t s, size_t pos)
+bfc_wstring_index(bfc_wstrptr_t s, size_t pos)
 {
 	return (s->buf + s->offs + pos);
 }

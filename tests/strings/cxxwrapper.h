@@ -116,7 +116,7 @@ namespace barefootc {
 		{
 			void *p;
 			RETVAR_METHCALL(p, bfc_iterator_classptr_t, &bfcit,
-					data, (&bfcit, 0), NULL);
+					index, (&bfcit, 0), NULL);
 			if (p == NULL) {
 				throw(std::out_of_range("bad position"));
 			}
@@ -674,7 +674,7 @@ namespace barefootc {
 			const charT *p;
 
 			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					data, (s, pos), NULL);
+					index, (s, pos), NULL);
 			return (*p);
 		}
 
@@ -683,7 +683,7 @@ namespace barefootc {
 			charT *p;
 
 			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					data, (&bfcstr, pos), NULL);
+					index, (&bfcstr, pos), NULL);
 			return (*p);
 		}
 
@@ -693,7 +693,7 @@ namespace barefootc {
 			const charT *p;
 
 			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					data, (s, n), NULL);
+					index, (s, n), NULL);
 			if ((p == NULL) || (n >= length())) {
 				throw(std::out_of_range("bad position"));
 			}
@@ -705,7 +705,7 @@ namespace barefootc {
 			charT *p;
 
 			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					data, (&bfcstr, n), NULL);
+					index, (&bfcstr, n), NULL);
 			if ((p == NULL) || (n >= length())) {
 				throw(std::out_of_range("bad position"));
 			}

@@ -63,8 +63,8 @@ struct bfc_objhdr {
 	int	      (*tostring) (cobjptrT, char *, size_t);		     \
 	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);     \
 	const elemT * (*first)    (cobjptrT);				     \
-	elemT *	      (*data)     (objptrT, size_t);			     \
-	elemT	      (*get)      (cobjptrT, size_t);
+	elemT *	      (*index)    (objptrT, size_t);			     \
+	void *		spare15;
 
 #define BFC_CLASSHDR(classptrT,objptrT,cobjptrT) \
 	BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,void)

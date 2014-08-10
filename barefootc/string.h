@@ -266,8 +266,7 @@ size_t	bfc_string_capacity(bfc_cstrptr_t s);
 int	bfc_string_reserve(bfc_strptr_t s, size_t n);
 
 /* Element access */
-char	bfc_string_at(bfc_cstrptr_t s, size_t pos);
-char *bfc_string_ref(bfc_strptr_t s, size_t pos);
+char *bfc_string_index(bfc_strptr_t s, size_t pos);
 const char *bfc_string_data(bfc_cstrptr_t s);  /* not zero terminated */
 
 /* Modifiers */
@@ -409,8 +408,7 @@ size_t	bfc_wstring_capacity(bfc_cwstrptr_t s);
 int	bfc_wstring_reserve(bfc_wstrptr_t s, size_t n);
 
 /* Element access */
-wchar_t	bfc_wstring_at(bfc_cwstrptr_t s, size_t pos);
-wchar_t *bfc_wstring_ref(bfc_wstrptr_t s, size_t pos);
+wchar_t *bfc_wstring_index(bfc_wstrptr_t s, size_t pos);
 const wchar_t *bfc_wstring_data(bfc_cwstrptr_t s);  /* not zero terminated */
 
 /* Modifiers */

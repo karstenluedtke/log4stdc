@@ -64,12 +64,17 @@ int	bfc_init_iterator(void *buf, size_t bufsize,
 int	bfc_init_reverse_iterator(void *buf, size_t bufsize,
 			  bfc_cobjptr_t obj, size_t pos);
 void	bfc_destroy_iterator(bfc_iterptr_t it);
+int	bfc_clone_iterator(bfc_citerptr_t obj, void *buf, size_t bufsize);
 size_t	bfc_iterator_objsize(bfc_citerptr_t it);
 int	bfc_iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 size_t	bfc_iterator_length(bfc_citerptr_t it);
 size_t	bfc_iterator_position(bfc_citerptr_t it);
 ptrdiff_t bfc_iterator_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
+int	bfc_init_cstr_iterator(void *buf, size_t bufsize,
+					const char *s, size_t pos);
+int	bfc_init_cstr_reverse_iterator(void *buf, size_t bufsize,
+					const char *s, size_t pos);
 #ifdef __cplusplus
 }	/* C++ */
 #endif

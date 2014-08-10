@@ -1,4 +1,5 @@
 #include "tests/strings/cxxwrapper.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -28,10 +29,14 @@ test(S s, typename S::size_type pos1, typename S::size_type n1, It f, It l, S ex
     typename S::const_iterator first = s.begin() + pos1;
     typename S::const_iterator last = s.begin() + pos1 + n1;
     typename S::size_type xlen = last - first;
+    l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 0);
     s.replace(first, last, f, l);
     assert(s.__invariants());
     assert(s == expected);
     typename S::size_type rlen = std::distance(f, l);
+    L4SC_DEBUG(logger, "%s: s.size %ld, old %ld - xlen %ld + rlen %ld",
+		__FUNCTION__,
+    		(long) s.size(), (long) old_size, (long) xlen, (long) rlen);
     assert(s.size() == old_size - xlen + rlen);
 }
 
@@ -948,6 +953,7 @@ void test8()
 
 int main()
 {
+    l4sc_configure_from_xml_file("log4j.xml");
     {
     typedef barefootc::basic_string<char> S;
     test0<S>();

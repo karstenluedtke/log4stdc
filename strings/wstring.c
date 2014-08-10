@@ -20,7 +20,11 @@
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
-
+static int clone_wstring(bfc_cwstrptr_t obj, void *buf, size_t bufsize);
+static unsigned wstring_hashcode(bfc_cwstrptr_t s);
+static int wstring_equals(bfc_cwstrptr_t s, bfc_cwstrptr_t other);
+static int wstring_tostring(bfc_cwstrptr_t s, char *buf, size_t bufsize);
+static void dump_wstring(bfc_cwstrptr_t s, int depth, struct l4sc_logger *log);
 static void last_method(void) { }
 
 struct bfc_string_class {
@@ -37,13 +41,13 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ bfc_init_wstring,
 	/* .destroy 	*/ bfc_destroy_wstring,
-	/* .clone 	*/ (void *) bfc_default_clone_object,
+	/* .clone 	*/ clone_wstring,
 	/* .clonesize 	*/ bfc_wstring_objsize,
-	/* .hashcode 	*/ (void *) bfc_default_get_object_hashcode,
-	/* .equals 	*/ (void *) bfc_default_is_equal_object,
+	/* .hashcode 	*/ wstring_hashcode,
+	/* .equals 	*/ wstring_equals,
 	/* .length 	*/ bfc_wstring_length,
-	/* .tostring 	*/ (void *) bfc_default_object_tostring,
-	/* .dump 	*/ (void *) bfc_default_dump_object,
+	/* .tostring 	*/ wstring_tostring,
+	/* .dump 	*/ dump_wstring,
 	/* Element access */
 	/* .first	*/ bfc_wstring_data,
 	/* .index	*/ bfc_wstring_index,
@@ -308,6 +312,61 @@ bfc_destroy_wstring(bfc_wstrptr_t obj)
 
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
 		BFC_DESTROY_EPILOGUE(obj, cls);
+	}
+}
+
+static int
+clone_wstring(bfc_cwstrptr_t obj, void *buf, size_t bufsize)
+{
+	bfc_wstrptr_t s = (bfc_wstrptr_t) buf;
+	size_t size = bfc_object_size(obj);
+	if (bufsize < size) {
+		return (-ENOSPC);
+	}
+	memcpy(s, obj, size);
+	return (BFC_SUCCESS);
+}
+
+static unsigned  
+wstring_hashcode(bfc_cwstrptr_t s)
+{
+	const size_t n = bfc_wstrlen(s);
+	const wchar_t *p = bfc_wstrdata(s);
+	unsigned x = 0;
+	size_t i;
+	for (i=0; i < n; i++) {
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[i];
+	}
+	return (x);
+}
+
+static int
+wstring_equals(bfc_cwstrptr_t s, bfc_cwstrptr_t other)
+{
+	if (s == other) {
+		return (1);
+	}
+	return (bfc_wstring_compare_bfstr(s, other) == 0);
+}
+
+static int
+wstring_tostring(bfc_cwstrptr_t s, char *buf, size_t bufsize)
+{
+	int rc = 0;
+
+	if (s && BFC_CLASS(s)) {
+		RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
+				copy, (s, buf, bufsize/sizeof(wchar_t), 0),
+				-ENOSYS);
+	}
+	return (rc);
+}
+
+static void
+dump_wstring(bfc_cwstrptr_t s, int depth, struct l4sc_logger *log)
+{
+	if (s && BFC_CLASS(s)) {
+		L4SC_DEBUG(log, "%s @%p", BFC_CLASS(s)->name, s);
 	}
 }
 

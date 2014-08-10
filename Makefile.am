@@ -43,6 +43,8 @@ libbarefootc_a_SOURCES+= strings/char_traits.c
 libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= containers/iterator.c
+libbarefootc_a_SOURCES+= containers/wstr_iterator.c
+libbarefootc_a_SOURCES+= containers/cstr_iterator.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
 libbarefootc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
@@ -449,11 +451,11 @@ tests_strings_basic_string_string_modifiers_string_replace_iter_iter_string_pass
 tests_strings_basic_string_string_modifiers_string_replace_iter_iter_string_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/strings/basic.string/string.modifiers/string_replace/iter_iter_string.pass
 
-#check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_replace/iter_iter_iter_iter.pass
-#tests_strings_basic_string_string_modifiers_string_replace_iter_iter_iter_iter_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_replace/iter_iter_iter_iter.pass.cpp
-#tests_strings_basic_string_string_modifiers_string_replace_iter_iter_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_modifiers_string_replace_iter_iter_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.modifiers/string_replace/iter_iter_iter_iter.pass
+check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_replace/iter_iter_iter_iter.pass
+tests_strings_basic_string_string_modifiers_string_replace_iter_iter_iter_iter_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_replace/iter_iter_iter_iter.pass.cpp
+tests_strings_basic_string_string_modifiers_string_replace_iter_iter_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_modifiers_string_replace_iter_iter_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.modifiers/string_replace/iter_iter_iter_iter.pass
 
 check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_copy/copy.pass
 tests_strings_basic_string_string_modifiers_string_copy_copy_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_copy/copy.pass.cpp

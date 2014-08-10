@@ -28,6 +28,11 @@
 #define	bfc_init_wstring_c_str			bfc_init_string_c_str
 #define	bfc_init_wstring_fill			bfc_init_string_fill
 #define	bfc_init_wstring_range			bfc_init_string_range
+#define clone_wstring				clone_string
+#define wstring_hashcode			string_hashcode
+#define wstring_equals				string_equals
+#define wstring_tostring			string_tostring
+#define dump_wstring				dump_string
 #define	bfc_wstring_length			bfc_string_length
 #define	bfc_wstring_max_size			bfc_string_max_size
 #define	bfc_wstring_resize			bfc_string_resize

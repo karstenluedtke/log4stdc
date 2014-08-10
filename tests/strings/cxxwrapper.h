@@ -44,8 +44,8 @@ namespace barefootc {
 
 		iterator(const iterator& it)
 		{
-			bfc_init_iterator(&bfcit, sizeof(bfcit),
-					  it.bfcit.obj, it.bfcit.pos);
+			VOID_METHCALL(bfc_iterator_classptr_t, &it.bfcit,
+				clone, (&it.bfcit, &bfcit, sizeof(bfcit)));
 		}
 
 		iterator(const stringT *s, bfc_cobjptr_t bfcstr, size_t p)
@@ -70,6 +70,11 @@ namespace barefootc {
 		{
 			bfc_init_reverse_iterator(&bfcit, sizeof(bfcit),
 								bfcstr, p);
+		}
+
+		iterator(const char *s)
+		{
+			bfc_init_cstr_iterator(&bfcit, sizeof(bfcit), s, 0);
 		}
 
 		~iterator()

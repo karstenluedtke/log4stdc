@@ -29,7 +29,7 @@ extern struct bfc_iterator_class bfc_reverse_iterator_class;
 #ifndef FORWARD_CLASS_NAME
 #define FORWARD_CLASS_NAME			"wstring forward iterator"
 #define REVERSE_CLASS_NAME			"wstring reverse iterator"
-#define STRINGFMT				"%S"
+#define IMPLEMENT_DUMP 1
 #endif
 
 struct bfc_iterator_class bfc_wstr_forward_iterator_class = {
@@ -138,15 +138,17 @@ iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other)
 	return (0);
 }
 
+#ifdef IMPLEMENT_DUMP
 static void
 dump_iterator(bfc_citerptr_t it, int depth, struct l4sc_logger *log)
 {
 	if (it && BFC_CLASS(it)) {
 		L4SC_DEBUG(log, "%s @%p", BFC_CLASS(it)->name, it);
-		L4SC_DEBUG(log, "pos %ld in %p: " STRINGFMT,
-				(long) it->pos, it->obj, (wchar_t *) it->obj);
+		L4SC_DEBUG(log, "pos %ld in wchar string @%p",
+				(long) it->pos, it->obj);
 	}
 }
+#endif
 
 static const void *
 iterator_first(bfc_citerptr_t it)

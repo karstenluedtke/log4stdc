@@ -66,7 +66,12 @@ bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
 		return (-ENOSPC);
 	}
 	memcpy(object, obj, size);
-	object->refc = 0;
+	if (size >= sizeof(struct bfc_objhdr)) {
+		object->lock = NULL;
+		object->next = NULL;
+		object->prev = NULL;
+		object->refc = 0;
+	}
 	return (BFC_SUCCESS);
 }
 

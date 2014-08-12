@@ -14,6 +14,8 @@
 
 #ifndef STRING_CLASS_NAME
 #define STRING_CLASS_NAME "wstring"
+#define IMPLEMENT_TOSTRING 1
+#include "barefootc/utf8.h"
 #endif
 
 #define LOGGERNAME "barefootc.string", 16
@@ -349,26 +351,47 @@ wstring_equals(bfc_cwstrptr_t s, bfc_cwstrptr_t other)
 	return (bfc_wstring_compare_bfstr(s, other) == 0);
 }
 
+#ifdef IMPLEMENT_TOSTRING
 static int
 wstring_tostring(bfc_cwstrptr_t s, char *buf, size_t bufsize)
 {
-	int rc = 0;
+	const wchar_t *wp = bfc_wstrdata(s);
+	const wchar_t *ep = wp + bfc_wstrlen(s);
+	char *cp = buf;
+	const char *limit = cp + bufsize;
+	uint32_t codept;
 
-	if (s && BFC_CLASS(s)) {
-		RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
-				copy, (s, buf, bufsize/sizeof(wchar_t), 0),
-				-ENOSYS);
+	while ((wp < ep) && (cp < limit)) {
+		BFC_GET_UTF16(codept, wp, ep);
+		BFC_PUT_UTF8(cp, limit, codept);
 	}
-	return (rc);
+	if (cp < limit) {
+		*cp = '\0';
+	} else if (bufsize > 0) {
+		buf[bufsize-1] = '\0';
+	}
+	return (cp - buf);
 }
 
 static void
 dump_wstring(bfc_cwstrptr_t s, int depth, struct l4sc_logger *log)
 {
 	if (s && BFC_CLASS(s)) {
-		L4SC_DEBUG(log, "%s @%p", BFC_CLASS(s)->name, s);
+		const size_t len = bfc_wstrlen(s);
+		if (len < 200) {
+			const size_t bufsize = 3*len + 20;
+			char *buf = alloca(bufsize);
+			wstring_tostring(s, buf, bufsize);
+			L4SC_DEBUG(log, "%s @%p, len %ld: \"%s\"",
+				BFC_CLASS(s)->name, s, (long) len, buf);
+		} else {
+			L4SC_DEBUG(log, "%s @%p, len %ld @%p",
+				BFC_CLASS(s)->name, s, (long) len,
+				bfc_wstrdata(s));
+		}
 	}
 }
+#endif
 
 size_t
 bfc_wstring_objsize(bfc_cwstrptr_t obj)

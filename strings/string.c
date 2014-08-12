@@ -121,3 +121,24 @@
 
 #include "wstring.c"
 
+static int
+string_tostring(bfc_cwstrptr_t s, char *buf, size_t bufsize)
+{
+	return ((int) bfc_string_copy(s, buf, bufsize, 0));
+}
+
+static void
+dump_string(bfc_cwstrptr_t s, int depth, struct l4sc_logger *log)
+{
+	if (s && BFC_CLASS(s)) {
+		const size_t len = bfc_strlen(s);
+		const char *data = bfc_strdata(s);
+		if (len < 200) {
+			L4SC_DEBUG(log, "%s @%p, len %ld: \"%s\"",
+				BFC_CLASS(s)->name, s, (long) len, data);
+		} else {
+			L4SC_DEBUG(log, "%s @%p, len %ld @%p",
+				BFC_CLASS(s)->name, s, (long) len, data);
+		}
+	}
+}

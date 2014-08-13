@@ -355,22 +355,11 @@ wstring_equals(bfc_cwstrptr_t s, bfc_cwstrptr_t other)
 static int
 wstring_tostring(bfc_cwstrptr_t s, char *buf, size_t bufsize)
 {
-	const wchar_t *wp = bfc_wstrdata(s);
-	const wchar_t *ep = wp + bfc_wstrlen(s);
-	char *cp = buf;
-	const char *limit = cp + bufsize;
-	uint32_t codept;
+	size_t n;
 
-	while ((wp < ep) && (cp < limit)) {
-		BFC_GET_UTF16(codept, wp, ep);
-		BFC_PUT_UTF8(cp, limit, codept);
-	}
-	if (cp < limit) {
-		*cp = '\0';
-	} else if (bufsize > 0) {
-		buf[bufsize-1] = '\0';
-	}
-	return (cp - buf);
+	n = bfc_utf8_from_wchar(buf, bufsize, bfc_wstrdata(s), bfc_wstrlen(s));
+
+	return ((int) n);
 }
 
 static void

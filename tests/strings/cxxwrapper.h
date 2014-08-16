@@ -318,7 +318,7 @@ namespace barefootc {
 			    const basic_string& str, size_t pos, size_t n)
 		{
 			int rc;
-			rc = bfc_init_basic_string_substr(buf, bufsize,
+			rc = bfc_init_basic_string_substr(buf, bufsize, pool,
 					(bfc_cstrptr_t) &str.bfcstr, pos, n);
 			if (rc < 0) {
 				throw_substr_error(-rc);
@@ -369,7 +369,7 @@ namespace barefootc {
 			    const basic_string& str, size_t pos, size_t n)
 		{
 			int rc;
-			rc = bfc_init_basic_wstring_substr(buf, bufsize,
+			rc = bfc_init_basic_wstring_substr(buf, bufsize, pool,
 					(bfc_cwstrptr_t) &str.bfcstr, pos, n);
 			if (rc < 0) {
 				throw_substr_error(-rc);

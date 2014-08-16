@@ -34,7 +34,8 @@ typedef const struct bfc_string_class *bfc_string_classptr_t;
 	charT *		buf;					\
 	size_t 		len;					\
 	unsigned 	offs;					\
-	unsigned 	bufsize;
+	unsigned 	bufsize;				\
+	struct mempool *pool;
 
 struct bfc_string {
 	BFC_STRINGHDR(bfc_string_classptr_t, char)
@@ -90,6 +91,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	int	(*init_move)(void *buf, size_t bufsize,			\
 				struct mempool *pool, strptrT str);	\
 	int	(*init_substr)(void *buf, size_t bufsize,		\
+				struct mempool *pool,			\
 				cstrptrT str, size_t pos, size_t n);	\
 	int	(*init_buffer)(void *buf, size_t bufsize,		\
 				struct mempool *pool,			\
@@ -245,7 +247,7 @@ int	bfc_init_string_bfstr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str);
 int	bfc_init_string_move(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_strptr_t str);
-int	bfc_init_string_substr(void *buf, size_t bufsize,
+int	bfc_init_string_substr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str, size_t pos, size_t n);
 int	bfc_init_string_buffer(void *buf, size_t bufsize, struct mempool *pool,
 				const char* s, size_t n);
@@ -387,7 +389,7 @@ int	bfc_init_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str);
 int	bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_wstrptr_t str);
-int	bfc_init_wstring_substr(void *buf, size_t bufsize,
+int	bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str, size_t pos, size_t n);
 int	bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 				const wchar_t* s, size_t n);
@@ -541,7 +543,7 @@ int	bfc_init_basic_string_bfstr(void *buf, size_t bufsize,
 int	bfc_init_basic_string_move(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_basic_strptr_t str);
 int	bfc_init_basic_string_substr(void *buf, size_t bufsize,
-		bfc_cstrptr_t str, size_t pos, size_t n);
+		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_string_buffer(void *buf, size_t bufsize,
 		struct mempool *pool, const char* s, size_t n);
 int	bfc_init_basic_string_c_str(void *buf, size_t bufsize,
@@ -570,7 +572,7 @@ int	bfc_init_basic_wstring_bfstr(void *buf, size_t bufsize,
 int	bfc_init_basic_wstring_move(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_basic_wstrptr_t str);
 int	bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
-		bfc_cwstrptr_t str, size_t pos, size_t n);
+		struct mempool *pool, bfc_cwstrptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_wstring_buffer(void *buf, size_t bufsize,
 		struct mempool *pool, const wchar_t* s, size_t n);
 int	bfc_init_basic_wstring_c_str(void *buf, size_t bufsize,

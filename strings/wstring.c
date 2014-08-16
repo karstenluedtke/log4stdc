@@ -238,7 +238,7 @@ bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_wstring_substr(void *buf, size_t bufsize,
+bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
 			bfc_cwstrptr_t str, size_t pos, size_t n)
 {
 	int rc;
@@ -250,7 +250,7 @@ bfc_init_wstring_substr(void *buf, size_t bufsize,
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(str))) {
 		return (-ERANGE);
 	}
-	rc = bfc_init_wstring_buffer(buf, bufsize, NULL,
+	rc = bfc_init_wstring_buffer(buf, bufsize, pool,
 		bfc_wstrdata(str) + pos, bfc_wstring_sublen(str, pos, n));
 	return (rc);
 }
@@ -1430,9 +1430,7 @@ bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
 		return (-ERANGE);
 	}
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			init_substr, (buf, bufsize, s, pos, n),
-			bfc_init_wstring_substr(buf, bufsize, s, pos, n));
+	return (bfc_init_wstring_substr(buf, bufsize, NULL, s, pos, n));
 }
 
 int

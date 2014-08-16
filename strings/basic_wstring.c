@@ -22,7 +22,6 @@ extern struct bfc_classhdr bfc_wchar_traits_class;
 
 struct bfc_basic_wstring {
 	BFC_STRINGHDR(bfc_string_classptr_t, wchar_t)
-	struct mempool *pool;
 };
 
 struct bfc_string_class {
@@ -109,7 +108,7 @@ bfc_init_basic_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
+bfc_init_basic_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str, size_t pos, size_t n)
 {
 	int rc;
@@ -122,7 +121,7 @@ bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(str))) {
 		return (-ERANGE);
 	}
-	return bfc_init_basic_wstring_buffer(buf, bufsize, s->pool,
+	return bfc_init_basic_wstring_buffer(buf, bufsize, pool? pool: s->pool,
 		bfc_wstrdata(str) + pos, bfc_wstring_sublen(str, pos, n));
 }
 

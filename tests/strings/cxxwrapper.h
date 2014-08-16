@@ -328,6 +328,20 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const char *s,
+			    const_iterator begin, const_iterator end)
+		{
+			int rc;
+			rc = bfc_init_basic_string_range(buf, bufsize,
+					pool, begin.bfciter(), end.bfciter());
+			if (rc < 0) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
 			    const wchar_t *s, size_t n)
 		{
 			return bfc_init_wstring_buffer(buf, bufsize, 0, s, n);
@@ -357,6 +371,20 @@ namespace barefootc {
 			int rc;
 			rc = bfc_init_basic_wstring_substr(buf, bufsize,
 					(bfc_cwstrptr_t) &str.bfcstr, pos, n);
+			if (rc < 0) {
+				throw_substr_error(-rc);
+			}
+			return (rc);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const wchar_t *s,
+			    const_iterator begin, const_iterator end)
+		{
+			int rc;
+			rc = bfc_init_basic_wstring_range(buf, bufsize,
+					pool, begin.bfciter(), end.bfciter());
 			if (rc < 0) {
 				throw_substr_error(-rc);
 			}
@@ -457,7 +485,24 @@ namespace barefootc {
 		}
 
 		//template<class InputIterator>
-		//basic_string(InputIterator begin, InputIterator end, const Allocator& a = Allocator());
+		//basic_string(InputIterator begin, InputIterator end,
+		//		const Allocator& a = Allocator());
+
+		basic_string(const_iterator begin, const_iterator end,
+				const Allocator& a): saved_allocator(a)
+		{
+			const charT *s = &(begin[0]);
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), s, begin, end);
+		}
+
+		basic_string(const_iterator begin, const_iterator end):
+				saved_allocator(0)
+		{
+			const charT *s = &(begin[0]);
+			init_string(&bfcstr, sizeof(bfcstr),
+				get_stdc_mempool(), s, begin, end);
+		}
 
 #if __cplusplus >= 201103L
 		// basic_string(initializer_list<charT>, const Allocator& = Allocator());
@@ -920,7 +965,22 @@ namespace barefootc {
 			return(*this);
 		}
 
-		template<class InputIterator> basic_string& assign(InputIterator first, InputIterator last);
+		//template<class InputIterator>
+		//basic_string& assign(InputIterator first, InputIterator last);
+
+		basic_string& assign(const_iterator first, const_iterator last)
+		{
+			int rc;
+			RETVAR_METHCALL(rc, classptrT, &bfcstr,
+				assign_range, (&bfcstr, first.bfciter(),
+							last.bfciter()),
+				-ENOSYS);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+			return(*this);
+		}
+
 #if __cplusplus >= 201103L
 		// basic_string& assign(initializer_list<charT>);
 #endif

@@ -491,11 +491,12 @@ tests_strings_basic_string_string_modifiers_string_assign_string_size_size_pass_
 tests_strings_basic_string_string_modifiers_string_assign_string_size_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/strings/basic.string/string.modifiers/string_assign/string_size_size.pass
 
-#check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_assign/rv_string.pass
-#tests_strings_basic_string_string_modifiers_string_assign_rv_string_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_assign/rv_string.pass.cpp
-#tests_strings_basic_string_string_modifiers_string_assign_rv_string_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_modifiers_string_assign_rv_string_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.modifiers/string_assign/rv_string.pass
+# move str&&
+# check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_assign/rv_string.pass
+# tests_strings_basic_string_string_modifiers_string_assign_rv_string_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_assign/rv_string.pass.cpp
+# tests_strings_basic_string_string_modifiers_string_assign_rv_string_pass_LDADD = libbarefootc.a liblog4stdc.a
+# tests_strings_basic_string_string_modifiers_string_assign_rv_string_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+# TESTS += tests/strings/basic.string/string.modifiers/string_assign/rv_string.pass
 
 #check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_assign/initializer_list.pass
 #tests_strings_basic_string_string_modifiers_string_assign_initializer_list_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_assign/initializer_list.pass.cpp
@@ -503,11 +504,11 @@ TESTS += tests/strings/basic.string/string.modifiers/string_assign/string_size_s
 #tests_strings_basic_string_string_modifiers_string_assign_initializer_list_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/strings/basic.string/string.modifiers/string_assign/initializer_list.pass
 
-#check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_assign/iterator.pass
-#tests_strings_basic_string_string_modifiers_string_assign_iterator_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_assign/iterator.pass.cpp
-#tests_strings_basic_string_string_modifiers_string_assign_iterator_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_modifiers_string_assign_iterator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.modifiers/string_assign/iterator.pass
+check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_assign/iterator.pass
+tests_strings_basic_string_string_modifiers_string_assign_iterator_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_assign/iterator.pass.cpp
+tests_strings_basic_string_string_modifiers_string_assign_iterator_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_modifiers_string_assign_iterator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.modifiers/string_assign/iterator.pass
 
 check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_assign/pointer.pass
 tests_strings_basic_string_string_modifiers_string_assign_pointer_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_assign/pointer.pass.cpp
@@ -545,11 +546,11 @@ tests_strings_basic_string_string_modifiers_string_insert_size_size_char_pass_LD
 tests_strings_basic_string_string_modifiers_string_insert_size_size_char_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/strings/basic.string/string.modifiers/string_insert/size_size_char.pass
 
-#check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_insert/iter_iter_iter.pass
-#tests_strings_basic_string_string_modifiers_string_insert_iter_iter_iter_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_insert/iter_iter_iter.pass.cpp
-#tests_strings_basic_string_string_modifiers_string_insert_iter_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_modifiers_string_insert_iter_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.modifiers/string_insert/iter_iter_iter.pass
+check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_insert/iter_iter_iter.pass
+tests_strings_basic_string_string_modifiers_string_insert_iter_iter_iter_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_insert/iter_iter_iter.pass.cpp
+tests_strings_basic_string_string_modifiers_string_insert_iter_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_modifiers_string_insert_iter_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.modifiers/string_insert/iter_iter_iter.pass
 
 #check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_insert/iter_initializer_list.pass
 #tests_strings_basic_string_string_modifiers_string_insert_iter_initializer_list_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_insert/iter_initializer_list.pass.cpp
@@ -659,11 +660,11 @@ TESTS += tests/strings/basic.string/string.modifiers/string_append/string_size_s
 #tests_strings_basic_string_string_modifiers_string_append_initializer_list_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/strings/basic.string/string.modifiers/string_append/initializer_list.pass
 
-#check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_append/iterator.pass
-#tests_strings_basic_string_string_modifiers_string_append_iterator_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_append/iterator.pass.cpp
-#tests_strings_basic_string_string_modifiers_string_append_iterator_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_strings_basic_string_string_modifiers_string_append_iterator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/strings/basic.string/string.modifiers/string_append/iterator.pass
+check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_append/iterator.pass
+tests_strings_basic_string_string_modifiers_string_append_iterator_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_append/iterator.pass.cpp
+tests_strings_basic_string_string_modifiers_string_append_iterator_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_strings_basic_string_string_modifiers_string_append_iterator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/strings/basic.string/string.modifiers/string_append/iterator.pass
 
 check_PROGRAMS += tests/strings/basic.string/string.modifiers/string_append/push_back.pass
 tests_strings_basic_string_string_modifiers_string_append_push_back_pass_SOURCES = tests/strings/basic.string/string.modifiers/string_append/push_back.pass.cpp

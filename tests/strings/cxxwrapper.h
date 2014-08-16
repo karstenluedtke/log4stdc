@@ -129,6 +129,18 @@ namespace barefootc {
 			return (*cp);
 		}
 		
+		charT& operator[](size_t pos)
+		{
+			void *p;
+			RETVAR_METHCALL(p, bfc_iterator_classptr_t, &bfcit,
+					index, (&bfcit, pos), NULL);
+			if (p == NULL) {
+				throw(std::out_of_range("bad position"));
+			}
+			charT *cp = (charT *) p;
+			return (*cp);
+		}
+		
 		void advance(ptrdiff_t n)
 		{
 			VOID_METHCALL(bfc_iterator_classptr_t, &bfcit,
@@ -306,10 +318,28 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const char *s)
+		{
+			return bfc_init_basic_string_c_str(buf,bufsize,pool,s);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
 			    struct mempool *pool, size_t n, char c)
 		{
 			return bfc_init_basic_string_fill(buf, bufsize,
 								pool, n, c);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const char *s,
+			    const basic_string& str)
+		{
+			int rc;
+			rc = bfc_init_basic_string_bfstr(buf, bufsize, pool,
+						(bfc_cstrptr_t) &str.bfcstr);
+			return (rc);
 		}
 
 		static int
@@ -357,10 +387,28 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const wchar_t *s)
+		{
+			return bfc_init_basic_wstring_c_str(buf,bufsize,pool,s);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
 			    struct mempool *pool, size_t n, wchar_t c)
 		{
 			return bfc_init_basic_wstring_fill(buf, bufsize,
 								pool, n, c);
+		}
+
+		static int
+		init_string(void *buf, size_t bufsize,
+			    struct mempool *pool, const wchar_t *s,
+			    const basic_string& str)
+		{
+			int rc;
+			rc = bfc_init_basic_wstring_bfstr(buf, bufsize, pool,
+						(bfc_cwstrptr_t) &str.bfcstr);
+			return (rc);
 		}
 
 		static int
@@ -409,9 +457,8 @@ namespace barefootc {
 			saved_allocator(str.saved_allocator)
 		{
 			const charT *s = str.data();
-			const size_t n = str.size();
 			init_string(&bfcstr, sizeof(bfcstr),
-					get_stdc_mempool(), s, n);
+					get_stdc_mempool(), s, str);
 		}
 
 #if __cplusplus >= 201103L
@@ -460,14 +507,14 @@ namespace barefootc {
 			saved_allocator()
 		{
 			init_string(&bfcstr, sizeof(bfcstr),
-				get_stdc_mempool(), s, chrtraits::length(s));
+					get_stdc_mempool(), s);
 		}
 
 		basic_string(const charT* s, const Allocator& a):
 			saved_allocator(a)
 		{
 			init_string(&bfcstr, sizeof(bfcstr),
-				get_stdc_mempool(), s, chrtraits::length(s));
+					get_stdc_mempool(), s);
 		}
 
 		basic_string(size_type n, charT c):

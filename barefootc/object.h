@@ -33,6 +33,7 @@ extern const struct bfc_classhdr bfc_object_class;
 
 struct mempool;
 struct bfc_mutex;
+struct bfc_iterator;
 struct l4sc_logger;
 
 #define BFC_OBJHDR(classptrT,objptrT) \
@@ -64,7 +65,15 @@ struct bfc_objhdr {
 	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);     \
 	const elemT * (*first)    (cobjptrT);				     \
 	elemT *	      (*index)    (objptrT, size_t);			     \
-	void *		spare15;
+	long	      (*getl)     (cobjptrT, size_t);			     \
+	int	      (*setl)     (objptrT, size_t, long);		     \
+	elemT *	      (*create)   (objptrT, size_t, struct mempool *);	     \
+	int	      (*ibegin)   (cobjptrT, struct bfc_iterator *, size_t); \
+	int	      (*ilimit)   (cobjptrT, struct bfc_iterator *, size_t); \
+	int	      (*rbegin)   (cobjptrT, struct bfc_iterator *, size_t); \
+	int	      (*rlimit)   (cobjptrT, struct bfc_iterator *, size_t); \
+	void *		spare22;					     \
+	void *		spare23;
 
 #define BFC_CLASSHDR(classptrT,objptrT,cobjptrT) \
 	BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,void)

@@ -27,6 +27,12 @@ static unsigned wstring_hashcode(bfc_cwstrptr_t s);
 static int wstring_equals(bfc_cwstrptr_t s, bfc_cwstrptr_t other);
 static int wstring_tostring(bfc_cwstrptr_t s, char *buf, size_t bufsize);
 static void dump_wstring(bfc_cwstrptr_t s, int depth, struct l4sc_logger *log);
+static long bfc_wstring_getlong(bfc_cwstrptr_t s, size_t pos);
+static int bfc_wstring_setlong(bfc_wstrptr_t s, size_t pos, long c);
+static int init_begin_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs);
+static int init_limit_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs);
+static int init_rbegin_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs);
+static int init_rlimit_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs);
 static void last_method(void) { }
 
 struct bfc_string_class {
@@ -53,7 +59,15 @@ struct bfc_string_class bfc_wstring_class = {
 	/* Element access */
 	/* .first	*/ bfc_wstring_data,
 	/* .index	*/ bfc_wstring_index,
-	/* .spare15 	*/ NULL,
+	/* .getl	*/ bfc_wstring_getlong,
+	/* .setl	*/ bfc_wstring_setlong,
+	/* .spare17 	*/ NULL,
+	/* .ibegin	*/ init_begin_iterator,
+	/* .ilimit	*/ init_limit_iterator,
+	/* .rbegin	*/ init_rbegin_iterator,
+	/* .rlimit	*/ init_rlimit_iterator,
+	/* .spare22 	*/ NULL,
+	/* .spare23 	*/ NULL,
 	/* Char traits	*/
 	/* .traits	*/ (void *) &bfc_wchar_traits_class,
 	/* Allocators 	*/
@@ -418,6 +432,57 @@ bfc_wstring_data(bfc_cwstrptr_t s)  /* not zero terminated */
 {
 	return (s->buf + s->offs);
 }
+
+static long
+bfc_wstring_getlong(bfc_cwstrptr_t s, size_t pos)
+{
+	const wchar_t *p;
+	p = (wchar_t*) bfc_string_index((bfc_strptr_t)(uintptr_t)s, pos);
+	return ((long) *p);
+}
+
+static int
+bfc_wstring_setlong(bfc_wstrptr_t s, size_t pos, long c)
+{
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	} else if (pos == bfc_wstrlen(s)) {
+		bfc_string_push_back((bfc_strptr_t)s, c);
+	} else {
+		wchar_t *p = (wchar_t*)bfc_string_index((bfc_strptr_t)s, pos);
+		*p = (wchar_t) c;
+	}
+	return (BFC_SUCCESS);
+}
+
+/* Iterators */
+static int
+init_begin_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs)
+{
+	return (bfc_init_iterator(it, bs, (bfc_cobjptr_t)s, 0));
+}
+
+static int
+init_limit_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs)
+{
+	size_t pos = bfc_wstrlen(s);
+	return (bfc_init_iterator(it, bs, (bfc_cobjptr_t)s, pos));
+}
+
+static int
+init_rbegin_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs)
+{
+	size_t n = bfc_wstrlen(s);
+	size_t pos = (n > 0)? (n-1): BFC_NPOS;
+	return (bfc_init_reverse_iterator(it, bs, (bfc_cobjptr_t)s, pos));
+}
+
+static int
+init_rlimit_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs)
+{
+	return (bfc_init_reverse_iterator(it, bs, (bfc_cobjptr_t)s, BFC_NPOS));
+}
+
 
 /* Modifiers */
 int

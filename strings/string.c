@@ -42,6 +42,8 @@
 #define	bfc_wstring_ref				bfc_cstring_ref
 #define	bfc_wstring_data			bfc_cstring_data
 #define	bfc_wstring_index			bfc_cstring_index
+#define	bfc_wstring_getlong			bfc_cstring_getlong
+#define	bfc_wstring_setlong			bfc_cstring_setlong
 #define	bfc_wstring_assign_copy			bfc_cstring_assign_copy
 #define	bfc_wstring_assign_substr		bfc_cstring_assign_substr
 #define	bfc_wstring_assign_c_str		bfc_cstring_assign_c_str

@@ -14,7 +14,5 @@
 void
 bfc_string_pop_back(bfc_strptr_t s)
 {
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			pop_back, (s),
-			-ENOSYS);
+	VOID_METHCALL(bfc_string_classptr_t, s, pop_back, (s));
 }

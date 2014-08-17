@@ -14,7 +14,5 @@
 void
 bfc_string_swap(bfc_strptr_t s, bfc_strptr_t str)
 {
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			swap, (s, str),
-			-ENOSYS);
+	VOID_METHCALL(bfc_string_classptr_t, s, swap, (s, str));
 }

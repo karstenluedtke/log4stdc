@@ -46,7 +46,15 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* Element access */
 	/* .first	*/ iterator_first,
 	/* .index	*/ forward_index,
-	/* .get		*/ NULL,
+	/* .getl	*/ NULL,
+	/* .setl	*/ NULL,
+	/* .spare17 	*/ NULL,
+	/* .ibegin	*/ NULL,
+	/* .ilimit	*/ NULL,
+	/* .rbegin	*/ NULL,
+	/* .rlimit	*/ NULL,
+	/* .spare22 	*/ NULL,
+	/* .spare23 	*/ NULL,
 	/* Allocators 	*/
 	/* .initialize	*/ bfc_init_iterator,
 	/* Iterator functions */
@@ -74,7 +82,15 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* Element access */
 	/* .first	*/ iterator_first,
 	/* .index	*/ reverse_index,
-	/* .get		*/ NULL,
+	/* .getl	*/ NULL,
+	/* .setl	*/ NULL,
+	/* .spare17 	*/ NULL,
+	/* .ibegin	*/ NULL,
+	/* .ilimit	*/ NULL,
+	/* .rbegin	*/ NULL,
+	/* .rlimit	*/ NULL,
+	/* .spare22 	*/ NULL,
+	/* .spare23 	*/ NULL,
 	/* Allocators 	*/
 	/* .initialize	*/ bfc_init_iterator,
 	/* Iterator functions */

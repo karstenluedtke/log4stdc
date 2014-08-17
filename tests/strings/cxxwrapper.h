@@ -51,28 +51,56 @@ namespace barefootc {
 				clone, (&it.bfcit, &bfcit, sizeof(bfcit)));
 		}
 
-		iterator(const stringT *s, bfc_cobjptr_t bfcstr, size_t p)
+		iterator(const stringT *s, bfc_cstrptr_t bfcstr, size_t p)
 		{
-			bfc_init_iterator(&bfcit, sizeof(bfcit), bfcstr, p);
+			if (p == 0) {
+				bfc_string_begin_iterator(bfcstr,
+							&bfcit, sizeof(bfcit));
+			} else if (p == stringT::npos) {
+				bfc_string_end_iterator(bfcstr,
+							&bfcit, sizeof(bfcit));
+			} else {
+				bfc_init_iterator(&bfcit, sizeof(bfcit),
+						(bfc_cobjptr_t)bfcstr, p);
+			}
 		}
 
-		iterator(stringT *s, bfc_objptr_t bfcstr, size_t p)
+		iterator(stringT *s, bfc_strptr_t bfcstr, size_t p)
 		{
-			bfc_init_iterator(&bfcit, sizeof(bfcit), bfcstr, p);
+			if (p == 0) {
+				bfc_string_begin_iterator(bfcstr,
+							&bfcit, sizeof(bfcit));
+			} else if (p == stringT::npos) {
+				bfc_string_end_iterator(bfcstr,
+							&bfcit, sizeof(bfcit));
+			} else {
+				bfc_init_iterator(&bfcit, sizeof(bfcit),
+						(bfc_cobjptr_t)bfcstr, p);
+			}
 		}
 
 		iterator(int reverse,
-			 const stringT *s, bfc_cobjptr_t bfcstr, size_t p)
+			 const stringT *s, bfc_cstrptr_t bfcstr, size_t p)
 		{
-			bfc_init_reverse_iterator(&bfcit, sizeof(bfcit),
-								bfcstr, p);
+			if (p == stringT::npos) {
+				bfc_string_reverse_end_iterator(bfcstr,
+							&bfcit, sizeof(bfcit));
+			} else {
+				bfc_init_reverse_iterator(&bfcit, sizeof(bfcit),
+						(bfc_cobjptr_t)bfcstr, p);
+			}
 		}
 
 		iterator(int reverse,
-			 stringT *s, bfc_objptr_t bfcstr, size_t p)
+			 stringT *s, bfc_strptr_t bfcstr, size_t p)
 		{
-			bfc_init_reverse_iterator(&bfcit, sizeof(bfcit),
-								bfcstr, p);
+			if (p == stringT::npos) {
+				bfc_string_reverse_end_iterator(bfcstr,
+							&bfcit, sizeof(bfcit));
+			} else {
+				bfc_init_reverse_iterator(&bfcit, sizeof(bfcit),
+						(bfc_cobjptr_t)bfcstr, p);
+			}
 		}
 
 		iterator(const char *s)
@@ -587,28 +615,28 @@ namespace barefootc {
 		iterator begin() noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(this, (bfc_objptr_t) &this->bfcstr, 0);
+				it(this, &this->bfcstr, 0);
 			return (it);
 		}
 
 		const_iterator begin() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(this, (bfc_cobjptr_t) &this->bfcstr, 0);
+				it(this, &this->bfcstr, 0);
 			return (it);
 		}
 
 		iterator end() noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(this, (bfc_objptr_t) &this->bfcstr, npos);
+				it(this, &this->bfcstr, npos);
 			return (it);
 		}
 
 		const_iterator end() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(this, (bfc_cobjptr_t) &this->bfcstr, npos);
+				it(this, &this->bfcstr, npos);
 			return (it);
 		}
 
@@ -617,7 +645,7 @@ namespace barefootc {
 			size_t n = length();
 			size_t pos = (n > 0)? (n-1): npos;
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_objptr_t) &this->bfcstr, pos);
+				it(1, this, &this->bfcstr, pos);
 			return (it);
 		}
 
@@ -626,21 +654,21 @@ namespace barefootc {
 			size_t n = length();
 			size_t pos = (n > 0)? (n-1): npos;
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t)&this->bfcstr, pos);
+				it(1, this, &this->bfcstr, pos);
 			return (it);
 		}
 
 		reverse_iterator rend() noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_objptr_t) &this->bfcstr, npos);
+				it(1, this, &this->bfcstr, npos);
 			return (it);
 		}
 
 		const_reverse_iterator rend() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
+				it(1, this, &this->bfcstr, npos);
 			return (it);
 		}
 
@@ -648,14 +676,14 @@ namespace barefootc {
 		const_iterator cbegin() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(this, (bfc_cobjptr_t) &this->bfcstr, 0);
+				it(this, &this->bfcstr, 0);
 			return (it);
 		}
 
 		const_iterator cend() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(this, (bfc_cobjptr_t) &this->bfcstr, npos);
+				it(this, &this->bfcstr, npos);
 			return (it);
 		}
 
@@ -664,14 +692,14 @@ namespace barefootc {
 			size_t n = length();
 			size_t pos = (n > 0)? (n-1): npos;
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t)&this->bfcstr, pos);
+				it(1, this, &this->bfcstr, pos);
 			return (it);
 		}
 
 		const_reverse_iterator crend() const noexcept
 		{
 			barefootc::iterator<basic_string,charT>
-				it(1, this, (bfc_cobjptr_t)&this->bfcstr, npos);
+				it(1, this, &this->bfcstr, npos);
 			return (it);
 		}
 

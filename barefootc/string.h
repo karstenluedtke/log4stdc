@@ -223,6 +223,16 @@ const char *bfc_strdata(bfc_cstrptr_t s);
 const char *bfc_string_subdata(bfc_cstrptr_t s, size_t pos);
 char *bfc_string_index(bfc_strptr_t s, size_t pos);
 const char *bfc_string_data(bfc_cstrptr_t s);  /* not zero terminated */
+long bfc_string_get_char(bfc_cstrptr_t s, size_t pos);
+int bfc_string_set_char(bfc_strptr_t s, size_t pos, long c);
+
+/* Iterators */
+int bfc_string_begin_iterator(bfc_cstrptr_t s,bfc_iterptr_t it,size_t bufsize);
+int bfc_string_end_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bufsize);
+int bfc_string_reverse_begin_iterator(bfc_cstrptr_t s,
+					bfc_iterptr_t it, size_t bufsize);
+int bfc_string_reverse_end_iterator(bfc_cstrptr_t s,
+					bfc_iterptr_t it, size_t bufsize);
 
 /* Modifiers */
 int     bfc_string_assign_copy(bfc_strptr_t s, bfc_cstrptr_t s2);

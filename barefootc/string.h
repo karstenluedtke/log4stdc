@@ -110,53 +110,23 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	size_t	(*capacity)(cstrptrT s);				\
 	int	(*reserve)(strptrT s, size_t n);			\
 	/* Modifiers */							\
-	int	(*assign_copy)(strptrT s, cstrptrT s2);			\
-	int	(*assign_substr)(strptrT s, cstrptrT s2,		\
-				 size_t subpos, size_t sublen);		\
-	int	(*assign_c_str)(strptrT s, const charT *s2);		\
 	int	(*assign_buffer)(strptrT s, const charT *s2, size_t n);	\
 	int	(*assign_fill)(strptrT s, size_t n, charT c);		\
-	int	(*assign_range)(strptrT s,iterptrT first,iterptrT last);\
-	int	(*append_copy)(strptrT s, cstrptrT s2);			\
-	int	(*append_substr)(strptrT s, cstrptrT s2,		\
-				 size_t subpos, size_t sublen);		\
-	int	(*append_c_str)(strptrT s, const charT *s2);		\
 	int	(*append_buffer)(strptrT s, const charT *s2, size_t n);	\
 	int	(*append_fill)(strptrT s, size_t n, charT c);		\
-	int	(*append_range)(strptrT s,iterptrT first,iterptrT last);\
 	int	(*push_back)(strptrT s, charT c);			\
-	int	(*insert_copy)(strptrT s, size_t pos, cstrptrT s2);	\
-	int	(*insert_substr)(strptrT s, size_t pos, cstrptrT s2,	\
-				 size_t subpos, size_t sublen);		\
-	int	(*insert_c_str)(strptrT s, size_t pos, const charT *s2);\
 	int	(*insert_buffer)(strptrT s, size_t pos,			\
 				 const charT *s2, size_t n);		\
 	int	(*insert_fill)(strptrT s,size_t pos, size_t n,charT c);	\
 	int	(*insert_fillit)(strptrT s,iterptrT p,size_t n,charT c);\
 	int	(*insert_char)(strptrT s, iterptrT p, charT c);		\
-	int	(*insert_range)(strptrT s, iterptrT p,			\
-				iterptrT first, iterptrT last);		\
-	int	(*erase_seq)(strptrT s, size_t pos, size_t len);	\
-	int	(*erase_tail)(strptrT s, size_t pos);			\
-	int	(*erase_char)(strptrT s, iterptrT p);			\
-	int	(*erase_range)(strptrT s,iterptrT first,iterptrT last);	\
 	void	(*pop_back)(strptrT s);					\
-	int	(*replace_copy)(strptrT s, size_t pos1, size_t n1,	\
-				cstrptrT str);				\
-	int	(*replace_substr)(strptrT s, size_t pos1, size_t n1,	\
-		 		cstrptrT str, size_t pos2, size_t n2);	\
 	int	(*replace_buffer)(strptrT s, size_t pos, size_t n1,	\
 				const charT* s2, size_t n2);		\
-	int	(*replace_c_str)(strptrT s, size_t pos, size_t n1,	\
-				const charT* s2);			\
 	int	(*replace_fill)(strptrT s, size_t pos, size_t n1,	\
 				size_t n2, charT c);			\
-	int	(*replace_range_copy)(strptrT s, iterptrT i1,		\
-				iterptrT i2, cstrptrT s2);		\
 	int	(*replace_range_buffer)(strptrT s, iterptrT i1,		\
 				iterptrT i2, const charT* s2, size_t n);\
-	int	(*replace_range_c_str)(strptrT s, iterptrT i1,		\
-				iterptrT i2, const charT* s2);		\
 	int	(*replace_range_fill)(strptrT s, iterptrT i1,		\
 				iterptrT i2, size_t n, charT c);	\
 	int	(*replace_ranges)(strptrT s, iterptrT i1, iterptrT i2,	\
@@ -164,56 +134,28 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	size_t	(*copy)(cstrptrT s, charT* s2, size_t n, size_t pos);	\
 	void	(*swap)(strptrT s, strptrT str);			\
 	/* String operations */						\
-	size_t	(*find_bfstr)(cstrptrT s, cstrptrT str, size_t pos);	\
 	size_t	(*find_buffer)(cstrptrT s, const charT* s2,		\
 				size_t pos, size_t n);			\
-	size_t	(*find_c_str)(cstrptrT s, const charT* s2, size_t pos);	\
 	size_t	(*find_char)(cstrptrT s, charT c, size_t pos);		\
-	size_t	(*rfind_bfstr)(cstrptrT s, cstrptrT str, size_t pos);	\
 	size_t	(*rfind_buffer)(cstrptrT s, const charT* s2,		\
 				size_t pos, size_t n);			\
-	size_t	(*rfind_c_str)(cstrptrT s, const charT* s2,size_t pos);	\
 	size_t	(*rfind_char)(cstrptrT s, charT c, size_t pos);		\
-	size_t	(*find_first_of_bfstr)(cstrptrT s, cstrptrT str,	\
-				size_t pos);				\
 	size_t	(*find_first_of_buffer)(cstrptrT s, const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_first_of_c_str)(cstrptrT s, const charT* s2,	\
-				size_t pos);				\
 	size_t	(*find_first_of_char)(cstrptrT s, charT c, size_t pos);	\
-	size_t	(*find_last_of_bfstr)(cstrptrT s, cstrptrT str,		\
-				size_t pos);				\
 	size_t	(*find_last_of_buffer)(cstrptrT s, const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_last_of_c_str)(cstrptrT s, const charT* s2,	\
-				size_t pos);				\
 	size_t	(*find_last_of_char)(cstrptrT s, charT c, size_t pos);	\
-	size_t	(*find_first_not_of_bfstr)(cstrptrT s, cstrptrT str,	\
-				size_t pos);				\
 	size_t	(*find_first_not_of_buffer)(cstrptrT s,const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_first_not_of_c_str)(cstrptrT s, const charT* s2,	\
-				size_t pos);				\
 	size_t	(*find_first_not_of_char)(cstrptrT s, charT c,		\
-				size_t pos);				\
-	size_t	(*find_last_not_of_bfstr)(cstrptrT s, cstrptrT str,	\
 				size_t pos);				\
 	size_t	(*find_last_not_of_buffer)(cstrptrT s, const charT* s2,	\
 				size_t pos, size_t n);			\
-	size_t	(*find_last_not_of_c_str)(cstrptrT s, const charT* s2,	\
-				size_t pos);				\
 	size_t	(*find_last_not_of_char)(cstrptrT s, charT c,		\
 				size_t pos);				\
 	int	(*substr)(cstrptrT s, size_t pos, size_t n,		\
 				void *buf, size_t bufsize);		\
-	int	(*compare_bfstr)(cstrptrT s, cstrptrT str);		\
-	int	(*compare_substr)(cstrptrT s, size_t pos1, size_t n1,	\
-				cstrptrT str);				\
-	int	(*compare_substrs)(cstrptrT s, size_t pos1, size_t n1,	\
-				cstrptrT str, size_t pos2, size_t n2);	\
-	int	(*compare_c_str)(cstrptrT s, const charT* s2);		\
-	int	(*compare_substr_c_str)(cstrptrT s, size_t pos1,	\
-				size_t n1, const charT* s2);		\
 	int	(*compare_buffer)(cstrptrT s, size_t pos1, size_t n1,	\
 				const charT* s2, size_t n2);		\
 	/* Check nothing is missing */					\
@@ -223,6 +165,13 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	BFC_CONTAINER_CLASSHDR(classptrT, strptrT, cstrptrT, charT)	\
 	BFC_STRING_CLASS_DATA(charT)					\
 	BFC_STRING_METHODS(strptrT,cstrptrT,charT,bfc_iterptr_t)
+
+#ifdef NEED_BFC_STRING_CLASS
+struct bfc_string_class {
+	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
+			     bfc_strptr_t, bfc_cstrptr_t, char)
+};
+#endif
 
 #define BFC_STRING_INIT_PROLOGUE(classptrT,objptrT,obj,buf,size,pool,cls)\
 	bfc_classptr_t super = (bfc_classptr_t) (cls)->super;		\
@@ -414,54 +363,24 @@ wchar_t *bfc_wstring_index(bfc_wstrptr_t s, size_t pos);
 const wchar_t *bfc_wstring_data(bfc_cwstrptr_t s);  /* not zero terminated */
 
 /* Modifiers */
-int     bfc_wstring_assign_copy(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
-int     bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
-			 		size_t subpos, size_t sublen);
-int     bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2);
 int     bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2,size_t n);
 int     bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
-int     bfc_wstring_assign_range(bfc_wstrptr_t s,iterptrT first,iterptrT last);
-int     bfc_wstring_append_copy(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
-int     bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
-			 		size_t subpos, size_t sublen);
-int     bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2);
 int     bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n);
 int     bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
-int     bfc_wstring_append_range(bfc_wstrptr_t s,iterptrT first,iterptrT last);
 int	bfc_wstring_push_back(bfc_wstrptr_t s, wchar_t c);
-int     bfc_wstring_insert_copy(bfc_wstrptr_t s,size_t pos,bfc_cwstrptr_t s2);
-int     bfc_wstring_insert_substr(bfc_wstrptr_t s, size_t pos,
-			bfc_cwstrptr_t s2, size_t subpos, size_t sublen);
-int     bfc_wstring_insert_c_str(bfc_wstrptr_t s,size_t pos,const wchar_t *s2);
 int     bfc_wstring_insert_buffer(bfc_wstrptr_t s, size_t pos,
 			 		const wchar_t *s2, size_t n);
 int     bfc_wstring_insert_fill(bfc_wstrptr_t s,size_t pos,size_t n,wchar_t c);
 int     bfc_wstring_insert_fillit(bfc_wstrptr_t s, iterptrT p,
 					size_t n, wchar_t c);
 int     bfc_wstring_insert_char(bfc_wstrptr_t s, iterptrT p, wchar_t c);
-int     bfc_wstring_insert_range(bfc_wstrptr_t s, iterptrT p,
-					iterptrT first, iterptrT last);
-int     bfc_wstring_erase_seq(bfc_wstrptr_t s, size_t pos, size_t len);
-int     bfc_wstring_erase_tail(bfc_wstrptr_t s, size_t pos);
-int     bfc_wstring_erase_char(bfc_wstrptr_t s, iterptrT p);
-int     bfc_wstring_erase_range(bfc_wstrptr_t s, iterptrT first, iterptrT last);
 void    bfc_wstring_pop_back(bfc_wstrptr_t s);
-int     bfc_wstring_replace_copy(bfc_wstrptr_t s, size_t pos1,size_t n1,
-					bfc_cwstrptr_t str);
-int     bfc_wstring_replace_substr(bfc_wstrptr_t s,size_t pos1,size_t n1,
-	 			bfc_cwstrptr_t str, size_t pos2, size_t n2);
 int     bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos,size_t n1,
 					const wchar_t* s2, size_t n2);
-int     bfc_wstring_replace_c_str(bfc_wstrptr_t s, size_t pos, size_t n1,
-					const wchar_t* s2);
 int     bfc_wstring_replace_fill(bfc_wstrptr_t s, size_t pos, size_t n1,
 					size_t n2, wchar_t c);
-int     bfc_wstring_replace_range_copy(bfc_wstrptr_t s, iterptrT i1,
-					iterptrT i2, bfc_cwstrptr_t s2);
 int     bfc_wstring_replace_range_buffer(bfc_wstrptr_t s, iterptrT i1,
 				iterptrT i2, const wchar_t* s2, size_t n);
-int     bfc_wstring_replace_range_c_str(bfc_wstrptr_t s, iterptrT i1,
-					iterptrT i2, const wchar_t* s2);
 int     bfc_wstring_replace_range_fill(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, size_t n, wchar_t c);
 int     bfc_wstring_replace_ranges(bfc_wstrptr_t s, iterptrT i1,
@@ -470,56 +389,28 @@ size_t	bfc_wstring_copy(bfc_cwstrptr_t s, wchar_t* s2, size_t n, size_t pos);
 void	bfc_wstring_swap(bfc_wstrptr_t s, bfc_wstrptr_t str);
 
 /* String operations */
-size_t	bfc_wstring_find_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str, size_t pos);
+size_t	bfc_wstring_find_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
 size_t	bfc_wstring_find_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_c_str(bfc_cwstrptr_t s, const wchar_t* s2, size_t pos);
-size_t	bfc_wstring_find_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_rfind_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,size_t pos);
+size_t	bfc_wstring_rfind_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
 size_t	bfc_wstring_rfind_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_rfind_c_str(bfc_cwstrptr_t s, const wchar_t* s2,size_t pos);
-size_t	bfc_wstring_rfind_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_find_first_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
-					size_t pos);
+size_t	bfc_wstring_find_first_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
 size_t	bfc_wstring_find_first_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_first_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos);
-size_t	bfc_wstring_find_first_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_find_last_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
-					size_t pos);
+size_t	bfc_wstring_find_last_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
 size_t	bfc_wstring_find_last_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_last_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos);
-size_t	bfc_wstring_find_last_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos);
-size_t	bfc_wstring_find_first_not_of_bfstr(bfc_cwstrptr_t s,bfc_cwstrptr_t str,
+size_t	bfc_wstring_find_first_not_of_char(bfc_cwstrptr_t s, wchar_t c,
 					size_t pos);
 size_t	bfc_wstring_find_first_not_of_buffer(bfc_cwstrptr_t s,const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_first_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos);
-size_t	bfc_wstring_find_first_not_of_char(bfc_cwstrptr_t s, wchar_t c,
-					size_t pos);
-size_t	bfc_wstring_find_last_not_of_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str,
+size_t	bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c,
 					size_t pos);
 size_t	bfc_wstring_find_last_not_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_last_not_of_c_str(bfc_cwstrptr_t s, const wchar_t* s2,
-					size_t pos);
-size_t	bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c,
-					size_t pos);
 int	bfc_wstring_substr(bfc_cwstrptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int	bfc_wstring_compare_bfstr(bfc_cwstrptr_t s, bfc_cwstrptr_t str);
-int	bfc_wstring_compare_substr(bfc_cwstrptr_t s, size_t pos1, size_t n1,
-					bfc_cwstrptr_t str);
-int	bfc_wstring_compare_substrs(bfc_cwstrptr_t s, size_t pos1, size_t n1,
-				 bfc_cwstrptr_t str, size_t pos2, size_t n2);
-int	bfc_wstring_compare_c_str(bfc_cwstrptr_t s, const wchar_t* s2);
-int	bfc_wstring_compare_substr_c_str(bfc_cwstrptr_t s, size_t pos1,
-					size_t n1, const wchar_t* s2);
 int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2);
 

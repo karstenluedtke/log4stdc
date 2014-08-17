@@ -4,13 +4,9 @@
 
 #include <stddef.h>
 #include <errno.h>
+#define NEED_BFC_STRING_CLASS 1
 #include "barefootc/object.h"
 #include "barefootc/string.h"
-
-struct bfc_string_class {
-	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			     bfc_strptr_t, bfc_cstrptr_t, char)
-};
 
 /**
  * @brief    bfc_string_erase_seq

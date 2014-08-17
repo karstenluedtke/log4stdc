@@ -115,13 +115,6 @@ bfc_wstrbuf(bfc_cwstrptr_t s)
 }
 
 int
-bfc_wstr_reserve(bfc_wstrptr_t s, size_t n)
-{
-	RETURN_METHCALL(bfc_string_classptr_t, s, reserve, (s, n),
-			bfc_wstring_reserve(s, n));
-}
-
-int
 bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
 	static const long zbuf = 0;
@@ -229,7 +222,7 @@ bfc_init_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
 
 int
 bfc_init_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
-				size_t n, wchar_t c)
+				size_t n, int c)
 {
 	bfc_wstrptr_t s = (bfc_wstrptr_t) buf;
 	int rc;
@@ -360,7 +353,7 @@ bfc_wstring_max_size(bfc_cwstrptr_t s)
 }
 
 int
-bfc_wstring_resize(bfc_wstrptr_t s, size_t n, wchar_t c)
+bfc_wstring_resize(bfc_wstrptr_t s, size_t n, int c)
 {
 	int rc;
 
@@ -435,7 +428,7 @@ bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 
 	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
 
-	if ((rc = bfc_wstr_reserve(s, n)) == BFC_SUCCESS) {
+	if ((rc = bfc_string_reserve((bfc_strptr_t)s, n)) == BFC_SUCCESS) {
 		wchar_t *data = bfc_wstrbuf(s);
 		if (n > 0) {
 			(*s->vptr->traits->copy)(data, s2, n);
@@ -451,14 +444,14 @@ bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 }
 
 int
-bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
+bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, int c)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %ld, %02x)", __FUNCTION__, s, (long) n, c);
 
-	if ((rc = bfc_wstr_reserve(s, n)) == BFC_SUCCESS) {
+	if ((rc = bfc_string_reserve((bfc_strptr_t)s, n)) == BFC_SUCCESS) {
 		wchar_t *data = bfc_wstrbuf(s);
 		if (n > 0) {
 			(*s->vptr->traits->assign)(data, n, c);
@@ -481,7 +474,8 @@ bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 
 	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
 
-	if ((rc = bfc_wstr_reserve(s, s->len + n)) == BFC_SUCCESS) {
+	if ((rc = bfc_string_reserve((bfc_strptr_t)s, s->len + n))
+							== BFC_SUCCESS) {
 		wchar_t *data = bfc_wstrbuf(s) + s->len;
 		if (n > 0) {
 			(*s->vptr->traits->copy)(data, s2, n);
@@ -498,14 +492,15 @@ bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 }
 
 int
-bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
+bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, int c)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %ld, %02x)", __FUNCTION__, s, (long) n, c);
 
-	if ((rc = bfc_wstr_reserve(s, s->len + n)) == BFC_SUCCESS) {
+	if ((rc = bfc_string_reserve((bfc_strptr_t)s, s->len + n))
+							== BFC_SUCCESS) {
 		wchar_t *data = bfc_wstrbuf(s) + s->len;
 		if (n > 0) {
 			(*s->vptr->traits->assign)(data, n, c);
@@ -522,14 +517,15 @@ bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c)
 }
 
 int
-bfc_wstring_push_back(bfc_wstrptr_t s, wchar_t c)
+bfc_wstring_push_back(bfc_wstrptr_t s, int c)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %02x)", __FUNCTION__, s, c);
 
-	if ((rc = bfc_wstr_reserve(s, s->len + 1)) == BFC_SUCCESS) {
+	if ((rc = bfc_string_reserve((bfc_strptr_t)s, s->len + 1))
+							== BFC_SUCCESS) {
 		wchar_t *data = bfc_wstrbuf(s) + s->len;
 		data[0] = c;
 		data[1] = '\0';
@@ -552,7 +548,7 @@ bfc_wstring_insert_buffer(bfc_wstrptr_t s, size_t pos,
 }
 
 int
-bfc_wstring_insert_fill(bfc_wstrptr_t s, size_t pos, size_t n, wchar_t c)
+bfc_wstring_insert_fill(bfc_wstrptr_t s, size_t pos, size_t n, int c)
 {
 	wchar_t *data = alloca(4*n+1);
 	if (n > 0) {
@@ -564,7 +560,7 @@ bfc_wstring_insert_fill(bfc_wstrptr_t s, size_t pos, size_t n, wchar_t c)
 }
 
 int
-bfc_wstring_insert_fillit(bfc_wstrptr_t s, bfc_iterptr_t p, size_t n, wchar_t c)
+bfc_wstring_insert_fillit(bfc_wstrptr_t s, bfc_iterptr_t p, size_t n, int c)
 {
 	size_t pos;
 
@@ -581,7 +577,7 @@ bfc_wstring_insert_fillit(bfc_wstrptr_t s, bfc_iterptr_t p, size_t n, wchar_t c)
 }
 
 int
-bfc_wstring_insert_char(bfc_wstrptr_t s, bfc_iterptr_t p, wchar_t c)
+bfc_wstring_insert_char(bfc_wstrptr_t s, bfc_iterptr_t p, int c)
 {
 	size_t pos;
 	wchar_t data[2];
@@ -627,7 +623,8 @@ bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos, size_t n1,
 		return (-ERANGE);
 	}
 	if ((n2 > nkill)
-	 && ((rc = bfc_wstr_reserve(s, s->len + n2 - nkill)) != BFC_SUCCESS)) {
+	 && ((rc = bfc_string_reserve((bfc_strptr_t)s, s->len + n2-nkill))
+							!= BFC_SUCCESS)) {
 		L4SC_ERROR(logger, "%s: no space for %ld-%ld+%ld characters",
 			__FUNCTION__, (long) s->len, (long) nkill, (long) n2);
 		return (rc);
@@ -663,7 +660,7 @@ bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos, size_t n1,
 
 int
 bfc_wstring_replace_fill(bfc_wstrptr_t s, size_t pos, size_t n1,
-					size_t n2, wchar_t c)
+					size_t n2, int c)
 {
 	wchar_t *data = alloca(4*n2+1);
 	if (n2 > 0) {
@@ -699,7 +696,7 @@ bfc_wstring_replace_range_buffer(bfc_wstrptr_t s, bfc_iterptr_t i1,
 
 int
 bfc_wstring_replace_range_fill(bfc_wstrptr_t s, bfc_iterptr_t i1,
-					bfc_iterptr_t i2, size_t n, wchar_t c)
+					bfc_iterptr_t i2, size_t n, int c)
 {
 	wchar_t *data = alloca(4*n+1);
 	if (n > 0) {
@@ -789,7 +786,7 @@ bfc_wstring_find_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 }
 
 size_t
-bfc_wstring_find_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+bfc_wstring_find_char(bfc_cwstrptr_t s, int c, size_t pos)
 {
 	const int len = bfc_wstrlen(s);
 	const wchar_t *cp = NULL, *data = bfc_wstrdata(s);
@@ -823,7 +820,7 @@ bfc_wstring_rfind_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 }
 
 size_t
-bfc_wstring_rfind_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+bfc_wstring_rfind_char(bfc_cwstrptr_t s, int c, size_t pos)
 {
 	const size_t len = bfc_wstrlen(s);
 	const wchar_t *cp, *data = bfc_wstrdata(s);
@@ -860,7 +857,7 @@ bfc_wstring_find_first_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 }
 
 size_t
-bfc_wstring_find_first_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+bfc_wstring_find_first_of_char(bfc_cwstrptr_t s, int c, size_t pos)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			find_char, (s, c, pos),
@@ -889,7 +886,7 @@ bfc_wstring_find_last_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 }
 
 size_t
-bfc_wstring_find_last_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+bfc_wstring_find_last_of_char(bfc_cwstrptr_t s, int c, size_t pos)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			rfind_char, (s, c, pos),
@@ -917,7 +914,7 @@ bfc_wstring_find_first_not_of_buffer(bfc_cwstrptr_t s,const wchar_t* s2,
 }
 
 size_t
-bfc_wstring_find_first_not_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+bfc_wstring_find_first_not_of_char(bfc_cwstrptr_t s, int c, size_t pos)
 {
 	const wchar_t *cp, *data = bfc_wstrdata(s);
 	const wchar_t *limit = data + bfc_wstrlen(s);
@@ -957,7 +954,7 @@ bfc_wstring_find_last_not_of_buffer(bfc_cwstrptr_t s, const wchar_t* s2,
 }
 
 size_t
-bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, wchar_t c, size_t pos)
+bfc_wstring_find_last_not_of_char(bfc_cwstrptr_t s, int c, size_t pos)
 {
 	const size_t len = bfc_wstrlen(s);
 	const wchar_t *cp, *data = bfc_wstrdata(s);

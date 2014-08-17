@@ -179,7 +179,7 @@ bfc_init_basic_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
 
 int
 bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
-				size_t n, wchar_t c)
+				size_t n, int c)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
 	
@@ -254,7 +254,7 @@ bfc_basic_wstring_max_size(bfc_basic_cwstrptr_t s)
 }
 
 int
-bfc_basic_wstring_resize(bfc_basic_wstrptr_t s, size_t n, wchar_t c)
+bfc_basic_wstring_resize(bfc_basic_wstrptr_t s, size_t n, int c)
 {
 	int rc = -ENOSPC;
 

@@ -19,7 +19,6 @@
 #include <memory>
 #include <stdexcept>
 
-#define NEED_BFC_STRING_CLASS 1
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
@@ -680,31 +679,23 @@ namespace barefootc {
 		// 21.4.4, capacity:
 		size_type size() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					size, (&bfcstr),
-					0);
+			return bfc_strlen(&bfcstr);
 		}
 
 		size_type length() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					size, (&bfcstr),
-					0);
+			return bfc_strlen(&bfcstr);
 		}
 
 		size_type max_size() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					max_size, (&bfcstr),
-					0);
+			return bfc_string_max_size(&bfcstr);
 		}
 
 		void resize(size_type n, charT c)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					resize, (&bfcstr, n, c),
-					-ENOSYS);
+			rc = bfc_string_resize(&bfcstr, n, c);
 			if (rc < 0) {
 				throw_resize_error(-rc);
 			}
@@ -713,9 +704,7 @@ namespace barefootc {
 		void resize(size_type n)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					resize, (&bfcstr, n, 0),
-					-ENOSYS);
+			rc = bfc_string_resize(&bfcstr, n, 0);
 			if (rc < 0) {
 				throw_resize_error(-rc);
 			}
@@ -723,17 +712,13 @@ namespace barefootc {
 
 		size_type capacity() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					capacity, (&bfcstr),
-					0);
+			return bfc_string_capacity(&bfcstr);
 		}
 
 		void reserve(size_type res_arg = 0)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					reserve, (&bfcstr, res_arg),
-					-ENOSYS);
+			rc = bfc_string_reserve(&bfcstr, res_arg);
 			if (rc < 0) {
 				throw_resize_error(-rc);
 			}
@@ -742,14 +727,12 @@ namespace barefootc {
 		void shrink_to_fit()
 		{
 			size_type len = length();
-			VOID_METHCALL(classptrT, &bfcstr,
-					reserve, (&bfcstr, len));
+			bfc_string_reserve(&bfcstr, len);
 		}
 
 		void clear() noexcept
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-					resize, (&bfcstr, 0, 0));
+			bfc_string_resize(&bfcstr, 0, 0);
 		}
 
 		bool empty() const noexcept
@@ -764,8 +747,7 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					index, (s, pos), NULL);
+			p = bfc_string_index(s, pos);
 			return (*p);
 		}
 
@@ -773,8 +755,7 @@ namespace barefootc {
 		{
 			charT *p;
 
-			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					index, (&bfcstr, pos), NULL);
+			p = bfc_string_index(&bfcstr, pos);
 			return (*p);
 		}
 
@@ -783,8 +764,7 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					index, (s, n), NULL);
+			p = bfc_string_index(s, n);
 			if ((p == NULL) || (n >= length())) {
 				throw(std::out_of_range("bad position"));
 			}
@@ -795,8 +775,7 @@ namespace barefootc {
 		{
 			charT *p;
 
-			RETVAR_METHCALL(p, classptrT, &bfcstr,
-					index, (&bfcstr, n), NULL);
+			p = bfc_string_index(&bfcstr, n);
 			if ((p == NULL) || (n >= length())) {
 				throw(std::out_of_range("bad position"));
 			}
@@ -841,8 +820,7 @@ namespace barefootc {
 
 		basic_string& operator+=(charT c)
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				push_back, (&bfcstr, c));
+			bfc_string_push_back(&bfcstr, c);
 			return(*this);
 		}
 
@@ -875,9 +853,7 @@ namespace barefootc {
 		basic_string& append(const charT* s, size_type n)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				append_buffer, (&bfcstr, s, n),
-				-ENOSYS);
+			rc = bfc_string_append_buffer(&bfcstr, s, n);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -897,9 +873,7 @@ namespace barefootc {
 		basic_string& append(size_type n, charT c)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				append_fill, (&bfcstr, n, c),
-				-ENOSYS);
+			rc = bfc_string_append_fill(&bfcstr, n, c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -927,9 +901,7 @@ namespace barefootc {
 		void push_back(charT c)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				push_back, (&bfcstr, c),
-				-ENOSYS);
+			rc = bfc_string_push_back(&bfcstr, c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -961,9 +933,7 @@ namespace barefootc {
 		basic_string& assign(const charT* s, size_type n)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				assign_buffer, (&bfcstr, s, n),
-				-ENOSYS);
+			rc = bfc_string_assign_buffer(&bfcstr, s, n);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -983,9 +953,7 @@ namespace barefootc {
 		basic_string& assign(size_type n, charT c)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				assign_fill, (&bfcstr, n, c),
-				-ENOSYS);
+			rc = bfc_string_assign_fill(&bfcstr, n, c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1034,9 +1002,7 @@ namespace barefootc {
 		basic_string& insert(size_type pos, const charT* s, size_type n)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					insert_buffer, (&bfcstr, pos, s, n),
-					-ENOSYS);
+			rc = bfc_string_insert_buffer(&bfcstr, pos, s, n);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1056,9 +1022,7 @@ namespace barefootc {
 		basic_string& insert(size_type pos, size_type n, charT c)
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					insert_fill, (&bfcstr, pos, n, c),
-					-ENOSYS);
+			rc = bfc_string_insert_fill(&bfcstr, pos, n, c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1069,9 +1033,7 @@ namespace barefootc {
 		{
 			iterator it(p);
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					insert_char, (&bfcstr, it.bfciter(), c),
-					-ENOSYS);
+			rc = bfc_string_insert_char(&bfcstr, it.bfciter(), c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1082,9 +1044,8 @@ namespace barefootc {
 		{
 			iterator it(p);
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				insert_fillit, (&bfcstr, it.bfciter(), n, c),
-				-ENOSYS);
+			rc = bfc_string_insert_fillit(&bfcstr,
+						      it.bfciter(), n, c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1147,9 +1108,7 @@ namespace barefootc {
 
 		void pop_back() noexcept
 		{
-			int rc;
-			VOID_METHCALL(classptrT, &bfcstr,
-					pop_back, (&bfcstr));
+			bfc_string_pop_back(&bfcstr);
 		}
 
 		basic_string& replace(size_type pos1, size_type n1,
@@ -1181,10 +1140,7 @@ namespace barefootc {
 					const charT* s, size_type n2)
 		{
 			int rc;
-
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				replace_buffer, (&bfcstr, pos, n1, s, n2),
-				-ENOSYS);
+			rc = bfc_string_replace_buffer(&bfcstr, pos, n1, s, n2);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1206,10 +1162,7 @@ namespace barefootc {
 					size_type n2, charT c)
 		{
 			int rc;
-
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				replace_fill, (&bfcstr, pos, n1, n2, c),
-				-ENOSYS);
+			rc = bfc_string_replace_fill(&bfcstr, pos, n1, n2, c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1233,11 +1186,8 @@ namespace barefootc {
 					const charT* s, size_type n)
 		{
 			int rc;
-
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				replace_range_buffer, (&bfcstr,
-					i1.bfciter(), i2.bfciter(), s, n),
-				-ENOSYS);
+			rc = bfc_string_replace_range_buffer(&bfcstr,
+					i1.bfciter(), i2.bfciter(), s, n);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1261,11 +1211,8 @@ namespace barefootc {
 					size_type n, charT c)
 		{
 			int rc;
-
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				replace_range_fill, (&bfcstr,
-					i1.bfciter(), i2.bfciter(), n, c),
-				-ENOSYS);
+			rc = bfc_string_replace_range_fill(&bfcstr,
+					i1.bfciter(), i2.bfciter(), n, c);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1280,12 +1227,9 @@ namespace barefootc {
 					const_iterator j1, const_iterator j2)
 		{
 			int rc;
-
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				replace_ranges, (&bfcstr,
+			rc = bfc_string_replace_ranges(&bfcstr,
 					i1.bfciter(), i2.bfciter(),
-					j1.bfciter(), j2.bfciter()),
-				-ENOSYS);
+					j1.bfciter(), j2.bfciter());
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1298,9 +1242,7 @@ namespace barefootc {
 		size_type copy(charT* s, size_type n, size_type pos = 0) const
 		{
 			size_type rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					copy, (&bfcstr, s, n, pos),
-					-ENOSYS);
+			rc = bfc_string_copy(&bfcstr, s, n, pos);
 			if ((((ptrdiff_t)rc) < 0) || (rc > n)) {
 				short err = -rc;
 				rc = 0;
@@ -1311,21 +1253,18 @@ namespace barefootc {
 
 		void swap(basic_string& str) noexcept
 		{
-			VOID_METHCALL(classptrT, &bfcstr,
-				      swap, (&bfcstr, &str.bfcstr));
+			bfc_string_swap(&bfcstr, &str.bfcstr);
 		}
 		
 		// 21.4.7, string operations:
 		const charT* c_str() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr, first, (&bfcstr),
-					bfcstr.buf);
+			return bfc_strdata(&bfcstr);
 		}
 
 		const charT* data() const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr, first, (&bfcstr),
-					bfcstr.buf);
+			return bfc_strdata(&bfcstr);
 		}
 
 		allocator_type get_allocator() const noexcept
@@ -1342,21 +1281,17 @@ namespace barefootc {
 		size_type find (const charT* s, size_type pos, size_type n)
 								const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					find_buffer, (&bfcstr, s, pos, n),
-					npos);
+			return bfc_string_find_buffer(&bfcstr, s, pos, n);
 		}
 
 		size_type find (const charT* s,size_type pos = 0)const noexcept
 		{
-			return bfc_string_find_c_str(&bfcstr, s ,pos);
+			return bfc_string_find_c_str(&bfcstr, s, pos);
 		}
 
 		size_type find (charT c, size_type pos = 0) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					find_char, (&bfcstr, c, pos),
-					npos);
+			return bfc_string_find_char(&bfcstr, c, pos);
 		}
 
 		size_type rfind(const basic_string& str, size_type pos = npos)
@@ -1368,9 +1303,7 @@ namespace barefootc {
 		size_type rfind(const charT* s, size_type pos, size_type n)
 								const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					rfind_buffer, (&bfcstr, s, pos, n),
-					npos);
+			return bfc_string_rfind_buffer(&bfcstr, s, pos, n);
 		}
 
 		size_type rfind(const charT* s, size_type pos = npos)
@@ -1381,9 +1314,7 @@ namespace barefootc {
 
 		size_type rfind(charT c, size_type pos = npos) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-					rfind_char, (&bfcstr, c, pos),
-					npos);
+			return bfc_string_rfind_char(&bfcstr, c, pos);
 		}
 
 		size_type find_first_of(const basic_string& str,
@@ -1396,9 +1327,8 @@ namespace barefootc {
 		size_type find_first_of(const charT* s, size_type pos,
 					size_type n) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_first_of_buffer, (&bfcstr, s, pos, n),
-				npos);
+			return bfc_string_find_first_of_buffer(&bfcstr,
+								s, pos, n);
 		}
 
 		size_type find_first_of(const charT* s, size_type pos = 0)
@@ -1410,9 +1340,7 @@ namespace barefootc {
 		size_type find_first_of(charT c, size_type pos = 0)
 								const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_first_of_char, (&bfcstr, c, pos),
-				npos);
+			return bfc_string_find_first_of_char(&bfcstr, c, pos);
 		}
 
 		size_type find_last_of (const basic_string& str,
@@ -1425,9 +1353,8 @@ namespace barefootc {
 		size_type find_last_of (const charT* s, size_type pos,
 					size_type n) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_last_of_buffer, (&bfcstr, s, pos, n),
-				npos);
+			return bfc_string_find_last_of_buffer(&bfcstr,
+								s, pos, n);
 		}
 
 		size_type find_last_of (const charT* s, size_type pos = npos)
@@ -1439,9 +1366,7 @@ namespace barefootc {
 		size_type find_last_of (charT c, size_type pos = npos)
 								const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_last_of_char, (&bfcstr, c, pos),
-				npos);
+			return bfc_string_find_last_of_char(&bfcstr, c, pos);
 		}
 
 		size_type find_first_not_of(const basic_string& str,
@@ -1454,9 +1379,8 @@ namespace barefootc {
 		size_type find_first_not_of(const charT* s,
 				size_type pos, size_type n) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_first_not_of_buffer, (&bfcstr, s, pos, n),
-				npos);
+			return bfc_string_find_first_not_of_buffer(&bfcstr,
+								   s, pos, n);
 		}
 
 		size_type find_first_not_of(const charT* s, size_type pos = 0)
@@ -1469,9 +1393,8 @@ namespace barefootc {
 		size_type find_first_not_of(charT c, size_type pos = 0)
 								const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_first_not_of_char, (&bfcstr, c, pos),
-				npos);
+			return bfc_string_find_first_not_of_char(&bfcstr,
+								 c, pos);
 		}
 
 		size_type find_last_not_of (const basic_string& str,
@@ -1484,9 +1407,8 @@ namespace barefootc {
 		size_type find_last_not_of (const charT* s,
 				size_type pos, size_type n) const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_last_not_of_buffer, (&bfcstr, s, pos, n),
-				npos);
+			return bfc_string_find_last_not_of_buffer(&bfcstr,
+								  s, pos, n);
 		}
 
 		size_type find_last_not_of (const charT* s, size_type pos=npos)
@@ -1499,20 +1421,16 @@ namespace barefootc {
 		size_type find_last_not_of (charT c, size_type pos = npos)
 								const noexcept
 		{
-			RETURN_METHCALL(classptrT, &bfcstr,
-				find_last_not_of_char, (&bfcstr, c, pos),
-				npos);
+			return bfc_string_find_last_not_of_char(&bfcstr,
+								c, pos);
 		}
 
 		basic_string substr(size_type pos = 0, size_type n = npos) const
 		{
 			basic_string s(saved_allocator);
 			int rc;
-
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-					substr, (&bfcstr, pos, n,
-					         &s.bfcstr, sizeof(s.bfcstr)),
-					-ENOSYS);
+			rc = bfc_string_substr(&bfcstr, pos, n,
+					       &s.bfcstr, sizeof(s.bfcstr));
 			if (rc < 0) {
 				throw_substr_error(-rc);
 			}
@@ -1592,9 +1510,8 @@ namespace barefootc {
 			    const charT* s, size_type n2) const
 		{
 			int rc;
-			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				compare_buffer, (&bfcstr, pos1, n1, s, n2),
-				-ENOSYS);
+			rc = bfc_string_compare_buffer(&bfcstr, pos1, n1,
+							s, n2);
 			if (rc < -1) {
 				throw_substr_error(-rc);
 			}

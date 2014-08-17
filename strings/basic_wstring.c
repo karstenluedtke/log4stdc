@@ -40,7 +40,7 @@ struct bfc_string_class bfc_basic_wstring_class = {
 
 	.traits		= (void *) &bfc_wchar_traits_class,
 
-	.init_bfstr	= (void *) bfc_init_basic_wstring_bfstr,
+	.init_copy	= (void *) bfc_init_basic_wstring_copy,
 	.init_move	= bfc_init_basic_wstring_move,
 	.init_substr	= (void *) bfc_init_basic_wstring_substr,
 	.init_buffer	= bfc_init_basic_wstring_buffer,
@@ -82,7 +82,7 @@ bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 int
-bfc_init_basic_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_basic_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);

@@ -337,7 +337,7 @@ namespace barefootc {
 			    const basic_string& str)
 		{
 			int rc;
-			rc = bfc_init_basic_string_bfstr(buf, bufsize, pool,
+			rc = bfc_init_basic_string_copy(buf, bufsize, pool,
 						(bfc_cstrptr_t) &str.bfcstr);
 			return (rc);
 		}
@@ -406,7 +406,7 @@ namespace barefootc {
 			    const basic_string& str)
 		{
 			int rc;
-			rc = bfc_init_basic_wstring_bfstr(buf, bufsize, pool,
+			rc = bfc_init_basic_wstring_copy(buf, bufsize, pool,
 						(bfc_cwstrptr_t) &str.bfcstr);
 			return (rc);
 		}
@@ -836,7 +836,7 @@ namespace barefootc {
 		basic_string& operator+=(const basic_string& str)
 		{
 			VOID_METHCALL(classptrT, &bfcstr,
-				append_bfstr, (&bfcstr, &str.bfcstr));
+				append_copy, (&bfcstr, &str.bfcstr));
 			return(*this);
 		}
 
@@ -862,7 +862,7 @@ namespace barefootc {
 		{
 			int rc;
 			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				append_bfstr, (&bfcstr, &str.bfcstr),
+				append_copy, (&bfcstr, &str.bfcstr),
 				-ENOSYS);
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -954,7 +954,7 @@ namespace barefootc {
 		{
 			int rc;
 			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				assign_bfstr, (&bfcstr, &str.bfcstr),
+				assign_copy, (&bfcstr, &str.bfcstr),
 				-ENOSYS);
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -1035,7 +1035,7 @@ namespace barefootc {
 		{
 			int rc;
 			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				insert_bfstr, (&bfcstr, pos1, &str.bfcstr),
+				insert_copy, (&bfcstr, pos1, &str.bfcstr),
 				-ENOSYS);
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -1193,7 +1193,7 @@ namespace barefootc {
 			int rc;
 
 			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				replace_bfstr, (&bfcstr,pos1,n1, &str.bfcstr),
+				replace_copy, (&bfcstr,pos1,n1, &str.bfcstr),
 				-ENOSYS);
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -1265,7 +1265,7 @@ namespace barefootc {
 			int rc;
 
 			RETVAR_METHCALL(rc, classptrT, &bfcstr,
-				replace_range_bfstr, (&bfcstr, 
+				replace_range_copy, (&bfcstr, 
 					i1.bfciter(), i2.bfciter(),
 					&str.bfcstr),
 				-ENOSYS);

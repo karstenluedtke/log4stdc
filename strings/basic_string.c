@@ -25,7 +25,7 @@
 #define	bfc_init_basic_wstring			bfc_init_basic_string
 #define	bfc_destroy_basic_wstring		bfc_destroy_basic_string
 #define	bfc_basic_wstring_objsize		bfc_basic_string_objsize
-#define	bfc_init_basic_wstring_bfstr		bfc_init_basic_string_bfstr
+#define	bfc_init_basic_wstring_copy		bfc_init_basic_string_copy
 #define	bfc_init_basic_wstring_move		bfc_init_basic_string_move
 #define	bfc_init_basic_wstring_substr		bfc_init_basic_string_substr
 #define	bfc_init_basic_wstring_buffer		bfc_init_basic_string_buffer

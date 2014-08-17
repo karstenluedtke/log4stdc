@@ -86,7 +86,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 
 #define BFC_STRING_METHODS(strptrT,cstrptrT,charT,iterptrT) \
 	/* Additional allocators */					\
-	int	(*init_bfstr)(void *buf, size_t bufsize,		\
+	int	(*init_copy)(void *buf, size_t bufsize,			\
 				struct mempool *pool, cstrptrT str);	\
 	int	(*init_move)(void *buf, size_t bufsize,			\
 				struct mempool *pool, strptrT str);	\
@@ -110,14 +110,14 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	size_t	(*capacity)(cstrptrT s);				\
 	int	(*reserve)(strptrT s, size_t n);			\
 	/* Modifiers */							\
-	int	(*assign_bfstr)(strptrT s, cstrptrT s2);		\
+	int	(*assign_copy)(strptrT s, cstrptrT s2);			\
 	int	(*assign_substr)(strptrT s, cstrptrT s2,		\
 				 size_t subpos, size_t sublen);		\
 	int	(*assign_c_str)(strptrT s, const charT *s2);		\
 	int	(*assign_buffer)(strptrT s, const charT *s2, size_t n);	\
 	int	(*assign_fill)(strptrT s, size_t n, charT c);		\
 	int	(*assign_range)(strptrT s,iterptrT first,iterptrT last);\
-	int	(*append_bfstr)(strptrT s, cstrptrT s2);		\
+	int	(*append_copy)(strptrT s, cstrptrT s2);			\
 	int	(*append_substr)(strptrT s, cstrptrT s2,		\
 				 size_t subpos, size_t sublen);		\
 	int	(*append_c_str)(strptrT s, const charT *s2);		\
@@ -125,7 +125,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	int	(*append_fill)(strptrT s, size_t n, charT c);		\
 	int	(*append_range)(strptrT s,iterptrT first,iterptrT last);\
 	int	(*push_back)(strptrT s, charT c);			\
-	int	(*insert_bfstr)(strptrT s, size_t pos, cstrptrT s2);	\
+	int	(*insert_copy)(strptrT s, size_t pos, cstrptrT s2);	\
 	int	(*insert_substr)(strptrT s, size_t pos, cstrptrT s2,	\
 				 size_t subpos, size_t sublen);		\
 	int	(*insert_c_str)(strptrT s, size_t pos, const charT *s2);\
@@ -141,7 +141,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	int	(*erase_char)(strptrT s, iterptrT p);			\
 	int	(*erase_range)(strptrT s,iterptrT first,iterptrT last);	\
 	void	(*pop_back)(strptrT s);					\
-	int	(*replace_bfstr)(strptrT s, size_t pos1, size_t n1,	\
+	int	(*replace_copy)(strptrT s, size_t pos1, size_t n1,	\
 				cstrptrT str);				\
 	int	(*replace_substr)(strptrT s, size_t pos1, size_t n1,	\
 		 		cstrptrT str, size_t pos2, size_t n2);	\
@@ -151,7 +151,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 				const charT* s2);			\
 	int	(*replace_fill)(strptrT s, size_t pos, size_t n1,	\
 				size_t n2, charT c);			\
-	int	(*replace_range_bfstr)(strptrT s, iterptrT i1,		\
+	int	(*replace_range_copy)(strptrT s, iterptrT i1,		\
 				iterptrT i2, cstrptrT s2);		\
 	int	(*replace_range_buffer)(strptrT s, iterptrT i1,		\
 				iterptrT i2, const charT* s2, size_t n);\
@@ -243,7 +243,7 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 #define iterptrT bfc_iterptr_t
 /* Allocators */
 int	bfc_init_string(void *buf, size_t bufsize, struct mempool *pool);
-int	bfc_init_string_bfstr(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_string_copy(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str);
 int	bfc_init_string_move(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_strptr_t str);
@@ -272,14 +272,14 @@ char *bfc_string_index(bfc_strptr_t s, size_t pos);
 const char *bfc_string_data(bfc_cstrptr_t s);  /* not zero terminated */
 
 /* Modifiers */
-int     bfc_string_assign_bfstr(bfc_strptr_t s, bfc_cstrptr_t s2);
+int     bfc_string_assign_copy(bfc_strptr_t s, bfc_cstrptr_t s2);
 int     bfc_string_assign_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
 			 		size_t subpos, size_t sublen);
 int     bfc_string_assign_c_str(bfc_strptr_t s, const char *s2);
 int     bfc_string_assign_buffer(bfc_strptr_t s, const char *s2, size_t n);
 int     bfc_string_assign_fill(bfc_strptr_t s, size_t n, char c);
 int     bfc_string_assign_range(bfc_strptr_t s, iterptrT first, iterptrT last);
-int     bfc_string_append_bfstr(bfc_strptr_t s, bfc_cstrptr_t s2);
+int     bfc_string_append_copy(bfc_strptr_t s, bfc_cstrptr_t s2);
 int     bfc_string_append_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
 			 		size_t subpos, size_t sublen);
 int     bfc_string_append_c_str(bfc_strptr_t s, const char *s2);
@@ -287,7 +287,7 @@ int     bfc_string_append_buffer(bfc_strptr_t s, const char *s2, size_t n);
 int     bfc_string_append_fill(bfc_strptr_t s, size_t n, char c);
 int     bfc_string_append_range(bfc_strptr_t s, iterptrT first, iterptrT last);
 int	bfc_string_push_back(bfc_strptr_t s, char c);
-int     bfc_string_insert_bfstr(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2);
+int     bfc_string_insert_copy(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2);
 int     bfc_string_insert_substr(bfc_strptr_t s, size_t pos,
 			bfc_cstrptr_t s2, size_t subpos, size_t sublen);
 int     bfc_string_insert_c_str(bfc_strptr_t s, size_t pos, const char *s2);
@@ -303,7 +303,7 @@ int     bfc_string_erase_tail(bfc_strptr_t s, size_t pos);
 int     bfc_string_erase_char(bfc_strptr_t s, iterptrT p);
 int     bfc_string_erase_range(bfc_strptr_t s, iterptrT first, iterptrT last);
 void    bfc_string_pop_back(bfc_strptr_t s);
-int     bfc_string_replace_bfstr(bfc_strptr_t s, size_t pos1,size_t n1,
+int     bfc_string_replace_copy(bfc_strptr_t s, size_t pos1,size_t n1,
 					bfc_cstrptr_t str);
 int     bfc_string_replace_substr(bfc_strptr_t s,size_t pos1,size_t n1,
 	 			bfc_cstrptr_t str, size_t pos2, size_t n2);
@@ -313,7 +313,7 @@ int     bfc_string_replace_c_str(bfc_strptr_t s, size_t pos, size_t n1,
 					const char* s2);
 int     bfc_string_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
 					size_t n2, char c);
-int     bfc_string_replace_range_bfstr(bfc_strptr_t s, iterptrT i1,
+int     bfc_string_replace_range_copy(bfc_strptr_t s, iterptrT i1,
 					iterptrT i2, bfc_cstrptr_t s2);
 int     bfc_string_replace_range_buffer(bfc_strptr_t s, iterptrT i1,
 				iterptrT i2, const char* s2, size_t n);
@@ -385,7 +385,7 @@ int	bfc_string_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
  */
 /* Allocators */
 int	bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool);
-int	bfc_init_wstring_bfstr(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str);
 int	bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_wstrptr_t str);
@@ -414,14 +414,14 @@ wchar_t *bfc_wstring_index(bfc_wstrptr_t s, size_t pos);
 const wchar_t *bfc_wstring_data(bfc_cwstrptr_t s);  /* not zero terminated */
 
 /* Modifiers */
-int     bfc_wstring_assign_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
+int     bfc_wstring_assign_copy(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
 int     bfc_wstring_assign_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			 		size_t subpos, size_t sublen);
 int     bfc_wstring_assign_c_str(bfc_wstrptr_t s, const wchar_t *s2);
 int     bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2,size_t n);
 int     bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
 int     bfc_wstring_assign_range(bfc_wstrptr_t s,iterptrT first,iterptrT last);
-int     bfc_wstring_append_bfstr(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
+int     bfc_wstring_append_copy(bfc_wstrptr_t s, bfc_cwstrptr_t s2);
 int     bfc_wstring_append_substr(bfc_wstrptr_t s, bfc_cwstrptr_t s2,
 			 		size_t subpos, size_t sublen);
 int     bfc_wstring_append_c_str(bfc_wstrptr_t s, const wchar_t *s2);
@@ -429,7 +429,7 @@ int     bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n);
 int     bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, wchar_t c);
 int     bfc_wstring_append_range(bfc_wstrptr_t s,iterptrT first,iterptrT last);
 int	bfc_wstring_push_back(bfc_wstrptr_t s, wchar_t c);
-int     bfc_wstring_insert_bfstr(bfc_wstrptr_t s,size_t pos,bfc_cwstrptr_t s2);
+int     bfc_wstring_insert_copy(bfc_wstrptr_t s,size_t pos,bfc_cwstrptr_t s2);
 int     bfc_wstring_insert_substr(bfc_wstrptr_t s, size_t pos,
 			bfc_cwstrptr_t s2, size_t subpos, size_t sublen);
 int     bfc_wstring_insert_c_str(bfc_wstrptr_t s,size_t pos,const wchar_t *s2);
@@ -446,7 +446,7 @@ int     bfc_wstring_erase_tail(bfc_wstrptr_t s, size_t pos);
 int     bfc_wstring_erase_char(bfc_wstrptr_t s, iterptrT p);
 int     bfc_wstring_erase_range(bfc_wstrptr_t s, iterptrT first, iterptrT last);
 void    bfc_wstring_pop_back(bfc_wstrptr_t s);
-int     bfc_wstring_replace_bfstr(bfc_wstrptr_t s, size_t pos1,size_t n1,
+int     bfc_wstring_replace_copy(bfc_wstrptr_t s, size_t pos1,size_t n1,
 					bfc_cwstrptr_t str);
 int     bfc_wstring_replace_substr(bfc_wstrptr_t s,size_t pos1,size_t n1,
 	 			bfc_cwstrptr_t str, size_t pos2, size_t n2);
@@ -456,7 +456,7 @@ int     bfc_wstring_replace_c_str(bfc_wstrptr_t s, size_t pos, size_t n1,
 					const wchar_t* s2);
 int     bfc_wstring_replace_fill(bfc_wstrptr_t s, size_t pos, size_t n1,
 					size_t n2, wchar_t c);
-int     bfc_wstring_replace_range_bfstr(bfc_wstrptr_t s, iterptrT i1,
+int     bfc_wstring_replace_range_copy(bfc_wstrptr_t s, iterptrT i1,
 					iterptrT i2, bfc_cwstrptr_t s2);
 int     bfc_wstring_replace_range_buffer(bfc_wstrptr_t s, iterptrT i1,
 				iterptrT i2, const wchar_t* s2, size_t n);
@@ -526,11 +526,13 @@ int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 size_t bfc_strlen(bfc_cstrptr_t s);
 size_t bfc_string_sublen(bfc_cstrptr_t s, size_t pos, size_t n);
 const char *bfc_strdata(bfc_cstrptr_t s);
+const char *bfc_string_subdata(bfc_cstrptr_t s, size_t pos);
 int bfc_str_reserve(bfc_strptr_t s, size_t n);
 
 size_t bfc_wstrlen(bfc_cwstrptr_t s);
 size_t bfc_wstring_sublen(bfc_cwstrptr_t s, size_t pos, size_t n);
 const wchar_t *bfc_wstrdata(bfc_cwstrptr_t s);
+const wchar_t *bfc_wstring_subdata(bfc_cwstrptr_t s, size_t pos);
 int bfc_wstr_reserve(bfc_wstrptr_t s, size_t n);
 
 /*
@@ -538,7 +540,7 @@ int bfc_wstr_reserve(bfc_wstrptr_t s, size_t n);
  */
 /* Allocators */
 int	bfc_init_basic_string(void *buf, size_t bufsize, struct mempool *pool);
-int	bfc_init_basic_string_bfstr(void *buf, size_t bufsize,
+int	bfc_init_basic_string_copy(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cstrptr_t str);
 int	bfc_init_basic_string_move(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_basic_strptr_t str);
@@ -567,7 +569,7 @@ int	bfc_basic_string_reserve(bfc_basic_strptr_t s, size_t n);
  */
 /* Allocators */
 int	bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool);
-int	bfc_init_basic_wstring_bfstr(void *buf, size_t bufsize,
+int	bfc_init_basic_wstring_copy(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cwstrptr_t str);
 int	bfc_init_basic_wstring_move(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_basic_wstrptr_t str);

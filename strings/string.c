@@ -21,7 +21,7 @@
 #define	bfc_init_wstring			bfc_init_string
 #define	bfc_destroy_wstring			bfc_destroy_string
 #define	bfc_wstring_objsize			bfc_string_objsize
-#define	bfc_init_wstring_bfstr			bfc_init_string_bfstr
+#define	bfc_init_wstring_copy			bfc_init_string_copy
 #define	bfc_init_wstring_move			bfc_init_string_move
 #define	bfc_init_wstring_substr			bfc_init_string_substr
 #define	bfc_init_wstring_buffer			bfc_init_string_buffer
@@ -42,20 +42,20 @@
 #define	bfc_wstring_ref				bfc_string_ref
 #define	bfc_wstring_data			bfc_string_data
 #define	bfc_wstring_index			bfc_string_index
-#define	bfc_wstring_assign_bfstr		bfc_string_assign_bfstr
+#define	bfc_wstring_assign_copy			bfc_string_assign_copy
 #define	bfc_wstring_assign_substr		bfc_string_assign_substr
 #define	bfc_wstring_assign_c_str		bfc_string_assign_c_str
 #define	bfc_wstring_assign_buffer		bfc_string_assign_buffer
 #define	bfc_wstring_assign_fill			bfc_string_assign_fill
 #define	bfc_wstring_assign_range		bfc_string_assign_range
-#define	bfc_wstring_append_bfstr		bfc_string_append_bfstr
+#define	bfc_wstring_append_copy			bfc_string_append_copy
 #define	bfc_wstring_append_substr		bfc_string_append_substr
 #define	bfc_wstring_append_c_str		bfc_string_append_c_str
 #define	bfc_wstring_append_buffer		bfc_string_append_buffer
 #define	bfc_wstring_append_fill			bfc_string_append_fill
 #define	bfc_wstring_append_range		bfc_string_append_range
 #define	bfc_wstring_push_back			bfc_string_push_back
-#define	bfc_wstring_insert_bfstr		bfc_string_insert_bfstr
+#define	bfc_wstring_insert_copy			bfc_string_insert_copy
 #define	bfc_wstring_insert_substr		bfc_string_insert_substr
 #define	bfc_wstring_insert_c_str		bfc_string_insert_c_str
 #define	bfc_wstring_insert_buffer		bfc_string_insert_buffer
@@ -68,12 +68,12 @@
 #define	bfc_wstring_erase_char			bfc_string_erase_char
 #define	bfc_wstring_erase_range			bfc_string_erase_range
 #define	bfc_wstring_pop_back			bfc_string_pop_back
-#define	bfc_wstring_replace_bfstr		bfc_string_replace_bfstr
+#define	bfc_wstring_replace_copy		bfc_string_replace_copy
 #define	bfc_wstring_replace_substr		bfc_string_replace_substr
 #define	bfc_wstring_replace_buffer		bfc_string_replace_buffer
 #define	bfc_wstring_replace_c_str		bfc_string_replace_c_str
 #define	bfc_wstring_replace_fill		bfc_string_replace_fill
-#define	bfc_wstring_replace_range_bfstr		bfc_string_replace_range_bfstr
+#define	bfc_wstring_replace_range_copy		bfc_string_replace_range_copy
 #define	bfc_wstring_replace_range_buffer	bfc_string_replace_range_buffer
 #define	bfc_wstring_replace_range_c_str		bfc_string_replace_range_c_str
 #define	bfc_wstring_replace_range_fill		bfc_string_replace_range_fill
@@ -117,6 +117,7 @@
 #define	bfc_wstrbuf				bfc_strbuf
 #define	bfc_wstrdata				bfc_strdata
 #define	bfc_wstring_sublen			bfc_string_sublen
+#define	bfc_wstring_subdata			bfc_string_subdata
 #define	bfc_wstr_reserve			bfc_str_reserve
 
 #include "wstring.c"

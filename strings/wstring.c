@@ -56,34 +56,32 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .length 	*/ bfc_wstring_length,
 	/* .tostring 	*/ wstring_tostring,
 	/* .dump 	*/ dump_wstring,
+
 	/* Element access */
 	/* .first	*/ bfc_wstring_data,
 	/* .index	*/ bfc_wstring_index,
 	/* .getl	*/ bfc_wstring_getlong,
 	/* .setl	*/ bfc_wstring_setlong,
 	/* .spare17 	*/ NULL,
+
+	/* Iterators */
 	/* .ibegin	*/ init_begin_iterator,
 	/* .ilimit	*/ init_limit_iterator,
 	/* .rbegin	*/ init_rbegin_iterator,
 	/* .rlimit	*/ init_rlimit_iterator,
 	/* .spare22 	*/ NULL,
 	/* .spare23 	*/ NULL,
+
 	/* Char traits	*/
 	/* .traits	*/ (void *) &bfc_wchar_traits_class,
-	/* Allocators 	*/
-	/* .init_copy	*/ bfc_init_wstring_copy,
-	/* .init_move	*/ bfc_init_wstring_move,
-	/* .init_substr	*/ bfc_init_wstring_substr,
-	/* .init_buffer	*/ bfc_init_wstring_buffer,
-	/* .init_c_str	*/ bfc_init_wstring_c_str,
-	/* .init_fill	*/ bfc_init_wstring_fill,
-	/* .init_range	*/ bfc_init_wstring_range,
+
 	/* Capacity	*/
 	/* .size 	*/ bfc_wstring_length,
 	/* .max_size	*/ bfc_wstring_max_size,
 	/* .resize	*/ bfc_wstring_resize,
 	/* .capacity	*/ bfc_wstring_capacity,
 	/* .reserve	*/ bfc_wstring_reserve,
+
 	/* Modifiers	*/
 	/* .assign_buffer	*/ bfc_wstring_assign_buffer,
 	/* .assign_fill 	*/ bfc_wstring_assign_fill,
@@ -118,6 +116,7 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .find_last_not_of_char   */ bfc_wstring_find_last_not_of_char,
 	/* .substr		*/ bfc_wstring_substr,
 	/* .compare_buffer	*/ bfc_wstring_compare_buffer,
+
 	/* Check nothing is missing */
 	/* .last_method	*/ last_method
 };
@@ -143,61 +142,6 @@ bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool)
 
 	s->buf = (wchar_t *) &zbuf;
 	return (BFC_SUCCESS);
-}
-
-int
-bfc_init_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cwstrptr_t str)
-{
-	int rc;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
-
-	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
-		__FUNCTION__, buf, (long) bufsize, pool, str);
-
-	rc = bfc_init_wstring_buffer(buf, bufsize, pool,
-				     bfc_wstrdata(str), bfc_wstrlen(str));
-	return (rc);
-}
-
-int
-bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_wstrptr_t str)
-{
-	int rc;
-	bfc_wstrptr_t obj = (bfc_wstrptr_t) buf;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
-
-	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
-		__FUNCTION__, buf, (long) bufsize, pool, str);
-	if ((rc = bfc_init_wstring(obj, bufsize, pool)) < 0) {
-		return(rc);
-	}
-	obj->buf = str->buf;
-	obj->len = str->len;
-	obj->bufsize = str->bufsize;
-	str->bufsize = 0;
-	str->len = 0;
-	str->buf = NULL;
-	return (rc);
-}
-
-int
-bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
-			bfc_cwstrptr_t str, size_t pos, size_t n)
-{
-	int rc;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
-
-	L4SC_TRACE(logger, "%s(%p, %ld, str %p, pos %ld, n %ld)",
-		__FUNCTION__, buf, (long) bufsize, str, (long) pos, (long) n);
-
-	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(str))) {
-		return (-ERANGE);
-	}
-	rc = bfc_init_wstring_buffer(buf, bufsize, pool,
-		bfc_wstring_subdata(str, pos), bfc_wstring_sublen(str, pos, n));
-	return (rc);
 }
 
 int
@@ -232,41 +176,6 @@ bfc_init_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
 	obj->buf = (wchar_t *) (intptr_t) s;
 	obj->bufsize = obj->len = (*obj->vptr->traits->szlen)(s);
 	return (rc);
-}
-
-int
-bfc_init_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
-				size_t n, int c)
-{
-	bfc_wstrptr_t s = (bfc_wstrptr_t) buf;
-	int rc;
-
-	if ((rc = bfc_init_wstring(s, bufsize, pool)) < 0) {
-		return(rc);
-	}
-
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			assign_fill, (s, n, c),
-			bfc_wstring_assign_fill(s, n, c));
-}
-
-int
-bfc_init_wstring_range(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_iterptr_t begin, bfc_iterptr_t end)
-{
-	bfc_wstrptr_t s = (bfc_wstrptr_t) buf;
-	int rc;
-	bfc_iterator_t zero;
-
-	if ((rc = bfc_init_wstring(s, bufsize, pool)) < 0) {
-		return(rc);
-	}
-
-	bfc_init_iterator(&zero, sizeof(zero), (bfc_objptr_t) s, 0);
-
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_ranges, (s, &zero, &zero, begin, end),
-			bfc_wstring_replace_ranges(s,&zero,&zero,begin,end));
 }
 
 void

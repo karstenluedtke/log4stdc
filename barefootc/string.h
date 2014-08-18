@@ -85,24 +85,6 @@ typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 	} *	traits;
 
 #define BFC_STRING_METHODS(strptrT,cstrptrT,charT,fillT,iterptrT) \
-	/* Additional allocators */					\
-	int	(*init_copy)(void *buf, size_t bufsize,			\
-				struct mempool *pool, cstrptrT str);	\
-	int	(*init_move)(void *buf, size_t bufsize,			\
-				struct mempool *pool, strptrT str);	\
-	int	(*init_substr)(void *buf, size_t bufsize,		\
-				struct mempool *pool,			\
-				cstrptrT str, size_t pos, size_t n);	\
-	int	(*init_buffer)(void *buf, size_t bufsize,		\
-				struct mempool *pool,			\
-				const charT* s, size_t n);		\
-	int	(*init_c_str)(void *buf, size_t bufsize,		\
-				struct mempool *pool, const charT* s);	\
-	int	(*init_fill)(void *buf, size_t bufsize,			\
-				struct mempool *pool,size_t n,fillT c);	\
-	int	(*init_range)(void *buf, size_t bufsize,		\
-				struct mempool *pool,			\
-				iterptrT begin, iterptrT end);		\
 	/* Capacity */							\
 	size_t	(*size)(cstrptrT s);		/* == length */		\
 	size_t	(*max_size)(cstrptrT s);				\
@@ -190,7 +172,7 @@ struct bfc_string_class {
  * bfc_string_t
  */
 #define iterptrT bfc_iterptr_t
-/* Allocators */
+/* Constructors */
 int	bfc_init_string(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_string_copy(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str);
@@ -412,7 +394,7 @@ int	bfc_cstring_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 /*
  * bfc_wstring_t
  */
-/* Allocators */
+/* Constructors */
 int	bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cwstrptr_t str);
@@ -501,12 +483,12 @@ int	bfc_wstring_compare_buffer(bfc_cwstrptr_t s, size_t pos1, size_t n1,
 /*
  * bfc_basic_string_t
  */
-/* Allocators */
+/* Constructors */
 int	bfc_init_basic_string(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_basic_string_copy(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cstrptr_t str);
 int	bfc_init_basic_string_move(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_basic_strptr_t str);
+		struct mempool *pool, bfc_strptr_t str);
 int	bfc_init_basic_string_substr(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_string_buffer(void *buf, size_t bufsize,
@@ -530,12 +512,12 @@ int	bfc_basic_string_reserve(bfc_basic_strptr_t s, size_t n);
 /*
  * bfc_basic_wstring_t
  */
-/* Allocators */
+/* Constructors */
 int	bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_basic_wstring_copy(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cwstrptr_t str);
 int	bfc_init_basic_wstring_move(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_basic_wstrptr_t str);
+		struct mempool *pool, bfc_wstrptr_t str);
 int	bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cwstrptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_wstring_buffer(void *buf, size_t bufsize,

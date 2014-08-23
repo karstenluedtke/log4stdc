@@ -36,6 +36,7 @@ static void close_logger(l4sc_logger_ptr_t obj);
 static void logger_log(l4sc_logger_ptr_t logger,
 		       int level, const char *msg, size_t msglen,
 		       const char *file, int line, const char *func);
+static int  is_logger_enabled(l4sc_logger_cptr_t logger, int level);
 static int  set_logger_parent(l4sc_logger_ptr_t logger,
 			      l4sc_logger_ptr_t parent);
 static int  set_logger_appender(l4sc_logger_ptr_t logger,
@@ -59,7 +60,7 @@ static const struct l4sc_logger_class loggercls = {
 	.close = close_logger,
 
 	.log = logger_log,
-	.is_enabled = l4sc_logger_enabled,
+	.is_enabled = is_logger_enabled,
 	.set_parent = set_logger_parent,
 	.set_appender = set_logger_appender,
 };
@@ -78,7 +79,7 @@ static const struct l4sc_logger_class rootloggercls = {
 	.close = close_logger,
 
 	.log = rootlogger_log,
-	.is_enabled = l4sc_logger_enabled,
+	.is_enabled = is_logger_enabled,
 	.set_parent = set_logger_parent,
 	.set_appender = set_logger_appender,
 };
@@ -227,23 +228,39 @@ logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
 	}
 }
 
-int
-l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level)
+static int
+is_logger_enabled(l4sc_logger_cptr_t logger, int level)
 {
 	if (!logger) {
 		return (0);
 	}
 	if (logger->level == INHERIT_LEVEL) {
 		l4sc_logger_cptr_t p = logger->parent;
-		int loops = 0;
+		int rc, loops = 0;
 		while (p && (loops++ < 20)) {
-			if (p->level != INHERIT_LEVEL) {
+			RETVAR_METHCALL(rc, l4sc_logger_class_ptr_t, p, 
+					is_enabled, (p, level),
+					-ENOSYS);
+			if (rc != -ENOSYS) {
+				return (rc);
+			} else if (p->level != INHERIT_LEVEL) {
 				return (IS_LEVEL_ENABLED(level, p->level));
 			}
 			p = p->parent;
 		}
 	}
 	return (IS_LEVEL_ENABLED(level, logger->level));
+}
+
+int
+l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level)
+{
+	if (logger) {
+		RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, 
+				is_enabled, (logger, level),
+				is_logger_enabled(logger, level));
+	}
+	return (0);
 }
 
 static int

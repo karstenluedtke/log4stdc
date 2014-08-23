@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([barefootc], [0.3.4], [bug-barefootc@example.org])
+AC_INIT([barefootc], [0.3.5], [bug-barefootc@example.org])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CC
 AC_PROG_CXX

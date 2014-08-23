@@ -39,6 +39,7 @@ typedef const struct l4sc_configurator *l4sc_configurator_cptr_t;
 #define OFF_LEVEL	 60000
 #define FATAL_LEVEL	 50000
 #define ERROR_LEVEL	 40000
+#define INHERIT_LEVEL	 33010
 #define WARN_LEVEL	 30000
 #define INFO_LEVEL	 20000
 #define DEBUG_LEVEL	 10000

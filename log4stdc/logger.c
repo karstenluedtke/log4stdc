@@ -365,7 +365,13 @@ l4sc_to_level(const char *value, int vallen, int defaultlevel)
 		case 'C': case 'c': return (FATAL_LEVEL);
 		case 'E': case 'e': return (ERROR_LEVEL);
 		case 'W': case 'w': return (WARN_LEVEL);
-		case 'I': case 'i': return (INFO_LEVEL);
+		case 'I': case 'i':
+			if ((vallen >= 3)
+			 && (strncasecmp(value, "inherit", 3) == 0)) {
+				return (INHERIT_LEVEL);
+			} else {
+				return (INFO_LEVEL);
+			}
 		case 'D': case 'd': return (DEBUG_LEVEL);
 		case 'T': case 't': return (TRACE_LEVEL);
 		default: ;

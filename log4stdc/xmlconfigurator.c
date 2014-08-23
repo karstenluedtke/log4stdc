@@ -14,6 +14,8 @@ static int init_xml_configurator(void *, size_t, struct mempool *);
 static size_t get_xml_configurator_size(l4sc_configurator_cptr_t obj);
 
 static int configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path);
+static int configure_from_string(l4sc_configurator_ptr_t cfgtr,
+						const char *s, size_t n);
 
 const struct l4sc_configurator_class l4sc_xml_configurator_class = {
 	.super = (l4sc_configurator_class_ptr_t) &l4sc_object_class,
@@ -21,6 +23,7 @@ const struct l4sc_configurator_class l4sc_xml_configurator_class = {
 	.init = init_xml_configurator,
 	.clonesize = get_xml_configurator_size,
 
+	.configure = configure_from_string,
 	.configure_from_file = configure_from_file,
 };
 
@@ -271,6 +274,53 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 	fclose(fp);
 
 	LOGINFO(("%s: \"%s\" done, error %d", __FUNCTION__, path, err));
+
+	return ((err == 0)? 0: (err > 0)? -err: err);
+}
+
+static int
+configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
+{
+	int err = 0;
+	size_t len = (n > 0)? n: strlen(s);
+	XML_Parser p;
+	struct parsing_state state;
+
+	LOGINFO(("%s: %ld bytes", __FUNCTION__, (long) len));
+
+	p = XML_ParserCreateNS(NULL, NS_DELIMITER);
+	if (p == NULL) {
+		LOGERROR(("%s: creating parser failed", __FUNCTION__));
+		return (-ENOMEM);
+	}
+
+	memset(&state, 0, sizeof(state));
+	state.configurator = cfgtr;
+
+	XML_SetElementHandler(p, StartElementHandler, EndElementHandler);
+	XML_SetUserData(p, &state);
+
+	do {
+		void *buff = XML_GetBuffer(p, len);
+		if (buff == NULL) {
+			LOGERROR(("%s: creating buffer failed", __FUNCTION__));
+			err = ENOMEM;
+			break;
+		}
+
+		memcpy(buff, s, len);
+
+		if (! XML_ParseBuffer(p, len, 1)) {
+			err = XML_GetErrorCode(p);
+			LOGERROR(("%s: parsing failed, error %d: %s",
+				__FUNCTION__, err, XML_ErrorString(err)));
+			break;
+		}
+	} while (0);
+
+	XML_ParserFree(p);
+
+	LOGINFO(("%s: done, error %d", __FUNCTION__, err));
 
 	return ((err == 0)? 0: (err > 0)? -err: err);
 }

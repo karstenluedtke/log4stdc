@@ -13,7 +13,7 @@ l4sc_logprintf(l4sc_logger_ptr_t logger, int level,
 	int rc = 0;
 	va_list ap;
 
-	if (IS_LEVEL_ENABLED(level, logger->level)) {
+	if (l4sc_logger_enabled(logger, level)) {
 		int estimate = 200 * strlen(fmt);
 		if (file) estimate += strlen(file);
 		if (func) estimate += strlen(func);

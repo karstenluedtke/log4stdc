@@ -16,7 +16,7 @@ l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,
 	size_t len = 0;
 	char msg[maxbytes+1];
 
-	if (IS_LEVEL_ENABLED(level, logger->level)) {
+	if (l4sc_logger_enabled(logger, level)) {
 		rc = vsnprintf(msg, maxbytes+1, fmt, ap);
 		if ((rc < 0) || ((len = (size_t) rc) > maxbytes)) {
 			if (partial) {

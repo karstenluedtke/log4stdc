@@ -65,6 +65,12 @@ int l4sc_set_base_directory_name(const char *path);
 int l4sc_merge_base_directory_path (char *buf, int bufsize,
 	  			    const char *relpath, int rellen);
 
+int l4sc_insert_custom_logger(const char *name, void *cbarg,
+	int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger, int level),
+	void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger,
+		       int level, const char *msg, size_t msglen,
+		       const char *file, int line, const char *func));
+
 l4sc_logger_ptr_t l4sc_get_root_logger(void);
 l4sc_logger_ptr_t l4sc_get_logger(const char *name, int namelen);
 

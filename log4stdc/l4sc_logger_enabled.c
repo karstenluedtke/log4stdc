@@ -5,6 +5,17 @@
 #include "logobjects.h"
 
 int
+l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level)
+{
+	if (logger) {
+		RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, 
+				is_enabled, (logger, level),
+				IS_LEVEL_ENABLED(level, logger->level));
+	}
+	return (0);
+}
+
+int
 l4sc_error_enabled(l4sc_logger_cptr_t logger)
 {
 	return (l4sc_logger_enabled(logger, ERROR_LEVEL));

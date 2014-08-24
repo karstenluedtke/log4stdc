@@ -46,6 +46,11 @@ static void rootlogger_log(l4sc_logger_ptr_t logger,
 		       int level, const char *msg, size_t msglen,
 		       const char *file, int line, const char *func);
 
+static int customlogger_is_enabled(l4sc_logger_cptr_t logger, int level);
+static void customlogger_log(l4sc_logger_ptr_t logger, int level,
+			     const char *msg, size_t msglen,
+			     const char *file, int line, const char *func);
+
 static const struct l4sc_logger_class loggercls = {
 	.super = (const struct l4sc_logger_class *) &l4sc_object_class,
 	.name = "logger",
@@ -80,6 +85,25 @@ static const struct l4sc_logger_class rootloggercls = {
 
 	.log = rootlogger_log,
 	.is_enabled = is_logger_enabled,
+	.set_parent = set_logger_parent,
+	.set_appender = set_logger_appender,
+};
+
+static const struct l4sc_logger_class customloggercls = {
+	.super = &loggercls,
+	.name = "custom logger",
+	.init = init_logger,
+	.destroy = destroy_logger,
+	.clonesize = get_logger_size,
+
+	.set_name = set_logger_name,
+	.set_opt = set_logger_option,
+	.get_opt = get_logger_option,
+	.apply = apply_logger_options,
+	.close = close_logger,
+
+	.log = customlogger_log,
+	.is_enabled = customlogger_is_enabled,
 	.set_parent = set_logger_parent,
 	.set_appender = set_logger_appender,
 };
@@ -252,17 +276,6 @@ is_logger_enabled(l4sc_logger_cptr_t logger, int level)
 	return (IS_LEVEL_ENABLED(level, logger->level));
 }
 
-int
-l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level)
-{
-	if (logger) {
-		RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, 
-				is_enabled, (logger, level),
-				is_logger_enabled(logger, level));
-	}
-	return (0);
-}
-
 static int
 set_logger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent)
 {
@@ -364,6 +377,48 @@ l4sc_get_logger(const char *name, int namelen)
 				__FUNCTION__, logger->name, loggercls.name));
 	}
 	return (logger);
+}
+
+int
+l4sc_insert_custom_logger(const char *name, void *cbarg,
+	int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger, int level),
+	void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger,
+		       int level, const char *msg, size_t msglen,
+		       const char *file, int line, const char *func))
+{
+	l4sc_logger_ptr_t logger = l4sc_get_logger(name, 0);
+	if (logger) {
+		logger->vptr = &customloggercls;
+		logger->cxxbuf.p[0] = cbarg;
+		logger->cxxbuf.p[1] = enatest;
+		logger->cxxbuf.p[2] = logfunc;
+	}
+}
+
+static int
+customlogger_is_enabled(l4sc_logger_cptr_t logger, int level)
+{
+	int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger, int level);
+	int enabled = 1;
+
+	if ((enatest = logger->cxxbuf.p[1]) != NULL) {
+		enabled = (*enatest)(logger->cxxbuf.p[0], logger, level);
+	}
+	return (enabled);
+}
+
+static void
+customlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
+	       size_t msglen, const char *file, int line, const char *func)
+{
+	void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger,
+		       int level, const char *msg, size_t msglen,
+		       const char *file, int line, const char *func);
+
+	if ((logfunc = logger->cxxbuf.p[2]) && msg && (msglen > 0)) {
+		(*logfunc)(logger->cxxbuf.p[0], logger,
+			   level, msg, msglen, file, line, func);
+	}
 }
 
 int

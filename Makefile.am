@@ -228,6 +228,12 @@ vector_test_DEPENDENCIES = libbarefootc.a
 
 TESTS = testlink vector_test string_test cxxwrapper_test
 
+noinst_PROGRAMS += examples/barefootc_log_redirect
+examples_barefootc_log_redirect_SOURCES = examples/barefootc_log_redirect.c
+examples_barefootc_log_redirect_LDADD = liblog4stdc.a
+examples_barefootc_log_redirect_DEPENDENCIES = liblog4stdc.a
+TESTS += examples/barefootc_log_redirect
+
 check_PROGRAMS += tests/log4stdc/configure.xml/level
 tests_log4stdc_configure_xml_level_SOURCES = tests/log4stdc/configure.xml/level.c
 tests_log4stdc_configure_xml_level_LDADD = liblog4stdc.a
@@ -448,7 +454,8 @@ check_PROGRAMS += tests/strings/basic.string/string.capacity/max_size.pass
 tests_strings_basic_string_string_capacity_max_size_pass_SOURCES = tests/strings/basic.string/string.capacity/max_size.pass.cpp
 tests_strings_basic_string_string_capacity_max_size_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_strings_basic_string_string_capacity_max_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-TESTS += tests/strings/basic.string/string.capacity/max_size.pass
+# takes somewhat long
+# TESTS += tests/strings/basic.string/string.capacity/max_size.pass
 
 check_PROGRAMS += tests/strings/basic.string/string.capacity/empty.pass
 tests_strings_basic_string_string_capacity_empty_pass_SOURCES = tests/strings/basic.string/string.capacity/empty.pass.cpp

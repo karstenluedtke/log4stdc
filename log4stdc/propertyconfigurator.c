@@ -11,8 +11,11 @@
 static int init_property_configurator(void *, size_t, struct mempool *);
 static size_t get_property_configurator_size(l4sc_configurator_cptr_t obj);
 
-static int config_from_property_line(const char *buf, int loop);
 static int configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path);
+static int configure_from_string(l4sc_configurator_ptr_t cfgtr,
+					const char *s, size_t n);
+static int config_from_property_line(const char *buf, const char *limit,
+								int loop);
 
 
 const struct l4sc_configurator_class l4sc_property_configurator_class = {
@@ -21,6 +24,7 @@ const struct l4sc_configurator_class l4sc_property_configurator_class = {
 	.init = init_property_configurator,
 	.clonesize = get_property_configurator_size,
 
+	.configure = configure_from_string,
 	.configure_from_file = configure_from_file,
 };
 
@@ -57,6 +61,32 @@ int trimmed_len(const char *base, const char *pos)
 }
 
 static int
+configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
+{
+	const char *line, *eol;
+	const char *limit = (n > 0)? s + n: s + strlen(s);
+	int loop, err = 0;
+
+	LOGINFO(("%s: len %ld", __FUNCTION__, (long)(limit - s)));
+
+	for (loop = 0; loop < 2; loop++) {
+		for (line = s; (line >= s) && (line < limit); line = eol+1) {
+			eol = memchr(line, '\n', limit - line);
+			if (eol) {
+				config_from_property_line(line, eol, loop);
+			} else {
+				config_from_property_line(line, limit, loop);
+				break;
+			}
+		}
+	}
+
+	LOGINFO(("%s: done, error %d", __FUNCTION__, err));
+
+	return ((err == 0)? 0: (err > 0)? -err: err);
+}
+
+static int
 configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 {
 	FILE *fp;
@@ -75,11 +105,11 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 	}
 
 	while (fgets(buf, sizeof(buf), fp)) {
-		config_from_property_line(buf, 0);
+		config_from_property_line(buf, buf+strlen(buf), 0);
 	}
 	rewind(fp);
 	while (fgets(buf, sizeof(buf), fp)) {
-		config_from_property_line(buf, 1);
+		config_from_property_line(buf, buf+strlen(buf), 1);
 	}
 	fclose(fp);
 
@@ -90,16 +120,15 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 
 
 static int
-config_from_property_line(const char *buf, int loop)
+config_from_property_line(const char *buf, const char *limit, int loop)
 {
 	l4sc_logger_ptr_t logger = NULL;
 	l4sc_appender_ptr_t appender = NULL;
 	l4sc_layout_ptr_t layout = NULL;
-	const char *cp, *ep, *v, *limit;
+	const char *cp, *ep, *v;
 	const char *nodetype = NULL, *nodename = NULL, *optname = NULL;
 	int nodelen = 0, optlen = 0, vallen = 0;
 
-	limit = buf + strlen(buf);
 	cp = trim_front(buf, limit);
 	ep = memchr(cp, '=', limit-cp);
 	if ((strncasecmp(cp, "log4", 4) != 0) || (ep == NULL)) {

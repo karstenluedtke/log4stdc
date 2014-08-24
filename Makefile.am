@@ -230,9 +230,15 @@ TESTS = testlink vector_test string_test cxxwrapper_test
 
 check_PROGRAMS += tests/log4stdc/configure.xml/level
 tests_log4stdc_configure_xml_level_SOURCES = tests/log4stdc/configure.xml/level.c
-tests_log4stdc_configure_xml_level_LDADD = libbarefootc.a liblog4stdc.a
+tests_log4stdc_configure_xml_level_LDADD = liblog4stdc.a
 tests_log4stdc_configure_xml_level_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/log4stdc/configure.xml/level
+
+check_PROGRAMS += tests/log4stdc/configure.prop/level
+tests_log4stdc_configure_prop_level_SOURCES = tests/log4stdc/configure.prop/level.c
+tests_log4stdc_configure_prop_level_LDADD = liblog4stdc.a
+tests_log4stdc_configure_prop_level_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/log4stdc/configure.prop/level
 
 check_PROGRAMS += tests/strings/basic.string/string.ops/string.accessors/data.pass
 tests_strings_basic_string_string_ops_string_accessors_data_pass_SOURCES = tests/strings/basic.string/string.ops/string.accessors/data.pass.cpp

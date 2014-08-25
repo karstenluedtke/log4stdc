@@ -428,7 +428,7 @@ namespace barefootc {
 		{
 			int rc;
 			rc = bfc_init_basic_wstring_copy(buf, bufsize, pool,
-						(bfc_cwstrptr_t) &str.bfcstr);
+						(bfc_cstrptr_t) &str.bfcstr);
 			return (rc);
 		}
 
@@ -439,7 +439,7 @@ namespace barefootc {
 		{
 			int rc;
 			rc = bfc_init_basic_wstring_substr(buf, bufsize, pool,
-					(bfc_cwstrptr_t) &str.bfcstr, pos, n);
+					(bfc_cstrptr_t) &str.bfcstr, pos, n);
 			if (rc < 0) {
 				throw_substr_error(-rc);
 			}
@@ -464,14 +464,16 @@ namespace barefootc {
 		// 21.4.2, construct/copy/destroy:
 		basic_string(): saved_allocator()
 		{
+			const charT *s = 0;
 			init_string(&bfcstr, sizeof(bfcstr),
-				get_stdc_mempool(), bfcstr.buf, 0);
+					get_stdc_mempool(), s, 0);
 		}
 
 		explicit basic_string(const Allocator& a): saved_allocator(a)
 		{
+			const charT *s = 0;
 			init_string(&bfcstr, sizeof(bfcstr),
-				get_stdc_mempool(), bfcstr.buf, 0);
+					get_stdc_mempool(), s, 0);
 		}
 
 		basic_string(const basic_string& str):

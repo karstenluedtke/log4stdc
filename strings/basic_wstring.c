@@ -25,7 +25,7 @@ struct bfc_basic_wstring {
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			bfc_basic_wstrptr_t, bfc_basic_cwstrptr_t, wchar_t)
+			bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
 extern struct bfc_string_class bfc_wstring_class;
@@ -49,10 +49,11 @@ struct bfc_string_class bfc_basic_wstring_class = {
 int
 bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
+	wchar_t *charbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_basic_wstrptr_t, s, buf, bufsize, pool,
+			  bfc_strptr_t, s, buf, bufsize, pool,
 			  &bfc_basic_wstring_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p)",
@@ -62,13 +63,14 @@ bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 		L4SC_ERROR(logger, "%s: no pool", __FUNCTION__);
 		return (-EFAULT);
 	}
-	if ((s->buf = bfc_mempool_alloc(pool, 56 * sizeof(wchar_t))) == NULL) {
+	if ((charbuf = bfc_mempool_alloc(pool, 56 * sizeof(wchar_t))) == NULL) {
 		L4SC_ERROR(logger, "%s: no memory", __FUNCTION__);
 		return (-ENOMEM);
 	}
 	s->pool = pool;
+	s->buf  = charbuf;
 	s->bufsize = 56;
-	s->buf[0] = 0;
+	charbuf[0] = 0;
 	return (BFC_SUCCESS);
 }
 
@@ -76,10 +78,11 @@ int
 bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 				const wchar_t* s, size_t n)
 {
+	wchar_t *charbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_basic_wstrptr_t, obj, buf, bufsize, pool,
+			  bfc_strptr_t, obj, buf, bufsize, pool,
 			  &bfc_basic_wstring_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, s %p, n %ld)",
@@ -95,17 +98,18 @@ bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 		L4SC_ERROR(logger, "%s: no pool", __FUNCTION__);
 		return (-EFAULT);
 	}
-	if ((obj->buf = bfc_mempool_alloc(pool,(n+1)*sizeof(wchar_t)))==NULL) {
+	if ((charbuf = bfc_mempool_alloc(pool,(n+1)*sizeof(wchar_t))) == NULL) {
 		L4SC_ERROR(logger, "%s: no memory for %ld chars",
 					__FUNCTION__, (long)(n+1));
 		return (-ENOMEM);
 	}
 	obj->pool = pool;
+	obj->buf  = charbuf;
 	obj->bufsize = (n+1);
 	if (n > 0) {
-		(*obj->vptr->traits->copy)(obj->buf, s, n);
+		(*obj->vptr->traits->copy)(charbuf, s, n);
 	}
-	obj->buf[n] = 0;
+	charbuf[n] = 0;
 	obj->len = n;
 	return (BFC_SUCCESS);
 }
@@ -128,10 +132,11 @@ int
 bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 				size_t n, int c)
 {
+	wchar_t *charbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_basic_wstrptr_t, obj, buf, bufsize, pool,
+			  bfc_strptr_t, obj, buf, bufsize, pool,
 			  &bfc_basic_wstring_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, n %ld, c %02x)",
@@ -147,23 +152,24 @@ bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 		L4SC_ERROR(logger, "%s: no pool", __FUNCTION__);
 		return (-EFAULT);
 	}
-	if ((obj->buf = bfc_mempool_alloc(pool,(n+1)*sizeof(wchar_t)))==NULL) {
+	if ((charbuf = bfc_mempool_alloc(pool,(n+1)*sizeof(wchar_t))) == NULL) {
 		L4SC_ERROR(logger, "%s: no memory for %ld chars",
 					__FUNCTION__, (long)(n+1));
 		return (-ENOMEM);
 	}
 	obj->pool = pool;
+	obj->buf  = charbuf;
 	obj->bufsize = (n+1);
 	if (n > 0) {
-		(*obj->vptr->traits->assign)(obj->buf, n, c);
+		(*obj->vptr->traits->assign)(charbuf, n, c);
 	}
-	obj->buf[n] = 0;
+	charbuf[n] = 0;
 	obj->len = n;
 	return (BFC_SUCCESS);
 }
 
 void
-bfc_destroy_basic_wstring(bfc_basic_wstrptr_t obj)
+bfc_destroy_basic_wstring(bfc_strptr_t obj)
 {
 	bfc_string_classptr_t cls;
 
@@ -173,38 +179,38 @@ bfc_destroy_basic_wstring(bfc_basic_wstrptr_t obj)
 }
 
 size_t
-bfc_basic_wstring_objsize(bfc_basic_cwstrptr_t obj)
+bfc_basic_wstring_objsize(bfc_cstrptr_t obj)
 {
 	return (sizeof(struct bfc_basic_wstring));
 }
 
 // capacity:
 size_t
-bfc_basic_wstring_length(bfc_basic_cwstrptr_t s)
+bfc_basic_wstring_length(bfc_cstrptr_t s)
 {
 	return (s->len);
 }
 
 size_t
-bfc_basic_wstring_max_size(bfc_basic_cwstrptr_t s)
+bfc_basic_wstring_max_size(bfc_cstrptr_t s)
 {
 	return ((0xFFF0uL << 7*(sizeof(s->bufsize)-2)) / sizeof(wchar_t));
 }
 
 int
-bfc_basic_wstring_resize(bfc_basic_wstrptr_t s, size_t n, int c)
+bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c)
 {
 	int rc = -ENOSPC;
 
 	if (n <= s->len) {
-		wchar_t *data = s->buf + s->offs;
+		wchar_t *data = (wchar_t *)s->buf + s->offs;
 		s->len = n;
 		data[s->len] = '\0';
 		return (BFC_SUCCESS);
 	} else if ((rc = bfc_basic_wstring_reserve(s, n)) == BFC_SUCCESS) {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_DEBUG(logger, "%s: got %ld chars", __FUNCTION__, (long)n);
-		wchar_t *data = s->buf + s->offs;
+		wchar_t *data = (wchar_t *)s->buf + s->offs;
 		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
 		s->len = n;
 		data[n] = '\0';
@@ -220,7 +226,7 @@ bfc_basic_wstring_resize(bfc_basic_wstrptr_t s, size_t n, int c)
 }
 
 size_t
-bfc_basic_wstring_capacity(bfc_basic_cwstrptr_t s)
+bfc_basic_wstring_capacity(bfc_cstrptr_t s)
 {
 	if (s->bufsize > 0) {
 		return (s->bufsize - 1);
@@ -229,7 +235,7 @@ bfc_basic_wstring_capacity(bfc_basic_cwstrptr_t s)
 }
 
 int
-bfc_basic_wstring_reserve(bfc_basic_wstrptr_t s, size_t n)
+bfc_basic_wstring_reserve(bfc_strptr_t s, size_t n)
 {
 	wchar_t *p;
 	size_t need;

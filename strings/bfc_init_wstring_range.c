@@ -10,7 +10,7 @@
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			     bfc_wstrptr_t, bfc_cwstrptr_t, wchar_t)
+			     bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
 /**
@@ -20,7 +20,7 @@ int
 bfc_init_wstring_range(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_iterptr_t begin, bfc_iterptr_t end)
 {
-	bfc_wstrptr_t s = (bfc_wstrptr_t) buf;
+	bfc_strptr_t s = (bfc_strptr_t) buf;
 	int rc;
 	bfc_iterator_t zero;
 

@@ -11,7 +11,7 @@
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			     bfc_wstrptr_t, bfc_cwstrptr_t, wchar_t)
+			     bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
 /**
@@ -19,10 +19,10 @@ struct bfc_string_class {
  */
 int
 bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_wstrptr_t str)
+				bfc_strptr_t str)
 {
 	int rc;
-	bfc_wstrptr_t obj = (bfc_wstrptr_t) buf;
+	bfc_strptr_t obj = (bfc_strptr_t) buf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",

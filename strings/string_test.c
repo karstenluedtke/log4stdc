@@ -11,8 +11,8 @@
 
 int main (int argc, char *argv[])
 {
-	struct bfc_wstring str1;
-	struct bfc_wstring wstr1;
+	struct bfc_string str1;
+	struct bfc_string wstr1;
 
 	bfc_init_string_c_str(&str1, sizeof(str1), NULL, "abcdef");
 	assert(str1.len == 6);

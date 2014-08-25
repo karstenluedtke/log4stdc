@@ -9,7 +9,7 @@
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			     bfc_wstrptr_t, bfc_cwstrptr_t, wchar_t)
+			     bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
 /**
@@ -19,7 +19,7 @@ int
 bfc_init_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 				size_t n, int c)
 {
-	bfc_wstrptr_t s = (bfc_wstrptr_t) buf;
+	bfc_strptr_t s = (bfc_strptr_t) buf;
 	int rc;
 
 	if ((rc = bfc_init_wstring(s, bufsize, pool)) < 0) {

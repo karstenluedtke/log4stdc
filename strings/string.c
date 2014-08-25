@@ -12,8 +12,8 @@
 #define STRING_CLASS_NAME			"string"
 
 #define	wchar_t					char
-#define bfc_wstrptr_t				bfc_strptr_t
-#define bfc_cwstrptr_t				bfc_cstrptr_t
+#define bfc_strptr_t				bfc_strptr_t
+#define bfc_cstrptr_t				bfc_cstrptr_t
 
 #define bfc_wstring_class			bfc_string_class
 #define bfc_wchar_traits_class			bfc_char_traits_class
@@ -126,13 +126,13 @@
 #include "wstring.c"
 
 static int
-cstring_tostring(bfc_cwstrptr_t s, char *buf, size_t bufsize)
+cstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize)
 {
 	return ((int) bfc_string_copy(s, buf, bufsize, 0));
 }
 
 static void
-dump_cstring(bfc_cwstrptr_t s, int depth, struct l4sc_logger *log)
+dump_cstring(bfc_cstrptr_t s, int depth, struct l4sc_logger *log)
 {
 	if (s && BFC_CLASS(s)) {
 		const size_t len = bfc_strlen(s);

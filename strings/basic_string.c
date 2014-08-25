@@ -12,11 +12,9 @@
 #define STRING_CLASS_NAME			"basic_string"
 
 #define	wchar_t					char
-#define bfc_wstrptr_t				bfc_strptr_t
-#define bfc_cwstrptr_t				bfc_cstrptr_t
+#define bfc_strptr_t				bfc_strptr_t
+#define bfc_cstrptr_t				bfc_cstrptr_t
 #define bfc_basic_wstring			bfc_basic_string
-#define bfc_basic_wstrptr_t			bfc_basic_strptr_t
-#define bfc_basic_cwstrptr_t			bfc_basic_cstrptr_t
 
 #define bfc_wstring_class			bfc_string_class
 #define bfc_basic_wstring_class			bfc_basic_string_class

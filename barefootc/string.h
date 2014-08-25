@@ -63,6 +63,8 @@ typedef struct bfc_basic_wstring bfc_basic_wstring_t;
 typedef struct bfc_basic_wstring *bfc_basic_wstrptr_t;
 typedef const struct bfc_basic_wstring *bfc_basic_cwstrptr_t;
 
+#define BFC_STRING_LOGGER	"barefootc.string",16
+
 #define BFC_CHAR_TRAITS_METHODS(charT,intT) \
 	int	(*eq)(charT c, charT d);	/* c == d */		\
 	int	(*lt)(charT c, charT d);	/* c <  d */		\

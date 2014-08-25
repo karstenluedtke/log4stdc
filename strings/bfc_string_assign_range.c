@@ -9,7 +9,7 @@
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
 #include "log4stdc.h"
-#define  LOGGERNAME  "barefootc.string", 16
+#define  BFC_STRING_LOGGER  "barefootc.string", 16
 
 /**
  * @brief    bfc_string_assign_range
@@ -17,7 +17,7 @@
 int
 bfc_string_assign_range(bfc_strptr_t s,bfc_iterptr_t first,bfc_iterptr_t last)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 	const size_t len = bfc_strlen(s);
 	bfc_iterator_t begin, limit;
 

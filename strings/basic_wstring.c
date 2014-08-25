@@ -16,7 +16,6 @@
 #define STRING_CLASS_NAME "basic_wstring"
 #endif
 
-#define LOGGERNAME "barefootc.string", 16
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
@@ -50,7 +49,7 @@ struct bfc_string_class bfc_basic_wstring_class = {
 int
 bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
 			  bfc_basic_wstrptr_t, s, buf, bufsize, pool,
@@ -77,7 +76,7 @@ int
 bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 				const wchar_t* s, size_t n)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
 			  bfc_basic_wstrptr_t, obj, buf, bufsize, pool,
@@ -116,7 +115,7 @@ bfc_init_basic_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
 				const wchar_t* s)
 {
 	int n;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, s %p)",
 		__FUNCTION__, buf, (long) bufsize, pool, s);
@@ -129,7 +128,7 @@ int
 bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 				size_t n, int c)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
 			  bfc_basic_wstrptr_t, obj, buf, bufsize, pool,
@@ -203,7 +202,7 @@ bfc_basic_wstring_resize(bfc_basic_wstrptr_t s, size_t n, int c)
 		data[s->len] = '\0';
 		return (BFC_SUCCESS);
 	} else if ((rc = bfc_basic_wstring_reserve(s, n)) == BFC_SUCCESS) {
-		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_DEBUG(logger, "%s: got %ld chars", __FUNCTION__, (long)n);
 		wchar_t *data = s->buf + s->offs;
 		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
@@ -213,7 +212,7 @@ bfc_basic_wstring_resize(bfc_basic_wstrptr_t s, size_t n, int c)
 			__FUNCTION__, s, (long) s->len, s->buf);
 		return (BFC_SUCCESS);
 	} else {
-		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_ERROR(logger, "%s: failed allocating %ld chars, err %d",
 			__FUNCTION__, (long)n, rc);
 	}
@@ -236,7 +235,7 @@ bfc_basic_wstring_reserve(bfc_basic_wstrptr_t s, size_t n)
 	size_t need;
 
 	if (n > bfc_basic_wstring_max_size(s)) {
-		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_ERROR(logger, "%s: too large %ld", __FUNCTION__, (long)n);
 		return (-EINVAL);
 	}
@@ -245,13 +244,13 @@ bfc_basic_wstring_reserve(bfc_basic_wstrptr_t s, size_t n)
 		return (BFC_SUCCESS);
 	}
 	if (s->pool == NULL) {
-		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_ERROR(logger, "%s: no pool", __FUNCTION__);
 		return (-EFAULT);
 	}
 	p = bfc_mempool_realloc(s->pool, s->buf, need * sizeof(wchar_t));
 	if (p == NULL) {
-		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_ERROR(logger, "%s: cannot allocate %ld chars of size %d",
 				__FUNCTION__,(long)need, (int)sizeof(wchar_t));
 		return (-ENOMEM);

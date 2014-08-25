@@ -18,7 +18,6 @@
 #include "barefootc/utf8.h"
 #endif
 
-#define LOGGERNAME "barefootc.string", 16
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
@@ -131,7 +130,7 @@ int
 bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
 	static const long zbuf = 0;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
 			  bfc_wstrptr_t, s, buf, bufsize, pool,
@@ -150,7 +149,7 @@ bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 {
 	bfc_wstrptr_t obj = (bfc_wstrptr_t) buf;
 	int rc;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, s %p, n %ld)",
 		__FUNCTION__, buf, (long) bufsize, pool, s, (long) n);
@@ -315,7 +314,7 @@ bfc_wstring_reserve(bfc_wstrptr_t s, size_t n)
 		return (BFC_SUCCESS);
 	}
 	if (n < s->bufsize) {
-		l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_DEBUG(logger, "%s: buf %p + %ld < limit %p",
 			__FUNCTION__, s->buf, (long) n, s->buf + s->bufsize);
 		wchar_t *p = s->buf + s->bufsize - (n+1);
@@ -397,7 +396,7 @@ init_rlimit_iterator(bfc_cwstrptr_t s, bfc_iterptr_t it, size_t bs)
 int
 bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
@@ -420,7 +419,7 @@ bfc_wstring_assign_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 int
 bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, int c)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %ld, %02x)", __FUNCTION__, s, (long) n, c);
@@ -443,7 +442,7 @@ bfc_wstring_assign_fill(bfc_wstrptr_t s, size_t n, int c)
 int
 bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %p, %ld)", __FUNCTION__, s, s2, (long) n);
@@ -468,7 +467,7 @@ bfc_wstring_append_buffer(bfc_wstrptr_t s, const wchar_t *s2, size_t n)
 int
 bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, int c)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %ld, %02x)", __FUNCTION__, s, (long) n, c);
@@ -493,7 +492,7 @@ bfc_wstring_append_fill(bfc_wstrptr_t s, size_t n, int c)
 int
 bfc_wstring_push_back(bfc_wstrptr_t s, int c)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %02x)", __FUNCTION__, s, c);
@@ -585,7 +584,7 @@ bfc_wstring_replace_buffer(bfc_wstrptr_t s, size_t pos, size_t n1,
 	const size_t len = bfc_wstrlen(s);
 	size_t nkill = bfc_wstring_sublen(s, pos, n1);
 	size_t ntail = 0;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 	int rc;
 
 	L4SC_TRACE(logger, "%s(%p, %ld, %ld, %p, %ld)",
@@ -651,7 +650,7 @@ bfc_wstring_replace_range_buffer(bfc_wstrptr_t s, bfc_iterptr_t i1,
 {
 	size_t pos;
 	ptrdiff_t k;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	if ((i1->obj != (bfc_objptr_t) s) || (i2->obj != (bfc_objptr_t) s)) {
 		return (-EFAULT);
@@ -690,7 +689,7 @@ bfc_wstring_replace_ranges(bfc_wstrptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
 	size_t n = 0;
 	ptrdiff_t d = bfc_iterator_distance(j1, j2);
 	bfc_iterator_t it;
-	l4sc_logger_ptr_t logger = l4sc_get_logger(LOGGERNAME);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %p, %p, %p, %p)",
 			__FUNCTION__, s, i1, i2, j1, j2);

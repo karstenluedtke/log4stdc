@@ -14,7 +14,7 @@
  */
 int
 bfc_string_replace_range_c_str(bfc_strptr_t s, bfc_iterptr_t i1,
-					bfc_iterptr_t i2, const char* s2)
+					bfc_iterptr_t i2, const void *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
 

@@ -12,7 +12,7 @@
  * @brief    bfc_string_insert_buffer
  */
 int
-bfc_string_insert_buffer(bfc_strptr_t s, size_t pos, const char *s2, size_t n)
+bfc_string_insert_buffer(bfc_strptr_t s, size_t pos, const void *s2, size_t n)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			insert_buffer, (s, pos, s2, n),

@@ -13,7 +13,7 @@
  */
 int
 bfc_string_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
-			  const char* s2, size_t n2)
+			  const void *s2, size_t n2)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			compare_buffer, (s, pos1, n1, s2, n2),

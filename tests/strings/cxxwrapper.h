@@ -25,6 +25,8 @@
 #include "barefootc/mempool.h"
 #include "log4stdc.h"
 
+#include <wchar.h>
+
 #if __cplusplus >= 201103L
 #else
 #define noexcept
@@ -106,6 +108,11 @@ namespace barefootc {
 		iterator(const char *s)
 		{
 			bfc_init_cstr_iterator(&bfcit, sizeof(bfcit), s, 0);
+		}
+
+		iterator(const wchar_t *s)
+		{
+			bfc_init_wstr_iterator(&bfcit, sizeof(bfcit), s, 0);
 		}
 
 		~iterator()
@@ -777,7 +784,7 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			p = bfc_string_index(s, pos);
+			p = (const charT *) bfc_string_index(s, pos);
 			return (*p);
 		}
 
@@ -785,7 +792,7 @@ namespace barefootc {
 		{
 			charT *p;
 
-			p = bfc_string_index(&bfcstr, pos);
+			p = (charT *) bfc_string_index(&bfcstr, pos);
 			return (*p);
 		}
 
@@ -794,7 +801,7 @@ namespace barefootc {
 			strptrT s = const_cast<strptrT>(&bfcstr);
 			const charT *p;
 
-			p = bfc_string_index(s, n);
+			p = (const charT *) bfc_string_index(s, n);
 			if ((p == NULL) || (n >= length())) {
 				throw(std::out_of_range("bad position"));
 			}
@@ -805,7 +812,7 @@ namespace barefootc {
 		{
 			charT *p;
 
-			p = bfc_string_index(&bfcstr, n);
+			p = (charT *) bfc_string_index(&bfcstr, n);
 			if ((p == NULL) || (n >= length())) {
 				throw(std::out_of_range("bad position"));
 			}
@@ -1289,12 +1296,12 @@ namespace barefootc {
 		// 21.4.7, string operations:
 		const charT* c_str() const noexcept
 		{
-			return bfc_strdata(&bfcstr);
+			return (const charT *) bfc_strdata(&bfcstr);
 		}
 
 		const charT* data() const noexcept
 		{
-			return bfc_strdata(&bfcstr);
+			return (const charT *) bfc_strdata(&bfcstr);
 		}
 
 		allocator_type get_allocator() const noexcept

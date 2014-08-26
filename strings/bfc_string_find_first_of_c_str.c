@@ -12,7 +12,7 @@
  * @brief    bfc_string_find_first_of_c_str
  */
 size_t
-bfc_string_find_first_of_c_str(bfc_cstrptr_t s, const char* s2, size_t pos)
+bfc_string_find_first_of_c_str(bfc_cstrptr_t s, const void *s2, size_t pos)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
 

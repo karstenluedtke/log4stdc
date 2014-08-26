@@ -13,7 +13,7 @@
  */
 int
 bfc_string_replace_c_str(bfc_strptr_t s, size_t pos, size_t n1,
-					const char* s2)
+					const void *s2)
 {
 	size_t n = (*s->vptr->traits->szlen)(s2);
 

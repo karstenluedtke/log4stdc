@@ -13,7 +13,7 @@
  */
 size_t
 bfc_string_find_first_of_buffer(bfc_cstrptr_t s,
-				const char* s2, size_t pos, size_t n)
+				const void *s2, size_t pos, size_t n)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			find_first_of_buffer, (s, s2, pos, n),

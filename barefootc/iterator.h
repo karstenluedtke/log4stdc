@@ -75,6 +75,11 @@ int	bfc_init_cstr_iterator(void *buf, size_t bufsize,
 					const char *s, size_t pos);
 int	bfc_init_cstr_reverse_iterator(void *buf, size_t bufsize,
 					const char *s, size_t pos);
+
+int	bfc_init_wstr_iterator(void *buf, size_t bufsize,
+					const wchar_t *s, size_t pos);
+int	bfc_init_wstr_reverse_iterator(void *buf, size_t bufsize,
+					const wchar_t *s, size_t pos);
 #ifdef __cplusplus
 }	/* C++ */
 #endif

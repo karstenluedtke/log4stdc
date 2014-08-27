@@ -19,10 +19,12 @@ static int iterator_tostring(bfc_citerptr_t it, char *buf, size_t bufsize);
 
 static const void *iterator_first(bfc_citerptr_t);
 static void *forward_index(bfc_iterptr_t, size_t pos);
+static long forward_getlong(bfc_citerptr_t, size_t pos);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t forward_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
 static void *reverse_index(bfc_iterptr_t it, size_t pos);
+static long reverse_getlong(bfc_citerptr_t it, size_t pos);
 static int advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 static void last_method(void) { }
@@ -46,7 +48,7 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* Element access */
 	/* .first	*/ iterator_first,
 	/* .index	*/ forward_index,
-	/* .getl	*/ NULL,
+	/* .getl	*/ forward_getlong,
 	/* .setl	*/ NULL,
 	/* .spare17 	*/ NULL,
 	/* .ibegin	*/ NULL,
@@ -82,7 +84,7 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* Element access */
 	/* .first	*/ iterator_first,
 	/* .index	*/ reverse_index,
-	/* .getl	*/ NULL,
+	/* .getl	*/ reverse_getlong,
 	/* .setl	*/ NULL,
 	/* .spare17 	*/ NULL,
 	/* .ibegin	*/ NULL,
@@ -261,6 +263,13 @@ forward_index(bfc_iterptr_t it, size_t pos)
 	return (iterator_index(it, (ptrdiff_t) pos));
 }
 
+static long
+forward_getlong(bfc_citerptr_t it, size_t pos)
+{
+	RETURN_METHCALL(bfc_classptr_t, it->obj,
+			getl, (it->obj, it->pos + pos), -ENOSYS);
+}
+
 static int
 advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 {
@@ -306,6 +315,13 @@ static void *
 reverse_index(bfc_iterptr_t it, size_t pos)
 {
 	return (iterator_index(it, 0 - (ptrdiff_t) pos));
+}
+
+static long
+reverse_getlong(bfc_citerptr_t it, size_t pos)
+{
+	RETURN_METHCALL(bfc_classptr_t, it->obj,
+			getl, (it->obj, it->pos - pos), -ENOSYS);
 }
 
 static int

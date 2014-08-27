@@ -349,7 +349,7 @@ bfc_wstring_getlong(bfc_cstrptr_t s, size_t pos)
 {
 	const wchar_t *p;
 	p = (wchar_t*) bfc_string_index((bfc_strptr_t)(uintptr_t)s, pos);
-	return ((long) *p);
+	return (((long) *p) & ~(~0uL << 8*sizeof(*p)));
 }
 
 static int
@@ -685,12 +685,12 @@ bfc_wstring_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
 
 int
 bfc_wstring_replace_ranges(bfc_strptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
-					    bfc_iterptr_t j1, bfc_iterptr_t j2)
+					   bfc_iterptr_t j1, bfc_iterptr_t j2)
 {
 	wchar_t *data;
-	const wchar_t *cp;
 	size_t n = 0;
 	ptrdiff_t d = bfc_iterator_distance(j1, j2);
+	long c;
 	bfc_iterator_t it;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
@@ -705,10 +705,10 @@ bfc_wstring_replace_ranges(bfc_strptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
 	data = alloca(4*d+20);
 	bfc_clone_object(j1, &it, sizeof(it));
 	while ((n < (size_t) d) && !bfc_iterator_equals(&it, j2)) {
-		RETVAR_METHCALL(cp, bfc_iterator_classptr_t, &it,
-				first, (&it), NULL);
-		if (cp) {
-			data[n++] = *cp;
+		RETVAR_METHCALL(c, bfc_iterator_classptr_t, &it,
+				getl, (&it, 0), -ENOSYS);
+		if (c >= 0) {
+			data[n++] = (wchar_t) c;
 		} else {
 			break;
 		}

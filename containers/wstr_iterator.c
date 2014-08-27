@@ -16,10 +16,12 @@ static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
 static const void *iterator_first(bfc_citerptr_t);
 static void *forward_index(bfc_iterptr_t, size_t pos);
+static long forward_getchar(bfc_citerptr_t, size_t pos);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t forward_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
 static void *reverse_index(bfc_iterptr_t it, size_t pos);
+static long reverse_getchar(bfc_citerptr_t it, size_t pos);
 static int advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
@@ -41,6 +43,7 @@ struct bfc_iterator_class bfc_wstr_forward_iterator_class = {
 	/* Element access */
 	.first	= iterator_first,
 	.index	= forward_index,
+	.getl	= forward_getchar,
 	/* Iterator functions */
 	.advance    = advance_forward,
 	.distance   = forward_distance,
@@ -55,6 +58,7 @@ struct bfc_iterator_class bfc_wstr_reverse_iterator_class = {
 	/* Element access */
 	.first	= iterator_first,
 	.index	= reverse_index,
+	.getl	= reverse_getchar,
 	/* Iterator functions */
 	.advance    = advance_reverse,
 	.distance   = reverse_distance,
@@ -158,13 +162,13 @@ iterator_first(bfc_citerptr_t it)
 }
 
 static inline void *
-iterator_index(bfc_iterptr_t it, ptrdiff_t n)
+iterator_index(bfc_citerptr_t it, ptrdiff_t n)
 {
 	wchar_t *s = (wchar_t *) it->obj;
 	if (n == 0) {
 		return (s + it->pos);
 	} else if (n > 0) {
-		size_t objlen = bfc_object_length(it->obj);
+		size_t objlen = wcslen((wchar_t *)it->obj);
 		if (it->pos + n < objlen) {
 			return (s + it->pos + n);
 		}
@@ -178,6 +182,16 @@ static void *
 forward_index(bfc_iterptr_t it, size_t pos)
 {
 	return (iterator_index(it, (ptrdiff_t) pos));
+}
+
+static long
+forward_getchar(bfc_citerptr_t it, size_t pos)
+{
+	wchar_t *cp;
+	if ((cp = iterator_index(it, (ptrdiff_t) pos)) == NULL) {
+		return (-ERANGE);
+	}
+	return (((long) *cp) & ~(~0uL << 8*sizeof(*cp)));
 }
 
 static int
@@ -235,6 +249,16 @@ static void *
 reverse_index(bfc_iterptr_t it, size_t pos)
 {
 	return (iterator_index(it, 0 - (ptrdiff_t) pos));
+}
+
+static long
+reverse_getchar(bfc_citerptr_t it, size_t pos)
+{
+	wchar_t *cp;
+	if ((cp = iterator_index(it, 0 - (ptrdiff_t) pos)) == NULL) {
+		return (-ERANGE);
+	}
+	return (((long) *cp) & ~(~0uL << 8*sizeof(*cp)));
 }
 
 static int

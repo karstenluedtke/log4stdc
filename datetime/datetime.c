@@ -96,32 +96,24 @@ bfc_init_datetime(void *buf, size_t bufsize)
 	return (BFC_SUCCESS);
 }
 
+#define SECONDS_PER_DAY		((uint32_t) 24 * 3600)
+
 int
 bfc_init_datetime_from_time_t(void *buf, size_t bufsize, time_t secs)
 {
 	bfc_dateptr_t date = (bfc_dateptr_t) buf;
-	time_t jan1;
 	int rc;
 	
 	if ((rc = bfc_init_datetime(buf, bufsize)) < 0) {
 		return (rc);
 	}
-	date->year = 1970 + secs / ((uint32_t) 365 * 24 * 3600);
-	/* for years after 1970, the year estimated above might be too high,
-	 * but never too low. So we do the next-year check just for the past.
-	 */
-	if ((jan1 = bfc_datetime_secs(date)) > secs) {
-		do {
-			date->year--;
-		} while ((jan1 = bfc_datetime_secs(date)) > secs);
+	if (secs > 0) {
+		date->day  = secs / SECONDS_PER_DAY;
+		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
 	} else if (secs < 0) {
-		do {
-			date->year++; /* next year */
-		} while (bfc_datetime_secs(date) <= secs);
-		date->year--;
-		jan1 = bfc_datetime_secs(date);
+		date->day  = (secs - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
+		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
 	}
-	date->secs = secs - jan1;
 	return (rc);
 }
 
@@ -152,7 +144,7 @@ static unsigned
 bfc_datetime_hashcode(bfc_cdateptr_t date)
 {
 	uint32_t x;
-	x  = date->year;
+	x  = date->day;
 	x ^= date->secs;
 	x ^= (date->frac << 10) ^ (date->frac >> 22);
 	return ((unsigned) x);
@@ -164,7 +156,7 @@ datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other)
 	if (date == other) {
 		return (1);
 	}
-	return ((date->year == other->year)
+	return ((date->day == other->day)
 	     && (date->secs == other->secs)
 	     && (date->frac == other->frac));
 }
@@ -180,7 +172,7 @@ datetime_tostring(bfc_cdateptr_t date, char *buf, size_t bufsize)
 {
 	if (date && BFC_CLASS(date)) {
 		snprintf(buf, bufsize, "%s @%p: %ld %ld.%lx",
-			 BFC_CLASS(date)->name, date, (long) date->year,
+			 BFC_CLASS(date)->name, date, (long) date->day,
 			 (long) date->secs, (unsigned long) date->frac);
 	}
 	return (0);
@@ -191,7 +183,7 @@ dump_datetime(bfc_cdateptr_t date, int depth, struct l4sc_logger *log)
 {
 	if (date && BFC_CLASS(date)) {
 		L4SC_DEBUG(log, "%s @%p: %ld %ld.%lx",
-			 BFC_CLASS(date)->name, date, (long) date->year,
+			 BFC_CLASS(date)->name, date, (long) date->day,
 			 (long) date->secs, (unsigned long) date->frac);
 	}
 }
@@ -199,31 +191,7 @@ dump_datetime(bfc_cdateptr_t date, int depth, struct l4sc_logger *log)
 time_t
 bfc_datetime_secs(bfc_cdateptr_t date)
 {
-	int32_t days, yr = date->year;
-
-	if (yr == 0) {
-		/* not related to calendar */
-		return ((time_t) date->secs);
-	}
-	days = 365 * (yr-1970) + (yr-1)/4 - 1970/4; /* 1901 - 2100 */
-	if (yr > 2100) {
-		/* no Feb 29 every 100 years, at the beginning of a century */
-		days -= (yr-1)/100 - 1970/100;
-		if (yr > 2400) {
-			/* but again a Feb 29 every 400 years, e.g. 2000 */
-			days += (yr-1)/400 - 1970/400;
-		} else {
-			days += 1; /* adjust for the extra day in 2000 */
-		}
-	} else if (yr < 1901) {
-		/* no Feb 29 every 100 years, at the beginning of a century */
-		days -= (yr-1)/100 - 1970/100;
-		if (yr < 1601) {
-			/* but again a Feb 29 every 400 years */
-			days += (yr-1)/400 - 1970/400;
-		}
-	}
-	return ((time_t) 24 * 3600 * days + date->secs);
+	return ((time_t) 24 * 3600 * date->day + date->secs);
 }
 
 static inline uint32_t

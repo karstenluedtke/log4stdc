@@ -96,6 +96,35 @@ bfc_init_datetime(void *buf, size_t bufsize)
 	return (BFC_SUCCESS);
 }
 
+int
+bfc_init_datetime_from_time_t(void *buf, size_t bufsize, time_t secs)
+{
+	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	time_t jan1;
+	int rc;
+	
+	if ((rc = bfc_init_datetime(buf, bufsize)) < 0) {
+		return (rc);
+	}
+	date->year = 1970 + secs / ((uint32_t) 365 * 24 * 3600);
+	/* for years after 1970, the year estimated above might be too high,
+	 * but never too low. So we do the next-year check just for the past.
+	 */
+	if ((jan1 = bfc_datetime_secs(date)) > secs) {
+		do {
+			date->year--;
+		} while ((jan1 = bfc_datetime_secs(date)) > secs);
+	} else if (secs < 0) {
+		do {
+			date->year++; /* next year */
+		} while (bfc_datetime_secs(date) <= secs);
+		date->year--;
+		jan1 = bfc_datetime_secs(date);
+	}
+	date->secs = secs - jan1;
+	return (rc);
+}
+
 void
 bfc_destroy_datetime(bfc_dateptr_t date)
 {

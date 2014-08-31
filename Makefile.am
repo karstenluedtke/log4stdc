@@ -34,6 +34,7 @@ libbarefootc_a_SOURCES+= barefootc/bfc_object_tostring.c
 libbarefootc_a_SOURCES+= barefootc/bfc_object_dump.c
 libbarefootc_a_SOURCES+= barefootc/posix_mutex.c
 libbarefootc_a_SOURCES+= barefootc/win32_mutex.c
+libbarefootc_a_SOURCES+= datetime/datetime.c
 libbarefootc_a_SOURCES+= strings/wstring.c
 libbarefootc_a_SOURCES+= strings/wchar_traits.c
 libbarefootc_a_SOURCES+= strings/basic_wstring.c

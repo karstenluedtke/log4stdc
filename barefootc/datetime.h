@@ -97,7 +97,7 @@ int	bfc_init_datetime_from_timespec(void *buf, size_t bufsize,
 					const struct timespec *spec);
 int	bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 					const char *s, size_t len);
-int	bfc_init_precision_datetime(void *buf, size_t bufsize,
+int	bfc_init_datetime_precise(void *buf, size_t bufsize,
 					time_t secs, unsigned long nsecs);
 void	bfc_destroy_datetime(bfc_dateptr_t date);
 int	bfc_clone_datetime(bfc_cdateptr_t obj, void *buf, size_t bufsize);
@@ -110,6 +110,11 @@ time_t	bfc_datetime_secs(bfc_cdateptr_t date);
 int	bfc_datetime_msecs(bfc_cdateptr_t date);
 long	bfc_datetime_usecs(bfc_cdateptr_t date);
 long	bfc_datetime_nsecs(bfc_cdateptr_t date);
+
+long	bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
+long	bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
+long	bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
+long	bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 
 #ifdef __cplusplus
 }	/* C++ */

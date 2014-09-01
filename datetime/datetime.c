@@ -10,6 +10,7 @@
 #include "barefootc/object.h"
 #include "barefootc/datetime.h"
 #include "log4stdc.h"
+#include "umul32_hiword.h"
 
 static int init_datetime(void *buf, size_t bufsize, struct mempool *pool);
 static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
@@ -117,6 +118,63 @@ bfc_init_datetime_from_time_t(void *buf, size_t bufsize, time_t secs)
 	return (rc);
 }
 
+int
+bfc_init_datetime_precise(void *buf, size_t bufsize,
+			  time_t secs, unsigned long nsecs)
+{
+	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	int rc;
+
+	if ((rc = bfc_init_datetime_from_time_t(buf, bufsize, secs)) >= 0) {
+		/*
+		 * frac =   2**32 * nsecs / 10**9
+		 *      =   nsecs * (2**32 / 10**9) 
+		 *      =  (nsecs * (2**61 / 10**9)) >> 29
+		 *     ~= ((nsecs * 2305843010) >> 32) << 3
+		 */
+		date->frac = (umul32_hiword(nsecs, 2305843010uL) << 3);
+	}
+	return (rc);
+}
+
+int
+bfc_init_datetime_from_timespec(void *buf, size_t bufsize,
+				const struct timespec *ts)
+{
+	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	int rc;
+
+	if ((rc = bfc_init_datetime_from_time_t(buf,bufsize,ts->tv_sec)) >= 0) {
+		/*
+		 * frac =   2**32 * nsecs / 10**9
+		 *      =   nsecs * (2**32 / 10**9) 
+		 *      =  (nsecs * (2**61 / 10**9)) >> 29
+		 *     ~= ((nsecs * 2305843010) >> 32) << 3
+		 */
+		date->frac = (umul32_hiword(ts->tv_nsec, 2305843010uL) << 3);
+	}
+	return (rc);
+}
+
+int
+bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
+				const struct timeval *tv)
+{
+	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	int rc;
+
+	if ((rc = bfc_init_datetime_from_time_t(buf,bufsize,tv->tv_sec)) >= 0) {
+		/*
+		 * frac =   2**32 * usecs / 10**6
+		 *      =   usecs * (2**32 / 10**6) 
+		 *      =  (usecs * (2**51 / 10**6)) >> 19
+		 *     ~= ((usecs * 2251799814) >> 32) << 13
+		 */
+		date->frac = (umul32_hiword(tv->tv_usec, 2251799814uL) << 13);
+	}
+	return (rc);
+}
+
 void
 bfc_destroy_datetime(bfc_dateptr_t date)
 {
@@ -194,43 +252,72 @@ bfc_datetime_secs(bfc_cdateptr_t date)
 	return ((time_t) 24 * 3600 * date->day + date->secs);
 }
 
-static inline uint32_t
-umul_hiword32(uint32_t a, uint32_t b)
-{
-	uint32_t hiword;
-
-#if defined(__i386) || defined(__i386__) || \
-    defined(__x86_64) || defined(__x86_64__) || defined(__amd64)
-	__asm__ __volatile__(
-	"mul %2" : "=d"(hiword) : "a"(a), "d"(b) : "cc");
-
-#elif defined(__ARMEL__) || defined(__ARMEB__) || defined(__ARM_EABI__)
-	uint32_t loword;
-	__asm__ __volatile__(
-	"umull %0,%1,%2,%3" : "=&r"(loword), "=&r"(hiword) : "r"(a), "r"(b));
-	/* "=&r" means early clobbering, */
-	/* these register must not be used as input registers */
-#else
-	hiword = (uint32_t) (((uint64_t) a * b) >> 32);
-#endif
-	return (hiword);
-}
-
 int
 bfc_datetime_msecs(bfc_cdateptr_t date)
 {
-	return ((int) umul_hiword32(date->frac, 1000u));
+	return ((int) umul32_hiword(date->frac, 1000u));
 }
 
 long
 bfc_datetime_usecs(bfc_cdateptr_t date)
 {
-	return ((long) umul_hiword32(date->frac, (uint32_t) 1000000uL));
+	return ((long) umul32_hiword(date->frac, (uint32_t) 1000000uL));
 }
 
 long
 bfc_datetime_nsecs(bfc_cdateptr_t date)
 {
-	return ((long) umul_hiword32(date->frac, (uint32_t) 1000000000uL));
+	return ((long) umul32_hiword(date->frac, (uint32_t) 1000000000uL));
+}
+
+long
+bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+{
+	int32_t days = last->day - first->day;
+	int32_t secs = last->secs - first->secs;
+
+	return ((days == 0)? (long)secs: (long)days * SECONDS_PER_DAY + secs);
+}
+
+long
+bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+{
+	long msecs = bfc_datetime_secs_between(first, last) * 1000u;
+
+	if (last->frac > first->frac) {
+		msecs += umul32_hiword(last->frac - first->frac, 1000u);
+	} else if (first->frac > last->frac) {
+		msecs -= umul32_hiword(first->frac - last->frac, 1000u);
+	}
+
+	return (msecs);
+}
+
+long
+bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+{
+	long usecs = bfc_datetime_secs_between(first, last) * 1000000uL;
+
+	if (last->frac > first->frac) {
+		usecs += umul32_hiword(last->frac - first->frac, 1000000uL);
+	} else if (first->frac > last->frac) {
+		usecs -= umul32_hiword(first->frac - last->frac, 1000000uL);
+	}
+
+	return (usecs);
+}
+
+long
+bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+{
+	long nsecs = bfc_datetime_secs_between(first, last) * 1000000000uL;
+
+	if (last->frac > first->frac) {
+		nsecs += umul32_hiword(last->frac - first->frac, 1000000000uL);
+	} else if (first->frac > last->frac) {
+		nsecs -= umul32_hiword(first->frac - last->frac, 1000000000uL);
+	}
+
+	return (nsecs);
 }
 

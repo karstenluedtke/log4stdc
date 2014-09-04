@@ -11,6 +11,8 @@ nobase_include_HEADERS+= barefootc/vector.h
 nobase_include_HEADERS+= barefootc/iterator.h
 nobase_include_HEADERS+= barefootc/linkedlist.h
 nobase_include_HEADERS+= barefootc/synchronization.h
+nobase_include_HEADERS+= barefootc/datetime.h
+nobase_include_HEADERS+= barefootc/utf8.h
 
 noinst_PROGRAMS = testlink
 noinst_PROGRAMS+= vector_test
@@ -35,6 +37,7 @@ libbarefootc_a_SOURCES+= barefootc/bfc_object_dump.c
 libbarefootc_a_SOURCES+= barefootc/posix_mutex.c
 libbarefootc_a_SOURCES+= barefootc/win32_mutex.c
 libbarefootc_a_SOURCES+= datetime/datetime.c
+libbarefootc_a_SOURCES+= datetime/umul32_hiword.h
 libbarefootc_a_SOURCES+= strings/wstring.c
 libbarefootc_a_SOURCES+= strings/wchar_traits.c
 libbarefootc_a_SOURCES+= strings/basic_wstring.c
@@ -220,6 +223,10 @@ string_test_LDADD = libbarefootc.a liblog4stdc.a
 string_test_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 
 cxxwrapper_test_SOURCES = strings/cxxwrapper_test.cpp
+cxxwrapper_test_SOURCES+= tests/strings/cxxwrapper.h
+cxxwrapper_test_SOURCES+= tests/support/min_allocator.h
+cxxwrapper_test_SOURCES+= tests/support/test_allocator.h
+cxxwrapper_test_SOURCES+= tests/input_iterator.h
 cxxwrapper_test_LDADD = libbarefootc.a liblog4stdc.a
 cxxwrapper_test_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 

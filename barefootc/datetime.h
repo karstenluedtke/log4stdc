@@ -18,6 +18,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include <stdint.h>
 #include <time.h>
 
 #include "barefootc/object.h"
@@ -115,6 +116,9 @@ long	bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
+
+long	bfc_datetime_days_to_date(unsigned year, unsigned month, unsigned day);
+uint32_t bfc_datetime_frac_from_decimal(unsigned long sub, int sublen);
 
 #ifdef __cplusplus
 }	/* C++ */

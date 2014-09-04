@@ -1,0 +1,91 @@
+/**
+ * @file bfc_init_datetime_from_isotime.c
+ */
+
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+#include <errno.h>
+
+#include "barefootc/datetime.h"
+
+/**
+ * @brief    bfc_init_datetime_from_isotime
+ */
+int
+bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
+				const char *s, size_t len)
+{
+	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	unsigned yr, m, d, hr, min, sec=0;
+	unsigned long sub=0;
+	const char *zone = NULL;
+	char tee;
+	int sublen=0;
+	int consumed=0;
+	int32_t days, secs;
+	int rc;
+	
+	if ((rc = bfc_init_datetime(buf, bufsize)) < 0) {
+		return (rc);
+	}
+
+	if (sscanf(s, "%u-%u-%u%c%u:%u:%u.%lu%n",
+			&yr,&m,&d, &tee, &hr,&min,&sec, &sub, &consumed) >= 8) {
+		zone = s + consumed;
+		for (sublen = 0; sublen < consumed; sublen++) {
+			if (strchr("0123456789", s[consumed-sublen-1]) == NULL)
+				break;
+		}
+	} else if (sscanf(s, "%u-%u-%u%c%u:%u:%u%n",
+			&yr,&m,&d, &tee, &hr,&min,&sec, &consumed) >= 7) {
+		zone = s + consumed;
+	} else if (sscanf(s, "%u-%u-%u%c%u:%u%n",
+			&yr,&m,&d, &tee, &hr,&min,      &consumed) >= 6) {
+		zone = s + consumed;
+	}
+
+	if ((zone == NULL) || (strchr("+-zZ", zone[0]) == NULL)) {
+		return (-EINVAL);
+	}
+
+	if (yr < 100) {
+		yr += (yr >= 70)? 1900: 2000; /* 1970 - 2069 */
+	}
+
+	days = bfc_datetime_days_to_date(yr, m, d);
+
+	secs = (int32_t) 3600 * hr + 60 * min + sec;
+
+	if (zone[0] == '+' /* Europe, Asia */ ) {
+		hr = min = 0;
+		if ((sscanf(zone+1, "%u:%u",    &hr, &min) == 2)
+		 || (sscanf(zone+1, "%02u%02u", &hr, &min) >= 1)
+		 || (sscanf(zone+1, "%u",       &hr)       == 1)) {
+			secs -= (int32_t) 3600 * hr + 60 * min;
+			if (secs < 0) {
+				days -= 1;
+				secs += (int32_t) 3600 * 24;
+			}
+		}
+	} else if (zone[0] == '-' /* America */ ) {
+		hr = min = 0;
+		if ((sscanf(zone+1, "%u:%u",    &hr, &min) == 2)
+		 || (sscanf(zone+1, "%02u%02u", &hr, &min) >= 1)
+		 || (sscanf(zone+1, "%u",       &hr)       == 1)) {
+			secs += (int32_t) 3600 * hr + 60 * min;
+			if (secs >= (int32_t) 3600 * 24) {
+				days += 1;
+				secs -= (int32_t) 3600 * 24;
+			}
+		}
+	}
+
+	date->day = days;
+	date->secs = secs;
+	date->frac = (sub > 0)? bfc_datetime_frac_from_decimal(sub, sublen): 0;
+
+	return (rc);
+}
+

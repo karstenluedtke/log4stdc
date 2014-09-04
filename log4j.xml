@@ -45,6 +45,9 @@
 	<logger name="barefootc.string">
 		<level value="TRACE"/>
 	</logger>
+	<logger name="barefootc.datetime">
+		<level value="TRACE"/>
+	</logger>
 	
 	
 	<logger name="com.teles.softphone.app">

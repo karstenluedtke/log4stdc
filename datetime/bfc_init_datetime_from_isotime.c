@@ -9,6 +9,7 @@
 #include <errno.h>
 
 #include "barefootc/datetime.h"
+#include "log4stdc.h"
 
 /**
  * @brief    bfc_init_datetime_from_isotime
@@ -26,8 +27,11 @@ bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 	int consumed=0;
 	int32_t days, secs;
 	int rc;
-	
+	l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.datetime", 0);
+
 	if ((rc = bfc_init_datetime(buf, bufsize)) < 0) {
+		L4SC_ERROR(logger, "%s: bfc_init_datetime error %d",
+							__FUNCTION__, rc);
 		return (rc);
 	}
 
@@ -46,7 +50,16 @@ bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 		zone = s + consumed;
 	}
 
-	if ((zone == NULL) || (strchr("+-zZ", zone[0]) == NULL)) {
+	if (zone == NULL) {
+		L4SC_ERROR(logger, "%s: date not recognized", __FUNCTION__);
+		return (-EINVAL);
+	}
+
+	L4SC_DEBUG(logger, "%s: found %d-%u-%u %u-%u-%u.%lu",
+			__FUNCTION__, yr, m, d, hr, min, sec, sub);
+
+	if (strchr("+-zZ", zone[0]) == NULL) {
+		L4SC_ERROR(logger, "%s: invalid zone %s", __FUNCTION__, zone);
 		return (-EINVAL);
 	}
 
@@ -85,6 +98,10 @@ bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 	date->day = days;
 	date->secs = secs;
 	date->frac = (sub > 0)? bfc_datetime_frac_from_decimal(sub, sublen): 0;
+
+	L4SC_DEBUG(logger, "%s: %s -> %ldd, %lus + %lu/4294967296",
+		__FUNCTION__, s, (long) date->day,
+		(unsigned long) date->secs, (unsigned long) date->frac);
 
 	return (rc);
 }

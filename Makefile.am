@@ -3213,11 +3213,11 @@ tests_wstring_access_db_front_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_wstring_access_db_front_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/wstring.access/db_front.pass
 
-check_PROGRAMS += tests/datetime/isotime
-tests_datetime_isotime_SOURCES = tests/datetime/isotime.c
-tests_datetime_isotime_LDADD = libbarefootc.a liblog4stdc.a
-tests_datetime_isotime_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-TESTS += tests/datetime/isotime
+check_PROGRAMS += tests/datetime/init_isotime
+tests_datetime_init_isotime_SOURCES = tests/datetime/init_isotime.c
+tests_datetime_init_isotime_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_init_isotime_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/init_isotime
 
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp

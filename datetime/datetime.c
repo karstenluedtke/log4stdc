@@ -39,8 +39,8 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* Element access */
 	/* .first	*/ NULL,
 	/* .index	*/ NULL,
-	/* .getl	*/ NULL,
-	/* .setl	*/ NULL,
+	/* .getl	*/ bfc_datetime_get_secs,
+	/* .setl	*/ bfc_datetime_set_secs,
 	/* .spare17 	*/ NULL,
 	/* .ibegin	*/ NULL,
 	/* .ilimit	*/ NULL,
@@ -49,10 +49,10 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .spare22 	*/ NULL,
 	/* .spare23 	*/ NULL,
 	/* comparision */
-	/* .secs_between	*/ NULL,
-	/* .msecs_between	*/ NULL,
-	/* .usecs_between	*/ NULL,
-	/* .nsecs_between	*/ NULL,
+	/* .secs_between	*/ bfc_datetime_secs_between,
+	/* .msecs_between	*/ bfc_datetime_msecs_between,
+	/* .usecs_between	*/ bfc_datetime_usecs_between,
+	/* .nsecs_between	*/ bfc_datetime_nsecs_between,
 	/* conversion and formatting */
 	/* .get_secs		*/ bfc_datetime_secs,
 	/* .get_msecs		*/ bfc_datetime_msecs,
@@ -244,6 +244,27 @@ dump_datetime(bfc_cdateptr_t date, int depth, struct l4sc_logger *log)
 			 BFC_CLASS(date)->name, date, (long) date->day,
 			 (long) date->secs, (unsigned long) date->frac);
 	}
+}
+
+int
+bfc_datetime_set_secs(bfc_dateptr_t date, size_t pos, long secs)
+{
+	if (secs > 0) {
+		date->day  = secs / SECONDS_PER_DAY;
+		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
+		date->frac = 0;
+	} else if (secs < 0) {
+		date->day  = (secs - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
+		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
+		date->frac = 0;
+	}
+	return (BFC_SUCCESS);
+}
+
+long
+bfc_datetime_get_secs(bfc_cdateptr_t date, size_t pos)
+{
+	return ((long) 24 * 3600 * date->day + date->secs);
 }
 
 time_t

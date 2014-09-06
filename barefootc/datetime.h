@@ -112,6 +112,9 @@ int	bfc_datetime_msecs(bfc_cdateptr_t date);
 long	bfc_datetime_usecs(bfc_cdateptr_t date);
 long	bfc_datetime_nsecs(bfc_cdateptr_t date);
 
+long	bfc_datetime_get_secs(bfc_cdateptr_t date, size_t pos);
+int	bfc_datetime_set_secs(bfc_dateptr_t date, size_t pos, long secs);
+
 long	bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);

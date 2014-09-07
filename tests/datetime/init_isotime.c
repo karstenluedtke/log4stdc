@@ -78,7 +78,7 @@ main (int argc, char *argv)
 	char buf[100];
 
 	l4sc_configure_from_xml_file("log4j.xml");
-	logger = l4sc_get_logger("barefootc.datetime", 0);
+	logger = l4sc_get_logger(BFC_DATETIME_LOGGER);
 
 	t1("1970-03-01T13:00Z",	    31+28,		13*3600);
 	t1("1972-03-01T13:00:14Z",  365+365+31+29,	13*3600 + 14);

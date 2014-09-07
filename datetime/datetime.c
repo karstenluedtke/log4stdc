@@ -39,8 +39,8 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* Element access */
 	/* .first	*/ NULL,
 	/* .index	*/ NULL,
-	/* .getl	*/ bfc_datetime_get_secs,
-	/* .setl	*/ bfc_datetime_set_secs,
+	/* .getl	*/ bfc_datetime_get_long,
+	/* .setl	*/ bfc_datetime_set_long,
 	/* .spare17 	*/ NULL,
 	/* .ibegin	*/ NULL,
 	/* .ilimit	*/ NULL,
@@ -247,23 +247,46 @@ dump_datetime(bfc_cdateptr_t date, int depth, struct l4sc_logger *log)
 }
 
 int
-bfc_datetime_set_secs(bfc_dateptr_t date, size_t pos, long secs)
+bfc_datetime_set_long(bfc_dateptr_t date, size_t pos, long val)
 {
-	if (secs > 0) {
-		date->day  = secs / SECONDS_PER_DAY;
-		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
+	if (pos != 0) {
+		switch (pos) {
+		case 1: date->day  = (int32_t)  val;
+			return (BFC_SUCCESS);
+		case 2: date->secs = (uint32_t) val;
+			return (BFC_SUCCESS);
+		case 3: date->frac = (uint32_t) val;
+			return (BFC_SUCCESS);
+		default: ;
+		}
+	}
+	if (val > 0) {
+		date->day  = val / SECONDS_PER_DAY;
+		date->secs = val - ((time_t) date->day * SECONDS_PER_DAY);
 		date->frac = 0;
-	} else if (secs < 0) {
-		date->day  = (secs - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
-		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
+	} else if (val < 0) {
+		date->day  = (val - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
+		date->secs = val - ((time_t) date->day * SECONDS_PER_DAY);
+		date->frac = 0;
+	} else {
+		date->day  = 0;
+		date->secs = 0;
 		date->frac = 0;
 	}
 	return (BFC_SUCCESS);
 }
 
 long
-bfc_datetime_get_secs(bfc_cdateptr_t date, size_t pos)
+bfc_datetime_get_long(bfc_cdateptr_t date, size_t pos)
 {
+	if (pos != 0) {
+		switch (pos) {
+		case 1: return ((long) date->day);
+		case 2: return ((long) date->secs);
+		case 3: return ((long) date->frac);
+		default: ;
+		}
+	}
 	return ((long) 24 * 3600 * date->day + date->secs);
 }
 
@@ -276,19 +299,19 @@ bfc_datetime_secs(bfc_cdateptr_t date)
 int
 bfc_datetime_msecs(bfc_cdateptr_t date)
 {
-	return ((int) umul32_hiword(date->frac, 1000u));
+	return ((int) umul32_hiword(date->frac + (uint32_t) 2147483uL, 1000u));
 }
 
 long
 bfc_datetime_usecs(bfc_cdateptr_t date)
 {
-	return ((long) umul32_hiword(date->frac, (uint32_t) 1000000uL));
+	return ((long) umul32_hiword(date->frac + 2147, (uint32_t) 1000000uL));
 }
 
 long
 bfc_datetime_nsecs(bfc_cdateptr_t date)
 {
-	return ((long) umul32_hiword(date->frac, (uint32_t) 1000000000uL));
+	return ((long) umul32_hiword(date->frac + 2, (uint32_t) 1000000000uL));
 }
 
 long
@@ -303,12 +326,15 @@ bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 long
 bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 {
+	uint32_t diff;
 	long msecs = bfc_datetime_secs_between(first, last) * 1000u;
 
 	if (last->frac > first->frac) {
-		msecs += umul32_hiword(last->frac - first->frac, 1000u);
+		diff = last->frac - first->frac;
+		msecs += umul32_hiword(diff + (uint32_t) 2147483uL, 1000u);
 	} else if (first->frac > last->frac) {
-		msecs -= umul32_hiword(first->frac - last->frac, 1000u);
+		diff = first->frac - last->frac;
+		msecs -= umul32_hiword(diff + (uint32_t) 2147483uL, 1000u);
 	}
 
 	return (msecs);
@@ -317,12 +343,15 @@ bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 long
 bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 {
+	uint32_t diff;
 	long usecs = bfc_datetime_secs_between(first, last) * 1000000uL;
 
 	if (last->frac > first->frac) {
-		usecs += umul32_hiword(last->frac - first->frac, 1000000uL);
+		diff = last->frac - first->frac;
+		usecs += umul32_hiword(diff + 2147 /*round*/, 1000000uL);
 	} else if (first->frac > last->frac) {
-		usecs -= umul32_hiword(first->frac - last->frac, 1000000uL);
+		diff = first->frac - last->frac;
+		usecs -= umul32_hiword(diff + 2147 /*round*/, 1000000uL);
 	}
 
 	return (usecs);
@@ -331,12 +360,15 @@ bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 long
 bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 {
+	uint32_t diff;
 	long nsecs = bfc_datetime_secs_between(first, last) * 1000000000uL;
 
 	if (last->frac > first->frac) {
-		nsecs += umul32_hiword(last->frac - first->frac, 1000000000uL);
+		diff = last->frac - first->frac;
+		nsecs += umul32_hiword(diff + 2 /*round*/, 1000000000uL);
 	} else if (first->frac > last->frac) {
-		nsecs -= umul32_hiword(first->frac - last->frac, 1000000000uL);
+		diff = first->frac - last->frac;
+		nsecs -= umul32_hiword(diff + 2 /*round*/, 1000000000uL);
 	}
 
 	return (nsecs);

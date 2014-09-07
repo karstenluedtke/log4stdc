@@ -23,6 +23,8 @@ extern "C" {
 
 #include "barefootc/object.h"
 
+#define BFC_DATETIME_LOGGER	"barefootc.datetime",18
+
 struct tm;
 
 struct bfc_datetime_class;
@@ -112,8 +114,8 @@ int	bfc_datetime_msecs(bfc_cdateptr_t date);
 long	bfc_datetime_usecs(bfc_cdateptr_t date);
 long	bfc_datetime_nsecs(bfc_cdateptr_t date);
 
-long	bfc_datetime_get_secs(bfc_cdateptr_t date, size_t pos);
-int	bfc_datetime_set_secs(bfc_dateptr_t date, size_t pos, long secs);
+long	bfc_datetime_get_long(bfc_cdateptr_t date, size_t pos);
+int	bfc_datetime_set_long(bfc_dateptr_t date, size_t pos, long val);
 
 long	bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);

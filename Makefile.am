@@ -3219,6 +3219,30 @@ tests_datetime_init_isotime_LDADD = libbarefootc.a liblog4stdc.a
 tests_datetime_init_isotime_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/datetime/init_isotime
 
+check_PROGRAMS += tests/datetime/secs_between
+tests_datetime_secs_between_SOURCES = tests/datetime/secs_between.c
+tests_datetime_secs_between_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_secs_between_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/secs_between
+
+check_PROGRAMS += tests/datetime/msecs_between
+tests_datetime_msecs_between_SOURCES = tests/datetime/msecs_between.c
+tests_datetime_msecs_between_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_msecs_between_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/msecs_between
+
+check_PROGRAMS += tests/datetime/usecs_between
+tests_datetime_usecs_between_SOURCES = tests/datetime/usecs_between.c
+tests_datetime_usecs_between_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_usecs_between_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/usecs_between
+
+check_PROGRAMS += tests/datetime/nsecs_between
+tests_datetime_nsecs_between_SOURCES = tests/datetime/nsecs_between.c
+tests_datetime_nsecs_between_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_nsecs_between_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/nsecs_between
+
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp
 #tests_strings_version_pass_LDADD = libbarefootc.a liblog4stdc.a

@@ -27,7 +27,7 @@ bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 	int consumed=0;
 	int32_t days, secs;
 	int rc;
-	l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.datetime", 0);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_DATETIME_LOGGER);
 
 	if ((rc = bfc_init_datetime(buf, bufsize)) < 0) {
 		L4SC_ERROR(logger, "%s: bfc_init_datetime error %d",

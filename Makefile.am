@@ -257,6 +257,12 @@ tests_log4stdc_configure_prop_level_LDADD = liblog4stdc.a
 tests_log4stdc_configure_prop_level_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/log4stdc/configure.prop/level
 
+check_PROGRAMS += tests/synchronization/atomic_counter
+tests_synchronization_atomic_counter_SOURCES = tests/synchronization/atomic_counter.c
+tests_synchronization_atomic_counter_LDADD = libbarefootc.a liblog4stdc.a
+tests_synchronization_atomic_counter_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/synchronization/atomic_counter
+
 check_PROGRAMS += tests/string.ops/string.accessors/data.pass
 tests_string_ops_string_accessors_data_pass_SOURCES = tests/string.ops/string.accessors/data.pass.cpp
 tests_string_ops_string_accessors_data_pass_LDADD = libbarefootc.a liblog4stdc.a

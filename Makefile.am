@@ -11,6 +11,7 @@ nobase_include_HEADERS+= barefootc/vector.h
 nobase_include_HEADERS+= barefootc/iterator.h
 nobase_include_HEADERS+= barefootc/linkedlist.h
 nobase_include_HEADERS+= barefootc/synchronization.h
+nobase_include_HEADERS+= barefootc/atomic.h
 nobase_include_HEADERS+= barefootc/datetime.h
 nobase_include_HEADERS+= barefootc/utf8.h
 
@@ -38,6 +39,7 @@ libbarefootc_a_SOURCES+= barefootc/posix_mutex.c
 libbarefootc_a_SOURCES+= barefootc/win32_mutex.c
 libbarefootc_a_SOURCES+= datetime/datetime.c
 libbarefootc_a_SOURCES+= datetime/umul32_hiword.h
+libbarefootc_a_SOURCES+= datetime/bfc_init_current_datetime.c
 libbarefootc_a_SOURCES+= datetime/bfc_init_datetime_from_isotime.c
 libbarefootc_a_SOURCES+= datetime/bfc_datetime_frac_from_decimal.c
 libbarefootc_a_SOURCES+= datetime/bfc_datetime_days_to_date.c

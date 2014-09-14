@@ -8,6 +8,7 @@ AC_PROG_RANLIB
 AC_PROG_INSTALL
 
 # Checks for libraries.
+AC_CHECK_LIB([rt], [clock_gettime])
 AC_CHECK_LIB([pthread], [pthread_mutexattr_settype])
 AC_CHECK_LIB([log], [__android_log_print])
 AC_CHECK_LIB([expat], [XML_ParseBuffer])
@@ -26,7 +27,7 @@ AC_TYPE_UINT64_T
 AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([getcwd gettimeofday localtime_r memchr memset strchr strerror strncasecmp strtoul pthread_mutex_init pthread_mutexattr_settype])
+AC_CHECK_FUNCS([getcwd clock_gettime gettimeofday localtime_r memchr memset strchr strerror strncasecmp strtoul pthread_mutex_init pthread_mutexattr_settype])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])

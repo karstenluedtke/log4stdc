@@ -30,7 +30,7 @@ t1(const char *start, const char *stop, long expected)
 #define ONEDAY	((int32_t) 24 * 3600)
 
 int
-main (int argc, char *argv)
+main (int argc, char *argv[])
 {
 	int i, j;
 	char buf[100];

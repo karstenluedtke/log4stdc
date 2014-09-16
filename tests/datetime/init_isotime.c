@@ -72,7 +72,7 @@ t3(const char *s, int long days, unsigned long secs, unsigned long frac)
 }
 
 int
-main (int argc, char *argv)
+main (int argc, char *argv[])
 {
 	int i, j;
 	char buf[100];

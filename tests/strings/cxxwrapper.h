@@ -26,6 +26,8 @@
 #include "log4stdc.h"
 
 #include <wchar.h>
+#include <stdio.h>
+#include <string.h>
 
 #if __cplusplus >= 201103L
 #else
@@ -303,7 +305,9 @@ namespace barefootc {
 				throw(std::bad_alloc());
 				return;
 			default:
-				throw(std::runtime_error("substr error " + rc));
+				char m[80];
+				snprintf(m, sizeof(m), "substr error %d", rc);
+				throw(std::runtime_error(m));
 			}
 		}
 
@@ -314,7 +318,9 @@ namespace barefootc {
 				throw(std::out_of_range("bad substr position"));
 				return;
 			default:
-				throw(std::runtime_error("substr error " + rc));
+				char m[80];
+				snprintf(m, sizeof(m), "substr error %d", rc);
+				throw(std::runtime_error(m));
 			}
 		}
 
@@ -325,7 +331,9 @@ namespace barefootc {
 				throw(std::out_of_range("bad position"));
 				return;
 			default:
-				throw(std::runtime_error("substr error " + rc));
+				char m[80];
+				snprintf(m, sizeof(m), "substr error %d", rc);
+				throw(std::runtime_error(m));
 			}
 		}
 

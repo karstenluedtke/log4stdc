@@ -55,6 +55,7 @@ test_npos(S s, typename S::size_type pos1, typename S::size_type n1,
      S expected)
 {
     typename S::size_type old_size = s.size();
+    typename S::size_type npos = S::npos;
     S s0 = s;
     try
     {
@@ -63,7 +64,7 @@ test_npos(S s, typename S::size_type pos1, typename S::size_type n1,
         assert(pos1 <= old_size && pos2 <= str.size());
         assert(s == expected);
         typename S::size_type xlen = std::min(n1, old_size - pos1);
-        typename S::size_type rlen = std::min(S::npos, str.size() - pos2);
+        typename S::size_type rlen = std::min(npos, str.size() - pos2);
         assert(s.size() == old_size - xlen + rlen);
     }
     catch (std::out_of_range&)

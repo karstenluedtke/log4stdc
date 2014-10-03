@@ -85,7 +85,6 @@ init_appender(void *buf, size_t bufsize, struct mempool *pool)
 static void
 destroy_appender(l4sc_appender_ptr_t appender)
 {
-	int i;
 	l4sc_layout_ptr_t layout = &appender->layout;
 
 	BFC_SLIST_REMOVE(&l4sc_appenders, appender, l4sc_appender_ptr_t, next);
@@ -151,7 +150,6 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 							appender->name;
 			buf[(len < bufsize)? len: bufsize-1] = '\0';
 			__android_log_write(prio, tag, buf);
-			written = len;
 		}
 #else
 		int fd = IS_AT_LEAST_WARN_LEVEL(level)? 2: 1;
@@ -205,7 +203,7 @@ l4sc_append(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 l4sc_appender_ptr_t
 l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 {
-	int i, rc;
+	int rc;
 	l4sc_appender_ptr_t appender = NULL;
 	l4sc_appender_class_ptr_t clazz = &l4sc_sysout_appender_class;
 	struct mempool *pool = get_default_mempool();

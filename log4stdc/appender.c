@@ -6,14 +6,22 @@
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <malloc.h>  /* for alloca */
 #endif
-#if defined(__ANDROID__)
-#include <android/log.h>
-#endif
 
 #include "logobjects.h"
 #include "barefootc/object.h"
 #include "barefootc/mempool.h"
 #include "barefootc/linkedlist.h"
+
+#if defined(__ANDROID__)
+#include <android/log.h>
+#define ANDROID_LOG_PRIO(level) \
+	( IS_AT_LEAST_FATAL_LEVEL(level)? ANDROID_LOG_FATAL: \
+	  IS_AT_LEAST_ERROR_LEVEL(level)? ANDROID_LOG_ERROR: \
+	  IS_AT_LEAST_WARN_LEVEL(level)?  ANDROID_LOG_WARN:  \
+	  IS_AT_LEAST_INFO_LEVEL(level)?  ANDROID_LOG_INFO:  \
+	  IS_AT_LEAST_DEBUG_LEVEL(level)? ANDROID_LOG_DEBUG: \
+					  ANDROID_LOG_VERBOSE )
+#endif
 
 static int init_appender(void *, size_t, struct mempool *);
 static void destroy_appender(l4sc_appender_ptr_t appender);
@@ -127,29 +135,27 @@ get_appender_option(l4sc_appender_cptr_t obj, const char *name, size_t namelen,
 static void
 append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
-	l4sc_layout_cptr_t layout = &appender->layout;
-	size_t len = 0;
-	int rc, written = 0;
-	if (msg && ((len = msg->msglen) > 0)) {
-		int level = msg->level;
-		int fd = IS_AT_LEAST_WARN_LEVEL(level)? 2: 1;
-		size_t bufsize = len + 100;
-		char *buf = alloca(bufsize);
-		len = l4sc_formatmsg(layout, msg, buf, bufsize);
+	if (msg && (msg->msglen > 0)) {
+		const int level = msg->level;
+		l4sc_layout_cptr_t layout = &appender->layout;
+		const size_t bufsize = msg->msglen + 100;
+		char *poolmem = ((bufsize > 2000) && appender->pool)?
+				bfc_mempool_alloc(appender->pool, bufsize):
+				NULL;
+		char *buf = poolmem? poolmem: alloca(bufsize);
+		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
 #if defined(__ANDROID__)
-		const char *tag = msg->logger?	msg->logger->name:
-						appender->name;
-		android_LogPriority prio =
-			IS_AT_LEAST_FATAL_LEVEL(level)?	ANDROID_LOG_FATAL:
-			IS_AT_LEAST_ERROR_LEVEL(level)?	ANDROID_LOG_ERROR:
-			IS_AT_LEAST_WARN_LEVEL(level)?	ANDROID_LOG_WARN:
-			IS_AT_LEAST_INFO_LEVEL(level)?	ANDROID_LOG_INFO:
-			IS_AT_LEAST_DEBUG_LEVEL(level)?	ANDROID_LOG_DEBUG:
-							ANDROID_LOG_VERBOSE;
-		buf[(len < bufsize)? len: bufsize-1] = '\0';
-		__android_log_write(prio, tag, buf);
-		written = len;
+		if (len > 0) {
+			android_LogPriority prio = ANDROID_LOG_PRIO(level);
+			const char *tag = msg->logger?	msg->logger->name:
+							appender->name;
+			buf[(len < bufsize)? len: bufsize-1] = '\0';
+			__android_log_write(prio, tag, buf);
+			written = len;
+		}
 #else
+		int fd = IS_AT_LEAST_WARN_LEVEL(level)? 2: 1;
+		int rc, written = 0;
 		while (len > written) {
 			if ((rc = write(fd, buf, len)) > 0) {
 				written += rc;
@@ -158,6 +164,10 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 			}
 		}
 #endif
+		if (poolmem) {
+			bfc_mempool_free(appender->pool, poolmem);
+			poolmem = NULL;
+		}
 	}
 }
 

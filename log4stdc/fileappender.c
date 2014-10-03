@@ -196,16 +196,17 @@ get_appender_option(l4sc_appender_cptr_t obj, const char *name, size_t namelen,
 static void
 append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
-	l4sc_layout_cptr_t layout = &appender->layout;
-	size_t len = 0;
-	int rolling = 0;
-	bfc_mutex_ptr_t lock;
-	if (msg && ((len = msg->msglen) > 0)) {
-		size_t bufsize = len + 200;
-		char *buf = alloca(bufsize);
-		len = l4sc_formatmsg(layout, msg, buf, bufsize);
+	if (msg && (msg->msglen > 0)) {
+		l4sc_layout_cptr_t layout = &appender->layout;
+		const size_t bufsize = msg->msglen + 200;
+		char *poolmem = ((bufsize > 2000) && appender->pool)?
+				bfc_mempool_alloc(appender->pool, bufsize):
+				NULL;
+		char *buf = poolmem? poolmem: alloca(bufsize);
+		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
 		if (len > 0) {
-			lock = lock_appender(appender);
+			bfc_mutex_ptr_t lock = lock_appender(appender);
+			int rolling = 0;
 
 			if (!is_open(appender)) {
 				open_appender(appender);
@@ -240,6 +241,10 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 			if (rolling) {
 				complete_rollover(appender);
 			}
+		}
+		if (poolmem) {
+			bfc_mempool_free(appender->pool, poolmem);
+			poolmem = NULL;
 		}
 	}
 }

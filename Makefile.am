@@ -187,10 +187,13 @@ liblog4stdc_a_SOURCES+= log4stdc/l4sc_formatmsg.c
 liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c log4stdc/fileappender.c
 liblog4stdc_a_SOURCES+= log4stdc/layout.c log4stdc/logmessage.c
-liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
 liblog4stdc_a_SOURCES+= log4stdc/propertyconfigurator.c
 liblog4stdc_a_SOURCES+= log4stdc/object.c 
+if EXPATXML
+liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
+endif EXPATXML
 
+if BFCLOG4CXX
 liblog4stdc_a_SOURCES+= log4cxx/repository.h log4cxx/repository.cpp
 liblog4stdc_a_SOURCES+= log4cxx/logger.cpp log4cxx/level.cpp
 liblog4stdc_a_SOURCES+= log4cxx/objectptr.cpp log4cxx/objectimpl.cpp
@@ -208,6 +211,8 @@ liblog4stdc_a_SOURCES+= log4cxx/pool.cpp
 liblog4stdc_a_SOURCES+= log4cxx/mutex.cpp
 liblog4stdc_a_SOURCES+= log4cxx/properties.cpp
 liblog4stdc_a_SOURCES+= log4cxx/loader.cpp
+endif BFCLOG4CXX
+
 liblog4stdc_a_SOURCES+= barefootc/bfc_new_object.c
 liblog4stdc_a_SOURCES+= barefootc/bfc_init_object.c
 liblog4stdc_a_SOURCES+= barefootc/bfc_destroy_object.c

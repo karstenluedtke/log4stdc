@@ -8,7 +8,6 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "log4stdc.h"
-#define  BFC_STRING_LOGGER  "barefootc.string", 16
 
 /**
  * @brief    bfc_init_basic_string_copy

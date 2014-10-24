@@ -156,6 +156,8 @@ struct bfc_classhdr {
 		if (__cls == NULL) {					\
 			var = (dflt);					\
 		}							\
+	} else {							\
+		var = (dflt);						\
 	}
 
 #define RETVAR_METHCALL(var,classT,obj,vmeth,args,dflt)			\

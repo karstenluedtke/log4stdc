@@ -393,6 +393,7 @@ l4sc_insert_custom_logger(const char *name, void *cbarg,
 		logger->cxxbuf.p[1] = enatest;
 		logger->cxxbuf.p[2] = logfunc;
 	}
+	return (BFC_SUCCESS);
 }
 
 static int

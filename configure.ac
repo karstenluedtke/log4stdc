@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([barefootc], [0.5.5], [bug-barefootc@example.org])
+AC_INIT([barefootc], [0.5.6], [bug-barefootc@example.org])
 AC_ARG_ENABLE([bfclog4cxx],
 [  --enable-bfclog4cxx    Build replacement library for log4cxx],
 [case "${enableval}" in

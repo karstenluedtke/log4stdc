@@ -7,7 +7,6 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "log4stdc.h"
-#define  BFC_STRING_LOGGER  "barefootc.string", 16
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,

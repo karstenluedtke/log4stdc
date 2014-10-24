@@ -9,7 +9,6 @@
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
 #include "log4stdc.h"
-#define  BFC_STRING_LOGGER  "barefootc.string", 16
 
 /**
  * @brief    bfc_string_append_range

@@ -525,6 +525,54 @@ int	bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c);
 size_t	bfc_basic_wstring_capacity(bfc_cstrptr_t s);
 int	bfc_basic_wstring_reserve(bfc_strptr_t s, size_t n);
 
+/*
+ * bfc_shared_string_t
+ */
+/* Constructors */
+int	bfc_init_shared_string(void *buf, size_t bufsize, struct mempool *pool);
+int	bfc_init_shared_string_copy(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cstrptr_t str);
+int	bfc_init_shared_string_substr(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
+int	bfc_init_shared_string_buffer(void *buf, size_t bufsize,
+		struct mempool *pool, const char* s, size_t n);
+int	bfc_init_shared_string_c_str(void *buf, size_t bufsize,
+		struct mempool *pool, const char* s);
+int	bfc_init_shared_string_fill(void *buf, size_t bufsize,
+		struct mempool *pool, size_t n, int c);
+int	bfc_init_shared_string_range(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_iterptr_t begin, bfc_iterptr_t end);
+void	bfc_destroy_shared_string(bfc_strptr_t obj);
+size_t	bfc_shared_string_objsize(bfc_cstrptr_t obj);
+
+/* Capacity */
+int	bfc_shared_string_resize(bfc_strptr_t s, size_t n, int c);
+size_t	bfc_shared_string_capacity(bfc_cstrptr_t s);
+int	bfc_shared_string_reserve(bfc_strptr_t s, size_t n);
+
+/*
+ * bfc_shared_wstring_t
+ */
+/* Constructors */
+int	bfc_init_shared_wstring(void *buf,size_t bufsize,struct mempool *pool);
+int	bfc_init_shared_wstring_copy(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cstrptr_t str);
+int	bfc_init_shared_wstring_substr(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
+int	bfc_init_shared_wstring_buffer(void *buf, size_t bufsize,
+		struct mempool *pool, const wchar_t* s, size_t n);
+int	bfc_init_shared_wstring_c_str(void *buf, size_t bufsize,
+		struct mempool *pool, const wchar_t* s);
+int	bfc_init_shared_wstring_range(void *buf, size_t bufsize,
+		struct mempool *pool, bfc_iterptr_t begin, bfc_iterptr_t end);
+void	bfc_destroy_shared_wstring(bfc_strptr_t obj);
+size_t	bfc_shared_wstring_objsize(bfc_cstrptr_t obj);
+
+/* Capacity */
+int	bfc_shared_wstring_resize(bfc_strptr_t s, size_t n, int c);
+size_t	bfc_shared_wstring_capacity(bfc_cstrptr_t s);
+int	bfc_shared_wstring_reserve(bfc_strptr_t s, size_t n);
+
 #ifdef __cplusplus
 }	/* C++ */
 #endif

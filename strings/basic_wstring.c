@@ -174,6 +174,13 @@ bfc_destroy_basic_wstring(bfc_strptr_t obj)
 	bfc_string_classptr_t cls;
 
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
+		wchar_t *charbuf = obj->buf;
+		struct mempool *pool;
+		obj->len = obj->bufsize = 0;
+		obj->buf = NULL;
+		if (charbuf && (pool = obj->pool)) {
+			mempool_free(pool, charbuf);
+		}
 		BFC_DESTROY_EPILOGUE(obj, cls);
 	}
 }

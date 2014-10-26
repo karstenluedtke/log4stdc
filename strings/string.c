@@ -123,6 +123,8 @@
 #define	bfc_wstring_sublen			bfc_string_sublen
 #define	bfc_wstring_subdata			bfc_string_subdata
 
+#define	bfc_init_shared_wstring_buffer		bfc_init_shared_string_buffer
+
 #include "wstring.c"
 
 static int

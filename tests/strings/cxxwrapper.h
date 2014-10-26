@@ -606,6 +606,7 @@ namespace barefootc {
 
 		~basic_string()
 		{
+			bfc_destroy(&bfcstr);
 		}
 
 		basic_string& operator=(const basic_string& str)

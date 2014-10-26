@@ -30,6 +30,41 @@ struct bfc_string_class {
 
 extern struct bfc_string_class bfc_wstring_class;
 
+static int bfc_shared_string_illegal_method(bfc_cstrptr_t s, const char *meth);
+
+int bfc_shared_wstring_assign_buffer(bfc_strptr_t s,
+				const wchar_t *s2, size_t n);
+
+static int bfc_shared_wstring_assign_fill(bfc_strptr_t s, size_t n, int c);
+static int bfc_shared_wstring_append_buffer(bfc_strptr_t s,
+				const wchar_t *s2, size_t n);
+static int bfc_shared_wstring_append_fill(bfc_strptr_t s, size_t n, int c);
+static int bfc_shared_wstring_push_back(bfc_strptr_t s, int c);
+static int bfc_shared_wstring_insert_buffer(bfc_strptr_t s, size_t pos,
+				const wchar_t *s2, size_t n);
+static int bfc_shared_wstring_insert_fill(bfc_strptr_t s,
+				size_t pos, size_t n, int c);
+static int bfc_shared_wstring_insert_fillit(bfc_strptr_t s,
+				bfc_iterptr_t p, size_t n, int c);
+static int bfc_shared_wstring_insert_char(bfc_strptr_t s,
+				bfc_iterptr_t p, int c);
+
+void bfc_shared_wstring_pop_back(bfc_strptr_t s);
+
+static int bfc_shared_wstring_replace_buffer(bfc_strptr_t s, size_t pos,
+				size_t n1, const wchar_t* s2, size_t n2);
+static int bfc_shared_wstring_replace_fill(bfc_strptr_t s,
+				size_t pos, size_t n1, size_t n2, int c);
+static int bfc_shared_wstring_replace_range_buffer(bfc_strptr_t s,
+				bfc_iterptr_t i1, bfc_iterptr_t i2,
+				const wchar_t* s2, size_t n);
+static int bfc_shared_wstring_replace_range_fill(bfc_strptr_t s,
+				bfc_iterptr_t i1, bfc_iterptr_t i2,
+				size_t n, int c);
+static int bfc_shared_wstring_replace_ranges(bfc_strptr_t s,
+				bfc_iterptr_t i1, bfc_iterptr_t i2,
+				bfc_iterptr_t j1, bfc_iterptr_t j2);
+
 struct bfc_string_class bfc_shared_wstring_class = {
 	.super 		= &bfc_wstring_class,
 	.name 		= STRING_CLASS_NAME,
@@ -44,6 +79,22 @@ struct bfc_string_class bfc_shared_wstring_class = {
 	.resize		= bfc_shared_wstring_resize,
 	.capacity	= bfc_shared_wstring_capacity,
 	.reserve	= bfc_shared_wstring_reserve,
+
+	.assign_buffer	= bfc_shared_wstring_assign_buffer,
+	.assign_fill 	= bfc_shared_wstring_assign_fill,
+	.append_buffer	= bfc_shared_wstring_append_buffer,
+	.append_fill 	= bfc_shared_wstring_append_fill,
+	.push_back	= bfc_shared_wstring_push_back,
+	.insert_buffer	= bfc_shared_wstring_insert_buffer,
+	.insert_fill 	= bfc_shared_wstring_insert_fill,
+	.insert_fillit	= bfc_shared_wstring_insert_fillit,
+	.insert_char 	= bfc_shared_wstring_insert_char,
+	.pop_back	= bfc_shared_wstring_pop_back,
+	.replace_buffer	= bfc_shared_wstring_replace_buffer,
+	.replace_fill	= bfc_shared_wstring_replace_fill,
+	.replace_range_buffer = bfc_shared_wstring_replace_range_buffer,
+	.replace_range_fill   = bfc_shared_wstring_replace_range_fill,
+	.replace_ranges	= bfc_shared_wstring_replace_ranges,
 };
 
 int
@@ -158,5 +209,114 @@ bfc_shared_wstring_reserve(bfc_strptr_t s, size_t n)
 		return (BFC_SUCCESS);
 	}
 	return (-ENOMEM);
+}
+
+static int
+bfc_shared_string_illegal_method(bfc_cstrptr_t s, const char *meth)
+{
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+	L4SC_ERROR(logger, "illegal method %s called for string @%p", meth, s);
+	return (-ENOSYS);
+}
+
+int
+bfc_shared_wstring_assign_buffer(bfc_strptr_t s, const wchar_t *s2, size_t n)
+{
+	s->buf = (void *) (intptr_t) s;
+	s->bufsize = s->len = n;
+	return (BFC_SUCCESS);
+}
+
+static int
+bfc_shared_wstring_assign_fill(bfc_strptr_t s, size_t n, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_append_buffer(bfc_strptr_t s, const wchar_t *s2, size_t n)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_append_fill(bfc_strptr_t s, size_t n, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_push_back(bfc_strptr_t s, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_insert_buffer(bfc_strptr_t s, size_t pos,
+			  const wchar_t *s2, size_t n)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_insert_fill(bfc_strptr_t s, size_t pos, size_t n, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_insert_fillit(bfc_strptr_t s, bfc_iterptr_t p, size_t n, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_insert_char(bfc_strptr_t s, bfc_iterptr_t p, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+void
+bfc_shared_wstring_pop_back(bfc_strptr_t s)
+{
+	if (bfc_wstrlen(s) > 0) {
+		s->len--;
+	}
+}
+
+static int
+bfc_shared_wstring_replace_buffer(bfc_strptr_t s, size_t pos, size_t n1,
+			   const wchar_t* s2, size_t n2)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
+					size_t n2, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
+				bfc_iterptr_t i2, const wchar_t* s2, size_t n)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
+					bfc_iterptr_t i2, size_t n, int c)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+}
+
+static int
+bfc_shared_wstring_replace_ranges(bfc_strptr_t s,
+				  bfc_iterptr_t i1, bfc_iterptr_t i2,
+				  bfc_iterptr_t j1, bfc_iterptr_t j2)
+{
+	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
 }
 

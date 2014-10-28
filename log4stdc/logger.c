@@ -460,6 +460,7 @@ l4sc_to_level(const char *value, int vallen, int defaultlevel)
 			}
 		case 'D': case 'd': return (DEBUG_LEVEL);
 		case 'T': case 't': return (TRACE_LEVEL);
+		case 'O': case 'o': return (OFF_LEVEL);
 		default: ;
 		}
 	}

@@ -286,6 +286,19 @@ static int
 set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
 {
 	int i;
+	extern const char obsolete_appender_name[]; /* in appender.c */
+
+	for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
+		if (logger->appenders[i]
+		 && ((logger->appenders[i]->name == NULL)
+		  || (logger->appenders[i]->name == obsolete_appender_name))) {
+			LOGINFO(("%s: %s clearing %p (class %s) at #%d",
+				__FUNCTION__,logger->name,logger->appenders[i],
+				BFC_CLASS(logger->appenders[i])->name, i));
+			logger->appenders[i]->refc--;
+			logger->appenders[i] = NULL;
+		}
+	}
 	for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
 		if (logger->appenders[i] == appender) {
 			LOGDEBUG(("%s: %s already appending to %s (class %s)",

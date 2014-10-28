@@ -67,6 +67,7 @@ struct appenderpool {
 
 struct appenderpool l4sc_appenders = { NULL, NULL };
 
+const char obsolete_appender_name[] = "###obsolete-appender###";
 
 static int
 init_appender(void *buf, size_t bufsize, struct mempool *pool)
@@ -205,44 +206,84 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 {
 	int rc;
 	l4sc_appender_ptr_t appender = NULL;
-	l4sc_appender_class_ptr_t clazz = &l4sc_sysout_appender_class;
+	l4sc_appender_class_ptr_t cl, clazz = NULL;
 	struct mempool *pool = get_default_mempool();
+
+	if (kind && (klen >= 5)) {
+		clazz = &l4sc_sysout_appender_class;
+		if ((klen >= 12)
+		 && (strncasecmp(kind+klen-12, "FileAppender", 12) == 0)) {
+			clazz = &l4sc_file_appender_class;
+		}
+		BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
+			cl = BFC_CLASS(appender);
+			if (cl && cl->name
+			 && (strncasecmp(cl->name, kind, klen) == 0)
+			 && (cl->name[klen] == '\0')) {
+				clazz = cl;
+			}
+		}
+	} else {
+		BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
+			if ((strncasecmp(appender->name, name, nlen) == 0)
+			 && (appender->name[nlen] == '\0')) {
+				return (appender);
+			}
+		}
+		LOGINFO(("%s: appender %.*s not found, no class",
+					__FUNCTION__, nlen, name));
+		return (NULL);
+	}
 
 	BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
 		if ((strncasecmp(appender->name, name, nlen) == 0)
 		 && (appender->name[nlen] == '\0')) {
-			return (appender);
+			cl = BFC_CLASS(appender);
+			if (cl == clazz) {
+				return (appender);
+			} else {
+				LOGINFO(("%s: appender %s class %s != %s",
+					__FUNCTION__, appender->name,
+					cl? cl->name: "(null)", clazz->name));
+				appender->name = obsolete_appender_name;
+				VOID_METHCALL(l4sc_appender_class_ptr_t,
+					appender, close, (appender));
+				break;
+			}
 		}
 	}
 
-	if (!kind || (klen < 5)) {
-		LOGINFO(("%s: appender %.*s not found, no class",
-					__FUNCTION__, nlen, name));
-		return (NULL);
-	} else if ((klen >= 12)
-		&& (strncasecmp(kind+klen-12, "FileAppender", 12) == 0)) {
-		clazz = &l4sc_file_appender_class;
-	}
-	BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
-		if (BFC_CLASS(appender) && BFC_CLASS(appender)->name
-		 && (strncasecmp(BFC_CLASS(appender)->name, kind, klen) == 0)
-		 && (BFC_CLASS(appender)->name[klen] == '\0')) {
-			clazz = BFC_CLASS(appender);
-		}
-	}
+	appender = NULL;
 
 	LOGINFO(("%s: appender %.*s not found, creating %.*s ...",
-				__FUNCTION__, nlen, name, klen, kind));
-	appender = NULL;
+			__FUNCTION__, nlen, name, klen, kind));
 	rc = bfc_new((void **) &appender, (bfc_classptr_t) clazz, pool);
 	if ((rc >= 0) && appender) {
-		CMETHCALL(clazz, set_name, (appender, name, nlen), (void)0);
+		VOID_METHCALL(l4sc_appender_class_ptr_t, appender,
+			      set_name, (appender, name, nlen));
 		appender->pool = pool;
 		LOGINFO(("%s: created %s (class %s).",
-				__FUNCTION__, appender->name, clazz->name));
+			__FUNCTION__, appender->name, clazz->name));
+	} else {
+		LOGERROR(("%s: error %d creating %s (class %s).",
+			__FUNCTION__, rc, appender->name, clazz->name));
+		appender = NULL;
 	}
+
 	return (appender);
 }
+
+void
+l4sc_close_appenders(void)
+{
+	l4sc_appender_ptr_t appender = NULL;
+
+	BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
+		VOID_METHCALL(l4sc_appender_class_ptr_t, appender,
+			      close, (appender));
+	}
+}
+
 
 l4sc_layout_ptr_t l4sc_get_appender_layout(l4sc_appender_ptr_t appender)
 {

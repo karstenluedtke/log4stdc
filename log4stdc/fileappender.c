@@ -311,6 +311,7 @@ open_appender(l4sc_appender_ptr_t appender)
 static void
 close_appender(l4sc_appender_ptr_t appender)
 {
+	bfc_mutex_ptr_t lock = lock_appender(appender);
 #if defined(L4SC_WINDOWS_FILES)
 	HANDLE fh = appender->fu.fh;
 	appender->fu.fh = NULL;
@@ -322,10 +323,11 @@ close_appender(l4sc_appender_ptr_t appender)
 	int fd = appender->fu.fd;
 	appender->fu.fh = NULL;
 	appender->fu.fd = 0;
-	if (fd) {
+	if (fd && (fd != -1)) {
 		close(fd);
 	}
 #endif
+	unlock_appender(appender, lock);
 }
 
 static int

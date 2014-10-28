@@ -333,6 +333,8 @@ l4sc_configure_from_xml_file(const char *path)
 	const int pathlen = strlen(path);
 	char pathbuf[256 + pathlen];
 
+	l4sc_close_appenders();
+
 	init_xml_configurator(&obj, sizeof(obj), NULL);
 	l4sc_merge_base_directory_path(pathbuf, sizeof(pathbuf), path, pathlen);
 	rc = VMETHCALL(&obj, configure_from_file, (&obj, pathbuf), -ENOSYS);
@@ -348,6 +350,8 @@ l4sc_configure_from_xml_string(const char *buf, size_t len)
 {
 	int rc;
 	struct l4sc_configurator obj;
+
+	l4sc_close_appenders();
 
 	init_xml_configurator(&obj, sizeof(obj), NULL);
 	rc = VMETHCALL(&obj, configure, (&obj, buf, len), -ENOSYS);

@@ -103,6 +103,8 @@ l4sc_appender_ptr_t l4sc_get_appender(const char *name, int nlen,
 
 l4sc_layout_ptr_t l4sc_get_appender_layout(l4sc_appender_ptr_t appender);
 
+void l4sc_close_appenders(void);
+
 int l4sc_to_level(const char *value, int vallen, int defaultlevel);
 
 #define L4SC_FATAL(logger,...) \

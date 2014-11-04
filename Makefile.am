@@ -3228,6 +3228,24 @@ tests_wstring_access_db_front_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_wstring_access_db_front_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/wstring.access/db_front.pass
 
+check_PROGRAMS += tests/shared_string.erase/erase_seq
+tests_shared_string_erase_erase_seq_SOURCES = tests/shared_string.erase/erase_seq.c
+tests_shared_string_erase_erase_seq_LDADD = libbarefootc.a liblog4stdc.a
+tests_shared_string_erase_erase_seq_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/shared_string.erase/erase_seq
+
+check_PROGRAMS += tests/shared_string.erase/erase_char
+tests_shared_string_erase_erase_char_SOURCES = tests/shared_string.erase/erase_char.c
+tests_shared_string_erase_erase_char_LDADD = libbarefootc.a liblog4stdc.a
+tests_shared_string_erase_erase_char_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/shared_string.erase/erase_char
+
+check_PROGRAMS += tests/shared_string.erase/erase_range
+tests_shared_string_erase_erase_range_SOURCES = tests/shared_string.erase/erase_range.c
+tests_shared_string_erase_erase_range_LDADD = libbarefootc.a liblog4stdc.a
+tests_shared_string_erase_erase_range_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/shared_string.erase/erase_range
+
 check_PROGRAMS += tests/datetime/init_isotime
 tests_datetime_init_isotime_SOURCES = tests/datetime/init_isotime.c
 tests_datetime_init_isotime_LDADD = libbarefootc.a liblog4stdc.a

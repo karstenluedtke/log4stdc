@@ -288,6 +288,37 @@ static int
 bfc_shared_wstring_replace_buffer(bfc_strptr_t s, size_t pos, size_t n1,
 			   const wchar_t* s2, size_t n2)
 {
+	const size_t len = bfc_wstrlen(s);
+	size_t nkill = bfc_wstring_sublen(s, pos, n1);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	L4SC_TRACE(logger, "%s(%p, %ld, %ld, %p, %ld)",
+		__FUNCTION__, s, (long) pos, (long) n1, s2, (long) n2);
+
+	if ((pos == BFC_NPOS) || (pos > len)) {
+		L4SC_ERROR(logger, "%s: pos %ld behind len %ld",
+			__FUNCTION__, (long) pos, (long) len);
+		return (-ERANGE);
+	}
+	if (n2 == 0) {
+		if (nkill == 0) {
+			return (BFC_SUCCESS);
+		} else if (pos == 0) {
+			/* erase the first characters in the string */
+			s->len  -= nkill;
+			s->offs += nkill;
+			return (BFC_SUCCESS);
+		} else if (pos + nkill == bfc_wstring_length(s)) {
+			/* erase the last characters in the string */
+			s->len  -= nkill;
+			return (BFC_SUCCESS);
+		} else {
+			L4SC_ERROR(logger, "%s: erased seq @%ld len %ld must "
+				   "be at head @0 or tail @%ld-%ld of string",
+				   __FUNCTION__, (long) pos, (long) n1,
+				   (long) bfc_wstring_length(s), (long) nkill);
+		}
+	}
 	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
 }
 
@@ -295,21 +326,54 @@ static int
 bfc_shared_wstring_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
 					size_t n2, int c)
 {
-	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	const wchar_t x = 0;
+
+	if (n2 != 0) {
+		return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, n1, &x, 0),
+			bfc_shared_wstring_replace_buffer(s, pos, n1, &x, 0));
 }
 
 static int
 bfc_shared_wstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const wchar_t* s2, size_t n)
 {
-	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	size_t pos;
+	ptrdiff_t k;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	if ((i1->obj != (bfc_objptr_t) s) || (i2->obj != (bfc_objptr_t) s)) {
+		return (-EFAULT);
+	}
+	if (n != 0) {
+		return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	}
+	pos = bfc_iterator_position(i1);
+	if ((k = bfc_iterator_distance(i1, i2)) < 0) {
+		return (-EINVAL);
+	}
+	L4SC_DEBUG(logger,"%s: pos %ld, k %ld",__FUNCTION__,(long)pos,(long)k);
+	bfc_object_dump(i1, 1, logger);
+	bfc_object_dump(i2, 1, logger);
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_buffer, (s, pos, k, s2, n),
+			bfc_shared_wstring_replace_buffer(s, pos, k, s2, n));
 }
 
 static int
 bfc_shared_wstring_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
 					bfc_iterptr_t i2, size_t n, int c)
 {
-	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	const wchar_t x = 0;
+
+	if (n != 0) {
+		return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_range_buffer, (s, i1, i2, &x, 0),
+			bfc_shared_wstring_replace_range_buffer(s,i1,i2,&x,0));
 }
 
 static int
@@ -317,6 +381,13 @@ bfc_shared_wstring_replace_ranges(bfc_strptr_t s,
 				  bfc_iterptr_t i1, bfc_iterptr_t i2,
 				  bfc_iterptr_t j1, bfc_iterptr_t j2)
 {
-	return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	const wchar_t x = 0;
+
+	if (bfc_iterator_distance(j1, j2) != 0) {
+		return (bfc_shared_string_illegal_method(s, __FUNCTION__));
+	}
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			replace_range_buffer, (s, i1, i2, &x, 0),
+			bfc_shared_wstring_replace_range_buffer(s,i1,i2,&x,0));
 }
 

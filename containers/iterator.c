@@ -20,11 +20,13 @@ static int iterator_tostring(bfc_citerptr_t it, char *buf, size_t bufsize);
 static const void *iterator_first(bfc_citerptr_t);
 static void *forward_index(bfc_iterptr_t, size_t pos);
 static long forward_getlong(bfc_citerptr_t, size_t pos);
+static int forward_setlong(bfc_iterptr_t, size_t pos, long val);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t forward_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
 static void *reverse_index(bfc_iterptr_t it, size_t pos);
 static long reverse_getlong(bfc_citerptr_t it, size_t pos);
+static int reverse_setlong(bfc_iterptr_t it, size_t pos, long val);
 static int advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 static void last_method(void) { }
@@ -49,7 +51,7 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .first	*/ iterator_first,
 	/* .index	*/ forward_index,
 	/* .getl	*/ forward_getlong,
-	/* .setl	*/ NULL,
+	/* .setl	*/ forward_setlong,
 	/* .spare17 	*/ NULL,
 	/* .ibegin	*/ NULL,
 	/* .ilimit	*/ NULL,
@@ -85,7 +87,7 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* .first	*/ iterator_first,
 	/* .index	*/ reverse_index,
 	/* .getl	*/ reverse_getlong,
-	/* .setl	*/ NULL,
+	/* .setl	*/ reverse_setlong,
 	/* .spare17 	*/ NULL,
 	/* .ibegin	*/ NULL,
 	/* .ilimit	*/ NULL,
@@ -271,6 +273,13 @@ forward_getlong(bfc_citerptr_t it, size_t pos)
 }
 
 static int
+forward_setlong(bfc_iterptr_t it, size_t pos, long val)
+{
+	RETURN_METHCALL(bfc_classptr_t, it->obj,
+			setl, (it->obj, it->pos + pos, val), -ENOSYS);
+}
+
+static int
 advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 16);
@@ -322,6 +331,13 @@ reverse_getlong(bfc_citerptr_t it, size_t pos)
 {
 	RETURN_METHCALL(bfc_classptr_t, it->obj,
 			getl, (it->obj, it->pos - pos), -ENOSYS);
+}
+
+static int
+reverse_setlong(bfc_iterptr_t it, size_t pos, long val)
+{
+	RETURN_METHCALL(bfc_classptr_t, it->obj,
+			setl, (it->obj, it->pos - pos, val), -ENOSYS);
 }
 
 static int

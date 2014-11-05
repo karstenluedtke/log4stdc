@@ -367,3 +367,11 @@ bfc_iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other)
 	RETURN_METHCALL(bfc_iterator_classptr_t, it,
 			equals, (it, other), 0);
 }
+
+int
+bfc_iterator_advance(bfc_iterptr_t it, ptrdiff_t n)
+{
+	RETURN_METHCALL(bfc_iterator_classptr_t, it,
+			advance, (it, n), -ENOSYS);
+}
+

@@ -70,6 +70,7 @@ int	bfc_iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 size_t	bfc_iterator_length(bfc_citerptr_t it);
 size_t	bfc_iterator_position(bfc_citerptr_t it);
 ptrdiff_t bfc_iterator_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
+int	bfc_iterator_advance(bfc_iterptr_t it, ptrdiff_t n);
 
 int	bfc_init_cstr_iterator(void *buf, size_t bufsize,
 					const char *s, size_t pos);

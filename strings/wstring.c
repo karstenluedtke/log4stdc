@@ -687,36 +687,59 @@ int
 bfc_wstring_replace_ranges(bfc_strptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
 					   bfc_iterptr_t j1, bfc_iterptr_t j2)
 {
-	wchar_t *data;
-	size_t n = 0;
-	ptrdiff_t d = bfc_iterator_distance(j1, j2);
-	long c;
-	bfc_iterator_t it;
+	int rc=0, rc2;
+	ptrdiff_t d, e;
+	size_t bufsize;
+	wchar_t *tailbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+	bfc_iterator_t it;
 
 	L4SC_TRACE(logger, "%s(%p, %p, %p, %p, %p)",
 			__FUNCTION__, s, i1, i2, j1, j2);
 
-	if (d < 0) {
+	if ((d = bfc_iterator_distance(j1, j2)) < 0) {
 		L4SC_ERROR(logger, "%s: negative distance %ld",
 						__FUNCTION__, (long)d);
 		return (-EINVAL);
 	}
-	data = alloca(4*d+20);
-	bfc_clone_object(j1, &it, sizeof(it));
-	while ((n < (size_t) d) && !bfc_iterator_equals(&it, j2)) {
-		RETVAR_METHCALL(c, bfc_iterator_classptr_t, &it,
-				getl, (&it, 0), -ENOSYS);
-		if (c >= 0) {
-			data[n++] = (wchar_t) c;
-		} else {
-			break;
-		}
-		VOID_METHCALL(bfc_iterator_classptr_t, &it, advance, (&it, 1));
+
+	if (bfc_string_end_iterator(s, &it, sizeof(it)) >= 0) {
+		e = bfc_iterator_distance(i2, &it);
+		bfc_destroy(&it);
+	} else {
+		L4SC_ERROR(logger, "%s: init end iterator failed",__FUNCTION__);
+		e = bfc_string_length(s);
 	}
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_range_buffer, (s, i1, i2, data, n),
-			bfc_wstring_replace_range_buffer(s, i1, i2, data, n));
+	bufsize = (e > 0)? e+1: 2;
+	tailbuf = alloca(bufsize * sizeof(wchar_t));
+	if (e > 0) {
+		bfc_wstring_copy(s, tailbuf, e, bfc_iterator_position(i2)); 
+	} else if (e < 0) {
+		L4SC_ERROR(logger, "%s: negative tail distance %ld",
+						__FUNCTION__, (long)e);
+		return (-EINVAL);
+	}
+
+	bfc_string_resize(s, bfc_iterator_position(i1), 0);
+
+	if ((d > 0) && (bfc_clone_object(i1, &it, sizeof(it)) >= 0)) {
+		if ((rc = bfc_string_append_iter_range(s, &it, j1, j2)) < 0) {
+			L4SC_ERROR(logger, "%s: appending range error %d",
+							__FUNCTION__, rc);
+		}
+		bfc_destroy(&it);
+	}
+
+	if ((e > 0) && tailbuf) {
+		if ((rc2 = bfc_wstring_append_buffer(s, tailbuf, e)) < 0) {
+			L4SC_ERROR(logger, "%s: appending tail error %d",
+							__FUNCTION__, rc);
+			rc = (rc < 0)? rc: rc2;
+		}
+	}
+
+	bfc_object_dump(s, 1, logger);
+	return (rc);
 }
 
 size_t

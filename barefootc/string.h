@@ -85,18 +85,19 @@ typedef const struct bfc_string *bfc_cstrptr_t;
 				 const charT *s2, size_t n);		\
 	int	(*insert_fill)(strptrT s,size_t pos, size_t n,fillT c);	\
 	int	(*insert_fillit)(strptrT s,bfc_iterptr_t p,size_t n,fillT c);\
-	int	(*insert_char)(strptrT s, bfc_iterptr_t p, fillT c);		\
+	int	(*insert_char)(strptrT s, bfc_iterptr_t p, fillT c);	\
 	void	(*pop_back)(strptrT s);					\
 	int	(*replace_buffer)(strptrT s, size_t pos, size_t n1,	\
 				const charT* s2, size_t n2);		\
 	int	(*replace_fill)(strptrT s, size_t pos, size_t n1,	\
 				size_t n2, fillT c);			\
-	int	(*replace_range_buffer)(strptrT s, bfc_iterptr_t i1,		\
+	int	(*replace_range_buffer)(strptrT s, bfc_iterptr_t i1,	\
 				bfc_iterptr_t i2, const charT* s2, size_t n);\
-	int	(*replace_range_fill)(strptrT s, bfc_iterptr_t i1,		\
+	int	(*replace_range_fill)(strptrT s, bfc_iterptr_t i1,	\
 				bfc_iterptr_t i2, size_t n, fillT c);	\
-	int	(*replace_ranges)(strptrT s, bfc_iterptr_t i1, bfc_iterptr_t i2,	\
-				bfc_iterptr_t j1, bfc_iterptr_t j2);		\
+	int	(*replace_ranges)(strptrT s,				\
+				bfc_iterptr_t i1, bfc_iterptr_t i2,	\
+				bfc_iterptr_t j1, bfc_iterptr_t j2);	\
 	size_t	(*copy)(cstrptrT s, charT* s2, size_t n, size_t pos);	\
 	void	(*swap)(strptrT s, strptrT str);			\
 	/* String operations */						\
@@ -215,6 +216,8 @@ int     bfc_string_append_c_str(bfc_strptr_t s, const void *s2);
 int     bfc_string_append_buffer(bfc_strptr_t s, const void *s2, size_t n);
 int     bfc_string_append_fill(bfc_strptr_t s, size_t n, int c);
 int     bfc_string_append_range(bfc_strptr_t s,
+				bfc_iterptr_t first, bfc_iterptr_t last);
+int     bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
 				bfc_iterptr_t first, bfc_iterptr_t last);
 int	bfc_string_push_back(bfc_strptr_t s, int c);
 int     bfc_string_insert_copy(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2);
@@ -495,6 +498,11 @@ size_t	bfc_basic_string_max_size(bfc_cstrptr_t s);
 int	bfc_basic_string_resize(bfc_strptr_t s, size_t n, int c);
 size_t	bfc_basic_string_capacity(bfc_cstrptr_t s);
 int	bfc_basic_string_reserve(bfc_strptr_t s, size_t n);
+
+/* Modifiers */
+int     bfc_basic_string_replace_ranges(bfc_strptr_t s,
+				  bfc_iterptr_t i1, bfc_iterptr_t i2,
+				  bfc_iterptr_t j1, bfc_iterptr_t j2);
 
 /*
  * bfc_basic_wstring_t

@@ -23,10 +23,8 @@ bfc_string_append_range(bfc_strptr_t s,
 
 	L4SC_TRACE(logger, "%s(%p, %p, %p)", __FUNCTION__, s, first, last);
 
-	bfc_init_iterator(&end, sizeof(end), (bfc_objptr_t) s, len);
+	bfc_string_end_iterator(s, &end, sizeof(end));
 
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_ranges, (s, &end, &end, first, last),
-			bfc_string_replace_ranges(s, &end, &end, first, last));
+	return (bfc_string_append_iter_range(s, &end, first, last));
 }
 

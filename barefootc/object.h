@@ -214,6 +214,9 @@ int  bfc_object_length(const void *);
 int  bfc_object_tostring(const void *, char *, size_t);
 void bfc_object_dump(const void *, int, struct l4sc_logger *);
 
+long bfc_container_getlong(const void *, size_t);
+int  bfc_container_setlong(void *, size_t, long);
+
 size_t bfc_get_base_object_size(bfc_cobjptr_t);
 
 int  bfc_default_init_object(void *, size_t, struct mempool *);

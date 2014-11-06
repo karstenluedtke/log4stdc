@@ -44,6 +44,8 @@ struct bfc_string_class bfc_basic_wstring_class = {
 	.resize		= bfc_basic_wstring_resize,
 	.capacity	= bfc_basic_wstring_capacity,
 	.reserve	= bfc_basic_wstring_reserve,
+
+	.replace_ranges	= bfc_basic_string_replace_ranges,
 };
 
 int

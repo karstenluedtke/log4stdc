@@ -979,7 +979,7 @@ bfc_wstring_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
 		return (-ERANGE);
 	}
-	return (bfc_init_shared_wstring_buffer(buf, bufsize, NULL,
+	return (bfc_init_shared_wstring_buffer(buf, bufsize,
 		bfc_wstring_subdata(s, pos), bfc_wstring_sublen(s, pos, n)));
 }
 

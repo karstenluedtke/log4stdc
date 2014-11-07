@@ -32,6 +32,7 @@ extern struct bfc_string_class bfc_wstring_class;
 
 static int bfc_shared_string_illegal_method(bfc_cstrptr_t s, const char *meth);
 
+int bfc_init_shared_wstring(void *buf, size_t bufsize, struct mempool *pool);
 int bfc_shared_wstring_assign_buffer(bfc_strptr_t s,
 				const wchar_t *s2, size_t n);
 
@@ -115,23 +116,18 @@ bfc_init_shared_wstring(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 int
-bfc_init_shared_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_shared_wstring_buffer(void *buf, size_t bufsize,
 				const wchar_t* s, size_t n)
 {
 	wchar_t *charbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, obj, buf, bufsize, pool,
+			  bfc_strptr_t, obj, buf, bufsize, NULL,
 			  &bfc_shared_wstring_class);
 
-	if (pool) {
-		L4SC_WARN(logger, "%s(%p, %ld, pool %p, s %p, n %ld): pool!",
-			__FUNCTION__, buf, (long) bufsize, pool, s, (long) n);
-	} else {
-		L4SC_TRACE(logger, "%s(%p, %ld, pool %p, s %p, n %ld)",
-			__FUNCTION__, buf, (long) bufsize, pool, s, (long) n);
-	}
+	L4SC_TRACE(logger, "%s(%p, %ld, s %p, n %ld)",
+			__FUNCTION__, buf, (long) bufsize, s, (long) n);
 
 	if (n >= bfc_basic_wstring_max_size(obj)) {
 		L4SC_ERROR(logger, "%s: too large string: %lu >= %lu chars",
@@ -146,17 +142,16 @@ bfc_init_shared_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_shared_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
-				const wchar_t* s)
+bfc_init_shared_wstring_c_str(void *buf, size_t bufsize, const wchar_t* s)
 {
 	int n;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
-	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, s %p)",
-		__FUNCTION__, buf, (long) bufsize, pool, s);
+	L4SC_TRACE(logger, "%s(%p, %ld, s %p)",
+		__FUNCTION__, buf, (long) bufsize, s);
 
 	n = (*bfc_shared_wstring_class.traits->szlen)(s);
-	return bfc_init_shared_wstring_buffer(buf, bufsize, pool, s, n);
+	return bfc_init_shared_wstring_buffer(buf, bufsize, s, n);
 }
 
 void

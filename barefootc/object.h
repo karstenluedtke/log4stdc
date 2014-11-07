@@ -214,6 +214,8 @@ int  bfc_object_length(const void *);
 int  bfc_object_tostring(const void *, char *, size_t);
 void bfc_object_dump(const void *, int, struct l4sc_logger *);
 
+const void *bfc_container_first(const void *);
+void *bfc_container_index(void *, size_t);
 long bfc_container_getlong(const void *, size_t);
 int  bfc_container_setlong(void *, size_t, long);
 

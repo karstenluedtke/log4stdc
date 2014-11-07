@@ -69,6 +69,8 @@ size_t	bfc_iterator_objsize(bfc_citerptr_t it);
 int	bfc_iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 size_t	bfc_iterator_length(bfc_citerptr_t it);
 size_t	bfc_iterator_position(bfc_citerptr_t it);
+void *	bfc_iterator_index(bfc_iterptr_t it);
+long	bfc_iterator_getlong(bfc_citerptr_t it);
 long	bfc_iterator_getlong(bfc_citerptr_t it);
 int	bfc_iterator_setlong(bfc_iterptr_t it, long val);
 ptrdiff_t bfc_iterator_distance(bfc_citerptr_t first, bfc_citerptr_t limit);

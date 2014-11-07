@@ -16,7 +16,7 @@ test1(const char *s1, size_t pos1, size_t n1, const char *expected)
 	bfc_string_t s, exp;
 	size_t origlen;
 
-	rc = bfc_init_shared_string_c_str(&s, sizeof(s), NULL, s1);
+	rc = bfc_init_shared_string_c_str(&s, sizeof(s), s1);
 	assert(rc >= 0);
 
 	origlen = bfc_string_length(&s);
@@ -25,7 +25,7 @@ test1(const char *s1, size_t pos1, size_t n1, const char *expected)
 	rc = bfc_string_erase_seq(&s, pos1, n1);
 	if (rc >= 0) {
         	assert(pos1 <= origlen);
-		bfc_init_shared_string_c_str(&exp, sizeof(exp), NULL, expected);
+		bfc_init_shared_string_c_str(&exp, sizeof(exp), expected);
 		assert(bfc_string_compare_bfstr(&s, &exp) == 0);
 		assert(bfc_string_compare_c_str(&s, expected) == 0);
 	} else {
@@ -41,7 +41,7 @@ test2(const char *s1, size_t pos1, const char *expected)
 	bfc_string_t s, exp;
 	size_t origlen;
 
-	rc = bfc_init_shared_string_c_str(&s, sizeof(s), NULL, s1);
+	rc = bfc_init_shared_string_c_str(&s, sizeof(s), s1);
 	assert(rc >= 0);
 
 	origlen = bfc_string_length(&s);
@@ -50,7 +50,7 @@ test2(const char *s1, size_t pos1, const char *expected)
 	rc = bfc_string_erase_tail(&s, pos1);
 	if (rc >= 0) {
         	assert(pos1 <= origlen);
-		bfc_init_shared_string_c_str(&exp, sizeof(exp), NULL, expected);
+		bfc_init_shared_string_c_str(&exp, sizeof(exp), expected);
 		assert(bfc_string_compare_bfstr(&s, &exp) == 0);
 		assert(bfc_string_compare_c_str(&s, expected) == 0);
 	} else {
@@ -66,7 +66,7 @@ test3(const char *s1, const char *expected)
 	bfc_string_t s, exp;
 	size_t origlen;
 
-	rc = bfc_init_shared_string_c_str(&s, sizeof(s), NULL, s1);
+	rc = bfc_init_shared_string_c_str(&s, sizeof(s), s1);
 	assert(rc >= 0);
 
 	origlen = bfc_string_length(&s);
@@ -74,7 +74,7 @@ test3(const char *s1, const char *expected)
 	
 	rc = bfc_string_erase_tail(&s, 0);
 	assert(rc >= 0);
-	bfc_init_shared_string_c_str(&exp, sizeof(exp), NULL, expected);
+	bfc_init_shared_string_c_str(&exp, sizeof(exp), expected);
 	assert(bfc_string_compare_bfstr(&s, &exp) == 0);
 	assert(bfc_string_compare_c_str(&s, expected) == 0);
 	return (BFC_SUCCESS);

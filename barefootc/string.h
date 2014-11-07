@@ -29,6 +29,14 @@ struct l4sc_logger;
 struct bfc_string_class;
 typedef const struct bfc_string_class *bfc_string_classptr_t;
 
+extern struct bfc_string_class bfc_string_class;
+extern struct bfc_string_class bfc_basic_string_class;
+extern struct bfc_string_class bfc_shared_string_class;
+
+extern struct bfc_string_class bfc_wstring_class;
+extern struct bfc_string_class bfc_basic_wstring_class;
+extern struct bfc_string_class bfc_shared_wstring_class;
+
 #define BFC_STRINGHDR(classptrT,charT) \
 	classptrT	vptr;	  /**< virtual methods */	\
 	charT *		buf;					\
@@ -44,6 +52,13 @@ struct bfc_string {
 typedef struct bfc_string bfc_string_t;
 typedef struct bfc_string *bfc_strptr_t;
 typedef const struct bfc_string *bfc_cstrptr_t;
+
+#define BFCSTR(s) \
+ {&bfc_shared_string_class, s, sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
+
+#define BFCWSTR(s) \
+ {&bfc_shared_wstring_class, s, (sizeof(s)-1)/sizeof(wchar_t), 0, \
+		     (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
 
 #define BFC_STRING_LOGGER	"barefootc.string",16
 

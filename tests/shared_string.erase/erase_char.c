@@ -18,7 +18,7 @@ test(const char *s1, size_t pos1, const char *expected)
 	bfc_iterator_t it, begin;
 	size_t origlen;
 
-	rc = bfc_init_shared_string_c_str(&s, sizeof(s), NULL, s1);
+	rc = bfc_init_shared_string_c_str(&s, sizeof(s), s1);
 	assert(rc >= 0);
 
 	origlen = bfc_string_length(&s);
@@ -34,7 +34,7 @@ test(const char *s1, size_t pos1, const char *expected)
 	rc = bfc_string_erase_char(&s, &it);
 	if (rc >= 0) {
         	assert(pos1 <= origlen);
-		bfc_init_shared_string_c_str(&exp, sizeof(exp), NULL, expected);
+		bfc_init_shared_string_c_str(&exp, sizeof(exp), expected);
 		assert(bfc_string_compare_bfstr(&s, &exp) == 0);
 		assert(bfc_string_compare_c_str(&s, expected) == 0);
 		assert((pos1 == 0) || (pos1 == origlen-1));

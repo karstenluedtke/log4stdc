@@ -23,11 +23,10 @@ bfc_string_insert_copy(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2)
 		return (bfc_string_replace_buffer(s, pos, 0, data, len));
 	} else {
 		bfc_iterator_t it, start, limit;
-		bfc_string_begin_iterator(s, &start, sizeof(start));
-		bfc_string_end_iterator  (s, &limit, sizeof(limit));
-		it = start;
-		while (((size_t)bfc_iterator_distance(&start, &it) < pos)
-			    && (bfc_iterator_distance(&it, &limit) > 0)) {
+		bfc_string_begin_iterator(s, &it, sizeof(it));
+		bfc_string_end_iterator(s, &limit, sizeof(limit));
+		while ((bfc_iterator_position(&it) < pos)
+		    && (bfc_iterator_distance(&it, &limit) > 0)) {
 			bfc_iterator_advance(&it, 1);
 		}
 		bfc_string_begin_iterator(s2, &start, sizeof(start));

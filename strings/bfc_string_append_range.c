@@ -18,13 +18,12 @@ bfc_string_append_range(bfc_strptr_t s,
 			 bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
-	const size_t len = bfc_strlen(s);
-	bfc_iterator_t end;
+	bfc_iterator_t it;
 
 	L4SC_TRACE(logger, "%s(%p, %p, %p)", __FUNCTION__, s, first, last);
 
-	bfc_string_end_iterator(s, &end, sizeof(end));
+	bfc_string_end_iterator(s, &it, sizeof(it));
 
-	return (bfc_string_append_iter_range(s, &end, first, last));
+	return (bfc_string_append_iter_range(s, &it, first, last));
 }
 

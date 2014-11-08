@@ -17,16 +17,15 @@ int
 bfc_string_assign_range(bfc_strptr_t s,bfc_iterptr_t first,bfc_iterptr_t last)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
-	const size_t len = bfc_strlen(s);
-	bfc_iterator_t begin, limit;
+	bfc_iterator_t start, limit;
 
 	L4SC_TRACE(logger, "%s(%p, %p, %p)", __FUNCTION__, s, first, last);
 
-	bfc_init_iterator(&begin, sizeof(begin), (bfc_objptr_t) s, 0);
-	bfc_init_iterator(&limit, sizeof(limit), (bfc_objptr_t) s, len);
+	bfc_string_begin_iterator(s, &start, sizeof(start));
+	bfc_string_end_iterator  (s, &limit, sizeof(limit));
 
 	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_ranges, (s, &begin, &limit, first, last),
-			bfc_string_replace_ranges(s,&begin,&limit,first,last));
+			replace_ranges, (s, &start, &limit, first, last),
+			bfc_string_replace_ranges(s,&start,&limit,first,last));
 }
 

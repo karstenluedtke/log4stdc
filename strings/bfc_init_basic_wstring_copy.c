@@ -25,7 +25,14 @@ bfc_init_basic_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
 		__FUNCTION__, buf, (long) bufsize, pool, str);
 
-	return bfc_init_basic_wstring_buffer(buf, bufsize, pool,
-				bfc_wstrdata(str), bfc_wstrlen(str));
+	if (BFC_CLASS(str)->traits == bfc_basic_wstring_class.traits) {
+		return bfc_init_basic_wstring_buffer(buf, bufsize, pool,
+					bfc_wstrdata(str), bfc_wstrlen(str));
+	} else {
+		bfc_iterator_t s, e;
+		bfc_string_begin_iterator(str, &s, sizeof(s));
+		bfc_string_end_iterator  (str, &e, sizeof(e));
+		return bfc_init_basic_wstring_range(buf, bufsize, pool, &s, &e);
+	}
 }
 

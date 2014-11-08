@@ -14,10 +14,15 @@
 int
 bfc_string_assign_copy(bfc_strptr_t s, bfc_cstrptr_t s2)
 {
-	const char *data = bfc_strdata(s2);
-	size_t len = bfc_strlen(s2);
-
-	RETURN_METHCALL(bfc_string_classptr_t, s, assign_buffer, (s,data,len),
-			bfc_string_assign_buffer(s, data, len));
+	if (BFC_CLASS(s)->traits == BFC_CLASS(s2)->traits) {
+		size_t len = bfc_strlen(s2);
+		const char *data = bfc_strdata(s2);
+		return (bfc_string_assign_buffer(s, data, len));
+	} else {
+		bfc_iterator_t start, limit;
+		bfc_string_begin_iterator(s2, &start, sizeof(start));
+		bfc_string_end_iterator  (s2, &limit, sizeof(limit));
+		return (bfc_string_assign_range(s, &start, &limit));
+	}
 }
 

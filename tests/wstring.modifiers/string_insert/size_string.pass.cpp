@@ -1,5 +1,6 @@
 #include <wchar.h>
 #include "tests/strings/cxxwrapper.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -20,11 +21,15 @@
 
 #include "tests/support/min_allocator.h"
 
+static l4sc_logger_ptr_t logger;
+
 template <class S>
 void
 test(S s, typename S::size_type pos, S str, S expected)
 {
     typename S::size_type old_size = s.size();
+    L4SC_DEBUG(logger, "%s(pos %ld): size %ld",
+		__FUNCTION__, (long)pos, (long)old_size);
     S s0 = s;
     try
     {
@@ -42,6 +47,8 @@ test(S s, typename S::size_type pos, S str, S expected)
 
 int main()
 {
+  l4sc_configure_from_xml_file("log4j.xml");
+  logger = l4sc_get_logger(BFC_STRING_LOGGER);
     {
     typedef barefootc::basic_string<wchar_t> S;
     test(S(L""), 0, S(L""), S(L""));

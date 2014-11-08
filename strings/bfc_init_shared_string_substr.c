@@ -14,7 +14,7 @@ int
 bfc_init_shared_string_substr(void *buf, size_t bufsize,
 				bfc_cstrptr_t s, size_t pos, size_t n)
 {
-	if ((pos == BFC_NPOS) || (pos > bfc_string_length(s))) {
+	if ((pos == BFC_NPOS) || (pos > bfc_strlen(s))) {
 		return (-ERANGE);
 	}
 	return (bfc_init_shared_string_buffer(buf, bufsize,

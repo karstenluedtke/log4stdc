@@ -37,10 +37,9 @@ bfc_basic_string_replace_ranges(bfc_strptr_t s,
 	memset(&tail, 0, sizeof(tail));
 	if (bfc_string_end_iterator(s, &it, sizeof(it)) >= 0) {
 		e = bfc_iterator_distance(i2, &it);
-		bfc_destroy(&it);
 	} else {
 		L4SC_ERROR(logger, "%s: init end iterator failed",__FUNCTION__);
-		e = bfc_string_length(s);
+		e = bfc_strlen(s);
 	}
 	if (e > 0) {
 		RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
@@ -66,12 +65,12 @@ bfc_basic_string_replace_ranges(bfc_strptr_t s,
 
 	bfc_string_resize(s, bfc_iterator_position(i1), 0);
 
-	if ((d > 0) && (bfc_clone_object(i1, &it, sizeof(it)) >= 0)) {
+	if (d > 0) {
+		it = *i1;
 		if ((rc = bfc_string_append_iter_range(s, &it, j1, j2)) < 0) {
 			L4SC_ERROR(logger, "%s: appending range error %d",
 							__FUNCTION__, rc);
 		}
-		bfc_destroy(&it);
 	}
 
 	if ((e > 0) && BFC_CLASS(&tail)) {

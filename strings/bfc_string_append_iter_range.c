@@ -17,7 +17,7 @@ int
 bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
 			     bfc_iterptr_t first, bfc_iterptr_t last)
 {
-	int rc;						      \
+	int rc;
 	size_t newsize;
 	ptrdiff_t d, n;
 	long c;
@@ -34,8 +34,8 @@ bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
 		return (bfc_string_resize(s, bfc_iterator_position(it), 0));
 	}
 
-	bfc_clone_object(it, &di, sizeof(di));
-	bfc_clone_object(first, &si, sizeof(si));
+	di = *it;
+	si = *first;
 #define MAKESPACE(extra) \
 	newsize = bfc_iterator_position(&di) + (extra);			\
 	L4SC_DEBUG(logger, "%s: resizing to %ld", 			\
@@ -52,7 +52,7 @@ bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
 		}
 		bfc_iterator_advance(&si, 1);
 
-		if (bfc_string_length(s) < bfc_iterator_position(&di) + 8) {
+		if (bfc_strlen(s) < bfc_iterator_position(&di) + 8) {
 			MAKESPACE(40);
 		}
 		bfc_iterator_setlong(&di, c);
@@ -64,8 +64,6 @@ bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
 	bfc_object_dump(s, 1, logger);
 
 	n = bfc_iterator_distance(it, &di);
-	bfc_destroy(&si);
-	bfc_destroy(&di);
 
 	return ((int) n);
 }

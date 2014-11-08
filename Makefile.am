@@ -3283,6 +3283,12 @@ tests_string_conversions_replace_size_size_wstring_LDADD = libbarefootc.a liblog
 tests_string_conversions_replace_size_size_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/string.conversions/replace_size_size_wstring
 
+check_PROGRAMS += tests/string.conversions/replace_range_wstring
+tests_string_conversions_replace_range_wstring_SOURCES = tests/string.conversions/replace_range_wstring.c
+tests_string_conversions_replace_range_wstring_LDADD = libbarefootc.a liblog4stdc.a
+tests_string_conversions_replace_range_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/string.conversions/replace_range_wstring
+
 check_PROGRAMS += tests/datetime/init_isotime
 tests_datetime_init_isotime_SOURCES = tests/datetime/init_isotime.c
 tests_datetime_init_isotime_LDADD = libbarefootc.a liblog4stdc.a

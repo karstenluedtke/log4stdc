@@ -1,5 +1,5 @@
 /**
- * @file bfc_string_append_copy.c
+ * @file bfc_string_assign.c
  */
 
 #include <stddef.h>
@@ -9,21 +9,20 @@
 #include "barefootc/string.h"
 
 /**
- * @brief    bfc_string_append_copy
+ * @brief    bfc_string_assign
  */
 int
-bfc_string_append_copy(bfc_strptr_t s, bfc_cstrptr_t s2)
+bfc_string_assign(bfc_strptr_t s, bfc_cstrptr_t s2)
 {
 	if (BFC_CLASS(s)->traits == BFC_CLASS(s2)->traits) {
 		size_t len = bfc_strlen(s2);
 		const char *data = bfc_strdata(s2);
-		return (bfc_string_append_buffer(s, data, len));
+		return (bfc_string_assign_buffer(s, data, len));
 	} else {
-		bfc_iterator_t it, start, limit;
-		bfc_string_end_iterator(s, &it, sizeof(it));
+		bfc_iterator_t start, limit;
 		bfc_string_begin_iterator(s2, &start, sizeof(start));
 		bfc_string_end_iterator  (s2, &limit, sizeof(limit));
-		return (bfc_string_append_iter_range(s, &it, &start, &limit));
+		return (bfc_string_assign_range(s, &start, &limit));
 	}
 }
 

@@ -39,7 +39,7 @@ test(const char *s1, const wchar_t *s2, const char *expected)
 	wslen = bfc_string_length(&ws);
 	assert(wslen == wcslen(s2));
 	
-	rc = bfc_string_append_copy(&s, &ws);
+	rc = bfc_string_append(&s, &ws);
 	newlen = bfc_string_length(&s);
 	if (rc >= 0) {
 		assert(newlen == origlen + wslen);

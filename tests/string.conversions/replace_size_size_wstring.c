@@ -50,7 +50,7 @@ test(const char *s1, size_t pos1, size_t n1, const wchar_t *s2,
 	wslen = bfc_string_length(&ws);
 	assert(wslen == wcslen(s2));
 	
-	rc = bfc_string_replace_copy(&s, pos1, n1, &ws);
+	rc = bfc_string_replace(&s, pos1, n1, &ws);
 	newlen = bfc_string_length(&s);
 	if (rc >= 0) {
         	assert(pos1 <= origlen);

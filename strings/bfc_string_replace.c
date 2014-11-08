@@ -1,5 +1,5 @@
 /**
- * @file bfc_string_replace_copy.c
+ * @file bfc_string_replace.c
  */
 
 #include <stddef.h>
@@ -9,11 +9,10 @@
 #include "barefootc/string.h"
 
 /**
- * @brief    bfc_string_replace_copy
+ * @brief    bfc_string_replace
  */
 int
-bfc_string_replace_copy(bfc_strptr_t s, size_t pos1, size_t n1,
-			  bfc_cstrptr_t str)
+bfc_string_replace(bfc_strptr_t s, size_t pos1, size_t n1, bfc_cstrptr_t str)
 {
 	if ((pos1 == BFC_NPOS) || (pos1 > bfc_strlen(s))) {
 		return (-ERANGE);

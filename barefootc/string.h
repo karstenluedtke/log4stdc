@@ -216,7 +216,7 @@ int bfc_string_reverse_end_iterator(bfc_cstrptr_t s,
 					bfc_iterptr_t it, size_t bufsize);
 
 /* Modifiers */
-int     bfc_string_assign_copy(bfc_strptr_t s, bfc_cstrptr_t s2);
+int     bfc_string_assign(bfc_strptr_t s, bfc_cstrptr_t s2);
 int     bfc_string_assign_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
 			 		size_t subpos, size_t sublen);
 int     bfc_string_assign_c_str(bfc_strptr_t s, const void *s2);
@@ -224,7 +224,7 @@ int     bfc_string_assign_buffer(bfc_strptr_t s, const void *s2, size_t n);
 int     bfc_string_assign_fill(bfc_strptr_t s, size_t n, int c);
 int     bfc_string_assign_range(bfc_strptr_t s,
 				bfc_iterptr_t first, bfc_iterptr_t last);
-int     bfc_string_append_copy(bfc_strptr_t s, bfc_cstrptr_t s2);
+int     bfc_string_append(bfc_strptr_t s, bfc_cstrptr_t s2);
 int     bfc_string_append_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
 			 		size_t subpos, size_t sublen);
 int     bfc_string_append_c_str(bfc_strptr_t s, const void *s2);
@@ -235,7 +235,7 @@ int     bfc_string_append_range(bfc_strptr_t s,
 int     bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
 				bfc_iterptr_t first, bfc_iterptr_t last);
 int	bfc_string_push_back(bfc_strptr_t s, int c);
-int     bfc_string_insert_copy(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2);
+int     bfc_string_insert(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2);
 int     bfc_string_insert_substr(bfc_strptr_t s, size_t pos,
 			bfc_cstrptr_t s2, size_t subpos, size_t sublen);
 int     bfc_string_insert_c_str(bfc_strptr_t s, size_t pos, const void *s2);
@@ -252,7 +252,7 @@ int     bfc_string_erase_char(bfc_strptr_t s, bfc_iterptr_t p);
 int     bfc_string_erase_range(bfc_strptr_t s,
 				bfc_iterptr_t first, bfc_iterptr_t last);
 void    bfc_string_pop_back(bfc_strptr_t s);
-int     bfc_string_replace_copy(bfc_strptr_t s, size_t pos1,size_t n1,
+int     bfc_string_replace(bfc_strptr_t s, size_t pos1,size_t n1,
 					bfc_cstrptr_t str);
 int     bfc_string_replace_substr(bfc_strptr_t s,size_t pos1,size_t n1,
 	 			bfc_cstrptr_t str, size_t pos2, size_t n2);
@@ -262,7 +262,7 @@ int     bfc_string_replace_c_str(bfc_strptr_t s, size_t pos, size_t n1,
 					const void *s2);
 int     bfc_string_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
 					size_t n2, int c);
-int     bfc_string_replace_range_copy(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_string_replace_range(bfc_strptr_t s, bfc_iterptr_t i1,
 					bfc_iterptr_t i2, bfc_cstrptr_t s2);
 int     bfc_string_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const void *s2, size_t n);

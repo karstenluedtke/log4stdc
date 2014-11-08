@@ -1,5 +1,5 @@
 /**
- * @file bfc_string_replace_range_copy.c
+ * @file bfc_string_replace_range.c
  */
 
 #include <stddef.h>
@@ -10,11 +10,11 @@
 #include "barefootc/iterator.h"
 
 /**
- * @brief    bfc_string_replace_range_copy
+ * @brief    bfc_string_replace_range
  */
 int
-bfc_string_replace_range_copy(bfc_strptr_t s, bfc_iterptr_t i1,
-					bfc_iterptr_t i2, bfc_cstrptr_t s2)
+bfc_string_replace_range(bfc_strptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
+			 bfc_cstrptr_t s2)
 {
 	if (BFC_CLASS(s)->traits == BFC_CLASS(s2)->traits) {
 		size_t len = bfc_strlen(s2);

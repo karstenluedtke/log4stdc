@@ -1,5 +1,5 @@
 /**
- * @file bfc_string_insert_copy.c
+ * @file bfc_string_insert.c
  */
 
 #include <stddef.h>
@@ -9,10 +9,10 @@
 #include "barefootc/string.h"
 
 /**
- * @brief    bfc_string_insert_copy
+ * @brief    bfc_string_insert
  */
 int
-bfc_string_insert_copy(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2)
+bfc_string_insert(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2)
 {
 	if ((pos == BFC_NPOS) || (pos > bfc_strlen(s))) {
 		return (-ERANGE);

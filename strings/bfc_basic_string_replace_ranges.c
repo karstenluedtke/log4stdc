@@ -74,7 +74,8 @@ bfc_basic_string_replace_ranges(bfc_strptr_t s,
 	}
 
 	if ((e > 0) && BFC_CLASS(&tail)) {
-		if ((rc2 = bfc_string_append_copy(s, &tail)) < 0) {
+		if ((rc2 = bfc_string_append_buffer(s,
+				bfc_strdata(&tail), bfc_strlen(&tail))) < 0) {
 			L4SC_ERROR(logger, "%s: appending tail error %d",
 							__FUNCTION__, rc);
 			rc = (rc < 0)? rc: rc2;

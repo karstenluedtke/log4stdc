@@ -854,7 +854,7 @@ namespace barefootc {
 		// 21.4.6, modifiers:
 		basic_string& operator+=(const basic_string& str)
 		{
-			bfc_string_append_copy(&bfcstr, &str.bfcstr);
+			bfc_string_append(&bfcstr, &str.bfcstr);
 			return(*this);
 		}
 
@@ -877,7 +877,7 @@ namespace barefootc {
 		basic_string& append(const basic_string& str)
 		{
 			int rc;
-			rc = bfc_string_append_copy(&bfcstr, &str.bfcstr);
+			rc = bfc_string_append(&bfcstr, &str.bfcstr);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -956,7 +956,7 @@ namespace barefootc {
 		basic_string& assign(const basic_string& str)
 		{
 			int rc;
-			rc = bfc_string_assign_copy(&bfcstr, &str.bfcstr);
+			rc = bfc_string_assign(&bfcstr, &str.bfcstr);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1026,7 +1026,7 @@ namespace barefootc {
 		basic_string& insert(size_type pos1, const basic_string& str)
 		{
 			int rc;
-			rc = bfc_string_insert_copy(&bfcstr, pos1, &str.bfcstr);
+			rc = bfc_string_insert(&bfcstr, pos1, &str.bfcstr);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1161,8 +1161,7 @@ namespace barefootc {
 					const basic_string& str)
 		{
 			int rc;
-			rc = bfc_string_replace_copy(&bfcstr, pos1, n1,
-						     &str.bfcstr);
+			rc = bfc_string_replace(&bfcstr, pos1, n1, &str.bfcstr);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -1219,7 +1218,7 @@ namespace barefootc {
 					const basic_string& str)
 		{
 			int rc;
-			rc = bfc_string_replace_range_copy(&bfcstr,
+			rc = bfc_string_replace_range(&bfcstr,
 						i1.bfciter(), i2.bfciter(),
 						&str.bfcstr);
 			if (rc < 0) {

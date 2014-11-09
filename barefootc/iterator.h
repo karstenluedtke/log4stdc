@@ -45,13 +45,13 @@ typedef const struct bfc_iterator *bfc_citerptr_t;
 					cobjptrT obj, size_t pos);	\
 	/* Iterator functions */					\
 	int	(*advance)(iterptrT it, ptrdiff_t n);			\
-	ptrdiff_t (*distance)(citerptrT first, citerptrT last);		\
-	/* Check nothing is missing */					\
-	void	(*last_method)(void);
+	ptrdiff_t (*distance)(citerptrT first, citerptrT last);
 
 #define BFC_ITERATOR_CLASS_DEF(classptrT,iterptrT,citerptrT,objptrT,cobjptrT,elemT) \
 	BFC_CONTAINER_CLASSHDR(classptrT, iterptrT, citerptrT, elemT)	\
-	BFC_ITERATOR_METHODS(iterptrT, citerptrT, objptrT, cobjptrT, elemT)
+	BFC_ITERATOR_METHODS(iterptrT,citerptrT,objptrT,cobjptrT,elemT)	\
+	/* Check nothing is missing */					\
+	void	(*last_method)(void);
 
 struct bfc_iterator_class {
 	BFC_ITERATOR_CLASS_DEF(bfc_iterator_classptr_t,

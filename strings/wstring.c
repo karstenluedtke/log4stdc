@@ -975,11 +975,28 @@ int
 bfc_wstring_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 		   void *buf, size_t bufsize)
 {
+	bfc_strptr_t s2 = (bfc_strptr_t) buf;
+	const wchar_t *data = bfc_wstring_subdata(s, pos);
+	const size_t sublen = bfc_wstring_sublen(s, pos, n);
+	int rc;
+
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
 		return (-ERANGE);
 	}
-	return (bfc_init_shared_wstring_buffer(buf, bufsize,
-		bfc_wstring_subdata(s, pos), bfc_wstring_sublen(s, pos, n)));
+	/*
+	 * If the buffer supplied is large enough, we make a writeable copy
+	 * of the substring in the remaining buffer space behind s2.
+	 */
+	if (bufsize > sizeof(*s2) + ((sublen+1) * sizeof(wchar_t))) {
+		const size_t l1 = sizeof(s2[0]);
+		const size_t l2 = (bufsize - l1) / sizeof(wchar_t);
+		wchar_t *b2 = (wchar_t *) &s2[1];
+		if ((bfc_init_wstring_buffer(s2, l1, NULL, b2, l2) >= 0)
+		 && (bfc_wstring_assign_buffer(s2, data, sublen)   >= 0)) {
+			return ((int) sublen);
+		}
+	}
+	return (bfc_init_shared_wstring_buffer(buf, bufsize, data, sublen));
 }
 
 int

@@ -276,6 +276,8 @@ int     bfc_string_replace_ranges(bfc_strptr_t s,
 size_t	bfc_string_copy(bfc_cstrptr_t s, void *s2, size_t n, size_t pos);
 void	bfc_string_swap(bfc_strptr_t s, bfc_strptr_t str);
 
+int	bfc_string_trim(bfc_strptr_t s);
+
 /* String operations */
 size_t	bfc_string_find_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str, size_t pos);
 size_t	bfc_string_find_buffer(bfc_cstrptr_t s, const void *s2,

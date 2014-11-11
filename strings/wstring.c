@@ -419,6 +419,8 @@ bfc_wstring_assign_buffer(bfc_strptr_t s, const wchar_t *s2, size_t n)
 	return (rc);
 }
 
+#define MAYBE_MULTICHAR(codept)	((codept) & (~0 << (8*sizeof(wchar_t)-1)))
+
 int
 bfc_wstring_assign_fill(bfc_strptr_t s, size_t n, int c)
 {
@@ -428,13 +430,24 @@ bfc_wstring_assign_fill(bfc_strptr_t s, size_t n, int c)
 	L4SC_TRACE(logger, "%s(%p, %ld, %02x)", __FUNCTION__, s, (long) n, c);
 
 	if ((rc = bfc_string_reserve((bfc_strptr_t)s, n)) == BFC_SUCCESS) {
-		wchar_t *data = bfc_wstrbuf(s);
-		if (n > 0) {
-			(*s->vptr->traits->assign)(data, n, c);
+		if (!MAYBE_MULTICHAR(c)) {
+			wchar_t *data = bfc_wstrbuf(s);
+			if (n > 0) {
+				(*s->vptr->traits->assign)(data, n, c);
+			}
+			data[n] = '\0';
+			s->len = n;
+			return (BFC_SUCCESS);
+		} else {
+			bfc_iterator_t i1, i2, j1, j2;
+			bfc_string_begin_iterator(s, &i1, sizeof(i1));
+			bfc_string_end_iterator  (s, &i2, sizeof(i2));
+			bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
+			bfc_init_source_iterator(&j2, sizeof(j2), c, n);
+			RETURN_METHCALL(bfc_string_classptr_t, s,
+				replace_ranges, (s, &i1, &i2, &j1, &j2),
+				bfc_wstring_replace_ranges(s,&i1,&i2,&j1,&j2));
 		}
-		data[n] = '\0';
-		s->len = n;
-		return (BFC_SUCCESS);
 	} else {
 		L4SC_ERROR(logger, "%s: no space for %ld characters",
 						__FUNCTION__, (long) n);
@@ -477,14 +490,23 @@ bfc_wstring_append_fill(bfc_strptr_t s, size_t n, int c)
 
 	if ((rc = bfc_string_reserve((bfc_strptr_t)s, s->len + n))
 							== BFC_SUCCESS) {
-		wchar_t *data = bfc_wstrbuf(s) + s->len;
-		if (n > 0) {
-			(*s->vptr->traits->assign)(data, n, c);
+		if (!MAYBE_MULTICHAR(c)) {
+			wchar_t *data = bfc_wstrbuf(s) + s->len;
+			if (n > 0) {
+				(*s->vptr->traits->assign)(data, n, c);
+			}
+			data[n] = '\0';
+			s->len += n;
+			return (BFC_SUCCESS);
+		} else {
+			bfc_iterator_t i1, j1, j2;
+			bfc_string_end_iterator(s, &i1, sizeof(i1));
+			bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
+			bfc_init_source_iterator(&j2, sizeof(j2), c, n);
+			RETURN_METHCALL(bfc_string_classptr_t, s,
+				replace_ranges, (s, &i1, &i1, &j1, &j2),
+				bfc_wstring_replace_ranges(s,&i1,&i1,&j1,&j2));
 		}
-		data[n] = '\0';
-		s->len += n;
-		L4SC_DEBUG(logger, "%s: len %ld", __FUNCTION__, (long) s->len);
-		return (BFC_SUCCESS);
 	} else {
 		L4SC_ERROR(logger, "%s: no space for %ld+%ld characters",
 				__FUNCTION__, (long) s->len, (long) n);
@@ -526,19 +548,25 @@ bfc_wstring_insert_buffer(bfc_strptr_t s, size_t pos,
 int
 bfc_wstring_insert_fill(bfc_strptr_t s, size_t pos, size_t n, int c)
 {
-	wchar_t *data = alloca(4*n+1);
-	if (n > 0) {
-		(*s->vptr->traits->assign)(data, n, c);
+	bfc_iterator_t i1, j1, j2;
+
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
 	}
+	bfc_string_begin_iterator(s, &i1, sizeof(i1));
+	bfc_iterator_set_position(&i1, pos);
+	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
+	bfc_init_source_iterator(&j2, sizeof(j2), c, n);
 	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_buffer, (s, pos, 0, data, n),
-			bfc_wstring_replace_buffer(s, pos, 0, data, n));
+			replace_ranges, (s, &i1, &i1, &j1, &j2),
+			bfc_wstring_replace_ranges(s, &i1, &i1, &j1, &j2));
 }
 
 int
 bfc_wstring_insert_fillit(bfc_strptr_t s, bfc_iterptr_t p, size_t n, int c)
 {
 	size_t pos;
+	bfc_iterator_t j1, j2;
 
 	if (p->obj != (bfc_objptr_t) s) {
 		return (-EFAULT);
@@ -547,9 +575,11 @@ bfc_wstring_insert_fillit(bfc_strptr_t s, bfc_iterptr_t p, size_t n, int c)
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
 		return (-ERANGE);
 	}
+	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
+	bfc_init_source_iterator(&j2, sizeof(j2), c, n);
 	RETURN_METHCALL(bfc_string_classptr_t, s,
-			insert_fill, (s, pos, n, c),
-			bfc_wstring_insert_fill(s, pos, n, c));
+			replace_ranges, (s, p, p, &j1, &j2),
+			bfc_wstring_replace_ranges(s, p, p, &j1, &j2));
 }
 
 int
@@ -638,13 +668,20 @@ int
 bfc_wstring_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
 					size_t n2, int c)
 {
-	wchar_t *data = alloca(4*n2+1);
-	if (n2 > 0) {
-		(*s->vptr->traits->assign)(data, n2, c);
+	bfc_iterator_t i1, i2, j1, j2;
+
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
 	}
+	bfc_string_begin_iterator(s, &i1, sizeof(i1));
+	bfc_string_begin_iterator(s, &i2, sizeof(i2));
+	bfc_iterator_set_position(&i1, pos);
+	bfc_iterator_set_position(&i2, pos + bfc_wstring_sublen(s, pos, n1));
+	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
+	bfc_init_source_iterator(&j2, sizeof(j2), c, n2);
 	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_buffer, (s, pos, n1, data, n2),
-			bfc_wstring_replace_buffer(s, pos, n1, data, n2));
+			replace_ranges, (s, &i1, &i2, &j1, &j2),
+			bfc_wstring_replace_ranges(s, &i1, &i2, &j1, &j2));
 }
 
 int
@@ -674,13 +711,14 @@ int
 bfc_wstring_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
 					bfc_iterptr_t i2, size_t n, int c)
 {
-	wchar_t *data = alloca(4*n+1);
-	if (n > 0) {
-		(*s->vptr->traits->assign)(data, n, c);
-	}
+	bfc_iterator_t j1, j2;
+
+	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
+	bfc_init_source_iterator(&j2, sizeof(j2), c, n);
+
 	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_range_buffer, (s, i1, i2, data, n),
-			bfc_wstring_replace_range_buffer(s, i1, i2, data, n));
+			replace_ranges, (s, i1, i2, &j1, &j2),
+			bfc_wstring_replace_ranges(s, i1, i2, &j1, &j2));
 }
 
 int

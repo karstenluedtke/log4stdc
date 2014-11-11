@@ -370,6 +370,15 @@ bfc_iterator_position(bfc_citerptr_t it)
 	return (it->pos);
 }
 
+size_t
+bfc_iterator_set_position(bfc_iterptr_t it, size_t newpos)
+{
+	size_t oldpos = it->pos;
+
+	it->pos = newpos;
+	return (oldpos);
+}
+
 ptrdiff_t
 bfc_iterator_distance(bfc_citerptr_t first, bfc_citerptr_t limit)
 {

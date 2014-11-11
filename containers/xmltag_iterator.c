@@ -13,7 +13,9 @@
 #include "log4stdc.h"
 
 static int  init_iterator(void *buf,size_t bufsize,struct mempool *pool);
-static int  advance_forward(bfc_tagptr_t it, ptrdiff_t n);
+static int  iterator_tostring(bfc_ctagptr_t tag, char *buf, size_t bufsize);
+static void dump_iterator(bfc_ctagptr_t tag,int depth,struct l4sc_logger *log);
+static int  advance_forward(bfc_tagptr_t tag, ptrdiff_t n);
 static int  get_xmltag_name(bfc_ctagptr_t tag,bfc_strptr_t buf,size_t bufsize);
 static int  get_xmltag_attrs(bfc_ctagptr_t tag,bfc_strptr_t buf,size_t bufsize);
 static int  get_namespace_prefix(bfc_ctagptr_t tag,
@@ -119,6 +121,10 @@ bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 	int level = tag->level + ((tag->tagtype == BFC_XML_START_TAG)? 1: 0);
 	char tt;
 	long c;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	L4SC_TRACE(logger, "%s(xmltag %p, next %p, bufsize %ld)",
+		__FUNCTION__, tag, next, (long) bufsize);
 
 	ti = bfc_string_find_char(s, '<', offs);
 	if ((ti != BFC_NPOS) && (ti >= offs) && (ti < limit)) {
@@ -157,6 +163,7 @@ bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 				next->length  = (unsigned)(te+1-ti);
 				next->nameoffs= (unsigned short)(ni - ti);
 				next->namelen = (unsigned short)(ne - ni);
+				bfc_object_dump(next, 1, logger);
 			}
 			return (tt);
 		}
@@ -177,6 +184,11 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 	bfc_strptr_t pattern;
 	static const bfc_string_t SLASHSTR = BFCSTR("/");
 	static const bfc_string_t CLOSESTR = BFCSTR(">");
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	L4SC_TRACE(logger, "%s(xmltag %p, endtag %p, bufsize %ld)",
+		__FUNCTION__, starttag, endtag, (long) bufsize);
+	bfc_object_dump(starttag, 1, logger);
 
 	b2size = sizeof(bfc_string_t) + 4 * (nameoffs + namelen + 5);
 	buf = alloca(b2size);
@@ -185,6 +197,7 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 	bfc_string_insert(pattern, 1, &SLASHSTR);
 	bfc_string_append(pattern,    &CLOSESTR);
 	patlen = bfc_strlen(pattern);
+	bfc_object_dump(pattern, 1, logger);
 	if ((nameoffs = bfc_string_find_char(pattern, ':', 0)) != BFC_NPOS) {
 		nameoffs++;
 	} else {
@@ -198,6 +211,7 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 			endtag->length  = (unsigned short) patlen;
 			endtag->nameoffs= (unsigned short) nameoffs;
 			endtag->namelen = (unsigned short) namelen;
+			bfc_object_dump(endtag, 1, logger);
 		}
 		return (BFC_XML_END_TAG);
 	}
@@ -215,13 +229,17 @@ get_xmltag_name(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
 static int
 get_xmltag_attrs(bfc_ctagptr_t tag, bfc_strptr_t attrs, size_t bufsize)
 {
-	bfc_strptr_t s = tag->obj;
+	bfc_strptr_t ap, s = tag->obj;
 	size_t pos = tag->pos + tag->nameoffs + tag->namelen;
 	size_t limit = tag->pos + tag->length;
 	unsigned n=0, maxattrs = (unsigned) (bufsize / 2*sizeof(attrs[0]));
 	size_t start, assign, quote, endquote;
 	long c;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	L4SC_TRACE(logger, "%s(xmltag %p, buf %p, size %ld): max %u",
+		__FUNCTION__, tag, attrs, (long) bufsize, maxattrs);
+	bfc_object_dump(tag, 1, logger);
 
 	while ((pos < limit) && (n < maxattrs)) {
 		while ((pos < limit) && (bfc_string_get_char(s, pos) > ' ')) {
@@ -254,12 +272,16 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_strptr_t attrs, size_t bufsize)
 			}
 		}
 		if (assign && (quote > assign) && (endquote > quote)) {
+			L4SC_DEBUG(logger, "%s(xmltag) #%d:", __FUNCTION__, n);
+			ap = &attrs[2*(n++)];
 			bfc_string_substr(s, start, assign-start,
-					&attrs[2*n], sizeof(attrs[2*n]));
-			bfc_string_trim(&attrs[2*n]);
+					  ap, sizeof(*ap));
+			bfc_string_trim(ap);
+			bfc_object_dump(ap, 1, logger);
+			ap++;
 			bfc_string_substr(s, quote+1, endquote-quote-1,
-					&attrs[2*n+1],sizeof(attrs[2*n+1]));
-			n++;
+					  ap, sizeof(*ap));
+			bfc_object_dump(ap, 1, logger);
 		}
 	}
 	return ((int) n);
@@ -275,5 +297,36 @@ get_namespace_prefix(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
 	}
 	bfc_string_substr(tag->obj, 0, 0, buf, bufsize);
 	return (-ENOENT);
+}
+
+static int
+iterator_tostring(bfc_ctagptr_t tag, char *buf, size_t bufsize)
+{
+	bfc_string_t tagstr;
+
+	if (tag && BFC_CLASS(tag) && tag->obj) {
+		bfc_string_substring(tag->obj, tag->pos, tag->length,
+				     &tagstr, sizeof(tagstr));
+		return (bfc_object_tostring(&tagstr, buf, bufsize));
+	}
+	return (0);
+}
+
+static void
+dump_iterator(bfc_ctagptr_t tag, int depth, struct l4sc_logger *log)
+{
+	char buf[200];
+	size_t maxsize;
+
+	if (tag && BFC_CLASS(tag)) {
+		L4SC_DEBUG(log, "%s type %d len %d @%p, name @%d len %d",
+			BFC_CLASS(tag)->name, tag->tagtype, tag->length, tag,
+			tag->nameoffs, tag->namelen);
+
+		iterator_tostring(tag, buf, sizeof(buf));
+
+		L4SC_DEBUG(log, "pos %ld in %p: %s",
+			(long) tag->pos, tag->obj, buf);
+	}
 }
 

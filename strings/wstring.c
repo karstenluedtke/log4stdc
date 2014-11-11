@@ -367,17 +367,25 @@ bfc_wstring_setlong(bfc_strptr_t s, size_t pos, long c)
 }
 
 /* Iterators */
+
+#ifndef INIT_FORWARD_ITERATOR
+#define INIT_FORWARD_ITERATOR	bfc_init_iterator
+#endif
+#ifndef INIT_REVERSE_ITERATOR
+#define INIT_REVERSE_ITERATOR	bfc_init_reverse_iterator
+#endif
+
 static int
 init_begin_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
 {
-	return (bfc_init_iterator(it, bs, (bfc_cobjptr_t)s, 0));
+	return (INIT_FORWARD_ITERATOR(it, bs, (bfc_cobjptr_t)s, 0));
 }
 
 static int
 init_limit_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
 {
 	size_t pos = bfc_wstrlen(s);
-	return (bfc_init_iterator(it, bs, (bfc_cobjptr_t)s, pos));
+	return (INIT_FORWARD_ITERATOR(it, bs, (bfc_cobjptr_t)s, pos));
 }
 
 static int
@@ -385,13 +393,13 @@ init_rbegin_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
 {
 	size_t n = bfc_wstrlen(s);
 	size_t pos = (n > 0)? (n-1): BFC_NPOS;
-	return (bfc_init_reverse_iterator(it, bs, (bfc_cobjptr_t)s, pos));
+	return (INIT_REVERSE_ITERATOR(it, bs, (bfc_cobjptr_t)s, pos));
 }
 
 static int
 init_rlimit_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
 {
-	return (bfc_init_reverse_iterator(it, bs, (bfc_cobjptr_t)s, BFC_NPOS));
+	return (INIT_REVERSE_ITERATOR(it, bs, (bfc_cobjptr_t)s, BFC_NPOS));
 }
 
 

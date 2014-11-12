@@ -11,7 +11,7 @@
 
 #define STRING_CLASS_NAME			"string"
 
-//#define INIT_FORWARD_ITERATOR			bfc_init_utf8_iterator
+#define INIT_FORWARD_ITERATOR			bfc_init_utf8_iterator
 
 #define	wchar_t					char
 #define bfc_strptr_t				bfc_strptr_t

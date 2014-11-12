@@ -108,7 +108,7 @@ forward_getchar(bfc_citerptr_t it, size_t pos)
 	uint32_t unicode;
 	long rc, rc2, rc3, rc4, rc5;
 
-	if ((rc = bfc_string_get_char(s, p)) < 0) {
+	if ((rc = bfc_string_get_char(s, p)) < 0x80) {
 		return (rc);
 	}
 	unicode = rc & 0xFF;
@@ -166,8 +166,8 @@ forward_putchar(bfc_iterptr_t it, size_t pos, long unicode)
 	uint32_t u = (uint32_t) unicode;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
-	L4SC_ERROR(logger, "%s(%p, %ld, %ld)",
-		__FUNCTION__, it, (long) p, (long) u);
+	L4SC_TRACE(logger, "%s(%s %p, %ld, %ld)",
+		__FUNCTION__, BFC_CLASS(it)->name, it, (long) p, (long) u);
 
 	if ((u) <= 0x7FuL) {
 		if ((rc = bfc_string_reserve(s, p+1)) >= 0) {
@@ -220,17 +220,24 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 	const size_t len = bfc_strlen(s);
 	
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
-	L4SC_TRACE(logger, "%s(%p, %ld)", __FUNCTION__, it, (long) n);
+	L4SC_TRACE(logger, "%s(%s %p, %ld): pos before = %ld",
+		__FUNCTION__, BFC_CLASS(it)->name, it, (long)n, (long)it->pos);
 
-	if (n < 0) {
-		return (advance_reverse(it, -n));
+	if ((size_t) n > len) /* this includes all negative values */ {
+		if (n > 0) {
+			it->pos = len;
+			return (-ERANGE);
+		} else if (n + len < 0) {
+			it->pos = 0;
+			return (-ERANGE);
+		} else {
+			return (advance_reverse(it, -n));
+		}
 	}
 
 	for (i = 0; (i < (int) n) && (it->pos < len); i++) {
-		if ((rc = bfc_string_get_char(s, it->pos)) < 0) {
-			return (rc);
-		} else if (rc < 0xC0) {
-			it->pos += 1;
+		if ((rc = bfc_string_get_char(s, it->pos)) < 0xC0) {
+			it->pos++;
 		} else if (rc < 0xE0) {
 			it->pos += 2;
 		} else if (rc < 0xF0) {
@@ -242,7 +249,7 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 		} else if (rc < 0xFE) {
 			it->pos += 6;
 		} else {
-			it->pos += 1; /* skip invalid code */
+			it->pos++; /* skip invalid code */
 		}
 		if (it->pos > len) {
 			it->pos = len;
@@ -252,13 +259,57 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 	return (BFC_SUCCESS);
 }
 
+static int
+advance_reverse(bfc_iterptr_t it, ptrdiff_t n)
+{
+	int i, rc;
+	bfc_cstrptr_t s = (bfc_cstrptr_t) it->obj;
+	const size_t len = bfc_strlen(s);
+	
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+	L4SC_TRACE(logger, "%s(%s %p, %ld): pos before = %ld",
+		__FUNCTION__, BFC_CLASS(it)->name, it, (long)n, (long)it->pos);
+
+	if ((size_t) n > len) /* this includes all negative values */ {
+		if (n > 0) {
+			it->pos = 0;
+			return (-ERANGE);
+		} else if (n + len < 0) {
+			it->pos = len;
+			return (-ERANGE);
+		} else {
+			return (advance_forward(it, -n));
+		}
+	}
+
+	for (i = 0; (i < (int) n) && (it->pos > 0); i++) {
+		if ((rc = bfc_string_get_char(s, it->pos)) < 0x80) {
+			it->pos--;
+		} else if (rc < 0xC0) /* continuation byte */ {
+			do {
+				it->pos--;
+				rc = bfc_string_get_char(s, it->pos);
+			} while ((it->pos > 0) && (rc >= 0x80) && (rc < 0xC0));
+		} else {
+			it->pos--; /* skip invalid code */
+		}
+	}
+	bfc_object_dump(it, 1, logger);
+	return (BFC_SUCCESS);
+}
+
 static long
 reverse_getchar(bfc_citerptr_t it, size_t pos)
 {
+	long rc;
+	bfc_cstrptr_t s = (bfc_cstrptr_t) it->obj;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
-	L4SC_ERROR(logger, "%s(%p, %ld) not supported",
-		__FUNCTION__, it, (long) pos);
+	if ((rc = bfc_string_get_char(s, it->pos)) < 0x80) {
+		return (rc);
+	}
+	L4SC_ERROR(logger, "%s(%p, %ld) with byte %ld not supported",
+		__FUNCTION__, it, (long) pos, rc);
 
 	return (-ENOSYS);
 }
@@ -266,17 +317,16 @@ reverse_getchar(bfc_citerptr_t it, size_t pos)
 static int
 reverse_putchar(bfc_iterptr_t it, size_t pos, long unicode)
 {
+	bfc_strptr_t s = (bfc_cstrptr_t) it->obj;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	if ((unicode >= 0) && (unicode < 0x80)) {
+		return (bfc_string_set_char(s, it->pos, unicode));
+	}
 
 	L4SC_ERROR(logger, "%s(%p, %ld, %ld) not supported",
 		__FUNCTION__, it, (long) pos, unicode);
 
 	return (-ENOSYS);
-}
-
-static int
-advance_reverse(bfc_iterptr_t it, ptrdiff_t n)
-{
-	return (advance_forward(it, -n));
 }
 

@@ -87,15 +87,9 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .append_buffer	*/ bfc_wstring_append_buffer,
 	/* .append_fill 	*/ bfc_wstring_append_fill,
 	/* .push_back		*/ bfc_wstring_push_back,
-	/* .insert_buffer	*/ bfc_wstring_insert_buffer,
-	/* .insert_fill 	*/ bfc_wstring_insert_fill,
-	/* .insert_fillit	*/ bfc_wstring_insert_fillit,
-	/* .insert_char 	*/ bfc_wstring_insert_char,
 	/* .pop_back		*/ bfc_wstring_pop_back,
 	/* .replace_buffer	*/ bfc_wstring_replace_buffer,
-	/* .replace_fill	*/ bfc_wstring_replace_fill,
 	/* .replace_range_buffer*/ bfc_wstring_replace_range_buffer,
-	/* .replace_range_fill	*/ bfc_wstring_replace_range_fill,
 	/* .replace_ranges	*/ bfc_wstring_replace_ranges,
 	/* .copy		*/ bfc_wstring_copy,
 	/* .swap		*/ (void *) bfc_swap_objects,
@@ -113,7 +107,9 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .find_first_not_of_char  */ bfc_wstring_find_first_not_of_char,
 	/* .find_last_not_of_buffer */ bfc_wstring_find_last_not_of_buffer,
 	/* .find_last_not_of_char   */ bfc_wstring_find_last_not_of_char,
-	/* .substr		*/ bfc_wstring_substr,
+	/* .substr		*/ bfc_wstring_shared_substr,
+	/* .mutable_substr	*/ bfc_wstring_mutable_substr,
+	/* .buffered_substr	*/ bfc_wstring_buffered_substr,
 	/* .compare_buffer	*/ bfc_wstring_compare_buffer,
 
 	/* Check nothing is missing */
@@ -544,71 +540,6 @@ bfc_wstring_push_back(bfc_strptr_t s, int c)
 	return (rc);
 }
 
-int
-bfc_wstring_insert_buffer(bfc_strptr_t s, size_t pos,
-			  const wchar_t *s2, size_t n)
-{
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_buffer, (s, pos, 0, s2, n),
-			bfc_wstring_replace_buffer(s, pos, 0, s2, n));
-}
-
-int
-bfc_wstring_insert_fill(bfc_strptr_t s, size_t pos, size_t n, int c)
-{
-	bfc_iterator_t i1, j1, j2;
-
-	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
-		return (-ERANGE);
-	}
-	bfc_string_begin_iterator(s, &i1, sizeof(i1));
-	bfc_iterator_set_position(&i1, pos);
-	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
-	bfc_init_source_iterator(&j2, sizeof(j2), c, n);
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_ranges, (s, &i1, &i1, &j1, &j2),
-			bfc_wstring_replace_ranges(s, &i1, &i1, &j1, &j2));
-}
-
-int
-bfc_wstring_insert_fillit(bfc_strptr_t s, bfc_iterptr_t p, size_t n, int c)
-{
-	size_t pos;
-	bfc_iterator_t j1, j2;
-
-	if (p->obj != (bfc_objptr_t) s) {
-		return (-EFAULT);
-	}
-	pos = bfc_iterator_position(p);
-	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
-		return (-ERANGE);
-	}
-	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
-	bfc_init_source_iterator(&j2, sizeof(j2), c, n);
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_ranges, (s, p, p, &j1, &j2),
-			bfc_wstring_replace_ranges(s, p, p, &j1, &j2));
-}
-
-int
-bfc_wstring_insert_char(bfc_strptr_t s, bfc_iterptr_t p, int c)
-{
-	size_t pos;
-	wchar_t data[2];
-
-	if (p->obj != (bfc_objptr_t) s) {
-		return (-EFAULT);
-	}
-	pos = bfc_iterator_position(p);
-	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
-		return (-ERANGE);
-	}
-	data[0] = c; data[1] = '\0';
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_buffer, (s, pos, 0, data, 1),
-			bfc_wstring_replace_buffer(s, pos, 0, data, 1));
-}
-
 void
 bfc_wstring_pop_back(bfc_strptr_t s)
 {
@@ -673,26 +604,6 @@ bfc_wstring_replace_buffer(bfc_strptr_t s, size_t pos, size_t n1,
 }
 
 int
-bfc_wstring_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
-					size_t n2, int c)
-{
-	bfc_iterator_t i1, i2, j1, j2;
-
-	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
-		return (-ERANGE);
-	}
-	bfc_string_begin_iterator(s, &i1, sizeof(i1));
-	bfc_string_begin_iterator(s, &i2, sizeof(i2));
-	bfc_iterator_set_position(&i1, pos);
-	bfc_iterator_set_position(&i2, pos + bfc_wstring_sublen(s, pos, n1));
-	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
-	bfc_init_source_iterator(&j2, sizeof(j2), c, n2);
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_ranges, (s, &i1, &i2, &j1, &j2),
-			bfc_wstring_replace_ranges(s, &i1, &i2, &j1, &j2));
-}
-
-int
 bfc_wstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const wchar_t* s2, size_t n)
 {
@@ -713,20 +624,6 @@ bfc_wstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			replace_buffer, (s, pos, k, s2, n),
 			bfc_wstring_replace_buffer(s, pos, k, s2, n));
-}
-
-int
-bfc_wstring_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
-					bfc_iterptr_t i2, size_t n, int c)
-{
-	bfc_iterator_t j1, j2;
-
-	bfc_init_source_iterator(&j1, sizeof(j1), c, 0);
-	bfc_init_source_iterator(&j2, sizeof(j2), c, n);
-
-	RETURN_METHCALL(bfc_string_classptr_t, s,
-			replace_ranges, (s, i1, i2, &j1, &j2),
-			bfc_wstring_replace_ranges(s, i1, i2, &j1, &j2));
 }
 
 int
@@ -1018,8 +915,38 @@ bfc_wstring_find_last_not_of_char(bfc_cstrptr_t s, int c, size_t pos)
 }
 
 int
-bfc_wstring_substr(bfc_cstrptr_t s, size_t pos, size_t n,
-		   void *buf, size_t bufsize)
+bfc_wstring_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+			  void *buf, size_t bufsize)
+{
+	const wchar_t *data = bfc_wstring_subdata(s, pos);
+	const size_t sublen = bfc_wstring_sublen(s, pos, n);
+	int rc;
+
+	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
+		return (-ERANGE);
+	}
+	return (bfc_init_shared_wstring_buffer(buf, bufsize, data, sublen));
+}
+
+int
+bfc_wstring_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+			   void *buf, size_t bufsize)
+{
+	const wchar_t *data = bfc_wstring_subdata(s, pos);
+	const size_t sublen = bfc_wstring_sublen(s, pos, n);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	L4SC_ERROR(logger, "%s: not available in class %s",
+				__FUNCTION__, BFC_CLASS(s)->name);
+
+	bfc_init_shared_wstring_buffer(buf, bufsize, data, sublen);
+	return (-ENOSYS);
+}
+
+int
+bfc_wstring_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+			    void *buf, size_t bufsize,
+			    void *databuf, size_t dbufsize)
 {
 	bfc_strptr_t s2 = (bfc_strptr_t) buf;
 	const wchar_t *data = bfc_wstring_subdata(s, pos);
@@ -1029,20 +956,11 @@ bfc_wstring_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
 		return (-ERANGE);
 	}
-	/*
-	 * If the buffer supplied is large enough, we make a writeable copy
-	 * of the substring in the remaining buffer space behind s2.
-	 */
-	if (bufsize > sizeof(*s2) + ((sublen+1) * sizeof(wchar_t))) {
-		const size_t l1 = sizeof(s2[0]);
-		const size_t l2 = (bufsize - l1) / sizeof(wchar_t);
-		wchar_t *b2 = (wchar_t *) &s2[1];
-		if ((bfc_init_wstring_buffer(s2, l1, NULL, b2, l2) >= 0)
-		 && (bfc_wstring_assign_buffer(s2, data, sublen)   >= 0)) {
-			return ((int) sublen);
-		}
+	rc = bfc_init_wstring_buffer(s2, bufsize, NULL, databuf, dbufsize);
+	if (rc >= 0) {
+		rc = bfc_wstring_assign_buffer(s2, data, sublen);
 	}
-	return (bfc_init_shared_wstring_buffer(buf, bufsize, data, sublen));
+	return (rc);
 }
 
 int

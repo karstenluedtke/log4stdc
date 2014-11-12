@@ -180,8 +180,8 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 	size_t nameoffs= starttag->nameoffs;
 	size_t namelen = starttag->namelen;
 	size_t ti, patlen, b2size;
-	void *buf;
-	bfc_strptr_t pattern;
+	void *databuf;
+	bfc_string_t pattern;
 	static const bfc_string_t SLASHSTR = BFCSTR("/");
 	static const bfc_string_t CLOSESTR = BFCSTR(">");
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -190,21 +190,21 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 		__FUNCTION__, starttag, endtag, (long) bufsize);
 	bfc_object_dump(starttag, 1, logger);
 
-	b2size = sizeof(bfc_string_t) + 4 * (nameoffs + namelen + 5);
-	buf = alloca(b2size);
-	bfc_string_substr(s, starttag->pos, nameoffs + namelen, buf, b2size);
-	pattern = (bfc_strptr_t) buf;
-	bfc_string_insert(pattern, 1, &SLASHSTR);
-	bfc_string_append(pattern,    &CLOSESTR);
-	patlen = bfc_strlen(pattern);
-	bfc_object_dump(pattern, 1, logger);
-	if ((nameoffs = bfc_string_find_char(pattern, ':', 0)) != BFC_NPOS) {
+	b2size = 4 * (nameoffs + namelen + 5);
+	databuf = alloca(b2size);
+	bfc_string_buffered_substr(s, starttag->pos, nameoffs + namelen, 
+				   &pattern, sizeof(pattern), databuf, b2size);
+	bfc_string_insert(&pattern, 1, &SLASHSTR);
+	bfc_string_append(&pattern,    &CLOSESTR);
+	patlen = bfc_strlen(&pattern);
+	bfc_object_dump(&pattern, 1, logger);
+	if ((nameoffs = bfc_string_find_char(&pattern, ':', 0)) != BFC_NPOS) {
 		nameoffs++;
 	} else {
 		nameoffs = 2; /* behind "</" */
 	}
 
-	ti = bfc_string_find_bfstr(s, pattern, offs);
+	ti = bfc_string_find_bfstr(s, &pattern, offs);
 	if ((ti != BFC_NPOS) && (ti >= offs) && (ti < limit)) {
 		if (endtag && (bfc_init_xmltag(endtag, bufsize, s, ti) >= 0)) {
 			endtag->tagtype = BFC_XML_END_TAG;
@@ -221,9 +221,8 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 static int
 get_xmltag_name(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
 {
-	return (bfc_string_substr(tag->obj,
-				  tag->pos + tag->nameoffs, tag->namelen,
-				  buf, bufsize));
+	return (bfc_string_shared_substr(tag->obj,
+		  tag->pos + tag->nameoffs, tag->namelen, buf, bufsize));
 }
 
 static int
@@ -274,13 +273,13 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_strptr_t attrs, size_t bufsize)
 		if (assign && (quote > assign) && (endquote > quote)) {
 			L4SC_DEBUG(logger, "%s(xmltag) #%d:", __FUNCTION__, n);
 			ap = &attrs[2*(n++)];
-			bfc_string_substr(s, start, assign-start,
-					  ap, sizeof(*ap));
+			bfc_shared_string_substr(s, start, assign-start,
+						 ap, sizeof(*ap));
 			bfc_string_trim(ap);
 			bfc_object_dump(ap, 1, logger);
 			ap++;
-			bfc_string_substr(s, quote+1, endquote-quote-1,
-					  ap, sizeof(*ap));
+			bfc_string_shared_substr(s, quote+1, endquote-quote-1,
+						 ap, sizeof(*ap));
 			bfc_object_dump(ap, 1, logger);
 		}
 	}
@@ -291,11 +290,10 @@ static int
 get_namespace_prefix(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
 {
 	if (tag->nameoffs > 2) {
-		return (bfc_string_substr(tag->obj,
-					  tag->pos + 1, tag->nameoffs - 2,
-					  buf, bufsize));
+		return (bfc_string_shared_substr(tag->obj,
+			  tag->pos+1, tag->nameoffs-2, buf, bufsize));
 	}
-	bfc_string_substr(tag->obj, 0, 0, buf, bufsize);
+	bfc_string_shared_substr(tag->obj, 0, 0, buf, bufsize);
 	return (-ENOENT);
 }
 
@@ -305,8 +303,8 @@ iterator_tostring(bfc_ctagptr_t tag, char *buf, size_t bufsize)
 	bfc_string_t tagstr;
 
 	if (tag && BFC_CLASS(tag) && tag->obj) {
-		bfc_string_substring(tag->obj, tag->pos, tag->length,
-				     &tagstr, sizeof(tagstr));
+		bfc_string_shared_substring(tag->obj, tag->pos, tag->length,
+					    &tagstr, sizeof(tagstr));
 		return (bfc_object_tostring(&tagstr, buf, bufsize));
 	}
 	return (0);

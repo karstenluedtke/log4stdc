@@ -108,7 +108,9 @@
 #define	bfc_wstring_find_last_not_of_buffer	bfc_cstring_find_last_not_of_buffer
 #define	bfc_wstring_find_last_not_of_c_str	bfc_cstring_find_last_not_of_c_str
 #define	bfc_wstring_find_last_not_of_char	bfc_cstring_find_last_not_of_char
-#define	bfc_wstring_substr			bfc_cstring_substr
+#define	bfc_wstring_shared_substr		bfc_cstring_shared_substr
+#define	bfc_wstring_mutable_substr		bfc_cstring_mutable_substr
+#define	bfc_wstring_buffered_substr		bfc_cstring_buffered_substr
 #define	bfc_wstring_compare_buffers		bfc_cstring_compare_buffers
 #define	bfc_wstring_compare_bfstr		bfc_cstring_compare_bfstr
 #define	bfc_wstring_compare_substr		bfc_cstring_compare_substr

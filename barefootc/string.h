@@ -96,20 +96,11 @@ typedef const struct bfc_string *bfc_cstrptr_t;
 	int	(*append_buffer)(strptrT s, const charT *s2, size_t n);	\
 	int	(*append_fill)(strptrT s, size_t n, fillT c);		\
 	int	(*push_back)(strptrT s, fillT c);			\
-	int	(*insert_buffer)(strptrT s, size_t pos,			\
-				 const charT *s2, size_t n);		\
-	int	(*insert_fill)(strptrT s,size_t pos, size_t n,fillT c);	\
-	int	(*insert_fillit)(strptrT s,bfc_iterptr_t p,size_t n,fillT c);\
-	int	(*insert_char)(strptrT s, bfc_iterptr_t p, fillT c);	\
 	void	(*pop_back)(strptrT s);					\
 	int	(*replace_buffer)(strptrT s, size_t pos, size_t n1,	\
 				const charT* s2, size_t n2);		\
-	int	(*replace_fill)(strptrT s, size_t pos, size_t n1,	\
-				size_t n2, fillT c);			\
 	int	(*replace_range_buffer)(strptrT s, bfc_iterptr_t i1,	\
 				bfc_iterptr_t i2, const charT* s2, size_t n);\
-	int	(*replace_range_fill)(strptrT s, bfc_iterptr_t i1,	\
-				bfc_iterptr_t i2, size_t n, fillT c);	\
 	int	(*replace_ranges)(strptrT s,				\
 				bfc_iterptr_t i1, bfc_iterptr_t i2,	\
 				bfc_iterptr_t j1, bfc_iterptr_t j2);	\
@@ -138,6 +129,11 @@ typedef const struct bfc_string *bfc_cstrptr_t;
 				size_t pos);				\
 	int	(*substr)(cstrptrT s, size_t pos, size_t n,		\
 				void *buf, size_t bufsize);		\
+	int	(*mutable_substr)(cstrptrT s, size_t pos, size_t n,	\
+				void *buf, size_t bufsize);		\
+	int	(*buffered_substr)(cstrptrT s, size_t pos, size_t n,	\
+				void *buf, size_t bufsize,		\
+				void *databuf, size_t dbufsize);	\
 	int	(*compare_buffer)(cstrptrT s, size_t pos1, size_t n1,	\
 				const charT* s2, size_t n2);		\
 	/* Check nothing is missing */					\
@@ -319,8 +315,13 @@ size_t	bfc_string_find_last_not_of_c_str(bfc_cstrptr_t s, const void *s2,
 					size_t pos);
 size_t	bfc_string_find_last_not_of_char(bfc_cstrptr_t s, int c,
 					size_t pos);
-int	bfc_string_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_string_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
+int	bfc_string_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int	bfc_string_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
 int	bfc_string_compare_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str);
 int	bfc_string_compare_substr(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					bfc_cstrptr_t str);
@@ -352,21 +353,11 @@ int     bfc_cstring_assign_fill(bfc_strptr_t s, size_t n, int c);
 int     bfc_cstring_append_buffer(bfc_strptr_t s, const char *s2, size_t n);
 int     bfc_cstring_append_fill(bfc_strptr_t s, size_t n, int c);
 int	bfc_cstring_push_back(bfc_strptr_t s, int c);
-int     bfc_cstring_insert_buffer(bfc_strptr_t s, size_t pos,
-			 		const char *s2, size_t n);
-int     bfc_cstring_insert_fill(bfc_strptr_t s,size_t pos,size_t n,int c);
-int     bfc_cstring_insert_fillit(bfc_strptr_t s, bfc_iterptr_t p,
-					size_t n, int c);
-int     bfc_cstring_insert_char(bfc_strptr_t s, bfc_iterptr_t p, int c);
 void    bfc_cstring_pop_back(bfc_strptr_t s);
 int     bfc_cstring_replace_buffer(bfc_strptr_t s, size_t pos,size_t n1,
 					const char* s2, size_t n2);
-int     bfc_cstring_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
-					size_t n2, int c);
 int     bfc_cstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const char* s2, size_t n);
-int     bfc_cstring_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
-					bfc_iterptr_t i2, size_t n, int c);
 int     bfc_cstring_replace_ranges(bfc_strptr_t s, bfc_iterptr_t i1,
 			bfc_iterptr_t i2, bfc_iterptr_t j1, bfc_iterptr_t j2);
 size_t	bfc_cstring_copy(bfc_cstrptr_t s, char* s2, size_t n, size_t pos);
@@ -393,8 +384,13 @@ size_t	bfc_cstring_find_last_not_of_char(bfc_cstrptr_t s, int c,
 					size_t pos);
 size_t	bfc_cstring_find_last_not_of_buffer(bfc_cstrptr_t s, const char* s2,
 					size_t pos, size_t n);
-int	bfc_cstring_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_cstring_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
+int	bfc_cstring_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int	bfc_cstring_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
 int	bfc_cstring_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					const char* s2, size_t n2);
 
@@ -441,21 +437,11 @@ int     bfc_wstring_assign_fill(bfc_strptr_t s, size_t n, int c);
 int     bfc_wstring_append_buffer(bfc_strptr_t s, const wchar_t *s2, size_t n);
 int     bfc_wstring_append_fill(bfc_strptr_t s, size_t n, int c);
 int	bfc_wstring_push_back(bfc_strptr_t s, int c);
-int     bfc_wstring_insert_buffer(bfc_strptr_t s, size_t pos,
-			 		const wchar_t *s2, size_t n);
-int     bfc_wstring_insert_fill(bfc_strptr_t s,size_t pos,size_t n,int c);
-int     bfc_wstring_insert_fillit(bfc_strptr_t s, bfc_iterptr_t p,
-					size_t n, int c);
-int     bfc_wstring_insert_char(bfc_strptr_t s, bfc_iterptr_t p, int c);
 void    bfc_wstring_pop_back(bfc_strptr_t s);
 int     bfc_wstring_replace_buffer(bfc_strptr_t s, size_t pos,size_t n1,
 					const wchar_t* s2, size_t n2);
-int     bfc_wstring_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
-					size_t n2, int c);
 int     bfc_wstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const wchar_t* s2, size_t n);
-int     bfc_wstring_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
-					bfc_iterptr_t i2, size_t n, int c);
 int     bfc_wstring_replace_ranges(bfc_strptr_t s, bfc_iterptr_t i1,
 			bfc_iterptr_t i2, bfc_iterptr_t j1, bfc_iterptr_t j2);
 size_t	bfc_wstring_copy(bfc_cstrptr_t s, wchar_t* s2, size_t n, size_t pos);
@@ -482,8 +468,13 @@ size_t	bfc_wstring_find_last_not_of_char(bfc_cstrptr_t s, int c,
 					size_t pos);
 size_t	bfc_wstring_find_last_not_of_buffer(bfc_cstrptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-int	bfc_wstring_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_wstring_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
+int	bfc_wstring_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int	bfc_wstring_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
 int	bfc_wstring_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2);
 

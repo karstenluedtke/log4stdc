@@ -606,7 +606,9 @@ namespace barefootc {
 
 		~basic_string()
 		{
+#ifndef OMIT_BFC_STRING_DESTRUCTOR	/* just for speeding up tests */
 			bfc_destroy(&bfcstr);
+#endif
 		}
 
 		basic_string& operator=(const basic_string& str)
@@ -1474,7 +1476,7 @@ namespace barefootc {
 		{
 			basic_string s(saved_allocator);
 			int rc;
-			rc = bfc_string_substr(&bfcstr, pos, n,
+			rc = bfc_string_shared_substr(&bfcstr, pos, n,
 					       &s.bfcstr, sizeof(s.bfcstr));
 			if (rc < 0) {
 				throw_substr_error(-rc);

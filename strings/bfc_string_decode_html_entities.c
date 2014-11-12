@@ -285,15 +285,15 @@ bfc_string_decode_html_entities(bfc_strptr_t s)
 	unsigned long unicode = 0;
 	int n;
 	char c1, c2;
-	bfc_string_t entstr;
+	bfc_string_t sub;
 	bfc_iterator_t i1, i2, j1, j2;
 	char buf[20];
 
 	while (((len = bfc_strlen(s)) > pos)
 	    && ((amp = bfc_string_find_char(s, '&', pos)) != BFC_NPOS)
 	    && ((sem = bfc_string_find_char(s, ';', amp)) != BFC_NPOS)) {
-		bfc_string_substr(s, amp, sem-amp, &entstr, sizeof(entstr));
-		bfc_object_tostring(&entstr, buf, sizeof(buf));
+		bfc_string_shared_substr(s, amp, sem-amp, &sub, sizeof(sub));
+		bfc_object_tostring(&sub, buf, sizeof(buf));
 		pos = sem+1;
 		unicode = 0;
 		if ((c1 = buf[1]) == '#') {

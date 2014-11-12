@@ -1,5 +1,5 @@
 /**
- * @file bfc_string_substr.c
+ * @file bfc_string_shared_substr.c
  */
 
 #include <stddef.h>
@@ -9,11 +9,11 @@
 #include "barefootc/string.h"
 
 /**
- * @brief    bfc_string_substr
+ * @brief    bfc_string_shared_substr
  */
 int
-bfc_string_substr(bfc_cstrptr_t s, size_t pos, size_t n,
-		  void *buf, size_t bufsize)
+bfc_string_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+			 void *buf, size_t bufsize)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			substr, (s, pos, n, buf, bufsize),

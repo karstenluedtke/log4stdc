@@ -1,3 +1,4 @@
+#define OMIT_BFC_STRING_DESTRUCTOR  /* just for speeding up tests */
 #include <wchar.h>
 #include "tests/strings/cxxwrapper.h"
 //===----------------------------------------------------------------------===//

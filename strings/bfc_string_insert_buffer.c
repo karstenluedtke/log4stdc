@@ -15,6 +15,7 @@ int
 bfc_string_insert_buffer(bfc_strptr_t s, size_t pos, const void *s2, size_t n)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
-			insert_buffer, (s, pos, s2, n),
+			replace_buffer, (s, pos, 0, s2, n),
 			-ENOSYS);
 }
+

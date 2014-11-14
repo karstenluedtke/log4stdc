@@ -920,7 +920,6 @@ bfc_wstring_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 {
 	const wchar_t *data = bfc_wstring_subdata(s, pos);
 	const size_t sublen = bfc_wstring_sublen(s, pos, n);
-	int rc;
 
 	if ((pos == BFC_NPOS) || (pos > bfc_wstrlen(s))) {
 		return (-ERANGE);

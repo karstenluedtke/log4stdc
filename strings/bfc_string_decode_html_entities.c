@@ -286,7 +286,7 @@ bfc_string_decode_html_entities(bfc_strptr_t s)
 	int n;
 	char c1, c2;
 	bfc_string_t sub;
-	bfc_iterator_t i1, i2, j1, j2;
+	bfc_iterator_t i1, i2;
 	char buf[20];
 
 	while (((len = bfc_strlen(s)) > pos)

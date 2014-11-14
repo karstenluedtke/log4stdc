@@ -74,9 +74,6 @@ t3(const char *s, int long days, unsigned long secs, unsigned long frac)
 int
 main (int argc, char *argv[])
 {
-	int i, j;
-	char buf[100];
-
 	l4sc_configure_from_xml_file("log4j.xml");
 	logger = l4sc_get_logger(BFC_DATETIME_LOGGER);
 

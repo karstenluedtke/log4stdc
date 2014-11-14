@@ -333,6 +333,8 @@ int	bfc_string_compare_substr_c_str(bfc_cstrptr_t s, size_t pos1,
 int	bfc_string_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					const void *s2, size_t n2);
 
+int	bfc_string_decode_html_entities(bfc_strptr_t s);
+
 /*
  * Specific functions for char strings
  */

@@ -317,7 +317,7 @@ reverse_getchar(bfc_citerptr_t it, size_t pos)
 static int
 reverse_putchar(bfc_iterptr_t it, size_t pos, long unicode)
 {
-	bfc_strptr_t s = (bfc_cstrptr_t) it->obj;
+	bfc_strptr_t s = (bfc_strptr_t) it->obj;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	if ((unicode >= 0) && (unicode < 0x80)) {

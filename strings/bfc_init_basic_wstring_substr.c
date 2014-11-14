@@ -20,7 +20,6 @@ int
 bfc_init_basic_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str, size_t pos, size_t n)
 {
-	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, str %p, pos %ld, n %ld)",

@@ -17,8 +17,8 @@ typedef BFC_VECTOR (testvec, test_t, 4) testvec_t;
 int
 main (int argc, char *argv[])
 {
-	int *ip, ib[20];
-	test_t *tp, tb[20];
+	int *ip;
+	test_t tb[20];
 	testvec_t tvec;
 	bfc_int_vector_t ivec;
 	int i, total_iterations = 0;

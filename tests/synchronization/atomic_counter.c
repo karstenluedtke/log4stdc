@@ -41,8 +41,6 @@ t1(int n)
 int
 main (int argc, char *argv[])
 {
-	int i, j;
-
 	l4sc_configure_from_xml_file("log4j.xml");
 	logger = l4sc_get_logger("barefootc", 0);
 

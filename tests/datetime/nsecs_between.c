@@ -31,9 +31,6 @@ t1(const char *start, const char *stop, long expected)
 int
 main (int argc, char *argv[])
 {
-	int i, j;
-	char buf[100];
-
 	l4sc_configure_from_xml_file("log4j.xml");
 	logger = l4sc_get_logger(BFC_DATETIME_LOGGER);
 

@@ -29,12 +29,15 @@ struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class = {
 	.super	= (const void *) &bfc_forward_iterator_class,
 	.name	= FORWARD_CLASS_NAME,
 	.init 	= init_iterator,
+	.dump	= dump_iterator,
 	/* Iterator functions */
 	.advance    = advance_forward,
 	/* Tag methods */
 	.find_nexttag = bfc_find_next_xmltag,
 	.find_endtag  = bfc_find_xml_endtag,
 	.get_name   = get_xmltag_name,
+	.get_namespace_prefix   = get_namespace_prefix,
+	.get_attrs  = get_xmltag_attrs,
 };
 
 static int
@@ -303,8 +306,8 @@ iterator_tostring(bfc_ctagptr_t tag, char *buf, size_t bufsize)
 	bfc_string_t tagstr;
 
 	if (tag && BFC_CLASS(tag) && tag->obj) {
-		bfc_string_shared_substring(tag->obj, tag->pos, tag->length,
-					    &tagstr, sizeof(tagstr));
+		bfc_string_shared_substr(tag->obj, tag->pos, tag->length,
+					 &tagstr, sizeof(tagstr));
 		return (bfc_object_tostring(&tagstr, buf, bufsize));
 	}
 	return (0);
@@ -314,7 +317,6 @@ static void
 dump_iterator(bfc_ctagptr_t tag, int depth, struct l4sc_logger *log)
 {
 	char buf[200];
-	size_t maxsize;
 
 	if (tag && BFC_CLASS(tag)) {
 		L4SC_DEBUG(log, "%s type %d len %d @%p, name @%d len %d",

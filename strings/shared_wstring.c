@@ -99,7 +99,6 @@ int
 bfc_init_shared_wstring_buffer(void *buf, size_t bufsize,
 				const wchar_t* s, size_t n)
 {
-	wchar_t *charbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
@@ -174,8 +173,6 @@ bfc_shared_wstring_capacity(bfc_cstrptr_t s)
 int
 bfc_shared_wstring_reserve(bfc_strptr_t s, size_t n)
 {
-	wchar_t *p;
-
 	if (n > bfc_basic_wstring_max_size(s)) {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_ERROR(logger, "%s: too large %ld", __FUNCTION__, (long)n);

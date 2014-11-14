@@ -76,6 +76,27 @@ int bfc_tag_get_attrs(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize);
 int bfc_tag_get_namespace_prefix(bfc_ctagptr_t tag,
 					bfc_strptr_t buf, size_t bufsize);
 
+struct bfc_tag_parse_state {
+	void *userdata;
+	int (*on_content)  (struct bfc_tag_parse_state *state,
+			    bfc_ctagptr_t starttag, bfc_cstrptr_t content);
+	int (*on_start_tag)(struct bfc_tag_parse_state *state,
+			    bfc_ctagptr_t starttag, bfc_cstrptr_t name,
+			    int numattrs, bfc_string_t attributes[]);
+	int (*on_end_tag)  (struct bfc_tag_parse_state *state,
+			    bfc_ctagptr_t starttag, bfc_ctagptr_t endtag,
+			    bfc_cstrptr_t name);
+	int (*on_empty_tag)(struct bfc_tag_parse_state *state,
+			    bfc_ctagptr_t starttag, bfc_cstrptr_t name,
+			    int numattrs, bfc_string_t attributes[]);
+	unsigned	maxlevels;
+	bfc_xmltag_t	prev;
+	bfc_xmltag_t	curr;
+	bfc_xmltag_t	tags[16 /* or more */];
+};
+
+int bfc_parse_xmltags(bfc_cstrptr_t s, struct bfc_tag_parse_state *st);
+
 #ifdef __cplusplus
 }	/* C++ */
 #endif

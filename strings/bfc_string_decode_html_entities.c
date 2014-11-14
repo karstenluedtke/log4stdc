@@ -313,11 +313,11 @@ bfc_string_decode_html_entities(bfc_strptr_t s)
 			}
 		}
 		if (unicode) {
-			bfc_string_start_iterator(s, &i1, sizeof(i1));
-			bfc_string_start_iterator(s, &i2, sizeof(i2));
+			bfc_string_begin_iterator(s, &i1, sizeof(i1));
+			bfc_string_begin_iterator(s, &i2, sizeof(i2));
 			bfc_iterator_set_position(&i1, amp);
 			bfc_iterator_set_position(&i2, sem+1);
-			bfc_string_replace_ranges_fill(s, &i1, &i2, 1, unicode);
+			bfc_string_replace_range_fill(s, &i1, &i2, 1, unicode);
 			pos += bfc_strlen(s) - len;
 		}
 	}

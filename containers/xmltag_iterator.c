@@ -226,7 +226,7 @@ get_xmltag_name(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
 }
 
 static int
-get_xmltag_attrs(bfc_ctagptr_t tag, bfc_strptr_t attrs, size_t bufsize)
+get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 {
 	bfc_strptr_t ap, s = tag->obj;
 	size_t pos = tag->pos + tag->nameoffs + tag->namelen;
@@ -273,7 +273,7 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_strptr_t attrs, size_t bufsize)
 		if (assign && (quote > assign) && (endquote > quote)) {
 			L4SC_DEBUG(logger, "%s(xmltag) #%d:", __FUNCTION__, n);
 			ap = &attrs[2*(n++)];
-			bfc_shared_string_substr(s, start, assign-start,
+			bfc_string_shared_substr(s, start, assign-start,
 						 ap, sizeof(*ap));
 			bfc_string_trim(ap);
 			bfc_object_dump(ap, 1, logger);
@@ -328,3 +328,4 @@ dump_iterator(bfc_ctagptr_t tag, int depth, struct l4sc_logger *log)
 	}
 }
 
+#include "bfc_parse_xmltags.c"

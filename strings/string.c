@@ -134,7 +134,19 @@
 static int
 cstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize)
 {
-	return ((int) bfc_string_copy(s, buf, bufsize, 0));
+	size_t len;
+
+	if (buf && (bufsize > 0)) {
+		len = bfc_string_copy(s, buf, bufsize, 0);
+		if (len < bufsize) {
+			buf[len] = '\0';
+		} else {
+			buf[bufsize-1] = '\0';
+		}
+	} else {
+		len = bfc_strlen(s);
+	}
+	return ((int) len);
 }
 
 static void

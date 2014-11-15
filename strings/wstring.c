@@ -226,7 +226,20 @@ wstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize)
 {
 	size_t n;
 
-	n = bfc_utf8_from_wchar(buf, bufsize, bfc_wstrdata(s), bfc_wstrlen(s));
+	if (buf && (bufsize > 0)) {
+		n = bfc_utf8_from_wchar(buf, bufsize,
+					bfc_wstrdata(s), bfc_wstrlen(s));
+		if (n < bufsize) {
+			buf[n] = '\0';
+		} else {
+			buf[bufsize-1] = '\0';
+		}
+	} else {
+		size_t tmpsize = 3*sizeof(wchar_t)/2 + 20;
+		char *tmp = alloca(tmpsize);
+		n = bfc_utf8_from_wchar(tmp, tmpsize,
+					bfc_wstrdata(s), bfc_wstrlen(s));
+	}
 
 	return ((int) n);
 }

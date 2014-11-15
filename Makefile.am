@@ -3367,6 +3367,12 @@ tests_string_conversions_replace_range_wstring_LDADD = libbarefootc.a liblog4std
 tests_string_conversions_replace_range_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/string.conversions/replace_range_wstring
 
+check_PROGRAMS += tests/iterators/parse_xmltags_string
+tests_iterators_parse_xmltags_string_SOURCES = tests/iterators/parse_xmltags_string.c
+tests_iterators_parse_xmltags_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_iterators_parse_xmltags_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/iterators/parse_xmltags_string
+
 check_PROGRAMS += tests/datetime/init_isotime
 tests_datetime_init_isotime_SOURCES = tests/datetime/init_isotime.c
 tests_datetime_init_isotime_LDADD = libbarefootc.a liblog4stdc.a

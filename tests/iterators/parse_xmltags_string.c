@@ -129,7 +129,7 @@ main(int argc, char *argv[])
 	do {
 	struct tag_expectations expectations[] = {
 		{ 0, "configuration",
-		  2, { "xmlns", "log4j=http://jakarta.apache.org/log4j/",
+		  2, { "xmlns:log4j", "http://jakarta.apache.org/log4j/",
 		       "debug", "1", } },
 		{ 1, "appender",
 		  2, { "class", "org.apache.log4j.ConsoleAppender",

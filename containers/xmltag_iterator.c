@@ -234,7 +234,7 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 	bfc_strptr_t ap, s = tag->obj;
 	size_t pos = tag->pos + tag->nameoffs + tag->namelen;
 	size_t limit = tag->pos + tag->length;
-	unsigned n=0, maxattrs = (unsigned) (bufsize / 2*sizeof(attrs[0]));
+	unsigned n=0, maxattrs = (unsigned) (bufsize / (2*sizeof(attrs[0])));
 	size_t start, assign, quote, endquote;
 	long c;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -243,11 +243,13 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 		__FUNCTION__, tag, attrs, (long) bufsize, maxattrs);
 	bfc_object_dump(tag, 1, logger);
 
-	while ((pos < limit) && (n < maxattrs)) {
+	for (; (pos < limit) && (n < maxattrs); pos++) {
+		L4SC_DEBUG(logger, "%s: pos %ld/%ld, have %u/%u",
+			__FUNCTION__, (long)pos, (long)limit, n, maxattrs);
 		while ((pos < limit) && (bfc_string_get_char(s, pos) > ' ')) {
 			pos++;
 		}
-		while ((pos < limit) && (bfc_string_get_char(s, pos) < ' ')) {
+		while ((pos < limit) && (bfc_string_get_char(s, pos) <= ' ')) {
 			pos++;
 		}
 		if (pos >= limit) {
@@ -256,8 +258,10 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 		start = pos;
 		assign = quote = endquote = 0;
 		c = bfc_string_get_char(s, pos);
+		L4SC_DEBUG(logger, "%s: pos %ld, char %c",
+				__FUNCTION__, (long) pos, (char)c);
 		if (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'))) {
-			while (!endquote && (pos < limit)) {
+			while (!endquote && (++pos < limit)) {
 				c = bfc_string_get_char(s, pos);
 				if (assign != 0) {
 					if (c == '"') {
@@ -265,12 +269,17 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 							quote = pos;
 						} else {
 							endquote = pos;
+							break;
 						}
 					}
 				} else if (c == '=') {
 					assign = pos;
 				}
-				pos++;
+				L4SC_DEBUG(logger, "%s: pos %ld, char %c, "
+					"assign %ld, quote %ld, endquote %ld",
+					__FUNCTION__, (long) pos, (char)c,
+					(long) assign, (long) quote,
+					(long) endquote);
 			}
 		}
 		if (assign && (quote > assign) && (endquote > quote)) {

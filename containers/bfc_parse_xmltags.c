@@ -9,8 +9,10 @@ static int indicate_end_tag(struct bfc_tag_parse_state *st, int tagtype);
 int
 bfc_parse_xmltags(bfc_cstrptr_t s, struct bfc_tag_parse_state *st)
 {
-	int rc;
+	int rc, iterations = 0;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	L4SC_TRACE(logger, "%s(%p, %p)", __FUNCTION__, s, st);
 
 	if (st->maxlevels < sizeof(st->tags) / sizeof(st->tags[0])) {
 		st->maxlevels = sizeof(st->tags) / sizeof(st->tags[0]);
@@ -20,11 +22,9 @@ bfc_parse_xmltags(bfc_cstrptr_t s, struct bfc_tag_parse_state *st)
 	}
 	st->curr = st->prev;
 	while ((rc = bfc_iterator_advance((bfc_iterptr_t) &st->curr, 1)) >= 0) {
-		if (st->curr.level >= st->maxlevels) {
-			L4SC_ERROR(logger, "%s: level %d >= max %d",
-				__FUNCTION__, st->curr.level, st->maxlevels);
-			return (-ENOSPC);
-		}
+		iterations++;
+		L4SC_DEBUG(logger, "%s: iteration #%d, found %d",
+				__FUNCTION__, iterations, rc);
 		if (st->on_start_tag && ((rc == BFC_XML_START_TAG)
 				      || (rc == BFC_XML_EMPTY_TAG))) {
 			indicate_start_tag(st, rc);
@@ -33,8 +33,13 @@ bfc_parse_xmltags(bfc_cstrptr_t s, struct bfc_tag_parse_state *st)
 				    || (rc == BFC_XML_EMPTY_TAG))) {
 			indicate_end_tag(st, rc);
 		}
+		if (st->curr.level < st->maxlevels) {
+			st->tags[st->curr.level] = st->curr;
+		} else {
+			L4SC_WARN(logger, "%s: level %d >= max %d",
+				__FUNCTION__, st->curr.level, st->maxlevels);
+		}
 		st->prev = st->curr;
-		st->tags[st->curr.level] = st->curr;
 	}
 	return (st->prev.level);
 }
@@ -76,8 +81,12 @@ indicate_end_tag(struct bfc_tag_parse_state *st, int tagtype)
 {
 	int rc;
 	bfc_ctagptr_t tag = &st->curr;
-	bfc_ctagptr_t starttag = &st->tags[tag->level];
+	bfc_ctagptr_t starttag = tag;
 	bfc_string_t namestr;
+
+	if ((tagtype == BFC_XML_END_TAG) && (tag->level < st->maxlevels)) {
+		starttag = &st->tags[tag->level];
+	}
 
 	get_xmltag_name(tag, &namestr, sizeof(namestr));
 

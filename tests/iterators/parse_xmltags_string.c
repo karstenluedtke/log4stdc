@@ -169,6 +169,61 @@ main(int argc, char *argv[])
 	"</log4j:configuration>" CRLF), expectations);
 	} while (0);
 
+	do {
+	struct tag_expectations expectations[] = {
+		{ 0, "configuration",
+		  2, { "xmlns:log4j", "http://jakarta.apache.org/log4j/",
+		       "debug", "1", } },
+		{ 1, "appender",
+		  2, { "class", "org.apache.log4j.RollingFileAppender",
+		       "name", "bfclog", } },
+		{ 2, "param",
+		  2, { "name", "File", "value", "bfc.log", } },
+		{ 2, "param", 0, { NULL } },
+		{ 2, "param",
+		  2, { "name", "MaxBackupIndex", "value", "9", } },
+		{ 2, "param", 0, { NULL } },
+		{ 2, "param",
+		  2, { "name", "MaxFileSize", "value", "10MB", } },
+		{ 2, "param", 0, { NULL } },
+		{ 2, "layout",
+		  1, { "class", "org.apache.log4j.PatternLayout", } },
+		{ 3, "param",
+		  2, { "name", "ConversionPattern",
+		       "value", "%d{ABSOLUTE} %-5p> %m%n", } },
+		{ 3, "param", 0, { NULL } },
+		{ 2, "layout", 0, { NULL } },
+		{ 1, "appender", 0, { NULL } },
+		{ 1, "logger",
+		  2, { "additivity", "false", "name", "barefootc" } },
+		{ 2, "level",
+		  1, { "value", "WARN", } },
+		{ 2, "level", 0, { NULL } },
+		{ 2, "appender-ref",
+		  1, { "ref", "bfclog", } },
+		{ 2, "appender-ref", 0, { NULL } },
+		{ 1, "logger", 0, { NULL } },
+		{ 0, "configuration", 0, { NULL }, },
+		{ 0, NULL, 0, { NULL, }, },
+	};
+	test(S1(
+	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
+	"<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\" debug=\"1\">" CRLF
+	"  <appender class=\"org.apache.log4j.RollingFileAppender\" name=\"bfclog\">" CRLF
+	"    <param name=\"File\" value=\"bfc.log\"/>" CRLF
+	"    <param name=\"MaxBackupIndex\" value=\"9\"/>" CRLF
+	"    <param name=\"MaxFileSize\" value=\"10MB\"/>" CRLF
+	"    <layout class=\"org.apache.log4j.PatternLayout\">" CRLF
+	"      <param name=\"ConversionPattern\" value=\"%d{ABSOLUTE} %-5p&gt; %m%n\"/>" CRLF
+	"    </layout>" CRLF
+	"  </appender>" CRLF
+	"  <logger additivity=\"false\" name=\"barefootc\">" CRLF
+	"    <level value=\"WARN\"/>" CRLF
+	"    <appender-ref ref=\"bfclog\"/>" CRLF
+	"  </logger>" CRLF
+	"</log4j:configuration>" CRLF), expectations);
+	} while (0);
+
 	return (0);
 }
 

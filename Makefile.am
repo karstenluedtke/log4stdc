@@ -184,6 +184,10 @@ libbarefootc_a_SOURCES+= containers/wstr_iterator.c
 libbarefootc_a_SOURCES+= containers/cstr_iterator.c
 libbarefootc_a_SOURCES+= containers/source_iterator.c
 libbarefootc_a_SOURCES+= containers/xmltag_iterator.c
+libbarefootc_a_SOURCES+= containers/bfc_parse_xmltags.c
+libbarefootc_a_SOURCES+= containers/bfc_tag_get_name.c
+libbarefootc_a_SOURCES+= containers/bfc_tag_get_namespace_prefix.c
+libbarefootc_a_SOURCES+= containers/bfc_tag_get_attrs.c
 libbarefootc_a_SOURCES+= containers/bfc_iterator_index.c
 libbarefootc_a_SOURCES+= containers/bfc_iterator_getlong.c
 libbarefootc_a_SOURCES+= containers/bfc_iterator_setlong.c
@@ -213,9 +217,7 @@ liblog4stdc_a_SOURCES+= log4stdc/appender.c log4stdc/fileappender.c
 liblog4stdc_a_SOURCES+= log4stdc/layout.c log4stdc/logmessage.c
 liblog4stdc_a_SOURCES+= log4stdc/propertyconfigurator.c
 liblog4stdc_a_SOURCES+= log4stdc/object.c 
-if EXPATXML
 liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
-endif EXPATXML
 
 if BFCLOG4CXX
 liblog4stdc_a_SOURCES+= log4cxx/repository.h log4cxx/repository.cpp
@@ -312,6 +314,9 @@ liblog4stdc_a_SOURCES+= containers/utf8_iterator.c
 liblog4stdc_a_SOURCES+= containers/cstr_iterator.c
 liblog4stdc_a_SOURCES+= containers/source_iterator.c
 liblog4stdc_a_SOURCES+= containers/xmltag_iterator.c
+liblog4stdc_a_SOURCES+= containers/bfc_tag_get_name.c
+liblog4stdc_a_SOURCES+= containers/bfc_tag_get_namespace_prefix.c
+liblog4stdc_a_SOURCES+= containers/bfc_tag_get_attrs.c
 liblog4stdc_a_SOURCES+= containers/bfc_iterator_getlong.c
 liblog4stdc_a_SOURCES+= containers/bfc_iterator_setlong.c
 liblog4stdc_a_SOURCES+= mempools/stdcpool.c

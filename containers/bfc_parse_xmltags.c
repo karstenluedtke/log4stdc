@@ -1,7 +1,17 @@
 
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "barefootc/xmltag.h"
 #include "barefootc/iterator.h"
+
+#include "log4stdc.h"
+
+extern struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class;
 
 static int indicate_start_tag(struct bfc_tag_parse_state *st, int tagtype);
 static int indicate_end_tag(struct bfc_tag_parse_state *st, int tagtype);
@@ -54,9 +64,9 @@ indicate_start_tag(struct bfc_tag_parse_state *st, int tagtype)
 	bfc_string_t namestr, tmp;
 	bfc_string_t attrs[40];
 
-	get_xmltag_name(tag, &namestr, sizeof(namestr));
+	bfc_tag_get_name(tag, &namestr, sizeof(namestr));
 
-	nattrs = get_xmltag_attrs(tag, attrs, sizeof(attrs));
+	nattrs = bfc_tag_get_attrs(tag, attrs, sizeof(attrs));
 	for (i=0; i < 2*nattrs; i++) {
 		if (bfc_string_find_char(&attrs[i], '&', 0) != BFC_NPOS) {
 			bufsize = 4*bfc_strlen(&attrs[i]) + 10;
@@ -88,7 +98,7 @@ indicate_end_tag(struct bfc_tag_parse_state *st, int tagtype)
 		starttag = &st->tags[tag->level];
 	}
 
-	get_xmltag_name(tag, &namestr, sizeof(namestr));
+	bfc_tag_get_name(tag, &namestr, sizeof(namestr));
 
 	if (st->on_end_tag) {
 		rc = (*st->on_end_tag)(st, starttag, tag, &namestr);

@@ -125,6 +125,7 @@ bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 	char tt;
 	long c;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+	static const bfc_string_t endcomment = BFCSTR("-->");
 
 	L4SC_TRACE(logger, "%s(xmltag %p, next %p, bufsize %ld)",
 		__FUNCTION__, tag, next, (long) bufsize);
@@ -137,6 +138,20 @@ bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 		} else if (c == '?') {
 			tt = BFC_XML_HEADER_TAG;
 			ni = ti+2;
+		} else if ((c == '!')
+			&& ((ne = bfc_string_find_bfstr(s, &endcomment, ti))
+								!= BFC_NPOS)) {
+			tt = BFC_XML_COMMENT_TAG;
+			ni = ti+2;
+			if (next && (bfc_init_xmltag(next,bufsize,s,ti) >= 0)) {
+				next->tagtype = tt;
+				next->level   = (unsigned short)level;
+				next->length  = (unsigned)(ne+3-ti);
+				next->nameoffs= (unsigned short)(ni - ti);
+				next->namelen = (unsigned short)(ne - ni);
+				bfc_object_dump(next, 1, logger);
+			}
+			return (tt);
 		} else {
 			tt = BFC_XML_START_TAG; /* or EMPTY_TAG */
 			ni = ti+1;
@@ -339,4 +354,3 @@ dump_iterator(bfc_ctagptr_t tag, int depth, struct l4sc_logger *log)
 	}
 }
 
-#include "bfc_parse_xmltags.c"

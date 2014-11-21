@@ -49,6 +49,7 @@ typedef const struct bfc_xmltag *bfc_ctagptr_t;
 #define	BFC_XML_START_TAG	1
 #define	BFC_XML_END_TAG  	2
 #define	BFC_XML_EMPTY_TAG	3
+#define	BFC_XML_COMMENT_TAG	4
 
 #define BFC_XMLTAG_METHODS(tagptrT,ctagptrT)				\
 	int (*find_nexttag)(bfc_ctagptr_t, bfc_tagptr_t, size_t);	\

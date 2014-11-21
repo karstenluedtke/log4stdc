@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include <expat.h>
-
+#include "barefootc/object.h"
+#include "barefootc/string.h"
+#include "barefootc/xmltag.h"
+#include "barefootc/mempool.h"
 #include "logobjects.h"
 
 static int init_xml_configurator(void *, size_t, struct mempool *);
@@ -54,29 +56,28 @@ struct parsing_state {
 };
 
 struct element_values {
-	const char *name;
-	const char *value;
-	const char *ref;
-	const char *class;
-	int         namelen;
-	int         valuelen;
-	int         reflen;
-	int         classlen;
+	bfc_cstrptr_t name;
+	bfc_cstrptr_t value;
+	bfc_cstrptr_t ref;
+	bfc_cstrptr_t class;
 };
 
-static void XMLCALL
-StartElementHandler(void *userData, const XML_Char *name,
-				    const XML_Char **attrs)
+static int
+on_start_tag(struct parsing_state *ps, bfc_ctagptr_t tag)
 {
-	struct parsing_state *ps = (struct parsing_state *) userData;
-	const char *nm, *ns = NULL;
-	int i, nslen;
+	int i, nattrs;
 	struct element_values values;
+	bfc_string_t namestr, tmp;
+	bfc_string_t attrs[10];
+	char name[80], a[80], v[80];
+
+	bfc_tag_get_name(tag, &namestr, sizeof(namestr));
+	nattrs = bfc_tag_get_attrs(tag, attrs, sizeof(attrs));
 
 	if (ps->depth == 0) {
-		for (i=0; attrs[2*i]; i++) {
-			const char *a = attrs[2*i];
-			const char *v = attrs[2*i+1];
+		for (i=0; i < nattrs; i++) {
+			bfc_object_tostring(&attrs[2*i], a, sizeof(a));
+			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
 			if ((strncasecmp(a, "debug", 5) == 0)
 			 || (strncasecmp(a, "internalDebug", 13) == 0)
 			 || (strncasecmp(a, "configDebug",   11) == 0)) {
@@ -85,144 +86,146 @@ StartElementHandler(void *userData, const XML_Char *name,
 			}
 		}
 	}
-	if ((nm = strchr(name, NS_DELIMITER)) == NULL) {
-		nm = name;
-		LOGDEBUG(("%s: <%s>", __FUNCTION__, nm));
-	} else {
-		ns = name;
-		nslen = nm++ - name;
-		LOGDEBUG(("%s: <%s xmlns=\"%.*s\">",__FUNCTION__,nm,nslen,ns));
-	}
-	memset(&values, 0, sizeof(values));
-	for (i=0; attrs[2*i]; i++) {
-		const char *a = attrs[2*i];
-		const char *v = attrs[2*i+1];
-		LOGDEBUG(("%s: attr #%d \"%s\" = \"%s\"",
-				__FUNCTION__, i, a, v? v: ""));
-		if (a && v) {
-			if (strncasecmp(a, "name", 4) == 0) {
-				values.name = v;
-				values.namelen = strlen(v);
-			} else if (strncasecmp(a, "value", 5) == 0) {
-				values.value = v;
-				values.valuelen = strlen(v);
-			} else if (strncasecmp(a, "class", 5) == 0) {
-				values.class = v;
-				values.classlen = strlen(v);
-			} else if (strncasecmp(a, "ref", 3) == 0) {
-				values.ref = v;
-				values.reflen = strlen(v);
-			}
+
+	bfc_object_tostring(&namestr, name, sizeof(name));
+	LOGDEBUG(("%s: <%s>", __FUNCTION__, name));
+
+	for (i=0; i < 2*nattrs; i++) {
+		if (bfc_string_find_char(&attrs[i], '&', 0) != BFC_NPOS) {
+			void *buf;
+			size_t bufsize = 4*bfc_strlen(&attrs[i]) + 10;
+			buf = alloca(bufsize);
+			bfc_string_buffered_substr(&attrs[i], 0, BFC_NPOS,
+					   &tmp, sizeof(tmp), buf, bufsize);
+			bfc_string_decode_html_entities(&tmp);
+			bfc_string_swap(&attrs[i], &tmp);
+			bfc_destroy(&tmp);
 		}
 	}
-	ps->depth++;
-	if (strncasecmp(nm, "logger", 6) == 0) {
-		ps->current_logger = l4sc_get_logger(
-					values.name, values.namelen);
-		for (i=0; attrs[2*i]; i++) {
-			const char *a = attrs[2*i];
-			const char *v = attrs[2*i+1];
+
+	memset(&values, 0, sizeof(values));
+	for (i=0; i < nattrs; i++) {
+		bfc_object_tostring(&attrs[2*i], a, sizeof(a));
+		bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
+		LOGDEBUG(("%s: attr #%d \"%s\" = \"%s\"",__FUNCTION__,i,a,v));
+		if (strncasecmp(a, "name", 4) == 0) {
+			values.name = &attrs[2*i+1];
+		} else if (strncasecmp(a, "value", 5) == 0) {
+			values.value = &attrs[2*i+1];
+		} else if (strncasecmp(a, "class", 5) == 0) {
+			values.class = &attrs[2*i+1];
+		} else if (strncasecmp(a, "ref", 3) == 0) {
+			values.ref = &attrs[2*i+1];
+		}
+	}
+	ps->depth = tag->level + (tag->tagtype == BFC_XML_START_TAG)? 1: 0;
+	if (strncasecmp(name, "logger", 6) == 0) {
+		bfc_object_tostring(values.name, v, sizeof(v));
+		ps->current_logger = l4sc_get_logger(v, strlen(v));
+		for (i=0; i < nattrs; i++) {
+			bfc_object_tostring(&attrs[2*i], a, sizeof(a));
+			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_logger,
-				a, strlen(a), v, v? strlen(v): 0);
+				a, strlen(a), v, strlen(v));
 		}
-	} else if (strncasecmp(nm, "appender-ref", 12) == 0) {
-		l4sc_appender_ptr_t appender = l4sc_get_appender(
-					values.ref, values.reflen, NULL, 0);
+	} else if (strncasecmp(name, "appender-ref", 12) == 0) {
+		l4sc_appender_ptr_t appender;
+		bfc_object_tostring(values.ref, v, sizeof(v));
+		appender = l4sc_get_appender(v, strlen(v), NULL, 0);
 		if (appender && ps->current_logger) {
 			l4sc_set_logger_appender(ps->current_logger, appender);
 		}
-	} else if (strncasecmp(nm, "appender", 8) == 0) {
-		ps->current_appender = l4sc_get_appender(
-					values.name, values.namelen,
-					values.class, values.classlen);
-		for (i=0; attrs[2*i]; i++) {
-			const char *a = attrs[2*i];
-			const char *v = attrs[2*i+1];
+	} else if (strncasecmp(name, "appender", 8) == 0) {
+		bfc_object_tostring(values.name, a, sizeof(a));
+		bfc_object_tostring(values.class, v, sizeof(v));
+		ps->current_appender = l4sc_get_appender(a, strlen(a),
+							 v, strlen(v));
+		for (i=0; i < nattrs; i++) {
+			bfc_object_tostring(&attrs[2*i], a, sizeof(a));
+			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_appender,
-				a, strlen(a), v, v? strlen(v): 0);
+				a, strlen(a), v, strlen(v));
 		}
-	} else if (strncasecmp(nm, "layout", 6) == 0) {
+	} else if (strncasecmp(name, "layout", 6) == 0) {
 		if (ps->current_appender) {
 			ps->current_layout = l4sc_get_appender_layout(
 						ps->current_appender);
-			for (i=0; attrs[2*i]; i++) {
-				const char *a = attrs[2*i];
-				const char *v = attrs[2*i+1];
+			for (i=0; i < nattrs; i++) {
+				bfc_object_tostring(&attrs[2*i], a, sizeof(a));
+				bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
 				l4sc_set_object_option(
 					(l4sc_objptr_t) ps->current_layout,
-					a, strlen(a), v, v? strlen(v): 0);
+					a, strlen(a), v, strlen(v));
 			}
 		}
-	} else if (strncasecmp(nm, "param", 5) == 0) {
+	} else if (strncasecmp(name, "param", 5) == 0) {
+		bfc_object_tostring(values.name, a, sizeof(a));
+		bfc_object_tostring(values.value, v, sizeof(v));
 		if (ps->current_layout) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_layout,
-				values.name, values.namelen,
-				values.value, values.valuelen);
+				a, strlen(a), v, strlen(v));
 		} else if (ps->current_appender) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_appender,
-				values.name, values.namelen,
-				values.value, values.valuelen);
+				a, strlen(a), v, strlen(v));
 		} else if (ps->current_logger) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_logger,
-				values.name, values.namelen,
-				values.value, values.valuelen);
+				a, strlen(a), v, strlen(v));
 		}
 	} else if (values.value) {
-		int nmlen = strlen(nm);
+		int nmlen = strlen(name);
+		bfc_object_tostring(values.value, v, sizeof(v));
 		if (ps->current_layout) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_layout,
-				nm, nmlen, values.value, values.valuelen);
+				name, nmlen, v, strlen(v));
 		} else if (ps->current_appender) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_appender,
-				nm, nmlen, values.value, values.valuelen);
+				name, nmlen, v, strlen(v));
 		} else if (ps->current_logger) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_logger,
-				nm, nmlen, values.value, values.valuelen);
+				name, nmlen, v, strlen(v));
 		}
 	}
+	return (BFC_SUCCESS);
 }
 
-static void XMLCALL
-EndElementHandler(void *userData, const XML_Char *name)
+static int
+on_end_tag(struct parsing_state *ps, bfc_ctagptr_t endtag)
 {
-	struct parsing_state *ps = (struct parsing_state *) userData;
-	const char *nm, *ns = NULL;
-	int nslen;
+	bfc_string_t namestr;
+	char name[80];
 
-	if ((nm = strchr(name, NS_DELIMITER)) == NULL) {
-		nm = name;
-		LOGDEBUG(("%s: <%s>", __FUNCTION__, nm));
-	} else {
-		ns = name;
-		nslen = nm++ - name;
-		LOGDEBUG(("%s: <%s xmlns=\"%.*s\">",__FUNCTION__,nm,nslen,ns));
-	}
-	ps->depth--;
-	if (strncasecmp(nm, "logger", 6) == 0) {
+	bfc_tag_get_name(endtag, &namestr, sizeof(namestr));
+	bfc_object_tostring(&namestr, name, sizeof(name));
+	LOGDEBUG(("%s: </%s>", __FUNCTION__, name));
+
+	ps->depth = endtag->level;
+	if (strncasecmp(name, "logger", 6) == 0) {
 		ps->current_logger = NULL;
-	} else if (strncasecmp(nm, "appender", 8) == 0) {
+	} else if (strncasecmp(name, "appender", 8) == 0) {
 		ps->current_appender = NULL;
-	} else if (strncasecmp(nm, "layout", 6) == 0) {
+	} else if (strncasecmp(name, "layout", 6) == 0) {
 		ps->current_layout = NULL;
 	}
+	return (BFC_SUCCESS);
 }
 
 static int
 configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 {
-	int err = 0, bytes_read = 0;
+	int rc, iterations = 0, err = 0, bytes_read = 0;
 	FILE *fp;
-	XML_Parser p;
-	const int BUFF_SIZE = 256;
 	struct parsing_state state;
+	bfc_string_t doc;
+	bfc_xmltag_t curr;
+	char buff[256];
 
 	LOGINFO(("%s: \"%s\"", __FUNCTION__, path));
 
@@ -234,44 +237,31 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 		return (-err);
 	}
 
-	p = XML_ParserCreateNS(NULL, NS_DELIMITER);
-	if (p == NULL) {
-		LOGERROR(("%s: creating parser failed", __FUNCTION__));
-		return (-ENOMEM);
-	}
-
 	memset(&state, 0, sizeof(state));
 	state.configurator = cfgtr;
 
-	XML_SetElementHandler(p, StartElementHandler, EndElementHandler);
-	XML_SetUserData(p, &state);
+	bfc_init_basic_string(&doc, sizeof(doc), get_stdc_mempool());
 
-	do {
-		void *buff = XML_GetBuffer(p, BUFF_SIZE);
-		if (buff == NULL) {
-			LOGERROR(("%s: creating buffer failed", __FUNCTION__));
-			err = ENOMEM;
-			break;
-		}
-
-		bytes_read = fread(buff, 1, BUFF_SIZE, fp);
-		if (bytes_read < 0) {
-			err = errno;
-			LOGERROR(("%s: reading \"%s\" failed, error %d: %s",
-				__FUNCTION__, path, err, strerror(err)));
-			break;
-		}
-
-		if (! XML_ParseBuffer(p, bytes_read, bytes_read == 0)) {
-			err = XML_GetErrorCode(p);
-			LOGERROR(("%s: reading \"%s\" failed, error %d: %s",
-				__FUNCTION__, path, err, XML_ErrorString(err)));
-			break;
-		}
-	} while (bytes_read > 0);
-
-	XML_ParserFree(p);
+	while ((bytes_read = fread(buff, 1, sizeof(buff), fp)) > 0) {
+		bfc_string_append_buffer(&doc, buff, bytes_read);
+	}
 	fclose(fp);
+
+	bfc_init_xmltag(&curr, sizeof(curr), &doc, 0);
+
+	while ((rc = bfc_iterator_advance((bfc_iterptr_t) &curr, 1)) >= 0) {
+		iterations++;
+		LOGDEBUG(("%s: iteration #%d, found %d",
+				__FUNCTION__, iterations, rc));
+		if ((rc == BFC_XML_START_TAG) || (rc == BFC_XML_EMPTY_TAG)) {
+			on_start_tag(&state, &curr);
+		}
+		if ((rc == BFC_XML_END_TAG) || (rc == BFC_XML_EMPTY_TAG)) {
+			on_end_tag(&state, &curr);
+		}
+	}
+	bfc_destroy(&curr);
+	bfc_destroy(&doc);
 
 	LOGINFO(("%s: \"%s\" done, error %d", __FUNCTION__, path, err));
 
@@ -281,44 +271,34 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 static int
 configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
 {
-	int err = 0;
+	int rc, iterations = 0, err = 0;
 	size_t len = (n > 0)? n: strlen(s);
-	XML_Parser p;
 	struct parsing_state state;
+	bfc_string_t doc;
+	bfc_xmltag_t curr;
 
 	LOGINFO(("%s: %ld bytes", __FUNCTION__, (long) len));
-
-	p = XML_ParserCreateNS(NULL, NS_DELIMITER);
-	if (p == NULL) {
-		LOGERROR(("%s: creating parser failed", __FUNCTION__));
-		return (-ENOMEM);
-	}
 
 	memset(&state, 0, sizeof(state));
 	state.configurator = cfgtr;
 
-	XML_SetElementHandler(p, StartElementHandler, EndElementHandler);
-	XML_SetUserData(p, &state);
+	bfc_init_shared_string_buffer(&doc, sizeof(doc), s, len);
 
-	do {
-		void *buff = XML_GetBuffer(p, len);
-		if (buff == NULL) {
-			LOGERROR(("%s: creating buffer failed", __FUNCTION__));
-			err = ENOMEM;
-			break;
+	bfc_init_xmltag(&curr, sizeof(curr), &doc, 0);
+
+	while ((rc = bfc_iterator_advance((bfc_iterptr_t) &curr, 1)) >= 0) {
+		iterations++;
+		LOGDEBUG(("%s: iteration #%d, found %d",
+				__FUNCTION__, iterations, rc));
+		if ((rc == BFC_XML_START_TAG) || (rc == BFC_XML_EMPTY_TAG)) {
+			on_start_tag(&state, &curr);
 		}
-
-		memcpy(buff, s, len);
-
-		if (! XML_ParseBuffer(p, len, 1)) {
-			err = XML_GetErrorCode(p);
-			LOGERROR(("%s: parsing failed, error %d: %s",
-				__FUNCTION__, err, XML_ErrorString(err)));
-			break;
+		if ((rc == BFC_XML_END_TAG) || (rc == BFC_XML_EMPTY_TAG)) {
+			on_end_tag(&state, &curr);
 		}
-	} while (0);
-
-	XML_ParserFree(p);
+	}
+	bfc_destroy(&curr);
+	bfc_destroy(&doc);
 
 	LOGINFO(("%s: done, error %d", __FUNCTION__, err));
 

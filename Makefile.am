@@ -3376,6 +3376,12 @@ tests_string_conversions_replace_range_wstring_LDADD = libbarefootc.a liblog4std
 tests_string_conversions_replace_range_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/string.conversions/replace_range_wstring
 
+check_PROGRAMS += tests/string.conversions/find_wstring
+tests_string_conversions_find_wstring_SOURCES = tests/string.conversions/find_wstring.c
+tests_string_conversions_find_wstring_LDADD = libbarefootc.a liblog4stdc.a
+tests_string_conversions_find_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/string.conversions/find_wstring
+
 check_PROGRAMS += tests/iterators/parse_xmltags_string
 tests_iterators_parse_xmltags_string_SOURCES = tests/iterators/parse_xmltags_string.c
 tests_iterators_parse_xmltags_string_LDADD = libbarefootc.a liblog4stdc.a

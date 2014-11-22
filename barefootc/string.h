@@ -280,6 +280,8 @@ size_t	bfc_string_find_buffer(bfc_cstrptr_t s, const void *s2,
 					size_t pos, size_t n);
 size_t	bfc_string_find_c_str(bfc_cstrptr_t s, const void *s2, size_t pos);
 size_t	bfc_string_find_char(bfc_cstrptr_t s, int c, size_t pos);
+size_t	bfc_string_find_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+					bfc_citerptr_t pattend, size_t pos);
 size_t	bfc_string_rfind_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str,size_t pos);
 size_t	bfc_string_rfind_buffer(bfc_cstrptr_t s, const void *s2,
 					size_t pos, size_t n);
@@ -332,6 +334,10 @@ int	bfc_string_compare_substr_c_str(bfc_cstrptr_t s, size_t pos1,
 					size_t n1, const void *s2);
 int	bfc_string_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 					const void *s2, size_t n2);
+int	bfc_string_compare_ranges(bfc_citerptr_t i1, bfc_citerptr_t i2,
+					bfc_citerptr_t j1, bfc_citerptr_t j2);
+int	bfc_string_compare_next_range(bfc_citerptr_t it, bfc_citerptr_t limit,
+				bfc_citerptr_t pattern, bfc_citerptr_t pattend);
 
 int	bfc_string_decode_html_entities(bfc_strptr_t s);
 

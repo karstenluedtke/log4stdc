@@ -14,9 +14,6 @@
 size_t
 bfc_string_find_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str, size_t pos)
 {
-	if ((pos == BFC_NPOS) || (pos > bfc_strlen(s))) {
-		return (BFC_NPOS);
-	}
 	if (BFC_CLASS(s)->traits == BFC_CLASS(str)->traits) {
 		const char *pattern = bfc_strdata(str);
 		size_t len = bfc_strlen(str);

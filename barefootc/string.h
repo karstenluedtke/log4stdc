@@ -287,6 +287,8 @@ size_t	bfc_string_rfind_buffer(bfc_cstrptr_t s, const void *s2,
 					size_t pos, size_t n);
 size_t	bfc_string_rfind_c_str(bfc_cstrptr_t s, const void *s2,size_t pos);
 size_t	bfc_string_rfind_char(bfc_cstrptr_t s, int c, size_t pos);
+size_t	bfc_string_rfind_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+					bfc_citerptr_t pattend, size_t pos);
 size_t	bfc_string_find_first_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
 					size_t pos);
 size_t	bfc_string_find_first_of_buffer(bfc_cstrptr_t s, const void *s2,

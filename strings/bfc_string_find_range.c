@@ -21,7 +21,7 @@ bfc_string_find_range(bfc_cstrptr_t s,
 
 	if (bfc_iterator_distance(pattern, pattend) == 0) {
 		return ((pos <= bfc_strlen(s))? pos: BFC_NPOS);
-	} else if (pos < bfc_strlen(s)) {
+	} else if ((pos != BFC_NPOS) && (pos < bfc_strlen(s))) {
 		const long c = bfc_iterator_getlong(pattern);
 		bfc_string_begin_iterator(s, &it, sizeof(it));
 		bfc_string_end_iterator(s, &limit, sizeof(limit));

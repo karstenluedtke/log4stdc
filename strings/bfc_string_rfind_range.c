@@ -27,7 +27,12 @@ bfc_string_rfind_range(bfc_cstrptr_t s,
 		bfc_string_begin_iterator(s, &it0, sizeof(it0));
 		bfc_string_end_iterator(s, &limit, sizeof(limit));
 		it = it0;
-		bfc_iterator_set_position(&it, (pos < len)? pos: len-1);
+		if (pos < len) {
+			bfc_iterator_set_position(&it, pos);
+		} else {
+			bfc_iterator_set_position(&it, len);
+			bfc_iterator_advance(&it, -1);
+		}
 		while (bfc_iterator_distance(&it0, &it) > 0) {
 			if ((bfc_iterator_getlong(&it) == c)
 			 && (bfc_string_compare_next_range(&it, &limit,

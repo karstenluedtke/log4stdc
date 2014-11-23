@@ -171,5 +171,17 @@ main(int argc, char *argv[])
 		 s2, BFC_NPOS, 13);
 	} while (0 /* just once */);
 
+	do {
+	    wchar_t s2[] = { 0xE4, 0 };
+	    test(S1("\303\244bcdefghijklmn\303\266pqrst\303\274"),
+		 s2, BFC_NPOS, 0);
+	} while (0 /* just once */);
+
+	do {
+	    wchar_t s2[] = { 0xFC, 0 };
+	    test(S1("\303\244bcdefghijklmn\303\266pqrst\303\274"),
+		 s2, BFC_NPOS, 22);
+	} while (0 /* just once */);
+
 	return (0);
 }

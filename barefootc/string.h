@@ -296,6 +296,8 @@ size_t	bfc_string_find_first_of_buffer(bfc_cstrptr_t s, const void *s2,
 size_t	bfc_string_find_first_of_c_str(bfc_cstrptr_t s, const void *s2,
 					size_t pos);
 size_t	bfc_string_find_first_of_char(bfc_cstrptr_t s, int c, size_t pos);
+size_t	bfc_string_find_first_of_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+					bfc_citerptr_t pattend, size_t pos);
 size_t	bfc_string_find_last_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
 					size_t pos);
 size_t	bfc_string_find_last_of_buffer(bfc_cstrptr_t s, const void *s2,
@@ -303,6 +305,8 @@ size_t	bfc_string_find_last_of_buffer(bfc_cstrptr_t s, const void *s2,
 size_t	bfc_string_find_last_of_c_str(bfc_cstrptr_t s, const void *s2,
 					size_t pos);
 size_t	bfc_string_find_last_of_char(bfc_cstrptr_t s, int c, size_t pos);
+size_t	bfc_string_find_last_of_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+					bfc_citerptr_t pattend, size_t pos);
 size_t	bfc_string_find_first_not_of_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str,
 					size_t pos);
 size_t	bfc_string_find_first_not_of_buffer(bfc_cstrptr_t s,const void *s2,
@@ -311,6 +315,9 @@ size_t	bfc_string_find_first_not_of_c_str(bfc_cstrptr_t s, const void *s2,
 					size_t pos);
 size_t	bfc_string_find_first_not_of_char(bfc_cstrptr_t s, int c,
 					size_t pos);
+size_t	bfc_string_find_first_not_of_range(bfc_cstrptr_t s,
+					bfc_citerptr_t pattern,
+					bfc_citerptr_t pattend, size_t pos);
 size_t	bfc_string_find_last_not_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
 					size_t pos);
 size_t	bfc_string_find_last_not_of_buffer(bfc_cstrptr_t s, const void *s2,
@@ -319,6 +326,9 @@ size_t	bfc_string_find_last_not_of_c_str(bfc_cstrptr_t s, const void *s2,
 					size_t pos);
 size_t	bfc_string_find_last_not_of_char(bfc_cstrptr_t s, int c,
 					size_t pos);
+size_t	bfc_string_find_last_not_of_range(bfc_cstrptr_t s,
+					bfc_citerptr_t pattern,
+					bfc_citerptr_t pattend, size_t pos);
 int	bfc_string_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
 int	bfc_string_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,

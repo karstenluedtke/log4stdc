@@ -283,16 +283,10 @@ advance_reverse(bfc_iterptr_t it, ptrdiff_t n)
 	}
 
 	for (i = 0; (i < (int) n) && (it->pos > 0); i++) {
-		if ((rc = bfc_string_get_char(s, it->pos)) < 0x80) {
+		do {
 			it->pos--;
-		} else if (rc < 0xC0) /* continuation byte */ {
-			do {
-				it->pos--;
-				rc = bfc_string_get_char(s, it->pos);
-			} while ((it->pos > 0) && (rc >= 0x80) && (rc < 0xC0));
-		} else {
-			it->pos--; /* skip invalid code */
-		}
+			rc = bfc_string_get_char(s, it->pos);
+		} while ((it->pos > 0) && (rc >= 0x80) && (rc < 0xC0));
 	}
 	bfc_object_dump(it, 1, logger);
 	return (BFC_SUCCESS);

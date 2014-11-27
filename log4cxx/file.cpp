@@ -5,6 +5,7 @@
 #include <log4cxx/helpers/pool.h>
 
 #include "log4stdc.h"
+#include "barefootc/utf8.h"
 
 using namespace log4cxx;
 using namespace log4cxx::helpers;
@@ -166,9 +167,27 @@ namespace log4cxx {
 		l4sc_set_base_directory_name(path);
 	}
 
-	void setBaseDirectoryName(std::string path)
+	void setBaseDirectoryName(std::string& path)
 	{
 		l4sc_set_base_directory_name(path.c_str());
+	}
+
+	void setBaseDirectoryName(std::wstring& path)
+	{
+		const size_t wlen = path.length();
+		const size_t bufsize = 3*wlen + 20;
+		char buf[bufsize];
+		char *cp = buf;
+		for (size_t pos=0; pos < wlen; pos++) {
+			unsigned long unicode = path[pos];
+			BFC_PUT_UTF8(cp, buf+sizeof(buf), unicode);
+		}
+		if (cp < buf + sizeof(buf)) {
+			*cp = 0;
+		} else {
+			buf[sizeof(buf)-1] = 0;
+		}
+		l4sc_set_base_directory_name(buf);
 	}
 }
 

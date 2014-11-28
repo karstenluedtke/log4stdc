@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <wchar.h>
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_WINDOWS_FILES 1
 #define L4SC_WINDOWS_LOCKS 1
@@ -278,7 +279,12 @@ open_appender(l4sc_appender_ptr_t appender)
 {
 #if defined(L4SC_WINDOWS_FILES)
 	if (appender->filename != NULL) {
-		HANDLE fh = CreateFileA(appender->filename, FILE_APPEND_DATA,
+		wchar_t *wbuf;
+		size_t wlen, clen = strlen(appender->filename);
+		wbuf = (wchar_t *) alloca((clen+1)*sizeof(wchar_t));
+		wlen = MultiByteToWideChar(CP_UTF8, 0,
+			appender->filename, clen, wbuf, sizeof(clen+1));
+		HANDLE fh = CreateFileW(wbuf, FILE_APPEND_DATA,
 			FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL /* FILE_FLAG_WRITE_THROUGH */,
 			NULL);

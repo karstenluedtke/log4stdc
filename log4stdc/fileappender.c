@@ -217,9 +217,10 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 			}
 			if (is_open(appender)) {
 #if defined(L4SC_WINDOWS_FILES)
+				DWORD dwBytesWritten;
 				WriteFile((HANDLE) appender->fu.fh,
-						buf, len, NULL, NULL);
-				appender->filesize += len;
+					buf, len, &dwBytesWritten, NULL);
+				appender->filesize += dwBytesWritten;
 #else
 				int rc;
 				size_t written = 0;
@@ -283,7 +284,8 @@ open_appender(l4sc_appender_ptr_t appender)
 		size_t wlen, clen = strlen(appender->filename);
 		wbuf = (wchar_t *) alloca((clen+1)*sizeof(wchar_t));
 		wlen = MultiByteToWideChar(CP_UTF8, 0,
-			appender->filename, clen, wbuf, sizeof(clen+1));
+			appender->filename, clen, wbuf, clen+1);
+		wbuf[(wlen < clen)? wlen: clen] = 0;
 		HANDLE fh = CreateFileW(wbuf, FILE_APPEND_DATA,
 			FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL /* FILE_FLAG_WRITE_THROUGH */,

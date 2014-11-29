@@ -1,4 +1,8 @@
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -12,7 +16,11 @@
 
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 #include <windows.h>
+#if defined(HAVE__LOCALTIME64_S)
 errno_t _localtime64_s(struct tm *, const __time64_t *);
+#else
+struct tm *_localtime64(const __time64_t *);
+#endif
 #endif
 
 #include "logobjects.h"
@@ -321,9 +329,19 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 	do {
 		__time64_t t = msg->time.tv_sec;
+#if defined(HAVE__LOCALTIME64_S)
 		_localtime64_s(&tmbuf, &t);
-	} while (0 /* just once */);
 #else
+		const struct tm *tm2 = _localtime64(&t);
+		if (tm2 != NULL) {
+			tmbuf = *tm2;
+		} else {
+			memset(&tmbuf, 0, sizeof(tmbuf));
+		}
+#endif
+	} while (0 /* just once */);
+
+#else /* not L4SC_USE_WINDOWS_LOCALTIME */
 	do {
 		time_t t = (time_t) msg->time.tv_sec;
 		localtime_r(&t, &tmbuf);

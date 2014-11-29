@@ -1,6 +1,10 @@
 
 #include "barefootc/object.h"
 
+#ifndef ELOOP
+#define ELOOP EINVAL
+#endif
+
 int
 bfc_init_object(bfc_classptr_t cls,
 		void *buf, size_t bufsize, struct mempool *pool)

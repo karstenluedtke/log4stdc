@@ -30,12 +30,24 @@ AC_TYPE_SIZE_T
 AC_TYPE_INT64_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
+AC_CHECK_TYPES([struct timespec], [], [], [[
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+]])
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([getcwd clock_gettime gettimeofday localtime_r memchr memset strchr strerror strncasecmp strtoul pthread_mutex_init pthread_mutexattr_settype])
+AC_CHECK_FUNCS([getcwd clock_gettime gettimeofday localtime_r _localtime64_s _localtime64 memchr memset strchr strerror strncasecmp strtoul pthread_mutex_init pthread_mutexattr_settype])
 
 AM_CONDITIONAL([BFCLOG4CXX], [test '(' x$bfclog4cxx = xtrue ')' -o '(' '(' x$bfclog4cxx = xauto ')' -a '(' x$ac_cv_header_log4cxx_log4cxx_h = xyes ')' ')' ])
 

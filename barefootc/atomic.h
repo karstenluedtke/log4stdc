@@ -18,7 +18,6 @@ extern "C" {
 #endif
 
 #if defined(__APPLE__)
-
 #include <inttypes.h>
 #include <libkern/OSAtomic.h>
 
@@ -31,6 +30,18 @@ typedef volatile int32_t bfc_atomic_counter_t;
 
 #define bfc_decr_and_test_atomic_counter(ctr) \
 				(OSAtomicDecrement32Barrier(&(ctr)) == 0)
+
+#elif defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <windows.h>
+
+typedef volatile LONG bfc_atomic_counter_t;
+
+#define bfc_init_atomic_counter(ctr,v)	ctr = (v)
+#define bfc_incr_atomic_counter(ctr)	InterlockedIncrement(&(ctr))
+#define bfc_decr_atomic_counter(ctr)	InterlockedDecrement(&(ctr))
+
+#define bfc_decr_and_test_atomic_counter(ctr) \
+					(InterlockedDecrement(&(ctr)) == 0)
 
 #elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_ATOMICS__)
 
@@ -50,6 +61,7 @@ typedef atomic_int_least32_t bfc_atomic_counter_t;
 
 #elif defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__) || defined(__amd64)
 
+#include <inttypes.h>
 typedef volatile int32_t bfc_atomic_counter_t;
 
 #define bfc_init_atomic_counter(ctr,v)	ctr = (v)

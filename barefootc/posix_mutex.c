@@ -1,7 +1,6 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
@@ -20,6 +19,10 @@
 #ifdef HAVE_PTHREAD_H
 #define __USE_UNIX98 1
 #include <pthread.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
 #endif
 
 struct posix_mutex {
@@ -66,6 +69,7 @@ const struct bfc_mutex_class bfc_posix_mutex_class = {
 #define pthread_mutex_unlock(m)
 #define pthread_mutexattr_init(a)
 #define pthread_mutexattr_settype(a,v)
+#define pthread_mutexattr_t long
 #endif
 
 static int

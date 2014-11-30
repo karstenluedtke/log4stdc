@@ -11,6 +11,10 @@
 
 #include <inttypes.h>
 
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <windows.h>
+#endif
+
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
 #include <time.h>

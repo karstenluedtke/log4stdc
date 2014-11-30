@@ -82,7 +82,6 @@ libbarefootc_a_SOURCES+= strings/bfc_strlen.c
 libbarefootc_a_SOURCES+= strings/bfc_strdata.c
 libbarefootc_a_SOURCES+= strings/bfc_string_sublen.c
 libbarefootc_a_SOURCES+= strings/bfc_string_subdata.c
-libbarefootc_a_SOURCES+= strings/bfc_string_reserve.c
 libbarefootc_a_SOURCES+= strings/bfc_string_append.c
 libbarefootc_a_SOURCES+= strings/bfc_string_append_c_str.c
 libbarefootc_a_SOURCES+= strings/bfc_string_append_iter_range.c
@@ -204,26 +203,28 @@ libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
-libbarefootc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
-libbarefootc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 
-libbarefootc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c 
-libbarefootc_a_SOURCES+= log4stdc/l4sc_formatmsg.c 
+libbarefootc_a_SOURCES+= log4stdc/l4sc_logprintf.c
+libbarefootc_a_SOURCES+= log4stdc/l4sc_vlog.c
+libbarefootc_a_SOURCES+= log4stdc/l4sc_log.c
+libbarefootc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c
+libbarefootc_a_SOURCES+= log4stdc/l4sc_formatmsg.c
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjects.h
 liblog4stdc_a_SOURCES+= barefootc/object.h
 liblog4stdc_a_SOURCES+= barefootc/linkedlist.h
 liblog4stdc_a_SOURCES+= barefootc/synchronization.h
 
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c 
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c log4stdc/l4sc_log.c 
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c 
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_formatmsg.c 
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_log.c
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_formatmsg.c
 
 liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c log4stdc/fileappender.c
 liblog4stdc_a_SOURCES+= log4stdc/layout.c log4stdc/logmessage.c
 liblog4stdc_a_SOURCES+= log4stdc/propertyconfigurator.c
-liblog4stdc_a_SOURCES+= log4stdc/object.c 
+liblog4stdc_a_SOURCES+= log4stdc/object.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
 
 if BFCLOG4CXX
@@ -267,7 +268,6 @@ liblog4stdc_a_SOURCES+= strings/bfc_strlen.c
 liblog4stdc_a_SOURCES+= strings/bfc_strdata.c
 liblog4stdc_a_SOURCES+= strings/bfc_string_sublen.c
 liblog4stdc_a_SOURCES+= strings/bfc_string_subdata.c
-liblog4stdc_a_SOURCES+= strings/bfc_string_reserve.c
 liblog4stdc_a_SOURCES+= strings/bfc_string_shared_substr.c
 liblog4stdc_a_SOURCES+= strings/bfc_string_buffered_substr.c
 liblog4stdc_a_SOURCES+= strings/bfc_string_decode_html_entities.c

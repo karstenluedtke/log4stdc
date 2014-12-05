@@ -26,6 +26,10 @@
 #endif
 #endif
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#endif
+
 #include "barefootc/object.h"
 #include "barefootc/datetime.h"
 #include "log4stdc.h"

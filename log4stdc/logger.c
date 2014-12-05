@@ -1,14 +1,26 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <errno.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #if defined(__ANDROID__)
 #include <android/log.h>
+#endif
+
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#define strncasecmp strnicmp
 #endif
 
 #include "logobjects.h"

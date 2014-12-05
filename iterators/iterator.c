@@ -7,6 +7,11 @@
 
 #include <inttypes.h>
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#define inline
+#endif
+
 #include "barefootc/object.h"
 #include "barefootc/iterator.h"
 #include "log4stdc.h"

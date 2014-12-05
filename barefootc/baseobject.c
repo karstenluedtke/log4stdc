@@ -8,6 +8,10 @@
 #include "object.h"
 #include "log4stdc.h"
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#endif
+
 static void bfc_destroy_base_object(bfc_objptr_t obj);
 
 const struct bfc_classhdr bfc_object_class = {

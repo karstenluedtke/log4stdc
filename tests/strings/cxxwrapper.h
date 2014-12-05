@@ -19,6 +19,10 @@
 #include <memory>
 #include <stdexcept>
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#endif
+
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"

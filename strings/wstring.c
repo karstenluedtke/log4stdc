@@ -7,6 +7,10 @@
 
 #include <inttypes.h>
 
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <malloc.h>  /* for alloca */
+#endif
+
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"

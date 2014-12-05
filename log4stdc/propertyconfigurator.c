@@ -1,10 +1,25 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <malloc.h>  /* for alloca */
+#endif
+
+#if defined(_MSC_VER)
+#define strncasecmp strnicmp
+#endif
 
 #include "logobjects.h"
 
@@ -90,8 +105,7 @@ static int
 configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 {
 	FILE *fp;
-	const int BUFF_SIZE = 256;
-	char buf[BUFF_SIZE];
+	char buf[256];
 	int err = 0;
 
 	LOGINFO(("%s: \"%s\"", __FUNCTION__, path));
@@ -229,12 +243,14 @@ l4sc_configure_from_property_file(const char *path)
 	int rc;
 	const int pathlen = strlen(path);
 	struct l4sc_configurator obj;
-	char pathbuf[256 + pathlen];
+	const size_t pathbufsize = 256 + pathlen;
+	char *pathbuf;
 
 	l4sc_close_appenders();
 
+	pathbuf = alloca(pathbufsize);
 	init_property_configurator(&obj, sizeof(obj), NULL);
-	l4sc_merge_base_directory_path(pathbuf, sizeof(pathbuf), path, pathlen);
+	l4sc_merge_base_directory_path(pathbuf, pathbufsize, path, pathlen);
 	rc = VMETHCALL(&obj, configure_from_file, (&obj, pathbuf), -ENOSYS);
 	VMETHCALL(&obj, destroy, (&obj), (void) 0);
 

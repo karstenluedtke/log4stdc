@@ -1,8 +1,11 @@
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <wchar.h>
@@ -16,6 +19,15 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <pthread.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#define strncasecmp strnicmp
 #endif
 
 #include "logobjects.h"

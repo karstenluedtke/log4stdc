@@ -5,6 +5,10 @@
 #include <wchar.h>
 #include <assert.h>
 
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <malloc.h>  /* for alloca */
+#endif
+
 #include "log4stdc.h"
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"

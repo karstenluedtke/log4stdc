@@ -27,6 +27,11 @@
 #include <pthread.h>
 #endif
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#define strncasecmp strnicmp
+#endif
+
 #include "logobjects.h"
 
 static int init_logmessage(void *, size_t, struct mempool *);

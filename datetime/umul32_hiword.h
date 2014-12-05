@@ -1,4 +1,6 @@
 
+#if defined(__GNUC__)
+
 static inline uint32_t
 umul32_hiword(uint32_t a, uint32_t b)
 {
@@ -25,3 +27,11 @@ umul32_hiword(uint32_t a, uint32_t b)
 	return (hiword);
 }
 
+#elif 0 // defined(_MSC_VER) && defined(__WORDSIZE) && (__WORDSIZE==32)
+
+uint32_t umul32_hiword_i386(uint32_t a, uint32_t b);
+#define umul32_hiword(a,b)	umul32_hiword_i386(a,b)
+
+#else
+#define umul32_hiword(a,b)	(uint32_t)((((uint64_t)(a))*(b)) >> 32)
+#endif

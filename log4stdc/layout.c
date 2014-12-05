@@ -6,9 +6,17 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <time.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#if defined(_MSC_VER)
+#define snprintf _snprintf
+#define strncasecmp strnicmp
+#endif
 
 #if defined(_MSC_VER) || defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_USE_WINDOWS_LOCALTIME 1

@@ -12,8 +12,6 @@
 #define STRING_CLASS_NAME			"shared_string"
 
 #define	wchar_t					char
-#define bfc_strptr_t				bfc_strptr_t
-#define bfc_cstrptr_t				bfc_cstrptr_t
 #define bfc_shared_wstring			bfc_shared_string
 
 #define bfc_wstring_class			bfc_string_class

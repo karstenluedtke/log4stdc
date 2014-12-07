@@ -9,14 +9,12 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 
-#define STRING_CLASS_NAME			"string"
+#define STRING_CLASS_NAME			"UTF-8 string"
 
 #define INIT_FORWARD_ITERATOR			bfc_init_utf8_iterator
+#define INIT_REVERSE_ITERATOR			bfc_init_utf8_reverse_iterator
 
 #define	wchar_t					char
-#define bfc_strptr_t				bfc_strptr_t
-#define bfc_cstrptr_t				bfc_cstrptr_t
-
 #define bfc_wstring_class			bfc_string_class
 #define bfc_wchar_traits_class			bfc_char_traits_class
 

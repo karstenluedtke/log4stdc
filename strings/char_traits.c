@@ -21,14 +21,14 @@ char	bfc_int_to_char(int c);
 int	bfc_char_to_int(char c);
 int	bfc_char_eq_int(int x, int y);
 
-struct charraits_class {
-	BFC_CLASSHDR(const struct charraits_class *, void *, const void *)
+struct char_traits_class {
+	BFC_CLASSHDR(const struct char_traits_class *, void *, const void *)
 	BFC_CHAR_TRAITS_METHODS(char, int)
 };
 
-struct charraits_class bfc_char_traits_class = {
+struct char_traits_class bfc_char_traits_class = {
 	.super	= NULL,
-	.name	= "charraits",
+	.name	= "char_traits",
 	.eq	= bfc_char_eq,
 	.lt	= bfc_char_lt,
 	.szlen	= bfc_char_length,

@@ -150,22 +150,31 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
 	if (msg && (msg->msglen > 0)) {
 		const int level = msg->level;
-		l4sc_layout_cptr_t layout = &appender->layout;
+#if defined(__ANDROID__)
+		android_LogPriority prio = ANDROID_LOG_PRIO(level);
+		const char *tag = msg->logger?	msg->logger->name:
+						appender->name;
+		if (msg->msg[msg->msglen] == '\0') {
+			/* formatting is done by android log lib */
+			__android_log_write(prio, tag, msg->msg);
+			return;
+		}
+#endif
+
 		const size_t bufsize = msg->msglen + 100;
 		char *poolmem = ((bufsize > 2000) && appender->pool)?
 				bfc_mempool_alloc(appender->pool, bufsize):
 				NULL;
 		char *buf = poolmem? poolmem: alloca(bufsize);
-		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
+
 #if defined(__ANDROID__)
-		if (len > 0) {
-			android_LogPriority prio = ANDROID_LOG_PRIO(level);
-			const char *tag = msg->logger?	msg->logger->name:
-							appender->name;
-			buf[(len < bufsize)? len: bufsize-1] = '\0';
-			__android_log_write(prio, tag, buf);
-		}
+		/* formatting is done by android log lib */
+		memcpy(buf, msg->msg, msg->msglen);
+		buf[msg->msglen] = '\0';
+		__android_log_write(prio, tag, buf);
 #else
+		l4sc_layout_cptr_t layout = &appender->layout;
+		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
 		int fd = IS_AT_LEAST_WARN_LEVEL(level)? 2: 1;
 		int rc, written = 0;
 		while (len > written) {

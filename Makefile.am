@@ -56,6 +56,7 @@ libbarefootc_a_SOURCES+= strings/cp1250_traits.c
 libbarefootc_a_SOURCES+= strings/cp1252_traits.c
 libbarefootc_a_SOURCES+= strings/iso8859_1_traits.c
 libbarefootc_a_SOURCES+= strings/iso8859_2_traits.c
+libbarefootc_a_SOURCES+= strings/iso8859_15_string.c
 libbarefootc_a_SOURCES+= strings/iso8859_15_traits.c
 libbarefootc_a_SOURCES+= strings/utf8_from_wchar.c
 libbarefootc_a_SOURCES+= strings/utf8_from_utf16.c
@@ -3361,6 +3362,12 @@ tests_string_conversions_assign_wstring_SOURCES = tests/string.conversions/assig
 tests_string_conversions_assign_wstring_LDADD = libbarefootc.a liblog4stdc.a
 tests_string_conversions_assign_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/string.conversions/assign_wstring
+
+check_PROGRAMS += tests/string.conversions/assign_iso8859_string
+tests_string_conversions_assign_iso8859_string_SOURCES = tests/string.conversions/assign_iso8859_string.c
+tests_string_conversions_assign_iso8859_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_string_conversions_assign_iso8859_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/string.conversions/assign_iso8859_string
 
 check_PROGRAMS += tests/string.conversions/append_wstring
 tests_string_conversions_append_wstring_SOURCES = tests/string.conversions/append_wstring.c

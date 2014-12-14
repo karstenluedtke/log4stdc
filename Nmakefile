@@ -70,6 +70,11 @@ OFILES= \
 	strings/basic_string.obj \
 	strings/shared_string.obj \
 	strings/char_traits.obj \
+	strings/cp1250_traits.obj \
+	strings/cp1252_traits.obj \
+	strings/iso8859_1_traits.obj \
+	strings/iso8859_2_traits.obj \
+	strings/iso8859_15_traits.obj \
 	strings/utf8_from_wchar.obj \
 	strings/utf8_from_utf16.obj \
 	strings/utf16_from_utf8.obj \
@@ -969,6 +974,21 @@ strings/shared_string.obj: strings/shared_string.c $(HEADERS)
 
 strings/char_traits.obj: strings/char_traits.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/char_traits.c
+
+strings/cp1250_traits.obj: strings/cp1250_traits.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/cp1250_traits.c
+
+strings/cp1252_traits.obj: strings/cp1252_traits.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/cp1252_traits.c
+
+strings/iso8859_1_traits.obj: strings/iso8859_1_traits.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_1_traits.c
+
+strings/iso8859_2_traits.obj: strings/iso8859_2_traits.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_2_traits.c
+
+strings/iso8859_15_traits.obj: strings/iso8859_15_traits.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_15_traits.c
 
 strings/utf8_from_wchar.obj: strings/utf8_from_wchar.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/utf8_from_wchar.c

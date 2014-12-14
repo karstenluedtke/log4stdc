@@ -600,6 +600,99 @@ int	bfc_shared_wstring_resize(bfc_strptr_t s, size_t n, int c);
 size_t	bfc_shared_wstring_capacity(bfc_cstrptr_t s);
 int	bfc_shared_wstring_reserve(bfc_strptr_t s, size_t n);
 
+/*
+ * bfc_shared_iso8859_string_t
+ */
+int bfc_init_empty_iso8859_1_string(void *buf,size_t bufsize,
+					struct mempool* pool);
+int bfc_init_basic_iso8859_1_string(void *buf, size_t bufsize,
+			struct mempool *pool, const wchar_t* s, size_t n);
+int bfc_init_shared_iso8859_1_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_init_shared_iso8859_1_string_c_str(void *buf, size_t bufsize,
+					const char *s);
+int bfc_init_buffered_iso8859_1_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_shared_iso8859_1_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_mutable_iso8859_1_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_buffered_iso8859_1_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
+
+int bfc_init_empty_iso8859_2_string(void *buf,size_t bufsize,
+					struct mempool* pool);
+int bfc_init_basic_iso8859_2_string(void *buf, size_t bufsize,
+			struct mempool *pool, const wchar_t* s, size_t n);
+int bfc_init_shared_iso8859_2_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_init_shared_iso8859_2_string_c_str(void *buf, size_t bufsize,
+					const char *s);
+int bfc_init_buffered_iso8859_2_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_shared_iso8859_2_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_mutable_iso8859_2_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_buffered_iso8859_2_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
+
+int bfc_init_empty_iso8859_15_string(void *buf,size_t bufsize,
+					struct mempool* pool);
+int bfc_init_basic_iso8859_15_string(void *buf, size_t bufsize,
+			struct mempool *pool, const wchar_t* s, size_t n);
+int bfc_init_shared_iso8859_15_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_init_shared_iso8859_15_string_c_str(void *buf, size_t bufsize,
+					const char *s);
+int bfc_init_buffered_iso8859_15_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_shared_iso8859_15_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_mutable_iso8859_15_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_buffered_iso8859_15_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
+
+int bfc_init_empty_cp1250_string(void *buf,size_t bufsize,
+					struct mempool* pool);
+int bfc_init_basic_cp1250_string(void *buf, size_t bufsize,
+			struct mempool *pool, const wchar_t* s, size_t n);
+int bfc_init_shared_cp1250_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_init_shared_cp1250_string_c_str(void *buf, size_t bufsize,
+					const char *s);
+int bfc_init_buffered_cp1250_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_shared_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_mutable_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_buffered_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
+
+int bfc_init_empty_cp1252_string(void *buf,size_t bufsize,
+					struct mempool* pool);
+int bfc_init_basic_cp1252_string(void *buf, size_t bufsize,
+			struct mempool *pool, const wchar_t* s, size_t n);
+int bfc_init_shared_cp1252_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_init_shared_cp1252_string_c_str(void *buf, size_t bufsize,
+					const char *s);
+int bfc_init_buffered_cp1252_string(void *buf, size_t bufsize,
+					const char *s, size_t n);
+int bfc_shared_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_mutable_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize);
+int bfc_buffered_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+					void *buf, size_t bufsize,
+					void *databuf, size_t dbufsize);
+
 #ifdef __cplusplus
 }	/* C++ */
 #endif

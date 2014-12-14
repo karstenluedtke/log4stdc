@@ -53,9 +53,13 @@ libbarefootc_a_SOURCES+= strings/basic_string.c
 libbarefootc_a_SOURCES+= strings/shared_string.c
 libbarefootc_a_SOURCES+= strings/char_traits.c
 libbarefootc_a_SOURCES+= strings/cp1250_traits.c
+libbarefootc_a_SOURCES+= strings/cp1250_string.c
 libbarefootc_a_SOURCES+= strings/cp1252_traits.c
+libbarefootc_a_SOURCES+= strings/cp1252_string.c
 libbarefootc_a_SOURCES+= strings/iso8859_1_traits.c
+libbarefootc_a_SOURCES+= strings/iso8859_1_string.c
 libbarefootc_a_SOURCES+= strings/iso8859_2_traits.c
+libbarefootc_a_SOURCES+= strings/iso8859_2_string.c
 libbarefootc_a_SOURCES+= strings/iso8859_15_string.c
 libbarefootc_a_SOURCES+= strings/iso8859_15_traits.c
 libbarefootc_a_SOURCES+= strings/utf8_from_wchar.c
@@ -3380,6 +3384,12 @@ tests_string_conversions_insert_size_wstring_SOURCES = tests/string.conversions/
 tests_string_conversions_insert_size_wstring_LDADD = libbarefootc.a liblog4stdc.a
 tests_string_conversions_insert_size_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/string.conversions/insert_size_wstring
+
+check_PROGRAMS += tests/string.conversions/insert_size_cp1252_string
+tests_string_conversions_insert_size_cp1252_string_SOURCES = tests/string.conversions/insert_size_cp1252_string.c
+tests_string_conversions_insert_size_cp1252_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_string_conversions_insert_size_cp1252_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/string.conversions/insert_size_cp1252_string
 
 check_PROGRAMS += tests/string.conversions/replace_size_size_wstring
 tests_string_conversions_replace_size_size_wstring_SOURCES = tests/string.conversions/replace_size_size_wstring.c

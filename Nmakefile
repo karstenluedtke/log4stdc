@@ -71,9 +71,14 @@ OFILES= \
 	strings/shared_string.obj \
 	strings/char_traits.obj \
 	strings/cp1250_traits.obj \
+	strings/cp1250_string.obj \
 	strings/cp1252_traits.obj \
+	strings/cp1252_string.obj \
 	strings/iso8859_1_traits.obj \
+	strings/iso8859_1_string.obj \
 	strings/iso8859_2_traits.obj \
+	strings/iso8859_2_string.obj \
+	strings/iso8859_15_string.obj \
 	strings/iso8859_15_traits.obj \
 	strings/utf8_from_wchar.obj \
 	strings/utf8_from_utf16.obj \
@@ -589,8 +594,10 @@ TESTS= \
 	tests/shared_string.erase/erase_char.exe \
 	tests/shared_string.erase/erase_range.exe \
 	tests/string.conversions/assign_wstring.exe \
+	tests/string.conversions/assign_iso8859_string.exe \
 	tests/string.conversions/append_wstring.exe \
 	tests/string.conversions/insert_size_wstring.exe \
+	tests/string.conversions/insert_size_cp1252_string.exe \
 	tests/string.conversions/replace_size_size_wstring.exe \
 	tests/string.conversions/replace_range_wstring.exe \
 	tests/string.conversions/find_wstring.exe \
@@ -873,8 +880,10 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\shared_string.erase\erase_char.exe
 	tests\shared_string.erase\erase_range.exe
 	tests\string.conversions\assign_wstring.exe
+	tests\string.conversions\assign_iso8859_string.exe
 	tests\string.conversions\append_wstring.exe
 	tests\string.conversions\insert_size_wstring.exe
+	tests\string.conversions\insert_size_cp1252_string.exe
 	tests\string.conversions\replace_size_size_wstring.exe
 	tests\string.conversions\replace_range_wstring.exe
 	tests\string.conversions\find_wstring.exe
@@ -978,14 +987,29 @@ strings/char_traits.obj: strings/char_traits.c $(HEADERS)
 strings/cp1250_traits.obj: strings/cp1250_traits.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/cp1250_traits.c
 
+strings/cp1250_string.obj: strings/cp1250_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/cp1250_string.c
+
 strings/cp1252_traits.obj: strings/cp1252_traits.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/cp1252_traits.c
+
+strings/cp1252_string.obj: strings/cp1252_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/cp1252_string.c
 
 strings/iso8859_1_traits.obj: strings/iso8859_1_traits.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_1_traits.c
 
+strings/iso8859_1_string.obj: strings/iso8859_1_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_1_string.c
+
 strings/iso8859_2_traits.obj: strings/iso8859_2_traits.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_2_traits.c
+
+strings/iso8859_2_string.obj: strings/iso8859_2_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_2_string.c
+
+strings/iso8859_15_string.obj: strings/iso8859_15_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_15_string.c
 
 strings/iso8859_15_traits.obj: strings/iso8859_15_traits.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/iso8859_15_traits.c
@@ -3794,6 +3818,14 @@ tests/string.conversions/assign_wstring.exe: \
 tests/string.conversions/assign_wstring.obj: tests/string.conversions/assign_wstring.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/assign_wstring.c
 
+tests/string.conversions/assign_iso8859_string.exe: \
+		tests/string.conversions/assign_iso8859_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/assign_iso8859_string.obj barefootc.lib log4stdc.lib
+
+tests/string.conversions/assign_iso8859_string.obj: tests/string.conversions/assign_iso8859_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/assign_iso8859_string.c
+
 tests/string.conversions/append_wstring.exe: \
 		tests/string.conversions/append_wstring.obj \
 		barefootc.lib log4stdc.lib
@@ -3809,6 +3841,14 @@ tests/string.conversions/insert_size_wstring.exe: \
 
 tests/string.conversions/insert_size_wstring.obj: tests/string.conversions/insert_size_wstring.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/insert_size_wstring.c
+
+tests/string.conversions/insert_size_cp1252_string.exe: \
+		tests/string.conversions/insert_size_cp1252_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/insert_size_cp1252_string.obj barefootc.lib log4stdc.lib
+
+tests/string.conversions/insert_size_cp1252_string.obj: tests/string.conversions/insert_size_cp1252_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/insert_size_cp1252_string.c
 
 tests/string.conversions/replace_size_size_wstring.exe: \
 		tests/string.conversions/replace_size_size_wstring.obj \

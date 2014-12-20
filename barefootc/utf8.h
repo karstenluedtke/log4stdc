@@ -89,6 +89,13 @@ do {									    \
 				| (((uint32_t) cp[0] & 0x3F) <<  6)	    \
 				| (((uint32_t) cp[1] & 0x3F)      );	    \
 			cp += 2;					    \
+			if ((unicode >= 0xD800) && (unicode < 0xDC00)	    \
+			    && (cp+2 < (limit)) && (cp[0] == 0xED)) {	    \
+				unicode = (((unicode & 0x3FF)+ 0x40) << 10) \
+					| (((uint32_t) cp[1] & 0x0F) <<  6) \
+					| (((uint32_t) cp[2] & 0x3F)      );\
+				cp += 3;				    \
+			}						    \
 		} else if ((unicode < 0xF8) && (cp+2 < (limit))) {	    \
 			unicode = ((unicode & 0x07) << 18)		    \
 				| (((uint32_t) cp[0] & 0x3F) << 12)	    \
@@ -120,8 +127,8 @@ do {									    \
 	if ((unicode >= 0xD800) && (unicode < 0xDC00) && (wp < (limit))) {  \
 		unsigned _low = *(wp) & 0xFFFF;				    \
 		if ((_low >= 0xDC00) && (_low < 0xDF00)) {		    \
-			unicode = 0x10000uL + ((unicode & 0x3FF) << 10)	    \
-					    + (_low & 0x3FF);		    \
+			unicode = (((unicode & 0x3FF) + 0x40) << 10)	    \
+				+ (_low & 0x3FF);			    \
 			wp++;						    \
 		}							    \
 	}								    \

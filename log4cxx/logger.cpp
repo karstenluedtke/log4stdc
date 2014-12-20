@@ -27,6 +27,8 @@
 
 #include "repository.h"
 
+#include "barefootc/utf8.h"
+
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 using namespace log4cxx::spi;
@@ -449,10 +451,34 @@ LoggerPtr Logger::getLoggerLS(const LogString& name) {
 void Logger::forcedLog(const LevelPtr& level1, const std::wstring& message,
         const LocationInfo& location) const
 {
+	const size_t wlen = message.length();
+	std::string s;
+	char ubuf[8];
+
+	for (size_t i=0; i < wlen; i++) {
+		char *cp = ubuf;
+		unsigned codept = (unsigned) message[i];
+		BFC_PUT_UTF8(cp, ubuf+sizeof(ubuf), codept);
+		s.append(ubuf, cp - ubuf);
+	}
+
+	this->forcedLog(level1, s, location);
 }
 
-void Logger::forcedLog(const LevelPtr& level1, const std::wstring& message) const
+void Logger::forcedLog(const LevelPtr& level1,const std::wstring& message) const
 {
+	const size_t wlen = message.length();
+	std::string s;
+	char ubuf[8];
+
+	for (size_t i=0; i < wlen; i++) {
+		char *cp = ubuf;
+		unsigned codept = (unsigned) message[i];
+		BFC_PUT_UTF8(cp, ubuf+sizeof(ubuf), codept);
+		s.append(ubuf, cp - ubuf);
+	}
+
+	this->forcedLog(level1, s);
 }
 
 void Logger::getName(std::wstring& rv) const {

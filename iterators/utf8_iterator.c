@@ -122,6 +122,15 @@ forward_getchar(bfc_citerptr_t it, size_t pos)
 					| ((rc      & 0x3F) <<  6)
 					| ((rc2     & 0x3F)      );
 			}
+			/* non-std encoding w/ high and low surrogates */
+			if ((unicode >= 0xD800) && (unicode < 0xDC00)
+	 		    && ((rc3 = bfc_string_get_char(s, p+3)) == 0xED)
+	 		    && ((rc4 = bfc_string_get_char(s, p+4)) >= 0)
+	 		    && ((rc5 = bfc_string_get_char(s, p+5)) >= 0)) {
+				unicode = (((unicode & 0x3FF)+ 0x40) << 10)
+					| ((rc4      & 0x0F) <<  6)
+					| ((rc5      & 0x3F)      );
+			}
 		} else if (unicode < 0xF8) {
 	 		if (((rc2 = bfc_string_get_char(s, p+2)) >= 0)
 	 		 && ((rc3 = bfc_string_get_char(s, p+3)) >= 0)) {
@@ -241,7 +250,13 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 		} else if (rc < 0xE0) {
 			it->pos += 2;
 		} else if (rc < 0xF0) {
-			it->pos += 3;
+			if ((rc == 0xED)
+			 && (forward_getchar(it, 0) >= 0x10000uL)) {
+				/*non-std encoding w/ high and low surrogates*/
+				it->pos += 6;
+			} else {
+				it->pos += 3;
+			}
 		} else if (rc < 0xF8) {
 			it->pos += 4;
 		} else if (rc < 0xFC) {

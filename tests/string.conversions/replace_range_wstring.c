@@ -13,6 +13,7 @@
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
 #include "barefootc/mempool.h"
+#include "barefootc/utf8.h"
 
 static struct mempool *pool;
 static l4sc_logger_ptr_t logger;
@@ -27,9 +28,10 @@ test(const char *s1, size_t pos1, size_t n1, const wchar_t *s2,
 	char *u8buf;
 	bfc_iterator_t start, limit;
 
-	bufsize = wcstombs(NULL, s2, 0) + 2;
+	wslen = wcslen(s2);
+	bufsize = 2*wslen + 20;
 	u8buf = alloca(bufsize);
-	wcstombs(u8buf, s2, bufsize);
+	bfc_utf8_from_wchar(u8buf, bufsize, s2, wslen);
 
 	L4SC_TRACE(logger,
 		"%s(\"%s\", pos %ld, n %ld, L\"%s\", expected \"%s\")",

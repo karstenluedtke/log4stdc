@@ -3439,6 +3439,12 @@ tests_string_conversions_find_last_not_of_wstring_LDADD = libbarefootc.a liblog4
 tests_string_conversions_find_last_not_of_wstring_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/string.conversions/find_last_not_of_wstring
 
+check_PROGRAMS += tests/wstring.conversions/assign_string
+tests_wstring_conversions_assign_string_SOURCES = tests/wstring.conversions/assign_string.c
+tests_wstring_conversions_assign_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_assign_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/assign_string
+
 check_PROGRAMS += tests/iterators/parse_xmltags_string
 tests_iterators_parse_xmltags_string_SOURCES = tests/iterators/parse_xmltags_string.c
 tests_iterators_parse_xmltags_string_LDADD = libbarefootc.a liblog4stdc.a

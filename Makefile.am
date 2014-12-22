@@ -3445,6 +3445,30 @@ tests_wstring_conversions_assign_string_LDADD = libbarefootc.a liblog4stdc.a
 tests_wstring_conversions_assign_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/wstring.conversions/assign_string
 
+check_PROGRAMS += tests/wstring.conversions/append_string
+tests_wstring_conversions_append_string_SOURCES = tests/wstring.conversions/append_string.c
+tests_wstring_conversions_append_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_append_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/append_string
+
+check_PROGRAMS += tests/wstring.conversions/insert_size_string
+tests_wstring_conversions_insert_size_string_SOURCES = tests/wstring.conversions/insert_size_string.c
+tests_wstring_conversions_insert_size_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_insert_size_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/insert_size_string
+
+check_PROGRAMS += tests/wstring.conversions/replace_size_size_string
+tests_wstring_conversions_replace_size_size_string_SOURCES = tests/wstring.conversions/replace_size_size_string.c
+tests_wstring_conversions_replace_size_size_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_replace_size_size_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/replace_size_size_string
+
+check_PROGRAMS += tests/wstring.conversions/replace_range_string
+tests_wstring_conversions_replace_range_string_SOURCES = tests/wstring.conversions/replace_range_string.c
+tests_wstring_conversions_replace_range_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_replace_range_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/replace_range_string
+
 check_PROGRAMS += tests/iterators/parse_xmltags_string
 tests_iterators_parse_xmltags_string_SOURCES = tests/iterators/parse_xmltags_string.c
 tests_iterators_parse_xmltags_string_LDADD = libbarefootc.a liblog4stdc.a

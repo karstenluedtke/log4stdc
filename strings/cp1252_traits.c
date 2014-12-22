@@ -122,18 +122,18 @@ bfc_unicode_to_cp1252(int c)
 
 	if ((c & ~0x7F) == 0) {
 		return ((char) c);
-	} else if ((c >= 0x80) && (c <= 0x9f)) {
+	} else if ((c >= 0x80) && (c <= 0x9F)) {
 		idx = (unsigned char) c & 0x1F;
 		if (c == (int) cp1252_0x80_0x9F_unicodes[idx]) {
 			return (0x80 + idx);
 		}
-		for (idx=0; idx < 32; idx++) {
-			if (c == (int) cp1252_0x80_0x9F_unicodes[idx]) {
-				return (0x80 + idx);
-			}
-		}
 	} else if ((c & ~0xFF) == 0) {
 		return ((char) c);
+	}
+	for (idx=0; idx < 32; idx++) {
+		if (c == (int) cp1252_0x80_0x9F_unicodes[idx]) {
+			return (0x80 + idx);
+		}
 	}
 	return ('?');
 }

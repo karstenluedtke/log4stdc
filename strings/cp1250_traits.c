@@ -218,10 +218,10 @@ bfc_unicode_to_cp1250(int c)
 		if (c == (int) cp1250_0x80_0xFF_unicodes[idx]) {
 			return (0x80 + idx);
 		}
-		for (idx=0; idx < 128; idx++) {
-			if (c == (int) cp1250_0x80_0xFF_unicodes[idx]) {
-				return (0x80 + idx);
-			}
+	}
+	for (idx=0; idx < 128; idx++) {
+		if (c == (int) cp1250_0x80_0xFF_unicodes[idx]) {
+			return (0x80 + idx);
 		}
 	}
 	return ('?');

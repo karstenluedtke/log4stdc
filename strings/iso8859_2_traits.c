@@ -197,20 +197,22 @@ bfc_iso8859_2_to_unicode(char c)
 char
 bfc_unicode_to_iso8859_2(int c)
 {
+	unsigned char idx;
+
 	if ((c & ~0x7F) == 0) {
 		return ((char) c);
 	} else if ((c >= 0xA0) && (c <= 0xFF)) {
-		unsigned char idx = (unsigned char) c - 0xA0;
+		idx = (unsigned char) c - 0xA0;
 		if (c == (int) iso8859_2_0xA0_0xFF_unicodes[idx]) {
 			return (0xA0 + idx);
 		}
-		for (idx=0; idx < 96; idx++) {
-			if (c == (int) iso8859_2_0xA0_0xFF_unicodes[idx]) {
-				return (0xA0 + idx);
-			}
-		}
 	} else if ((c & ~0xFF) == 0) {
 		return ((char) c);
+	}
+	for (idx=0; idx < 96; idx++) {
+		if (c == (int) iso8859_2_0xA0_0xFF_unicodes[idx]) {
+			return (0xA0 + idx);
+		}
 	}
 	return ('?');
 }

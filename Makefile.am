@@ -3469,6 +3469,42 @@ tests_wstring_conversions_replace_range_string_LDADD = libbarefootc.a liblog4std
 tests_wstring_conversions_replace_range_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/wstring.conversions/replace_range_string
 
+check_PROGRAMS += tests/wstring.conversions/find_string
+tests_wstring_conversions_find_string_SOURCES = tests/wstring.conversions/find_string.c
+tests_wstring_conversions_find_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_find_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/find_string
+
+check_PROGRAMS += tests/wstring.conversions/rfind_string
+tests_wstring_conversions_rfind_string_SOURCES = tests/wstring.conversions/rfind_string.c
+tests_wstring_conversions_rfind_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_rfind_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/rfind_string
+
+check_PROGRAMS += tests/wstring.conversions/find_first_of_string
+tests_wstring_conversions_find_first_of_string_SOURCES = tests/wstring.conversions/find_first_of_string.c
+tests_wstring_conversions_find_first_of_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_find_first_of_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/find_first_of_string
+
+check_PROGRAMS += tests/wstring.conversions/find_first_not_of_string
+tests_wstring_conversions_find_first_not_of_string_SOURCES = tests/wstring.conversions/find_first_not_of_string.c
+tests_wstring_conversions_find_first_not_of_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_find_first_not_of_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/find_first_not_of_string
+
+check_PROGRAMS += tests/wstring.conversions/find_last_of_string
+tests_wstring_conversions_find_last_of_string_SOURCES = tests/wstring.conversions/find_last_of_string.c
+tests_wstring_conversions_find_last_of_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_find_last_of_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/find_last_of_string
+
+check_PROGRAMS += tests/wstring.conversions/find_last_not_of_string
+tests_wstring_conversions_find_last_not_of_string_SOURCES = tests/wstring.conversions/find_last_not_of_string.c
+tests_wstring_conversions_find_last_not_of_string_LDADD = libbarefootc.a liblog4stdc.a
+tests_wstring_conversions_find_last_not_of_string_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/wstring.conversions/find_last_not_of_string
+
 check_PROGRAMS += tests/iterators/parse_xmltags_string
 tests_iterators_parse_xmltags_string_SOURCES = tests/iterators/parse_xmltags_string.c
 tests_iterators_parse_xmltags_string_LDADD = libbarefootc.a liblog4stdc.a

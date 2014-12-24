@@ -3523,6 +3523,12 @@ tests_datetime_init_isotime_LDADD = libbarefootc.a liblog4stdc.a
 tests_datetime_init_isotime_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/datetime/init_isotime
 
+check_PROGRAMS += tests/datetime/init_current
+tests_datetime_init_current_SOURCES = tests/datetime/init_current.c
+tests_datetime_init_current_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_init_current_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/init_current
+
 check_PROGRAMS += tests/datetime/secs_between
 tests_datetime_secs_between_SOURCES = tests/datetime/secs_between.c
 tests_datetime_secs_between_LDADD = libbarefootc.a liblog4stdc.a

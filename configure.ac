@@ -12,6 +12,7 @@ esac],[bfclog4cxx=false])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CC
 AC_PROG_CXX
+AM_PROG_CC_C_O
 AM_PROG_AR
 AC_PROG_RANLIB
 AC_PROG_INSTALL

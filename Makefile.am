@@ -44,6 +44,7 @@ libbarefootc_a_SOURCES+= datetime/bfc_init_current_datetime.c
 libbarefootc_a_SOURCES+= datetime/bfc_init_datetime_from_isotime.c
 libbarefootc_a_SOURCES+= datetime/bfc_datetime_frac_from_decimal.c
 libbarefootc_a_SOURCES+= datetime/bfc_datetime_days_to_date.c
+libbarefootc_a_SOURCES+= datetime/bfc_datetime_to_isodate.c
 libbarefootc_a_SOURCES+= strings/wstring.c
 libbarefootc_a_SOURCES+= strings/wchar_traits.c
 libbarefootc_a_SOURCES+= strings/basic_wstring.c

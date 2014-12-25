@@ -143,6 +143,17 @@ long	bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_days_to_date(unsigned year, unsigned month, unsigned day);
 uint32_t bfc_datetime_frac_from_decimal(unsigned long sub, int sublen);
 
+int	bfc_datetime_to_gmtime(bfc_cdateptr_t date, struct tm *tm);
+int	bfc_datetime_to_localtime(bfc_cdateptr_t date, struct tm *tm);
+int	bfc_datetime_to_worldtime(bfc_cdateptr_t date,int offs,struct tm *tm);
+int	bfc_datetime_to_isodate(bfc_cdateptr_t date,char *buf,size_t bufsize);
+int	bfc_datetime_to_local_isodate(bfc_cdateptr_t date,
+					char *buf, size_t bufsize);
+int	bfc_datetime_to_world_isodate(bfc_cdateptr_t date, int offs,
+					char *buf, size_t bufsize);
+int	bfc_datetime_format(bfc_cdateptr_t date, const char *fmt,
+					char *buf, size_t bufsize);
+
 #ifdef __cplusplus
 }	/* C++ */
 #endif

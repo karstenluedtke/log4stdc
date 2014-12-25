@@ -11,8 +11,19 @@
 
 #include <inttypes.h>
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_MSC_VER) || defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#define L4SC_USE_WINDOWS_LOCALTIME 1
+#endif
+
+#if defined(L4SC_USE_WINDOWS_LOCALTIME)
 #include <windows.h>
+#if defined(HAVE__LOCALTIME64_S)
+errno_t _gmtime64_s(struct tm *, const __time64_t *);
+errno_t _localtime64_s(struct tm *, const __time64_t *);
+#else
+struct tm *_gmtime64(const __time64_t *);
+struct tm *_localtime64(const __time64_t *);
+#endif
 #endif
 
 #ifdef TIME_WITH_SYS_TIME
@@ -40,6 +51,11 @@ static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
 static unsigned bfc_datetime_hashcode(bfc_cdateptr_t date);
 static void dump_datetime(bfc_cdateptr_t date,int depth,struct l4sc_logger*log);
 static int datetime_tostring(bfc_cdateptr_t date, char *buf, size_t bufsize);
+
+static int to_gmtime(bfc_cdateptr_t date, struct tm *tm);
+static int to_localtime(bfc_cdateptr_t date, struct tm *tm);
+static int to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm);
+static int to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize);
 
 static void last_method(void) { }
 
@@ -81,10 +97,10 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .get_msecs		*/ bfc_datetime_msecs,
 	/* .get_usecs		*/ bfc_datetime_usecs,
 	/* .get_nsecs		*/ bfc_datetime_nsecs,
-	/* .to_gmtime		*/ NULL,
-	/* .to_localtime	*/ NULL,
-	/* .to_worldtime	*/ NULL,
-	/* .to_isodate		*/ NULL,
+	/* .to_gmtime		*/ to_gmtime,
+	/* .to_localtime	*/ to_localtime,
+	/* .to_worldtime	*/ to_worldtime,
+	/* .to_isodate		*/ to_isodate,
 	/* .to_local_isodate	*/ NULL,
 	/* .to_world_isodate	*/ NULL,
 	/* .format		*/ NULL,
@@ -399,3 +415,139 @@ bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 	return (nsecs);
 }
 
+#define POSIX_SECS_PER_DAY	86400L
+
+static int
+to_localtime(bfc_cdateptr_t date, struct tm *tm)
+{
+	int rc = BFC_SUCCESS;
+	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * date->day + date->secs;
+#if defined(L4SC_USE_WINDOWS_LOCALTIME)
+	__time64_t t = (__time64_t) secs;
+#if defined(HAVE__LOCALTIME64_S)
+	_localtime64_s(tm, &t);
+#else
+	const struct tm *tm2 = _localtime64(&t);
+	if (tm2 != NULL) {
+		*tm = *tm2;
+	} else {
+		memset(tm, 0, sizeof(*tm));
+		rc = -EINVAL;
+	}
+#endif
+#else /* not L4SC_USE_WINDOWS_LOCALTIME */
+	time_t t = (time_t) secs;
+#if defined(HAVE_LOCALTIME_R)
+	localtime_r(&t, tm);
+#else
+	const struct tm *tm2 = localtime(&t);
+	if (tm2 != NULL) {
+		*tm = *tm2;
+	} else {
+		memset(tm, 0, sizeof(*tm));
+		rc = -EINVAL;
+	}
+#endif
+#endif
+	return (rc);
+}
+
+static int
+to_gmtime(bfc_cdateptr_t date, struct tm *tm)
+{
+	int rc = BFC_SUCCESS;
+	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * date->day + date->secs;
+#if defined(L4SC_USE_WINDOWS_LOCALTIME)
+	__time64_t t = (__time64_t) secs;
+#if defined(HAVE__LOCALTIME64_S)
+	_gmtime64_s(tm, &t);
+#else
+	const struct tm *tm2 = _gmtime64(&t);
+	if (tm2 != NULL) {
+		*tm = *tm2;
+	} else {
+		memset(tm, 0, sizeof(*tm));
+		rc = -EINVAL;
+	}
+#endif
+#else /* not L4SC_USE_WINDOWS_LOCALTIME */
+	time_t t = (time_t) secs;
+#if defined(HAVE_LOCALTIME_R)
+	gmtime_r(&t, tm);
+#else
+	const struct tm *tm2 = gmtime(&t);
+	if (tm2 != NULL) {
+		*tm = *tm2;
+	} else {
+		memset(tm, 0, sizeof(*tm));
+		rc = -EINVAL;
+	}
+#endif
+#endif
+	return (rc);
+}
+
+static int
+to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm)
+{
+	int rc = BFC_SUCCESS;
+	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * date->day
+				+ date->secs - offs;
+#if defined(L4SC_USE_WINDOWS_LOCALTIME)
+	__time64_t t = (__time64_t) secs;
+#if defined(HAVE__LOCALTIME64_S)
+	_gmtime64_s(tm, &t);
+#else
+	const struct tm *tm2 = _gmtime64(&t);
+	if (tm2 != NULL) {
+		*tm = *tm2;
+	} else {
+		memset(tm, 0, sizeof(*tm));
+		rc = -EINVAL;
+	}
+#endif
+#else /* not L4SC_USE_WINDOWS_LOCALTIME */
+	time_t t = (time_t) secs;
+#if defined(HAVE_LOCALTIME_R)
+	gmtime_r(&t, tm);
+#else
+	const struct tm *tm2 = gmtime(&t);
+	if (tm2 != NULL) {
+		*tm = *tm2;
+	} else {
+		memset(tm, 0, sizeof(*tm));
+		rc = -EINVAL;
+	}
+#endif
+#endif
+	return (rc);
+}
+
+static int
+to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
+{
+	int rc, len;
+	struct tm tm;
+
+	if ((rc = to_gmtime(date, &tm)) < 0) {
+		return(rc);
+	}
+	
+	len = strftime(buf, bufsize, "%Y-%m-%dT%H:%M:%SZ", &tm);
+	if (len < 16) {
+		return (len);
+	} else if (len+7 < bufsize) {
+		long usecs = bfc_datetime_usecs(date);
+		if ((unsigned long) usecs < 1000000uL) {
+			len -= 1; /* 'Z' */
+			len += snprintf(buf+len, bufsize-len, ".%06ldZ", usecs);
+		}
+	} else if (len+4 < bufsize) {
+		int msecs = bfc_datetime_msecs(date);
+		if ((unsigned) msecs < 1000) {
+			len -= 1; /* 'Z' */
+			len += snprintf(buf+len, bufsize-len, ".%03dZ", msecs);
+		}
+	}
+	return (len);
+}

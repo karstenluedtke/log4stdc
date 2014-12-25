@@ -17,17 +17,18 @@ test1(void)
 	time_t t0, t1;
 	struct tm tm0;
 	bfc_datetime_t t;
-	char buf[80];
+	int rc;
+	char buf[40], buf2[25];
 
 	do {
 		time(&t0);
-		bfc_init_current_datetime(&t, sizeof(t));
+		rc = bfc_init_current_datetime(&t, sizeof(t));
 		time(&t1);
 	} while (t1 != t0);
 
 	tm0 = *gmtime(&t0);
-	strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm0);
-	L4SC_INFO(logger, "%s: current systime is %s (%ld)",
+	strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", &tm0);
+	L4SC_INFO(logger, "%s: current systime is %sZ (%ld)",
 		__FUNCTION__, buf, (long) t0); 
 	L4SC_INFO(logger,
 		"%s: current bfc_datetime is %ldT%02u:%02u:%02uZ (%ld)",
@@ -35,9 +36,17 @@ test1(void)
 		t.secs/3600, (t.secs/60) % 60, t.secs % 60,
 		86400uL * t.day + t.secs);
 
+	assert (rc >= 0);
 	assert (t.secs/3600 == tm0.tm_hour);
 	assert ((t.secs/60) % 60 == tm0.tm_min);
 	assert (t.secs % 60 == tm0.tm_sec);
+
+	rc = bfc_datetime_to_isodate(&t, buf2, sizeof(buf2));
+	L4SC_INFO(logger, "%s: formatted bfc_datetime is %s",
+		__FUNCTION__, buf2);
+	assert (strncmp(buf2, buf, strlen(buf)) == 0);
+	assert (rc == 24);
+	assert (buf2[rc-1] == 'Z');
 }
 
 int

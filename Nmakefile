@@ -62,6 +62,12 @@ OFILES= \
 	datetime/bfc_init_datetime_from_isotime.obj \
 	datetime/bfc_datetime_frac_from_decimal.obj \
 	datetime/bfc_datetime_days_to_date.obj \
+	datetime/bfc_datetime_to_gmtime.obj \
+	datetime/bfc_datetime_to_localtime.obj \
+	datetime/bfc_datetime_to_worldtime.obj \
+	datetime/bfc_datetime_to_isodate.obj \
+	datetime/bfc_datetime_to_local_isodate.obj \
+	datetime/bfc_datetime_to_world_isodate.obj \
 	strings/wstring.obj \
 	strings/wchar_traits.obj \
 	strings/basic_wstring.obj \
@@ -595,6 +601,7 @@ TESTS= \
 	tests/shared_string.erase/erase_range.exe \
 	tests/string.conversions/assign_wstring.exe \
 	tests/string.conversions/assign_iso8859_string.exe \
+	tests/string.conversions/append_to_iso8859_string.exe \
 	tests/string.conversions/append_wstring.exe \
 	tests/string.conversions/insert_size_wstring.exe \
 	tests/string.conversions/insert_size_cp1252_string.exe \
@@ -606,12 +613,25 @@ TESTS= \
 	tests/string.conversions/find_first_not_of_wstring.exe \
 	tests/string.conversions/find_last_of_wstring.exe \
 	tests/string.conversions/find_last_not_of_wstring.exe \
+	tests/wstring.conversions/assign_string.exe \
+	tests/wstring.conversions/append_string.exe \
+	tests/wstring.conversions/insert_size_string.exe \
+	tests/wstring.conversions/replace_size_size_string.exe \
+	tests/wstring.conversions/replace_range_string.exe \
+	tests/wstring.conversions/find_string.exe \
+	tests/wstring.conversions/rfind_string.exe \
+	tests/wstring.conversions/find_first_of_string.exe \
+	tests/wstring.conversions/find_first_not_of_string.exe \
+	tests/wstring.conversions/find_last_of_string.exe \
+	tests/wstring.conversions/find_last_not_of_string.exe \
 	tests/iterators/parse_xmltags_string.exe \
 	tests/datetime/init_isotime.exe \
+	tests/datetime/init_current.exe \
 	tests/datetime/secs_between.exe \
 	tests/datetime/msecs_between.exe \
 	tests/datetime/usecs_between.exe \
 	tests/datetime/nsecs_between.exe \
+	tests/datetime/to_isodate.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -881,6 +901,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\shared_string.erase\erase_range.exe
 	tests\string.conversions\assign_wstring.exe
 	tests\string.conversions\assign_iso8859_string.exe
+	tests\string.conversions\append_to_iso8859_string.exe
 	tests\string.conversions\append_wstring.exe
 	tests\string.conversions\insert_size_wstring.exe
 	tests\string.conversions\insert_size_cp1252_string.exe
@@ -892,12 +913,25 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\string.conversions\find_first_not_of_wstring.exe
 	tests\string.conversions\find_last_of_wstring.exe
 	tests\string.conversions\find_last_not_of_wstring.exe
+	tests\wstring.conversions\assign_string.exe
+	tests\wstring.conversions\append_string.exe
+	tests\wstring.conversions\insert_size_string.exe
+	tests\wstring.conversions\replace_size_size_string.exe
+	tests\wstring.conversions\replace_range_string.exe
+	tests\wstring.conversions\find_string.exe
+	tests\wstring.conversions\rfind_string.exe
+	tests\wstring.conversions\find_first_of_string.exe
+	tests\wstring.conversions\find_first_not_of_string.exe
+	tests\wstring.conversions\find_last_of_string.exe
+	tests\wstring.conversions\find_last_not_of_string.exe
 	tests\iterators\parse_xmltags_string.exe
 	tests\datetime\init_isotime.exe
+	tests\datetime\init_current.exe
 	tests\datetime\secs_between.exe
 	tests\datetime\msecs_between.exe
 	tests\datetime\usecs_between.exe
 	tests\datetime\nsecs_between.exe
+	tests\datetime\to_isodate.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
@@ -959,6 +993,24 @@ datetime/bfc_datetime_frac_from_decimal.obj: datetime/bfc_datetime_frac_from_dec
 
 datetime/bfc_datetime_days_to_date.obj: datetime/bfc_datetime_days_to_date.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ datetime/bfc_datetime_days_to_date.c
+
+datetime/bfc_datetime_to_gmtime.obj: datetime/bfc_datetime_to_gmtime.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ datetime/bfc_datetime_to_gmtime.c
+
+datetime/bfc_datetime_to_localtime.obj: datetime/bfc_datetime_to_localtime.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ datetime/bfc_datetime_to_localtime.c
+
+datetime/bfc_datetime_to_worldtime.obj: datetime/bfc_datetime_to_worldtime.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ datetime/bfc_datetime_to_worldtime.c
+
+datetime/bfc_datetime_to_isodate.obj: datetime/bfc_datetime_to_isodate.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ datetime/bfc_datetime_to_isodate.c
+
+datetime/bfc_datetime_to_local_isodate.obj: datetime/bfc_datetime_to_local_isodate.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ datetime/bfc_datetime_to_local_isodate.c
+
+datetime/bfc_datetime_to_world_isodate.obj: datetime/bfc_datetime_to_world_isodate.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ datetime/bfc_datetime_to_world_isodate.c
 
 strings/wstring.obj: strings/wstring.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/wstring.c
@@ -3826,6 +3878,14 @@ tests/string.conversions/assign_iso8859_string.exe: \
 tests/string.conversions/assign_iso8859_string.obj: tests/string.conversions/assign_iso8859_string.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/assign_iso8859_string.c
 
+tests/string.conversions/append_to_iso8859_string.exe: \
+		tests/string.conversions/append_to_iso8859_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/append_to_iso8859_string.obj barefootc.lib log4stdc.lib
+
+tests/string.conversions/append_to_iso8859_string.obj: tests/string.conversions/append_to_iso8859_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/append_to_iso8859_string.c
+
 tests/string.conversions/append_wstring.exe: \
 		tests/string.conversions/append_wstring.obj \
 		barefootc.lib log4stdc.lib
@@ -3914,6 +3974,94 @@ tests/string.conversions/find_last_not_of_wstring.exe: \
 tests/string.conversions/find_last_not_of_wstring.obj: tests/string.conversions/find_last_not_of_wstring.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/find_last_not_of_wstring.c
 
+tests/wstring.conversions/assign_string.exe: \
+		tests/wstring.conversions/assign_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/assign_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/assign_string.obj: tests/wstring.conversions/assign_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/assign_string.c
+
+tests/wstring.conversions/append_string.exe: \
+		tests/wstring.conversions/append_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/append_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/append_string.obj: tests/wstring.conversions/append_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/append_string.c
+
+tests/wstring.conversions/insert_size_string.exe: \
+		tests/wstring.conversions/insert_size_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/insert_size_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/insert_size_string.obj: tests/wstring.conversions/insert_size_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/insert_size_string.c
+
+tests/wstring.conversions/replace_size_size_string.exe: \
+		tests/wstring.conversions/replace_size_size_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/replace_size_size_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/replace_size_size_string.obj: tests/wstring.conversions/replace_size_size_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/replace_size_size_string.c
+
+tests/wstring.conversions/replace_range_string.exe: \
+		tests/wstring.conversions/replace_range_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/replace_range_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/replace_range_string.obj: tests/wstring.conversions/replace_range_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/replace_range_string.c
+
+tests/wstring.conversions/find_string.exe: \
+		tests/wstring.conversions/find_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/find_string.obj: tests/wstring.conversions/find_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_string.c
+
+tests/wstring.conversions/rfind_string.exe: \
+		tests/wstring.conversions/rfind_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/rfind_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/rfind_string.obj: tests/wstring.conversions/rfind_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/rfind_string.c
+
+tests/wstring.conversions/find_first_of_string.exe: \
+		tests/wstring.conversions/find_first_of_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_first_of_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/find_first_of_string.obj: tests/wstring.conversions/find_first_of_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_first_of_string.c
+
+tests/wstring.conversions/find_first_not_of_string.exe: \
+		tests/wstring.conversions/find_first_not_of_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_first_not_of_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/find_first_not_of_string.obj: tests/wstring.conversions/find_first_not_of_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_first_not_of_string.c
+
+tests/wstring.conversions/find_last_of_string.exe: \
+		tests/wstring.conversions/find_last_of_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_last_of_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/find_last_of_string.obj: tests/wstring.conversions/find_last_of_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_last_of_string.c
+
+tests/wstring.conversions/find_last_not_of_string.exe: \
+		tests/wstring.conversions/find_last_not_of_string.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_last_not_of_string.obj barefootc.lib log4stdc.lib
+
+tests/wstring.conversions/find_last_not_of_string.obj: tests/wstring.conversions/find_last_not_of_string.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_last_not_of_string.c
+
 tests/iterators/parse_xmltags_string.exe: \
 		tests/iterators/parse_xmltags_string.obj \
 		barefootc.lib log4stdc.lib
@@ -3929,6 +4077,14 @@ tests/datetime/init_isotime.exe: \
 
 tests/datetime/init_isotime.obj: tests/datetime/init_isotime.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/init_isotime.c
+
+tests/datetime/init_current.exe: \
+		tests/datetime/init_current.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/init_current.obj barefootc.lib log4stdc.lib
+
+tests/datetime/init_current.obj: tests/datetime/init_current.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/init_current.c
 
 tests/datetime/secs_between.exe: \
 		tests/datetime/secs_between.obj \
@@ -3961,4 +4117,12 @@ tests/datetime/nsecs_between.exe: \
 
 tests/datetime/nsecs_between.obj: tests/datetime/nsecs_between.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/nsecs_between.c
+
+tests/datetime/to_isodate.exe: \
+		tests/datetime/to_isodate.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/to_isodate.obj barefootc.lib log4stdc.lib
+
+tests/datetime/to_isodate.obj: tests/datetime/to_isodate.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/to_isodate.c
 

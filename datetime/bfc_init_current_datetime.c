@@ -33,20 +33,21 @@ bfc_init_current_datetime(void *buf, size_t bufsize)
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 	if ((rc = bfc_init_datetime(buf, bufsize)) >= 0) {
 		bfc_dateptr_t date = (bfc_dateptr_t) buf;
-		UINT64 secs, frac;
+		UINT64 ftim, secs;
+		unsigned long frac;
 		FILETIME ft;
 
 		GetSystemTimeAsFileTime(&ft);
-		frac = ft.dwHighDateTime;
-		frac <<= 32;
-		frac |= ft.dwLowDateTime;
-		secs  = frac / 10000000u;
-		frac -= 10000000u * secs;
+		ftim = ft.dwHighDateTime;
+		ftim <<= 32;
+		ftim |= ft.dwLowDateTime;
+		secs  = ftim / 10000000u;
+		frac  = (unsigned long) (ftim - (10000000u * secs));
 		secs -= (UINT64)134774 * SECONDS_PER_DAY; /* Jan 1st, 1970 */
 
 		date->day  = secs / SECONDS_PER_DAY;
 		date->secs = secs - ((UINT64) date->day * SECONDS_PER_DAY);
-		date->frac = bfc_frac_from_decimal((unsigned long) frac, 7);
+		date->frac = bfc_datetime_frac_from_decimal(frac, 7);
 	}
 
 #elif defined(HAVE_CLOCK_GETTIME)

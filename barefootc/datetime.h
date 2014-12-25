@@ -30,18 +30,36 @@ struct tm;
 struct bfc_datetime_class;
 typedef const struct bfc_datetime_class *bfc_datetime_classptr_t;
 
-#define BFC_DATETIMEHDR(classptrT,objptrT) \
-	classptrT	vptr;	/**< virtual methods */			\
-	int32_t		day;	/**< day after Jan 1st, 1970; or 0   */	\
-	uint32_t	secs;	/**< seconds of the day              */	\
-	uint32_t	frac;	/**< fractional part of time, 1s/2**32 */
+/**
+ * @brief   Representation of date and time.
+ *
+ * Actually the representation below hides the complexity resulting from
+ * the insertion of leap seconds in UTC.
+ *
+ * A day sometimes has 86401 seconds, in contrast to the POSIX definition
+ * that "each and every day shall be accounted for by exactly 86400 seconds"
+ * [The Open Group Base Specifications Issue 7, IEEE Std 1003.1, 2013 Edition].
+ *
+ * On the other hand the system time is usually adjusted (via NTP or manually)
+ * by repeating a second whenever a leap second occurs.
+ *
+ * So the current system time always represents UTC, and other points in time
+ * can be calculated by multiplying the difference in days and 86400 according
+ * to the POSIX definition.
+ */
 
 struct bfc_datetime {
 	bfc_datetime_classptr_t vptr; /**< virtual methods */
 	int32_t		day;	/**< day after Jan 1st, 1970; or 0     */
-	uint32_t	secs;	/**< seconds of the day                */
+	uint32_t	secs;	/**< seconds of the day (UTC)          */
 	uint32_t	frac;	/**< fractional part of time, 1s/2**32 */
 };
+
+#define BFC_DATETIMEHDR(classptrT,objptrT) \
+	classptrT	vptr;	/**< virtual methods */			\
+	int32_t		day;	/**< day after Jan 1st, 1970; or 0   */	\
+	uint32_t	secs;	/**< seconds of the day (UTC)        */	\
+	uint32_t	frac;	/**< fractional part of time, 1s/2**32 */
 
 typedef struct bfc_datetime bfc_datetime_t;
 typedef struct bfc_datetime *bfc_dateptr_t;

@@ -18,7 +18,7 @@ test1(const char *s)
 	struct tm tm0;
 	bfc_datetime_t t;
 	int rc;
-	char buf[40], buf2[25];
+	char buf[40], buf2[26];
 
 	rc = bfc_init_datetime_from_isotime(&t, sizeof(t), s, strlen(s));
 	assert (rc >= 0);
@@ -39,19 +39,44 @@ test1(const char *s)
 }
 
 void
-test2(const char *s, int offs)
+test2(const char *s)
 {
 	bfc_datetime_t t, t0;
 	int rc;
-	char buf[40], buf1[25], buf2[25];
+	char buf[40], buf1[26], buf2[26];
+
+	rc = bfc_init_datetime_from_isotime(&t, sizeof(t), s, strlen(s));
+	assert (rc >= 0);
+
+	rc = bfc_datetime_to_local_isodate(&t, buf1, sizeof(buf1));
+	L4SC_DEBUG(logger, "%s: %s -> %s", __FUNCTION__, s, buf1);
+	assert (rc == 25);
+	assert (buf1[rc-3] == ':');
+	assert ((buf1[rc-6] == '+') || (buf1[rc-6] == '-'));
+
+	rc = bfc_init_datetime_from_isotime(&t0, sizeof(t0), buf1, rc);
+	assert (rc >= 0);
+
+	rc = bfc_datetime_to_isodate(&t0, buf2, sizeof(buf2));
+	assert (rc == 24);
+	assert (strncmp(buf2, s, strlen(buf)) == 0);
+}
+
+void
+test3(const char *s, int offs)
+{
+	bfc_datetime_t t, t0;
+	int rc;
+	char buf[40], buf1[26], buf2[26];
 
 	rc = bfc_init_datetime_from_isotime(&t, sizeof(t), s, strlen(s));
 	assert (rc >= 0);
 
 	rc = bfc_datetime_to_world_isodate(&t, offs, buf1, sizeof(buf1));
 	L4SC_DEBUG(logger, "%s: %s -> %s", __FUNCTION__, s, buf1);
-	assert (rc == 24);
-	assert (buf1[rc-5] == ((offs >= 0)? '+': '-'));
+	assert (rc == 25);
+	assert (buf1[rc-3] == ':');
+	assert (buf1[rc-6] == ((offs >= 0)? '+': '-'));
 
 	rc = bfc_init_datetime_from_isotime(&t0, sizeof(t0), buf1, rc);
 	assert (rc >= 0);
@@ -65,9 +90,10 @@ void
 test(const char *s)
 {
 	test1(s);
-	test2(s,   1);
-	test2(s, 530);
-	test2(s,  -8);
+	test2(s);
+	test3(s,   1);
+	test3(s, 530);
+	test3(s,  -8);
 }
 
 int
@@ -78,6 +104,10 @@ main (int argc, char *argv[])
 
 	test("2014-12-25T16:26:58Z");
 	test("2014-12-25T16:47:17Z");
+	test("2014-12-25T23:55:26Z");
+	test("2014-12-26T00:05:26Z");
+	test("2014-12-31T23:55:38Z");
+	test("2015-01-01T00:05:38Z");
 
 	return (0);
 }

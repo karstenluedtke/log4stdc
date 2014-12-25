@@ -56,6 +56,7 @@ static int to_gmtime(bfc_cdateptr_t date, struct tm *tm);
 static int to_localtime(bfc_cdateptr_t date, struct tm *tm);
 static int to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm);
 static int to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize);
+static int to_local_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize);
 static int to_world_isodate(bfc_cdateptr_t date, int offs,
 					char *buf, size_t bufsize);
 
@@ -103,7 +104,7 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .to_localtime	*/ to_localtime,
 	/* .to_worldtime	*/ to_worldtime,
 	/* .to_isodate		*/ to_isodate,
-	/* .to_local_isodate	*/ NULL,
+	/* .to_local_isodate	*/ to_local_isodate,
 	/* .to_world_isodate	*/ to_world_isodate,
 	/* .format		*/ NULL,
 	/* modifiers */	
@@ -602,7 +603,7 @@ to_world_isodate(bfc_cdateptr_t date, int offs, char *buf, size_t bufsize)
 	if (len+5 < bufsize) {
 		char sign = (offs >= 0)? '+': '-';
 		unsigned o = (offs >= 0)? offs: -offs;
-		static const char fmt[] = "%c%02u%02u";
+		static const char fmt[] = "%c%02u:%02u";
 		if (o <= 12) {
 			len += snprintf(buf+len, bufsize-len, fmt, sign, o, 0);
 		} else if (o <= 1200) {
@@ -612,6 +613,53 @@ to_world_isodate(bfc_cdateptr_t date, int offs, char *buf, size_t bufsize)
 			len += snprintf(buf+len, bufsize-len,
 					fmt, sign, o/3600, (o/60) % 60);
 		}
+	}
+
+	return (len);
+}
+
+static int
+to_local_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
+{
+	int rc, offs, len;
+	struct tm tm, utc;
+
+	if ((rc = to_localtime(date, &tm)) < 0) {
+		return(rc);
+	}
+	if ((rc = to_gmtime(date, &utc)) < 0) {
+		return(rc);
+	}
+	if (tm.tm_yday == utc.tm_yday) {
+		offs = 60 * (tm.tm_hour - utc.tm_hour);
+	} else if ((tm.tm_year > utc.tm_year)
+		|| (tm.tm_yday > utc.tm_yday)) {
+		offs = 60 * (tm.tm_hour + 24 - utc.tm_hour);
+	} else {
+		offs = 60 * (tm.tm_hour - utc.tm_hour - 24);
+	}
+	offs += tm.tm_min - utc.tm_min;
+
+	len = strftime(buf, bufsize, "%Y-%m-%dT%H:%M:%S", &tm);
+	if (len < 16) {
+		return (len);
+	} else if (len+12 < bufsize) {
+		long usecs = bfc_datetime_usecs(date);
+		if ((unsigned long) usecs < 1000000uL) {
+			len += snprintf(buf+len, bufsize-len, ".%06ld", usecs);
+		}
+	} else if (len+9 < bufsize) {
+		int msecs = bfc_datetime_msecs(date);
+		if ((unsigned) msecs < 1000) {
+			len += snprintf(buf+len, bufsize-len, ".%03d", msecs);
+		}
+	}
+
+	if (len+5 < bufsize) {
+		char sign = (offs >= 0)? '+': '-';
+		unsigned o = (offs >= 0)? offs: -offs;
+		static const char fmt[] = "%c%02u:%02u";
+		len += snprintf(buf+len, bufsize-len, fmt, sign, o/60, o % 60);
 	}
 
 	return (len);

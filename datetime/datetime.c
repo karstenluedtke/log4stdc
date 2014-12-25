@@ -56,6 +56,8 @@ static int to_gmtime(bfc_cdateptr_t date, struct tm *tm);
 static int to_localtime(bfc_cdateptr_t date, struct tm *tm);
 static int to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm);
 static int to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize);
+static int to_world_isodate(bfc_cdateptr_t date, int offs,
+					char *buf, size_t bufsize);
 
 static void last_method(void) { }
 
@@ -102,7 +104,7 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .to_worldtime	*/ to_worldtime,
 	/* .to_isodate		*/ to_isodate,
 	/* .to_local_isodate	*/ NULL,
-	/* .to_world_isodate	*/ NULL,
+	/* .to_world_isodate	*/ to_world_isodate,
 	/* .format		*/ NULL,
 	/* modifiers */	
 	/* .advance_secs	*/ NULL,
@@ -487,12 +489,32 @@ to_gmtime(bfc_cdateptr_t date, struct tm *tm)
 	return (rc);
 }
 
+static int32_t
+offset_to_seconds(int offs)
+{
+	if ((-12 <= offs) && (offs <= 12)) {
+		return ((int32_t) 3600 * offs);
+	}
+	if ((-1200 <= offs) && (offs <= 1200)) {
+		if (offs >= 0) {
+			unsigned hrs = (unsigned) offs / 100;
+			unsigned min = (unsigned) offs % 100;
+			return ((int32_t) 3600 * hrs + 60 * min);
+		} else {
+			unsigned hrs = ((unsigned) -offs) / 100;
+			unsigned min = ((unsigned) -offs) % 100;
+			return -((int32_t) 3600 * hrs + 60 * min);
+		}
+	}
+	return ((int32_t) offs);
+}
+
 static int
 to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm)
 {
 	int rc = BFC_SUCCESS;
 	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * date->day
-				+ date->secs - offs;
+				+ date->secs + offset_to_seconds(offs);
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 	__time64_t t = (__time64_t) secs;
 #if defined(HAVE__LOCALTIME64_S)
@@ -549,5 +571,48 @@ to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
 			len += snprintf(buf+len, bufsize-len, ".%03dZ", msecs);
 		}
 	}
+	return (len);
+}
+
+static int
+to_world_isodate(bfc_cdateptr_t date, int offs, char *buf, size_t bufsize)
+{
+	int rc, len;
+	struct tm tm;
+
+	if ((rc = to_worldtime(date, offs, &tm)) < 0) {
+		return(rc);
+	}
+
+	len = strftime(buf, bufsize, "%Y-%m-%dT%H:%M:%S", &tm);
+	if (len < 16) {
+		return (len);
+	} else if (len+12 < bufsize) {
+		long usecs = bfc_datetime_usecs(date);
+		if ((unsigned long) usecs < 1000000uL) {
+			len += snprintf(buf+len, bufsize-len, ".%06ld", usecs);
+		}
+	} else if (len+9 < bufsize) {
+		int msecs = bfc_datetime_msecs(date);
+		if ((unsigned) msecs < 1000) {
+			len += snprintf(buf+len, bufsize-len, ".%03d", msecs);
+		}
+	}
+
+	if (len+5 < bufsize) {
+		char sign = (offs >= 0)? '+': '-';
+		unsigned o = (offs >= 0)? offs: -offs;
+		static const char fmt[] = "%c%02u%02u";
+		if (o <= 12) {
+			len += snprintf(buf+len, bufsize-len, fmt, sign, o, 0);
+		} else if (o <= 1200) {
+			len += snprintf(buf+len, bufsize-len,
+					fmt, sign, o/100, o % 100);
+		} else {
+			len += snprintf(buf+len, bufsize-len,
+					fmt, sign, o/3600, (o/60) % 60);
+		}
+	}
+
 	return (len);
 }

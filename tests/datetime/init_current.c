@@ -46,7 +46,6 @@ test1(void)
 		__FUNCTION__, buf2);
 	assert (strncmp(buf2, buf, strlen(buf)) == 0);
 	assert (rc == 24);
-	assert (buf2[rc-1] == 'Z');
 }
 
 int

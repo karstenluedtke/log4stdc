@@ -44,7 +44,12 @@ libbarefootc_a_SOURCES+= datetime/bfc_init_current_datetime.c
 libbarefootc_a_SOURCES+= datetime/bfc_init_datetime_from_isotime.c
 libbarefootc_a_SOURCES+= datetime/bfc_datetime_frac_from_decimal.c
 libbarefootc_a_SOURCES+= datetime/bfc_datetime_days_to_date.c
+libbarefootc_a_SOURCES+= datetime/bfc_datetime_to_gmtime.c
+libbarefootc_a_SOURCES+= datetime/bfc_datetime_to_localtime.c
+libbarefootc_a_SOURCES+= datetime/bfc_datetime_to_worldtime.c
 libbarefootc_a_SOURCES+= datetime/bfc_datetime_to_isodate.c
+libbarefootc_a_SOURCES+= datetime/bfc_datetime_to_local_isodate.c
+libbarefootc_a_SOURCES+= datetime/bfc_datetime_to_world_isodate.c
 libbarefootc_a_SOURCES+= strings/wstring.c
 libbarefootc_a_SOURCES+= strings/wchar_traits.c
 libbarefootc_a_SOURCES+= strings/basic_wstring.c
@@ -3553,6 +3558,12 @@ tests_datetime_nsecs_between_SOURCES = tests/datetime/nsecs_between.c
 tests_datetime_nsecs_between_LDADD = libbarefootc.a liblog4stdc.a
 tests_datetime_nsecs_between_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/datetime/nsecs_between
+
+check_PROGRAMS += tests/datetime/to_isodate
+tests_datetime_to_isodate_SOURCES = tests/datetime/to_isodate.c
+tests_datetime_to_isodate_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_to_isodate_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/to_isodate
 
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp

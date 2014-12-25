@@ -631,12 +631,12 @@ to_local_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
 		return(rc);
 	}
 	if (tm.tm_yday == utc.tm_yday) {
-		offs = 60 * (tm.tm_hour - utc.tm_hour);
+		offs = 60 * ((int) tm.tm_hour - utc.tm_hour);
 	} else if ((tm.tm_year > utc.tm_year)
-		|| (tm.tm_yday > utc.tm_yday)) {
-		offs = 60 * (tm.tm_hour + 24 - utc.tm_hour);
+		|| ((tm.tm_year==utc.tm_year) && (tm.tm_yday > utc.tm_yday))) {
+		offs = 60 * ((int) tm.tm_hour + 24 - utc.tm_hour);
 	} else {
-		offs = 60 * (tm.tm_hour - utc.tm_hour - 24);
+		offs = 60 * ((int) tm.tm_hour - utc.tm_hour - 24);
 	}
 	offs += tm.tm_min - utc.tm_min;
 

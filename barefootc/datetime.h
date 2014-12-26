@@ -110,6 +110,7 @@ struct timeval;
 struct timespec;
 
 int	bfc_init_datetime(void *buf, size_t bufsize);
+int	bfc_init_datetime_copy(void *buf, size_t bufsize, const void *src);
 int	bfc_init_current_datetime(void *buf, size_t bufsize);
 int	bfc_init_datetime_from_time_t(void *buf, size_t bufsize, time_t secs);
 int	bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
@@ -139,6 +140,11 @@ long	bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
+
+int	bfc_datetime_advance_secs(bfc_dateptr_t date, signed long secs);
+int	bfc_datetime_advance_msecs(bfc_dateptr_t date, signed long msecs);
+int	bfc_datetime_advance_usecs(bfc_dateptr_t date, signed long usecs);
+int	bfc_datetime_advance_nsecs(bfc_dateptr_t date, signed long nsecs);
 
 long	bfc_datetime_days_to_date(unsigned year, unsigned month, unsigned day);
 uint32_t bfc_datetime_frac_from_decimal(unsigned long sub, int sublen);

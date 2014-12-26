@@ -108,10 +108,10 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .to_world_isodate	*/ to_world_isodate,
 	/* .format		*/ NULL,
 	/* modifiers */	
-	/* .advance_secs	*/ NULL,
-	/* .advance_msecs	*/ NULL,
-	/* .advance_usecs	*/ NULL,
-	/* .advance_nsecs	*/ NULL,
+	/* .advance_secs	*/ bfc_datetime_advance_secs,
+	/* .advance_msecs	*/ bfc_datetime_advance_msecs,
+	/* .advance_usecs	*/ bfc_datetime_advance_usecs,
+	/* .advance_nsecs	*/ bfc_datetime_advance_nsecs,
 	/* .last_method	*/ last_method
 };
 
@@ -135,6 +135,18 @@ bfc_init_datetime(void *buf, size_t bufsize)
 		return (-ENOSPC);
 	}
 	memset(date, 0, sizeof(*date));
+	date->vptr = &bfc_datetime_class;
+	return (BFC_SUCCESS);
+}
+
+int
+bfc_init_datetime_copy(void *buf, size_t bufsize, const void *src)
+{
+	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	if (bufsize < sizeof(*date)) {
+		return (-ENOSPC);
+	}
+	memcpy(date, src, sizeof(*date));
 	date->vptr = &bfc_datetime_class;
 	return (BFC_SUCCESS);
 }
@@ -343,18 +355,27 @@ bfc_datetime_secs(bfc_cdateptr_t date)
 int
 bfc_datetime_msecs(bfc_cdateptr_t date)
 {
+	if (date->frac >= 4290000000uL) {
+		return (999);
+	}
 	return ((int) umul32_hiword(date->frac + (uint32_t) 2147483uL, 1000u));
 }
 
 long
 bfc_datetime_usecs(bfc_cdateptr_t date)
 {
+	if (date->frac >= 4294963000uL) {
+		return (999999L);
+	}
 	return ((long) umul32_hiword(date->frac + 2147, (uint32_t) 1000000uL));
 }
 
 long
 bfc_datetime_nsecs(bfc_cdateptr_t date)
 {
+	if (date->frac >= 4294967290uL) {
+		return (999999999L);
+	}
 	return ((long) umul32_hiword(date->frac + 2, (uint32_t) 1000000000uL));
 }
 
@@ -417,6 +438,76 @@ bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 
 	return (nsecs);
 }
+
+int
+bfc_datetime_advance_secs(bfc_dateptr_t date, signed long secs)
+{
+	signed long s = date->secs + secs;
+	unsigned long days;
+
+	if (s >= 86400L) {
+		days = (s < 2*86400L)? 1uL: (unsigned long) s / 86400uL;
+		date->day += (uint32_t) days;
+		date->secs = (uint32_t)(s - (days * 86400uL));
+	} else if (s < 0) {
+		days = (s >= -86400L)? 1uL: (unsigned long)(86399L-s)/86400uL;
+		date->day -= (uint32_t) days;
+		date->secs = (uint32_t)(s + (days * 86400uL));
+	} else {
+		date->secs = (uint32_t) s;
+	}
+
+	return (BFC_SUCCESS);
+}
+
+int
+bfc_datetime_advance_msecs(bfc_dateptr_t date, signed long msecs)
+{
+	int64_t sum  = (int64_t) 4294967L * msecs + date->frac;
+	int32_t secs = (int32_t) (sum >> 32);
+
+	if (secs == 0) {
+		date->frac = (uint32_t) sum;
+	} else {
+		bfc_datetime_advance_secs(date, secs);
+		date->frac = (uint32_t) sum;
+	}
+
+	return (BFC_SUCCESS);
+}
+
+int
+bfc_datetime_advance_usecs(bfc_dateptr_t date, signed long usecs)
+{
+	int64_t sum  = (int64_t) 4295 * usecs + date->frac;
+	int32_t secs = (int32_t) (sum >> 32);
+
+	if (secs == 0) {
+		date->frac = (uint32_t) sum;
+	} else {
+		bfc_datetime_advance_secs(date, secs);
+		date->frac = (uint32_t) sum;
+	}
+
+	return (BFC_SUCCESS);
+}
+
+int
+bfc_datetime_advance_nsecs(bfc_dateptr_t date, signed long nsecs)
+{
+	int64_t sum  = (int64_t) 4 * nsecs + date->frac;
+	int32_t secs = (int32_t) (sum >> 32);
+
+	if (secs == 0) {
+		date->frac = (uint32_t) sum;
+	} else {
+		bfc_datetime_advance_secs(date, secs);
+		date->frac = (uint32_t) sum;
+	}
+
+	return (BFC_SUCCESS);
+}
+
 
 #define POSIX_SECS_PER_DAY	86400L
 

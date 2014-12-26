@@ -3559,6 +3559,12 @@ tests_datetime_nsecs_between_LDADD = libbarefootc.a liblog4stdc.a
 tests_datetime_nsecs_between_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/datetime/nsecs_between
 
+check_PROGRAMS += tests/datetime/advance
+tests_datetime_advance_SOURCES = tests/datetime/advance.c
+tests_datetime_advance_LDADD = libbarefootc.a liblog4stdc.a
+tests_datetime_advance_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/datetime/advance
+
 check_PROGRAMS += tests/datetime/to_isodate
 tests_datetime_to_isodate_SOURCES = tests/datetime/to_isodate.c
 tests_datetime_to_isodate_LDADD = libbarefootc.a liblog4stdc.a

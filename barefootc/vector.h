@@ -46,10 +46,6 @@
 /** @addtogroup class_definitions */
 struct bfc_vector_class;
 typedef const struct bfc_vector_class *bfc_vector_class_ptr_t;
-
-struct bfc_vector_class {
-	BFC_CLASSHDR(bfc_vector_class_ptr_t, bfc_objptr_t, bfc_cobjptr_t)
-};
 /** @} */
 
 /** @addtogroup vector_definition */
@@ -632,7 +628,7 @@ do {									\
  */
  
 #define BFC_VECTOR_POP_BACK(vec)	\
-	if (BFC_VECTOR_GET_SIZE(vec) > 0)					\
+	if (BFC_VECTOR_GET_SIZE(vec) > 0)				\
 		BFC_VECTOR_SET_SIZE(vec, BFC_VECTOR_GET_SIZE(vec)-1)
 
 /**
@@ -677,11 +673,11 @@ do {									\
 #define BFC_VECTOR_DELETE(vec,idx)	\
 do {									\
 	unsigned __copy_idx = idx;					\
-	for (;__copy_idx < (BFC_VECTOR_GET_SIZE(vec)-1); __copy_idx++) {	\
+	for (;__copy_idx < (BFC_VECTOR_GET_SIZE(vec)-1); __copy_idx++) {\
 		BFC_VECTOR_SET(vec, __copy_idx,				\
 			    BFC_VECTOR_GET(vec, __copy_idx+1));		\
 	}								\
-	BFC_VECTOR_POP_BACK(vec);						\
+	BFC_VECTOR_POP_BACK(vec);					\
 } while (0)
 /** @} */
 

@@ -83,7 +83,7 @@ typedef const struct bfc_string *bfc_cstrptr_t;
 		BFC_CHAR_TRAITS_METHODS(charT, int)			\
 	} *	traits;
 
-#define BFC_STRING_METHODS(strptrT,cstrptrT,charT,fillT,bfc_iterptr_t) \
+#define BFC_STRING_METHODS(strptrT,cstrptrT,charT,fillT,iterptrT) \
 	/* Capacity */							\
 	size_t	(*size)(cstrptrT s);		/* == length */		\
 	size_t	(*max_size)(cstrptrT s);				\

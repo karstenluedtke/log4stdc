@@ -849,6 +849,13 @@ void *bfc_vector_have(void *, unsigned);
 void *bfc_vector_set (void *, unsigned, void *);
 void *bfc_vector_ref (void *, unsigned);
 
+int bfc_init_vector_class(void *, size_t, struct mempool *);
+#define bfc_init_vector(vec,pool)					\
+do {									\
+	BFC_VECTOR_INIT_POOL(vec,pool);					\
+	bfc_init_vector_class(vec,sizeof(*vec),pool);			\
+} while (0)
+
 #ifdef __cplusplus
 };
 #endif

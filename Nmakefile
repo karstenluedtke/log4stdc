@@ -31,6 +31,7 @@ HEADERS= \
 	barefootc/object.h \
 	barefootc/mempool.h \
 	barefootc/string.h \
+	barefootc/container.h \
 	barefootc/vector.h \
 	barefootc/iterator.h \
 	barefootc/xmltag.h \
@@ -233,6 +234,10 @@ OFILES= \
 	containers/bfc_container_index.obj \
 	containers/bfc_container_getlong.obj \
 	containers/bfc_container_setlong.obj \
+	containers/bfc_container_begin_iterator.obj \
+	containers/bfc_container_end_iterator.obj \
+	containers/bfc_container_insert_fill.obj \
+	containers/vector.obj \
 	containers/vector_ref.obj \
 	containers/vector_set.obj \
 	mempools/stdcpool.obj \
@@ -631,6 +636,7 @@ TESTS= \
 	tests/datetime/msecs_between.exe \
 	tests/datetime/usecs_between.exe \
 	tests/datetime/nsecs_between.exe \
+	tests/datetime/advance.exe \
 	tests/datetime/to_isodate.exe \
 
 
@@ -931,6 +937,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\datetime\msecs_between.exe
 	tests\datetime\usecs_between.exe
 	tests\datetime\nsecs_between.exe
+	tests\datetime\advance.exe
 	tests\datetime\to_isodate.exe
 	echo "check done"
 
@@ -1506,6 +1513,18 @@ containers/bfc_container_getlong.obj: containers/bfc_container_getlong.c $(HEADE
 
 containers/bfc_container_setlong.obj: containers/bfc_container_setlong.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_setlong.c
+
+containers/bfc_container_begin_iterator.obj: containers/bfc_container_begin_iterator.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_begin_iterator.c
+
+containers/bfc_container_end_iterator.obj: containers/bfc_container_end_iterator.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_end_iterator.c
+
+containers/bfc_container_insert_fill.obj: containers/bfc_container_insert_fill.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_insert_fill.c
+
+containers/vector.obj: containers/vector.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/vector.c
 
 containers/vector_ref.obj: containers/vector_ref.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/vector_ref.c
@@ -4117,6 +4136,14 @@ tests/datetime/nsecs_between.exe: \
 
 tests/datetime/nsecs_between.obj: tests/datetime/nsecs_between.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/nsecs_between.c
+
+tests/datetime/advance.exe: \
+		tests/datetime/advance.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/advance.obj barefootc.lib log4stdc.lib
+
+tests/datetime/advance.obj: tests/datetime/advance.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/advance.c
 
 tests/datetime/to_isodate.exe: \
 		tests/datetime/to_isodate.obj \

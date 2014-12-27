@@ -218,6 +218,10 @@ const void *bfc_container_first(const void *);
 void *bfc_container_index(void *, size_t);
 long bfc_container_getlong(const void *, size_t);
 int  bfc_container_setlong(void *, size_t, long);
+int  bfc_container_begin_iterator(const void *obj,
+				struct bfc_iterator *it, size_t bufsize);
+int  bfc_container_end_iterator(const void *obj, 
+				struct bfc_iterator *it, size_t bufsize);
 
 size_t bfc_get_base_object_size(bfc_cobjptr_t);
 

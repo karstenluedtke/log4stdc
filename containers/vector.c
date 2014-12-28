@@ -15,15 +15,18 @@
 #define snprintf _snprintf
 #endif
 
+#define BFC_VECTOR_ENABLE_TRIPLE_INDIRECT	1
+#define CV_ELEMSIZE_FACTOR(vec)		((vec)->elem_size / sizeof(char))
+
 #include "barefootc/object.h"
 #include "barefootc/iterator.h"
 #include "barefootc/container.h"
 #include "barefootc/vector.h"
 #include "log4stdc.h"
 
-typedef BFC_VECTOR(bfc_generic_vector, size_t, 16) bfc_generic_vector_t;
-typedef struct bfc_generic_vector *bfc_vecptr_t;
-typedef const struct bfc_generic_vector *bfc_cvecptr_t;
+/* for the remainder of this file ... */
+typedef struct bfc_char_vector *bfc_vecptr_t;
+typedef const struct bfc_char_vector *bfc_cvecptr_t;
 
 static int clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize);
 static void destroy_vector(bfc_vecptr_t vec);
@@ -161,7 +164,7 @@ clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize)
 static size_t
 vector_objsize(bfc_cvecptr_t vec)
 {
-	return (offsetof(struct bfc_generic_vector, direct)
+	return (offsetof(struct bfc_char_vector, direct)
 		+ (vec->elem_direct * vec->elem_size));
 }
 
@@ -250,9 +253,10 @@ static int vector_resize(bfc_vecptr_t vec, size_t n, const void *p)
 	if (n < size) {
 		BFC_VECTOR_SET_SIZE(vec, n);
 	} else if (n > size) {
-		bfc_iterator_t it;
-		bfc_container_end_iterator(vec, &it, sizeof(it));
-		bfc_container_insert_fill((bfc_contptr_t) vec, &it, n-size, p);
+		while (size < n) {
+			bfc_container_push_back((bfc_contptr_t) vec, p);
+			size++;
+		}
 		BFC_VECTOR_SET_SIZE(vec, n);
 	}
 	return (BFC_SUCCESS);
@@ -284,18 +288,44 @@ vector_reserve(bfc_vecptr_t vec, size_t n)
 }
 
 /* Modifiers */
-static int vector_assign_fill(bfc_vecptr_t vec, size_t n, const void *p)
+static int
+vector_assign_fill(bfc_vecptr_t vec, size_t n, const void *p)
+{
+	int rc, count = 0;
+
+	bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
+	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, n)) < 0) {
+		return (rc);
+	}
+	while (count < (int) n) {
+		bfc_container_push_back((bfc_contptr_t) vec, p);
+		count++;
+	}
+	return (count);
+}
+
+static int
+vector_assign_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
+{
+	int count = 0;
+	bfc_iterator_t it = *first;
+
+	bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
+	while (bfc_iterator_distance(&it, last) > 0) {
+		const void *p = bfc_iterator_index(&it);
+		bfc_iterator_advance(&it, 1);
+		bfc_container_push_back((bfc_contptr_t) vec, p);
+		count++;
+	}
+	return (count);
+}
+
+static int
+vector_push_front(bfc_vecptr_t vec, const void *p)
 {
 	return (-ENOSYS);
 }
-static int vector_assign_range(bfc_vecptr_t vec, bfc_iterptr_t first,bfc_iterptr_t last)
-{
-	return (-ENOSYS);
-}
-static int vector_push_front(bfc_vecptr_t vec, const void *p)
-{
-	return (-ENOSYS);
-}
+
 static void
 vector_pop_front(bfc_vecptr_t vec)
 {
@@ -304,21 +334,70 @@ vector_pop_front(bfc_vecptr_t vec)
 static int
 vector_push_back(bfc_vecptr_t vec, const void *p)
 {
+	size_t size = BFC_VECTOR_GET_SIZE(vec);
+	void *ref = bfc_vector_have(vec, size);
+
+	if (ref) {
+		size++;
+		BFC_VECTOR_SET_SIZE(vec, size);
+		if (p) {
+			memcpy(ref, p, vec->elem_size);
+		} else {
+			memset(ref, 0, vec->elem_size);
+		}
+	} else {
+		return (-ENOMEM);
+	}
+	return ((int) size);
+}
+
+static void
+vector_pop_back(bfc_vecptr_t vec)
+{
+	size_t size = BFC_VECTOR_GET_SIZE(vec);
+
+	if (size > 0) {
+		bfc_container_resize((bfc_contptr_t) vec, size-1, NULL);
+	}
+}
+
+static int
+vector_insert_element(bfc_vecptr_t vec, bfc_iterptr_t position, const void *p)
+{
+	size_t size = BFC_VECTOR_GET_SIZE(vec);
+	size_t idx, pos = bfc_iterator_position(position);
+	void *ref, *src;
+	int rc;
+
+	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, size+1)) < 0) {
+		return (rc);
+	}
+	for (idx = pos; idx < size; idx++) {
+		if (((src = bfc_vector_ref(vec, idx)) != NULL)
+		 && ((ref = bfc_vector_have(vec, idx+1)) != NULL)) {
+			memcpy(ref, src, vec->elem_size);
+		}
+	}
+	size++;
+	BFC_VECTOR_SET_SIZE(vec, size);
+
+	if ((ref = bfc_vector_have(vec, pos)) != NULL) {
+		if (p) {
+			memcpy(ref, p, vec->elem_size);
+		} else {
+			memset(ref, 0, vec->elem_size);
+		}
+	}
+
+	return ((int) size);
+}
+
+static int
+vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n, const void *p)
+{
 	return (-ENOSYS);
 }
 
-static void vector_pop_back(bfc_vecptr_t vec)
-{
-}
-
-static int vector_insert_element(bfc_vecptr_t vec, bfc_iterptr_t position, const void *p)
-{
-	return (-ENOSYS);
-}
-static int vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n, const void *p)
-{
-	return (-ENOSYS);
-}
 static int vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position, bfc_iterptr_t first,bfc_iterptr_t last)
 {
 	return (-ENOSYS);

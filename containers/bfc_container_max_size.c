@@ -1,5 +1,5 @@
 /**
- * @file bfc_container_insert_fill.c
+ * @file bfc_container_max_size.c
  */
 
 #include <stddef.h>
@@ -14,12 +14,12 @@ struct bfc_container {
 };
 
 /**
- * @brief    bfc_container_insert_fill
+ * @brief    bfc_container_max_size
  */
-int
-bfc_container_insert_fill(bfc_contptr_t c, bfc_iterptr_t position, size_t n, const void *p)
+size_t
+bfc_container_max_size(bfc_ccontptr_t c)
 {
 	RETURN_METHCALL(bfc_container_classptr_t, c,
-			insert_fill, (c, position, n, p),
+			max_size, (c),
 			-ENOSYS);
 }

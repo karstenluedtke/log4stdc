@@ -1,5 +1,5 @@
 /**
- * @file bfc_container_insert_fill.c
+ * @file bfc_container_assign_range.c
  */
 
 #include <stddef.h>
@@ -14,12 +14,12 @@ struct bfc_container {
 };
 
 /**
- * @brief    bfc_container_insert_fill
+ * @brief    bfc_container_assign_range
  */
 int
-bfc_container_insert_fill(bfc_contptr_t c, bfc_iterptr_t position, size_t n, const void *p)
+bfc_container_assign_range(bfc_contptr_t c, bfc_iterptr_t first,bfc_iterptr_t last)
 {
 	RETURN_METHCALL(bfc_container_classptr_t, c,
-			insert_fill, (c, position, n, p),
+			assign_range, (c, first,last),
 			-ENOSYS);
 }

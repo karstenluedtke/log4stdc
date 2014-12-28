@@ -1,5 +1,5 @@
 /**
- * @file bfc_container_insert_fill.c
+ * @file bfc_container_copy_out.c
  */
 
 #include <stddef.h>
@@ -14,12 +14,12 @@ struct bfc_container {
 };
 
 /**
- * @brief    bfc_container_insert_fill
+ * @brief    bfc_container_copy_out
  */
-int
-bfc_container_insert_fill(bfc_contptr_t c, bfc_iterptr_t position, size_t n, const void *p)
+size_t
+bfc_container_copy_out(bfc_ccontptr_t c,void* buf,size_t n,size_t pos)
 {
 	RETURN_METHCALL(bfc_container_classptr_t, c,
-			insert_fill, (c, position, n, p),
+			copy_out, (c, buf,n,pos),
 			-ENOSYS);
 }

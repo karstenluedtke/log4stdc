@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -14,14 +16,14 @@
 #include <vector>
 #include <cassert>
 #include "../../../MoveOnly.h"
-#include "../../../stack_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
 #ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
     {
-        std::vector<MoveOnly> c;
+        barefootc::vector<MoveOnly> c;
         c.push_back(MoveOnly(0));
         assert(c.size() == 1);
         for (int j = 0; j < c.size(); ++j)
@@ -44,7 +46,7 @@ int main()
             assert(c[j] == MoveOnly(j));
     }
     {
-        std::vector<MoveOnly, stack_allocator<MoveOnly, 15> > c;
+        barefootc::vector<MoveOnly, stack_allocator<MoveOnly, 15> > c;
         c.push_back(MoveOnly(0));
         assert(c.size() == 1);
         for (int j = 0; j < c.size(); ++j)
@@ -68,7 +70,7 @@ int main()
     }
 #if __cplusplus >= 201103L
     {
-        std::vector<MoveOnly, min_allocator<MoveOnly>> c;
+        barefootc::vector<MoveOnly, min_allocator<MoveOnly>> c;
         c.push_back(MoveOnly(0));
         assert(c.size() == 1);
         for (int j = 0; j < c.size(); ++j)

@@ -222,7 +222,7 @@ do {									\
 
 #define CV1_HAVE_OR_BREAK(vec,idx)	\
 	if ((vec)->indirect == NULL) {					\
-		if (((vec)->indirect = BFC_VECTOR_ALLOC_BLOCK(vec,		\
+		if (((vec)->indirect = BFC_VECTOR_ALLOC_BLOCK(vec,	\
 					CV1_ELEMENTS(vec),		\
 					CV1_ELEMSIZE(vec))) == NULL) {	\
 			BFC_VECTOR_ALLOC_ERROR_HANDLER(vec);		\
@@ -411,18 +411,16 @@ do {									\
 #define BFC_VECTOR_INIT_POOL(vec,mpool) \
 do {									\
 	unsigned __vec_nelem, __vec_log2;				\
-	static double __vec_zero[1 + (sizeof((vec)->direct[0])		\
-						/ sizeof(double))];	\
+	static const size_t __vec_zero[1 + (sizeof((vec)->direct[0])	\
+					  / sizeof(size_t))] = { 0 };	\
 									\
 	memset (vec, 0, sizeof(*vec));					\
-	memset (__vec_zero, 0, sizeof (__vec_zero));			\
 									\
 	(vec)->pool = (mpool);						\
 	(vec)->elem_size = sizeof((vec)->direct[0]);			\
-	(vec)->zero_element = (void *) __vec_zero;			\
+	*((const size_t **) &(vec)->zero_element) = __vec_zero;		\
 									\
-	__vec_nelem = sizeof((vec)->direct)				\
-			/ sizeof((vec)->direct[0]);			\
+	__vec_nelem = sizeof((vec)->direct) / sizeof((vec)->direct[0]);	\
 	(vec)->elem_direct = __vec_nelem;				\
 									\
 	__vec_nelem = 4096 / sizeof((vec)->direct[0]);			\
@@ -850,10 +848,10 @@ void *bfc_vector_set (void *, unsigned, void *);
 void *bfc_vector_ref (void *, unsigned);
 
 int bfc_init_vector_class(void *, size_t, struct mempool *);
-#define bfc_init_vector(vec,pool)					\
+#define bfc_init_vector(vec,bufsize,pool)				\
 do {									\
 	BFC_VECTOR_INIT_POOL(vec,pool);					\
-	bfc_init_vector_class(vec,sizeof(*vec),pool);			\
+	bfc_init_vector_class(vec,bufsize,pool);			\
 } while (0)
 
 #ifdef __cplusplus

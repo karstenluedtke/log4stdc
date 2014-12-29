@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -13,8 +15,8 @@
 
 #include <vector>
 #include <cassert>
-#include "../../../stack_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+#include "tests/support/min_allocator.h"
 
 #ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
 
@@ -56,7 +58,7 @@ int main()
 {
 #ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
     {
-        std::vector<A> c;
+        barefootc::vector<A> c;
         c.emplace_back(2, 3.5);
         assert(c.size() == 1);
         assert(c.front().geti() == 2);
@@ -69,7 +71,7 @@ int main()
         assert(c.back().getd() == 4.5);
     }
     {
-        std::vector<A, stack_allocator<A, 4> > c;
+        barefootc::vector<A, stack_allocator<A, 4> > c;
         c.emplace_back(2, 3.5);
         assert(c.size() == 1);
         assert(c.front().geti() == 2);
@@ -83,7 +85,7 @@ int main()
     }
 #if __cplusplus >= 201103L
     {
-        std::vector<A, min_allocator<A>> c;
+        barefootc::vector<A, min_allocator<A>> c;
         c.emplace_back(2, 3.5);
         assert(c.size() == 1);
         assert(c.front().geti() == 2);

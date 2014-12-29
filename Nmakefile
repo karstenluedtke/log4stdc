@@ -236,7 +236,23 @@ OFILES= \
 	containers/bfc_container_setlong.obj \
 	containers/bfc_container_begin_iterator.obj \
 	containers/bfc_container_end_iterator.obj \
+	containers/bfc_container_max_size.obj \
+	containers/bfc_container_capacity.obj \
+	containers/bfc_container_reserve.obj \
+	containers/bfc_container_resize.obj \
+	containers/bfc_container_assign_fill.obj \
+	containers/bfc_container_assign_range.obj \
+	containers/bfc_container_push_front.obj \
+	containers/bfc_container_pop_front.obj \
+	containers/bfc_container_push_back.obj \
+	containers/bfc_container_pop_back.obj \
+	containers/bfc_container_insert_element.obj \
 	containers/bfc_container_insert_fill.obj \
+	containers/bfc_container_insert_range.obj \
+	containers/bfc_container_erase_element.obj \
+	containers/bfc_container_erase_range.obj \
+	containers/bfc_container_copy_out.obj \
+	containers/bfc_container_swap.obj \
 	containers/vector.obj \
 	containers/vector_ref.obj \
 	containers/vector_set.obj \
@@ -638,6 +654,8 @@ TESTS= \
 	tests/datetime/nsecs_between.exe \
 	tests/datetime/advance.exe \
 	tests/datetime/to_isodate.exe \
+	tests/vector.modifiers/push_back.pass.exe \
+	tests/vector.modifiers/pop_back.pass.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -939,6 +957,8 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\datetime\nsecs_between.exe
 	tests\datetime\advance.exe
 	tests\datetime\to_isodate.exe
+	tests\vector.modifiers\push_back.pass.exe
+	tests\vector.modifiers\pop_back.pass.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
@@ -1520,8 +1540,56 @@ containers/bfc_container_begin_iterator.obj: containers/bfc_container_begin_iter
 containers/bfc_container_end_iterator.obj: containers/bfc_container_end_iterator.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_end_iterator.c
 
+containers/bfc_container_max_size.obj: containers/bfc_container_max_size.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_max_size.c
+
+containers/bfc_container_capacity.obj: containers/bfc_container_capacity.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_capacity.c
+
+containers/bfc_container_reserve.obj: containers/bfc_container_reserve.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_reserve.c
+
+containers/bfc_container_resize.obj: containers/bfc_container_resize.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_resize.c
+
+containers/bfc_container_assign_fill.obj: containers/bfc_container_assign_fill.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_assign_fill.c
+
+containers/bfc_container_assign_range.obj: containers/bfc_container_assign_range.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_assign_range.c
+
+containers/bfc_container_push_front.obj: containers/bfc_container_push_front.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_push_front.c
+
+containers/bfc_container_pop_front.obj: containers/bfc_container_pop_front.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_pop_front.c
+
+containers/bfc_container_push_back.obj: containers/bfc_container_push_back.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_push_back.c
+
+containers/bfc_container_pop_back.obj: containers/bfc_container_pop_back.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_pop_back.c
+
+containers/bfc_container_insert_element.obj: containers/bfc_container_insert_element.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_insert_element.c
+
 containers/bfc_container_insert_fill.obj: containers/bfc_container_insert_fill.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_insert_fill.c
+
+containers/bfc_container_insert_range.obj: containers/bfc_container_insert_range.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_insert_range.c
+
+containers/bfc_container_erase_element.obj: containers/bfc_container_erase_element.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_erase_element.c
+
+containers/bfc_container_erase_range.obj: containers/bfc_container_erase_range.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_erase_range.c
+
+containers/bfc_container_copy_out.obj: containers/bfc_container_copy_out.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_copy_out.c
+
+containers/bfc_container_swap.obj: containers/bfc_container_swap.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_swap.c
 
 containers/vector.obj: containers/vector.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/vector.c
@@ -4152,4 +4220,20 @@ tests/datetime/to_isodate.exe: \
 
 tests/datetime/to_isodate.obj: tests/datetime/to_isodate.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/to_isodate.c
+
+tests/vector.modifiers/push_back.pass.exe: \
+		tests/vector.modifiers/push_back.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/push_back.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.modifiers/push_back.pass.obj: tests/vector.modifiers/push_back.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/push_back.pass.cpp
+
+tests/vector.modifiers/pop_back.pass.exe: \
+		tests/vector.modifiers/pop_back.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/pop_back.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.modifiers/pop_back.pass.obj: tests/vector.modifiers/pop_back.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/pop_back.pass.cpp
 

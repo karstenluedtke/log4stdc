@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -66,10 +68,10 @@ bool operator==(const CMyClass &lhs, const CMyClass &rhs) { return lhs.equal(rhs
 int main()
 {
     CMyClass instance(42);
-    std::vector<CMyClass> vec;
+    barefootc::vector<CMyClass> vec;
 
     vec.push_back(instance);
-    std::vector<CMyClass> vec2(vec);
+    barefootc::vector<CMyClass> vec2(vec);
 
     gCopyConstructorShouldThow = true;
     try {

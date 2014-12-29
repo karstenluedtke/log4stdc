@@ -24,8 +24,9 @@
 #endif
 
 #include "barefootc/object.h"
-#include "barefootc/string.h"
 #include "barefootc/iterator.h"
+#include "barefootc/container.h"
+#include "barefootc/vector.h"
 #include "barefootc/mempool.h"
 #include "log4stdc.h"
 
@@ -40,7 +41,7 @@
 #endif
 
 namespace barefootc {
-	template <class T, class Allocator = allocator<T> >
+	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
 		// types:
@@ -61,9 +62,32 @@ namespace barefootc {
 		typedef iterator reverse_iterator;
 		typedef iterator const_reverse_iterator;
 
+	private:
+		BFC_VECTOR(bfcvec_s, T, 4) bfcvec;
+
+	public:
 		// 23.3.6.2, construct/copy/destroy:
-		explicit vector(const Allocator& = Allocator());
-		explicit vector(size_type n);
+		vector()
+		{
+			struct mempool *pool = get_stdc_mempool();
+			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
+			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
+		}
+
+		explicit vector(const Allocator&)
+		{
+			struct mempool *pool = get_stdc_mempool();
+			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
+			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
+		}
+
+		explicit vector(size_type n)
+		{
+			struct mempool *pool = get_stdc_mempool();
+			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
+			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
+		}
+
 		vector(size_type n, const T& value,
 			const Allocator& = Allocator());
 		template <class InputIterator>
@@ -76,7 +100,10 @@ namespace barefootc {
 		vector(vector&&, const Allocator&);
 		vector(initializer_list<T>, const Allocator& = Allocator());
 #endif
-		~vector();
+		~vector()
+		{
+			bfc_destroy(&bfcvec);
+		}
 
 		vector<T,Allocator>& operator=(const vector<T,Allocator>& x);
 #if __cplusplus >= 201103L
@@ -86,7 +113,9 @@ namespace barefootc {
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last);
 		void assign(size_type n, const T& u);
+#if __cplusplus >= 201103L
 		void assign(initializer_list<T>);
+#endif
 		allocator_type get_allocator() const;
 
 		// iterators:
@@ -104,37 +133,112 @@ namespace barefootc {
 		const_reverse_iterator crend() const;
 
 		// 23.3.6.3, capacity:
-		size_type size() const;
-		size_type max_size() const;
-		void resize(size_type sz);
-		void resize(size_type sz, const T& c);
-		size_type capacity() const;
-		bool empty() const;
-		void reserve(size_type n);
-		void shrink_to_fit();
+		size_type size() const
+		{
+			return (bfc_object_length(&bfcvec));
+		}
+
+		size_type max_size() const
+		{
+			return (bfc_container_max_size((bfc_contptr_t)&bfcvec));
+		}
+
+		void resize(size_type sz)
+		{
+			bfc_container_resize((bfc_contptr_t)&bfcvec, sz, NULL);
+		}
+
+		void resize(size_type sz, const T& c)
+		{
+			bfc_container_resize((bfc_contptr_t)&bfcvec, sz, &c);
+		}
+
+		size_type capacity() const
+		{
+			return (bfc_container_capacity((bfc_contptr_t)&bfcvec));
+		}
+
+		bool empty() const
+		{
+			return (size() == 0);
+		}
+
+		void reserve(size_type n)
+		{
+			bfc_container_reserve((bfc_contptr_t)&bfcvec, n);
+		}
+
+		void shrink_to_fit()
+		{
+			bfc_container_reserve((bfc_contptr_t)&bfcvec, 0);
+		}
 
 		// element access:
-		reference operator[](size_type n);
-		const_reference operator[](size_type n) const;
-		const_reference at(size_type n) const;
-		reference at(size_type n);
-		reference front();
-		const_reference front() const;
-		reference back();
-		const_reference back() const;
+		reference operator[](size_type n)
+		{
+			return (at(n));
+		}
+
+		const_reference operator[](size_type n) const
+		{
+			return (at(n));
+		}
+
+		const_reference at(size_type n) const
+		{
+			const T *p;
+			p = (const T*)bfc_container_index(
+					(bfc_ccontptr_t)&bfcvec, n);
+			return (*p);
+		}
+
+		reference at(size_type n)
+		{
+			T *p;
+			p = (T*)bfc_container_index((bfc_contptr_t)&bfcvec, n);
+			return (*p);
+		}
+
+		reference front()
+		{
+			return (at(0));
+		}
+
+		const_reference front() const
+		{
+			return (at(0));
+		}
+
+		reference back()
+		{
+			return (at(size()));
+		}
+
+		const_reference back() const
+		{
+			return (at(size()));
+		}
+
 
 		// 23.3.6.4, data access
 		T* data() noexcept;
 		const T* data() const noexcept;
 
 		// 23.3.6.5, modifiers:
-		void push_back(const T& x);
+		void push_back(const T& x)
+		{
+			bfc_container_push_back((bfc_contptr_t)&bfcvec, &x);
+		}
+
 #if __cplusplus >= 201103L
 		void push_back(T&& x);
 		template <class... Args>
 		void emplace_back(Args&&... args);
 #endif
-		void pop_back();
+		void pop_back()
+		{
+			bfc_container_pop_back((bfc_contptr_t)&bfcvec);
+		}
 
 		iterator insert(const_iterator position, const T& x);
 		iterator insert(const_iterator position,

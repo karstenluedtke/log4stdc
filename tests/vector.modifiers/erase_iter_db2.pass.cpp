@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -20,24 +22,24 @@
 #include <cstdlib>
 #include <exception>
 
-#include "min_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
     {
     int a1[] = {1, 2, 3};
-    std::vector<int> l1(a1, a1+3);
-    std::vector<int> l2(a1, a1+3);
-    std::vector<int>::const_iterator i = l2.begin();
+    barefootc::vector<int> l1(a1, a1+3);
+    barefootc::vector<int> l2(a1, a1+3);
+    barefootc::vector<int>::const_iterator i = l2.begin();
     l1.erase(i);
     assert(false);
     }
 #if __cplusplus >= 201103L
     {
     int a1[] = {1, 2, 3};
-    std::vector<int, min_allocator<int>> l1(a1, a1+3);
-    std::vector<int, min_allocator<int>> l2(a1, a1+3);
-    std::vector<int, min_allocator<int>>::const_iterator i = l2.begin();
+    barefootc::vector<int, min_allocator<int>> l1(a1, a1+3);
+    barefootc::vector<int, min_allocator<int>> l2(a1, a1+3);
+    barefootc::vector<int, min_allocator<int>>::const_iterator i = l2.begin();
     l1.erase(i);
     assert(false);
     }

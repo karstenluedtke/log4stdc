@@ -3592,6 +3592,126 @@ tests_datetime_to_isodate_LDADD = libbarefootc.a liblog4stdc.a
 tests_datetime_to_isodate_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/datetime/to_isodate
 
+check_PROGRAMS += tests/vector.modifiers/push_back.pass
+tests_vector_modifiers_push_back_pass_SOURCES = tests/vector.modifiers/push_back.pass.cpp
+tests_vector_modifiers_push_back_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_modifiers_push_back_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.modifiers/push_back.pass
+
+#check_PROGRAMS += tests/vector.modifiers/emplace_back.pass
+#tests_vector_modifiers_emplace_back_pass_SOURCES = tests/vector.modifiers/emplace_back.pass.cpp
+#tests_vector_modifiers_emplace_back_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_emplace_back_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/emplace_back.pass
+
+#check_PROGRAMS += tests/vector.modifiers/emplace_extra.pass
+#tests_vector_modifiers_emplace_extra_pass_SOURCES = tests/vector.modifiers/emplace_extra.pass.cpp
+#tests_vector_modifiers_emplace_extra_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_emplace_extra_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/emplace_extra.pass
+
+#check_PROGRAMS += tests/vector.modifiers/emplace.pass
+#tests_vector_modifiers_emplace_pass_SOURCES = tests/vector.modifiers/emplace.pass.cpp
+#tests_vector_modifiers_emplace_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_emplace_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/emplace.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter_db1.pass
+#tests_vector_modifiers_erase_iter_db1_pass_SOURCES = tests/vector.modifiers/erase_iter_db1.pass.cpp
+#tests_vector_modifiers_erase_iter_db1_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_db1_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter_db1.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter_db2.pass
+#tests_vector_modifiers_erase_iter_db2_pass_SOURCES = tests/vector.modifiers/erase_iter_db2.pass.cpp
+#tests_vector_modifiers_erase_iter_db2_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_db2_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter_db2.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter_iter_db1.pass
+#tests_vector_modifiers_erase_iter_iter_db1_pass_SOURCES = tests/vector.modifiers/erase_iter_iter_db1.pass.cpp
+#tests_vector_modifiers_erase_iter_iter_db1_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_iter_db1_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter_iter_db1.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter_iter_db2.pass
+#tests_vector_modifiers_erase_iter_iter_db2_pass_SOURCES = tests/vector.modifiers/erase_iter_iter_db2.pass.cpp
+#tests_vector_modifiers_erase_iter_iter_db2_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_iter_db2_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter_iter_db2.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter_iter_db3.pass
+#tests_vector_modifiers_erase_iter_iter_db3_pass_SOURCES = tests/vector.modifiers/erase_iter_iter_db3.pass.cpp
+#tests_vector_modifiers_erase_iter_iter_db3_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_iter_db3_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter_iter_db3.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter_iter_db4.pass
+#tests_vector_modifiers_erase_iter_iter_db4_pass_SOURCES = tests/vector.modifiers/erase_iter_iter_db4.pass.cpp
+#tests_vector_modifiers_erase_iter_iter_db4_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_iter_db4_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter_iter_db4.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter_iter.pass
+#tests_vector_modifiers_erase_iter_iter_pass_SOURCES = tests/vector.modifiers/erase_iter_iter.pass.cpp
+#tests_vector_modifiers_erase_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter_iter.pass
+
+#check_PROGRAMS += tests/vector.modifiers/erase_iter.pass
+#tests_vector_modifiers_erase_iter_pass_SOURCES = tests/vector.modifiers/erase_iter.pass.cpp
+#tests_vector_modifiers_erase_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_erase_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/erase_iter.pass
+
+#check_PROGRAMS += tests/vector.modifiers/insert_iter_initializer_list.pass
+#tests_vector_modifiers_insert_iter_initializer_list_pass_SOURCES = tests/vector.modifiers/insert_iter_initializer_list.pass.cpp
+#tests_vector_modifiers_insert_iter_initializer_list_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_insert_iter_initializer_list_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/insert_iter_initializer_list.pass
+
+#check_PROGRAMS += tests/vector.modifiers/insert_iter_iter_iter.pass
+#tests_vector_modifiers_insert_iter_iter_iter_pass_SOURCES = tests/vector.modifiers/insert_iter_iter_iter.pass.cpp
+#tests_vector_modifiers_insert_iter_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_insert_iter_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/insert_iter_iter_iter.pass
+
+#check_PROGRAMS += tests/vector.modifiers/insert_iter_rvalue.pass
+#tests_vector_modifiers_insert_iter_rvalue_pass_SOURCES = tests/vector.modifiers/insert_iter_rvalue.pass.cpp
+#tests_vector_modifiers_insert_iter_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_insert_iter_rvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/insert_iter_rvalue.pass
+
+#check_PROGRAMS += tests/vector.modifiers/insert_iter_size_value.pass
+#tests_vector_modifiers_insert_iter_size_value_pass_SOURCES = tests/vector.modifiers/insert_iter_size_value.pass.cpp
+#tests_vector_modifiers_insert_iter_size_value_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_insert_iter_size_value_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/insert_iter_size_value.pass
+
+#check_PROGRAMS += tests/vector.modifiers/insert_iter_value.pass
+#tests_vector_modifiers_insert_iter_value_pass_SOURCES = tests/vector.modifiers/insert_iter_value.pass.cpp
+#tests_vector_modifiers_insert_iter_value_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_insert_iter_value_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/insert_iter_value.pass
+
+check_PROGRAMS += tests/vector.modifiers/pop_back.pass
+tests_vector_modifiers_pop_back_pass_SOURCES = tests/vector.modifiers/pop_back.pass.cpp
+tests_vector_modifiers_pop_back_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_modifiers_pop_back_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.modifiers/pop_back.pass
+
+#check_PROGRAMS += tests/vector.modifiers/push_back_exception_safety.pass
+#tests_vector_modifiers_push_back_exception_safety_pass_SOURCES = tests/vector.modifiers/push_back_exception_safety.pass.cpp
+#tests_vector_modifiers_push_back_exception_safety_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_push_back_exception_safety_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/push_back_exception_safety.pass
+
+#check_PROGRAMS += tests/vector.modifiers/push_back_rvalue.pass
+#tests_vector_modifiers_push_back_rvalue_pass_SOURCES = tests/vector.modifiers/push_back_rvalue.pass.cpp
+#tests_vector_modifiers_push_back_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+#tests_vector_modifiers_push_back_rvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+#TESTS += tests/vector.modifiers/push_back_rvalue.pass
+
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp
 #tests_strings_version_pass_LDADD = libbarefootc.a liblog4stdc.a

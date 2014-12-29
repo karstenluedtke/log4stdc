@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -17,8 +19,8 @@
 
 #include <vector>
 #include <cassert>
-#include "../../../stack_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+#include "tests/support/min_allocator.h"
 
 #ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
 
@@ -60,8 +62,8 @@ int main()
 {
 #ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
     {
-        std::vector<A> c;
-        std::vector<A>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
+        barefootc::vector<A> c;
+        barefootc::vector<A>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
         assert(i == c.begin());
         assert(c.size() == 1);
         assert(c.front().geti() == 2);
@@ -84,8 +86,8 @@ int main()
         assert(c.back().getd() == 4.5);
     }
     {
-        std::vector<A, stack_allocator<A, 7> > c;
-        std::vector<A, stack_allocator<A, 7> >::iterator i = c.emplace(c.cbegin(), 2, 3.5);
+        barefootc::vector<A, stack_allocator<A, 7> > c;
+        barefootc::vector<A, stack_allocator<A, 7> >::iterator i = c.emplace(c.cbegin(), 2, 3.5);
         assert(i == c.begin());
         assert(c.size() == 1);
         assert(c.front().geti() == 2);
@@ -109,16 +111,16 @@ int main()
     }
 #if _LIBCPP_DEBUG >= 1
     {
-        std::vector<A> c1;
-        std::vector<A> c2;
-        std::vector<A>::iterator i = c1.emplace(c2.cbegin(), 2, 3.5);
+        barefootc::vector<A> c1;
+        barefootc::vector<A> c2;
+        barefootc::vector<A>::iterator i = c1.emplace(c2.cbegin(), 2, 3.5);
         assert(false);
     }
 #endif
 #if __cplusplus >= 201103L
     {
-        std::vector<A, min_allocator<A>> c;
-        std::vector<A, min_allocator<A>>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
+        barefootc::vector<A, min_allocator<A>> c;
+        barefootc::vector<A, min_allocator<A>>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
         assert(i == c.begin());
         assert(c.size() == 1);
         assert(c.front().geti() == 2);
@@ -142,9 +144,9 @@ int main()
     }
 #if _LIBCPP_DEBUG >= 1
     {
-        std::vector<A, min_allocator<A>> c1;
-        std::vector<A, min_allocator<A>> c2;
-        std::vector<A, min_allocator<A>>::iterator i = c1.emplace(c2.cbegin(), 2, 3.5);
+        barefootc::vector<A, min_allocator<A>> c1;
+        barefootc::vector<A, min_allocator<A>> c2;
+        barefootc::vector<A, min_allocator<A>>::iterator i = c1.emplace(c2.cbegin(), 2, 3.5);
         assert(false);
     }
 #endif

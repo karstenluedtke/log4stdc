@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -17,16 +19,16 @@
 
 #include <vector>
 #include <cassert>
-#include "../../../stack_allocator.h"
+#include "tests/support/stack_allocator.h"
 #include "../../../MoveOnly.h"
-#include "min_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
 #ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
     {
-        std::vector<MoveOnly> v(100);
-        std::vector<MoveOnly>::iterator i = v.insert(v.cbegin() + 10, MoveOnly(3));
+        barefootc::vector<MoveOnly> v(100);
+        barefootc::vector<MoveOnly>::iterator i = v.insert(v.cbegin() + 10, MoveOnly(3));
         assert(v.size() == 101);
         assert(i == v.begin() + 10);
         int j;
@@ -37,8 +39,8 @@ int main()
             assert(v[j] == MoveOnly());
     }
     {
-        std::vector<MoveOnly, stack_allocator<MoveOnly, 300> > v(100);
-        std::vector<MoveOnly, stack_allocator<MoveOnly, 300> >::iterator i = v.insert(v.cbegin() + 10, MoveOnly(3));
+        barefootc::vector<MoveOnly, stack_allocator<MoveOnly, 300> > v(100);
+        barefootc::vector<MoveOnly, stack_allocator<MoveOnly, 300> >::iterator i = v.insert(v.cbegin() + 10, MoveOnly(3));
         assert(v.size() == 101);
         assert(i == v.begin() + 10);
         int j;
@@ -50,16 +52,16 @@ int main()
     }
 #if _LIBCPP_DEBUG >= 1
     {
-        std::vector<int> v1(3);
-        std::vector<int> v2(3);
+        barefootc::vector<int> v1(3);
+        barefootc::vector<int> v2(3);
         v1.insert(v2.begin(), 4);
         assert(false);
     }
 #endif
 #if __cplusplus >= 201103L
     {
-        std::vector<MoveOnly, min_allocator<MoveOnly>> v(100);
-        std::vector<MoveOnly, min_allocator<MoveOnly>>::iterator i = v.insert(v.cbegin() + 10, MoveOnly(3));
+        barefootc::vector<MoveOnly, min_allocator<MoveOnly>> v(100);
+        barefootc::vector<MoveOnly, min_allocator<MoveOnly>>::iterator i = v.insert(v.cbegin() + 10, MoveOnly(3));
         assert(v.size() == 101);
         assert(i == v.begin() + 10);
         int j;
@@ -71,8 +73,8 @@ int main()
     }
 #if _LIBCPP_DEBUG >= 1
     {
-        std::vector<int, min_allocator<int>> v1(3);
-        std::vector<int, min_allocator<int>> v2(3);
+        barefootc::vector<int, min_allocator<int>> v1(3);
+        barefootc::vector<int, min_allocator<int>> v2(3);
         v1.insert(v2.begin(), 4);
         assert(false);
     }

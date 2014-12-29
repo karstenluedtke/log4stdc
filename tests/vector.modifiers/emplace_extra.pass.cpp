@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -14,20 +16,20 @@
 #include <vector>
 #include <cassert>
 
-#include "min_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
 #ifndef _LIBCPP_HAS_NO_GENERALIZED_INITIALIZERS
     {
-        std::vector<int> v;
+        barefootc::vector<int> v;
         v.reserve(3);
         v = { 1, 2, 3 };
         v.emplace(v.begin(), v.back());
         assert(v[0] == 3);
     }
     {
-        std::vector<int> v;
+        barefootc::vector<int> v;
         v.reserve(4);
         v = { 1, 2, 3 };
         v.emplace(v.begin(), v.back());
@@ -35,14 +37,14 @@ int main()
     }
 #if __cplusplus >= 201103L
     {
-        std::vector<int, min_allocator<int>> v;
+        barefootc::vector<int, min_allocator<int>> v;
         v.reserve(3);
         v = { 1, 2, 3 };
         v.emplace(v.begin(), v.back());
         assert(v[0] == 3);
     }
     {
-        std::vector<int, min_allocator<int>> v;
+        barefootc::vector<int, min_allocator<int>> v;
         v.reserve(4);
         v = { 1, 2, 3 };
         v.emplace(v.begin(), v.back());

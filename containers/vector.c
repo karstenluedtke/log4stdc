@@ -132,6 +132,7 @@ bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 	if (bufsize < bfc_object_size(vec)) {
 		return (-ENOSPC);
 	}
+	vec->pool = pool;
 	return (BFC_SUCCESS);
 }
 
@@ -209,9 +210,52 @@ vector_tostring(bfc_cvecptr_t vec, char *buf, size_t bufsize)
 static void
 dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
 {
+	int di, ti;
+	char *ip, **dp, ***tp;
+	const int __dblcnt = CV2_POINTERS(vec);
+
 	if (vec && BFC_CLASS(vec)) {
-		L4SC_DEBUG(log, "%s @%p",
-			 BFC_CLASS(vec)->name, vec);
+		L4SC_DEBUG(log, "%s @%p size %ld, pool %p",
+			BFC_CLASS(vec)->name, vec,
+			(long)BFC_VECTOR_GET_SIZE(vec), vec->pool);
+		L4SC_DEBUG(log, "%6ld direct elements @%p size %d",
+			(long)CV0_ELEMENTS(vec), vec->direct, vec->elem_size);
+
+		if ((ip = vec->indirect) != NULL) {
+			L4SC_DEBUG(log, "%6ld indirect elements @%p",
+				(long)CV1_ELEMENTS(vec), ip);
+		}
+
+		if ((dp = (vec)->double_indirect) != NULL) {
+			L4SC_DEBUG(log, "%6ld double indirect elements @%p",
+				(long)CV2_ELEMENTS(vec), dp);
+			for (di=0; di < __dblcnt; di++) {
+				if ((ip = dp[di]) != NULL) {
+					L4SC_DEBUG(log,
+					    "%6ld double indirect elements @%p",
+					    (long)CV1_ELEMENTS(vec), ip);
+				}
+			}
+		}
+	
+		if ((tp = (vec)->triple_indirect) != NULL) {
+			L4SC_DEBUG(log, "%6ld triple indirect elements @%p",
+				(long)CV3_ELEMENTS(vec), tp);
+			for (ti=0; ti < __dblcnt; ti++) {
+				if ((dp = tp[ti]) != NULL) {
+					L4SC_DEBUG(log,
+					    "%6ld triple indirect elements @%p",
+					    (long)CV2_ELEMENTS(vec), dp);
+					for (di=0; di < __dblcnt; di++) {
+						if ((ip = dp[di]) != NULL) {
+							L4SC_DEBUG(log,
+							    "%6ld triple indirect elements @%p",
+							    (long)CV1_ELEMENTS(vec), ip);
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -256,24 +300,37 @@ vector_setlong(bfc_vecptr_t vec, size_t pos, long val)
 	if ((pos == BFC_NPOS) || (pos > bfc_object_length(vec))) {
 		return (-ERANGE);
 	}
-
-	if ((p = bfc_vector_have(vec, pos)) != NULL) {
-		if (vec->elem_size == sizeof(long)) {
-			*(long *)p = val;
-			return (BFC_SUCCESS);
-		} else if (vec->elem_size == sizeof(int)) {
-			*(int *)p = (int) val;
-			return (BFC_SUCCESS);
-		} else if (vec->elem_size == sizeof(short)) {
-			*(short *)p = (short) val;
-			return (BFC_SUCCESS);
-		} else if (vec->elem_size == sizeof(char)) {
-			*(char *)p = (char) val;
-			return (BFC_SUCCESS);
-		}
-		return (-EINVAL);
+	if ((p = bfc_vector_have(vec, pos)) == NULL) {
+		return (-ENOMEM);
 	}
-	return (-ENOMEM);
+	if (val == 0) {
+		memset(p, 0, vec->elem_size);
+	} else if (vec->elem_size == sizeof(long)) {
+		*(long *)p = val;
+	} else if (vec->elem_size == sizeof(int)) {
+		*(int *)p = (int) val;
+	} else if (vec->elem_size == sizeof(short)) {
+		*(short *)p = (short) val;
+	} else if (vec->elem_size == sizeof(char)) {
+		*(char *)p = (char) val;
+	} else {
+		signed long x = val;
+		char *cp = (char *) p;
+		char *ep = cp + vec->elem_size;
+		static const long endiantest = 0x12;
+		if (*(const char *)&endiantest == 0x12) {
+			while (cp < ep) {	/* little endian */
+				*(cp++) = (char) x;
+				x >>= sizeof(char);
+			}
+		} else {
+			while (ep > cp) {	/* big endian */
+				*(--ep) = (char) x;
+				x >>= sizeof(char);
+			}
+		}
+	}
+	return (BFC_SUCCESS);
 }
 
 static int
@@ -400,19 +457,23 @@ static int
 vector_push_back(bfc_vecptr_t vec, const void *p)
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
-	void *ref = bfc_vector_have(vec, size);
+	void *ref;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
-	if (ref) {
-		size++;
-		BFC_VECTOR_SET_SIZE(vec, size);
-		if (p) {
-			memcpy(ref, p, vec->elem_size);
-		} else {
-			memset(ref, 0, vec->elem_size);
-		}
-	} else {
+	L4SC_TRACE(logger, "%s(vec @%p, elem @%p)", __FUNCTION__, vec, p);
+	dump_vector(vec, 1, logger);
+
+	if ((ref = bfc_vector_have(vec, size)) == NULL) {
 		return (-ENOMEM);
 	}
+	size++;
+	BFC_VECTOR_SET_SIZE(vec, size);
+	if (p) {
+		memcpy(ref, p, vec->elem_size);
+	} else {
+		memset(ref, 0, vec->elem_size);
+	}
+	dump_vector(vec, 1, logger);
 	return ((int) size);
 }
 

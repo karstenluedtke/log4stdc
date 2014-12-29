@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -17,14 +19,14 @@
 
 #include <vector>
 #include <cassert>
-#include "../../../stack_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
     {
-        std::vector<int> v(100);
-        std::vector<int>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
+        barefootc::vector<int> v(100);
+        barefootc::vector<int>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
         assert(v.size() == 105);
         assert(i == v.begin() + 10);
         int j;
@@ -36,8 +38,8 @@ int main()
             assert(v[j] == 0);
     }
     {
-        std::vector<int, stack_allocator<int, 300> > v(100);
-        std::vector<int, stack_allocator<int, 300> >::iterator i = v.insert(v.cbegin() + 10, 5, 1);
+        barefootc::vector<int, stack_allocator<int, 300> > v(100);
+        barefootc::vector<int, stack_allocator<int, 300> >::iterator i = v.insert(v.cbegin() + 10, 5, 1);
         assert(v.size() == 105);
         assert(i == v.begin() + 10);
         int j;
@@ -50,16 +52,16 @@ int main()
     }
 #if _LIBCPP_DEBUG >= 1
     {
-        std::vector<int> c1(100);
-        std::vector<int> c2;
-        std::vector<int>::iterator i = c1.insert(c2.cbegin() + 10, 5, 1);
+        barefootc::vector<int> c1(100);
+        barefootc::vector<int> c2;
+        barefootc::vector<int>::iterator i = c1.insert(c2.cbegin() + 10, 5, 1);
         assert(false);
     }
 #endif
 #if __cplusplus >= 201103L
     {
-        std::vector<int, min_allocator<int>> v(100);
-        std::vector<int, min_allocator<int>>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
+        barefootc::vector<int, min_allocator<int>> v(100);
+        barefootc::vector<int, min_allocator<int>>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
         assert(v.size() == 105);
         assert(i == v.begin() + 10);
         int j;
@@ -71,8 +73,8 @@ int main()
             assert(v[j] == 0);
     }
     {
-        std::vector<int, min_allocator<int>> v(100);
-        std::vector<int, min_allocator<int>>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
+        barefootc::vector<int, min_allocator<int>> v(100);
+        barefootc::vector<int, min_allocator<int>>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
         assert(v.size() == 105);
         assert(i == v.begin() + 10);
         int j;
@@ -85,9 +87,9 @@ int main()
     }
 #if _LIBCPP_DEBUG >= 1
     {
-        std::vector<int, min_allocator<int>> c1(100);
-        std::vector<int, min_allocator<int>> c2;
-        std::vector<int, min_allocator<int>>::iterator i = c1.insert(c2.cbegin() + 10, 5, 1);
+        barefootc::vector<int, min_allocator<int>> c1(100);
+        barefootc::vector<int, min_allocator<int>> c2;
+        barefootc::vector<int, min_allocator<int>>::iterator i = c1.insert(c2.cbegin() + 10, 5, 1);
         assert(false);
     }
 #endif

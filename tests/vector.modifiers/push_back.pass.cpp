@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -13,13 +15,17 @@
 
 #include <vector>
 #include <cassert>
-#include "../../../stack_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+#include "tests/support/min_allocator.h"
+
+static l4sc_logger_ptr_t logger;
 
 int main()
 {
+    l4sc_configure_from_xml_file("log4j.xml");
+    logger = l4sc_get_logger("barefootc.container", 0);
     {
-        std::vector<int> c;
+        barefootc::vector<int> c;
         c.push_back(0);
         assert(c.size() == 1);
         for (int j = 0; j < c.size(); ++j)
@@ -42,7 +48,7 @@ int main()
             assert(c[j] == j);
     }
     {
-        std::vector<int, stack_allocator<int, 15> > c;
+        barefootc::vector<int, stack_allocator<int, 15> > c;
         c.push_back(0);
         assert(c.size() == 1);
         for (int j = 0; j < c.size(); ++j)
@@ -66,7 +72,7 @@ int main()
     }
 #if __cplusplus >= 201103L
     {
-        std::vector<int, min_allocator<int>> c;
+        barefootc::vector<int, min_allocator<int>> c;
         c.push_back(0);
         assert(c.size() == 1);
         for (int j = 0; j < c.size(); ++j)

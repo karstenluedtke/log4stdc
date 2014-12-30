@@ -529,10 +529,13 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, size+n)) < 0) {
 		return (rc);
 	}
-	for (idx = pos; idx < size; idx++) {
+	for (idx = size-1; idx >= pos; idx--) {
 		if (((src = bfc_vector_ref(vec, idx)) != NULL)
 		 && ((ref = bfc_vector_have(vec, idx+n)) != NULL)) {
 			memcpy(ref, src, vec->elem_size);
+		}
+		if (idx == 0) {
+			break;
 		}
 	}
 	size += n;
@@ -579,10 +582,13 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, size+n)) < 0) {
 		return (rc);
 	}
-	for (idx = pos; idx < size; idx++) {
+	for (idx = size-1; idx >= pos; idx--) {
 		if (((src = bfc_vector_ref(vec, idx)) != NULL)
 		 && ((ref = bfc_vector_have(vec, idx+n)) != NULL)) {
 			memcpy(ref, src, vec->elem_size);
+		}
+		if (idx == 0) {
+			break;
 		}
 	}
 	size += n;
@@ -626,7 +632,7 @@ vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);
 	}
 	if (pos+n < size) {
-		for (idx = size-n-1; idx >= pos; idx--) {
+		for (idx = pos; idx+n < size; idx++) {
 			L4SC_TRACE(logger, "%s: idx %ld", __FUNCTION__, (long) idx);
 			if ((int) idx < 0) {
 				return (-EFAULT);
@@ -634,9 +640,6 @@ vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 			if (((src = bfc_vector_ref(vec, idx+n)) != NULL)
 			 && ((ref = bfc_vector_have(vec, idx)) != NULL)) {
 				memcpy(ref, src, vec->elem_size);
-			}
-			if (idx == pos) {
-				break;
 			}
 		}
 		size -= n;

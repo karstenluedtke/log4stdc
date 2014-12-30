@@ -549,6 +549,14 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	void *ref, *src;
 	int rc;
 	bfc_iterator_t it;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %p, %p): pos %ld/%ld",
+		__FUNCTION__, vec, position, first, last,(long)pos,(long)size);
+	bfc_object_dump(vec, 1, logger);
+	bfc_object_dump(position, 1, logger);
+	bfc_object_dump(first, 1, logger);
+	bfc_object_dump(last, 1, logger);
 
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);
@@ -573,7 +581,7 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 			memcpy(ref, src, vec->elem_size);
 		}
 	}
-	return (-ENOSYS);
+	return (BFC_SUCCESS);
 }
 
 static int

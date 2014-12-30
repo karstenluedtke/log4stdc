@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "tests/strings/cxxwrapper.h"
+#include "tests/iterators/cxxiterator.h"
 
 #if __cplusplus >= 201103L
 #else
@@ -57,7 +57,7 @@ namespace barefootc {
 		//typedef implementation-defined const_iterator; // see 23.2
 		//typedef std::reverse_iterator<iterator> reverse_iterator;
 		//typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-		typedef barefootc::iterator<vector,T> iterator;
+		typedef barefootc::iterator<T> iterator;
 		typedef iterator const_iterator;
 		typedef iterator reverse_iterator;
 		typedef iterator const_reverse_iterator;
@@ -138,7 +138,7 @@ namespace barefootc {
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
 					  (bfc_objptr_t) &bfcvec, 0);
-			barefootc::iterator<vector,T> it(tmp);
+			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
 
@@ -147,7 +147,7 @@ namespace barefootc {
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
 					  (bfc_objptr_t) &bfcvec, BFC_NPOS);
-			barefootc::iterator<vector,T> it(tmp);
+			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
 
@@ -161,7 +161,7 @@ namespace barefootc {
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
 					  (bfc_objptr_t) &bfcvec, 0);
-			barefootc::iterator<vector,T> it(tmp);
+			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
 
@@ -170,7 +170,7 @@ namespace barefootc {
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
 					  (bfc_objptr_t) &bfcvec, BFC_NPOS);
-			barefootc::iterator<vector,T> it(tmp);
+			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
 

@@ -91,6 +91,11 @@ int	bfc_init_wstr_iterator(void *buf, size_t bufsize,
 int	bfc_init_wstr_reverse_iterator(void *buf, size_t bufsize,
 					const wchar_t *s, size_t pos);
 
+int	bfc_init_intarray_iterator(void *buf, size_t bufsize,
+					const int *s, size_t pos);
+int	bfc_init_intarray_reverse_iterator(void *buf, size_t bufsize,
+					const int *s, size_t pos);
+
 int	bfc_init_source_iterator(void *buf, size_t bufsize,
 					long sourceval, size_t pos);
 

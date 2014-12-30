@@ -203,6 +203,7 @@ libbarefootc_a_SOURCES+= iterators/null_iterator.c
 libbarefootc_a_SOURCES+= iterators/utf8_iterator.c
 libbarefootc_a_SOURCES+= iterators/wstr_iterator.c
 libbarefootc_a_SOURCES+= iterators/cstr_iterator.c
+libbarefootc_a_SOURCES+= iterators/intarray_iterator.c
 libbarefootc_a_SOURCES+= iterators/source_iterator.c
 libbarefootc_a_SOURCES+= iterators/xmltag_iterator.c
 libbarefootc_a_SOURCES+= iterators/bfc_parse_xmltags.c
@@ -3670,12 +3671,6 @@ TESTS += tests/vector.modifiers/push_back.pass
 #tests_vector_modifiers_insert_iter_initializer_list_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/vector.modifiers/insert_iter_initializer_list.pass
 
-#check_PROGRAMS += tests/vector.modifiers/insert_iter_iter_iter.pass
-#tests_vector_modifiers_insert_iter_iter_iter_pass_SOURCES = tests/vector.modifiers/insert_iter_iter_iter.pass.cpp
-#tests_vector_modifiers_insert_iter_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_vector_modifiers_insert_iter_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/vector.modifiers/insert_iter_iter_iter.pass
-
 #check_PROGRAMS += tests/vector.modifiers/insert_iter_rvalue.pass
 #tests_vector_modifiers_insert_iter_rvalue_pass_SOURCES = tests/vector.modifiers/insert_iter_rvalue.pass.cpp
 #tests_vector_modifiers_insert_iter_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
@@ -3693,6 +3688,12 @@ tests_vector_modifiers_insert_iter_value_pass_SOURCES = tests/vector.modifiers/i
 tests_vector_modifiers_insert_iter_value_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_vector_modifiers_insert_iter_value_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/vector.modifiers/insert_iter_value.pass
+
+check_PROGRAMS += tests/vector.modifiers/insert_iter_iter_iter.pass
+tests_vector_modifiers_insert_iter_iter_iter_pass_SOURCES = tests/vector.modifiers/insert_iter_iter_iter.pass.cpp
+tests_vector_modifiers_insert_iter_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_modifiers_insert_iter_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.modifiers/insert_iter_iter_iter.pass
 
 check_PROGRAMS += tests/vector.modifiers/pop_back.pass
 tests_vector_modifiers_pop_back_pass_SOURCES = tests/vector.modifiers/pop_back.pass.cpp

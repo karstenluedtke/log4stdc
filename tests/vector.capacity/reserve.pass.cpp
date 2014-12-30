@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -13,51 +15,51 @@
 
 #include <vector>
 #include <cassert>
-#include "../../../stack_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
     {
-        std::vector<int> v;
+        barefootc::vector<int> v;
         v.reserve(10);
         assert(v.capacity() >= 10);
     }
     {
-        std::vector<int> v(100);
-        assert(v.capacity() == 100);
+        barefootc::vector<int> v(100);
+        assert(v.capacity() >= 100);
         v.reserve(50);
         assert(v.size() == 100);
-        assert(v.capacity() == 100);
+        assert(v.capacity() >= 100);
         v.reserve(150);
         assert(v.size() == 100);
-        assert(v.capacity() == 150);
+        assert(v.capacity() >= 150);
     }
     {
-        std::vector<int, stack_allocator<int, 250> > v(100);
-        assert(v.capacity() == 100);
+        barefootc::vector<int, stack_allocator<int, 250> > v(100);
+        assert(v.capacity() >= 100);
         v.reserve(50);
         assert(v.size() == 100);
-        assert(v.capacity() == 100);
+        assert(v.capacity() >= 100);
         v.reserve(150);
         assert(v.size() == 100);
-        assert(v.capacity() == 150);
+        assert(v.capacity() >= 150);
     }
 #if __cplusplus >= 201103L
     {
-        std::vector<int, min_allocator<int>> v;
+        barefootc::vector<int, min_allocator<int>> v;
         v.reserve(10);
         assert(v.capacity() >= 10);
     }
     {
-        std::vector<int, min_allocator<int>> v(100);
-        assert(v.capacity() == 100);
+        barefootc::vector<int, min_allocator<int>> v(100);
+        assert(v.capacity() >= 100);
         v.reserve(50);
         assert(v.size() == 100);
-        assert(v.capacity() == 100);
+        assert(v.capacity() >= 100);
         v.reserve(150);
         assert(v.size() == 100);
-        assert(v.capacity() == 150);
+        assert(v.capacity() >= 150);
     }
 #endif
 }

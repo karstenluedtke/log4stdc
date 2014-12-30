@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -13,15 +15,15 @@
 
 #include <vector>
 #include <cassert>
-#include "../../../stack_allocator.h"
-#include "../../../MoveOnly.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+// #include "../../../MoveOnly.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
-#ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
+#if 0 // ndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
     {
-        std::vector<MoveOnly> v(100);
+        barefootc::vector<MoveOnly> v(100);
         v.resize(50);
         assert(v.size() == 50);
         assert(v.capacity() == 100);
@@ -30,7 +32,7 @@ int main()
         assert(v.capacity() >= 200);
     }
     {
-        std::vector<MoveOnly, stack_allocator<MoveOnly, 300> > v(100);
+        barefootc::vector<MoveOnly, stack_allocator<MoveOnly, 300> > v(100);
         v.resize(50);
         assert(v.size() == 50);
         assert(v.capacity() == 100);
@@ -40,19 +42,19 @@ int main()
     }
 #else  // _LIBCPP_HAS_NO_RVALUE_REFERENCES
     {
-        std::vector<int> v(100);
+        barefootc::vector<int> v(100);
         v.resize(50);
         assert(v.size() == 50);
-        assert(v.capacity() == 100);
+        assert(v.capacity() >= 100);
         v.resize(200);
         assert(v.size() == 200);
         assert(v.capacity() >= 200);
     }
     {
-        std::vector<int, stack_allocator<int, 300> > v(100);
+        barefootc::vector<int, stack_allocator<int, 300> > v(100);
         v.resize(50);
         assert(v.size() == 50);
-        assert(v.capacity() == 100);
+        assert(v.capacity() >= 100);
         v.resize(200);
         assert(v.size() == 200);
         assert(v.capacity() >= 200);
@@ -60,10 +62,10 @@ int main()
 #endif  // _LIBCPP_HAS_NO_RVALUE_REFERENCES
 #if __cplusplus >= 201103L
     {
-        std::vector<MoveOnly, min_allocator<MoveOnly>> v(100);
+        barefootc::vector<MoveOnly, min_allocator<MoveOnly>> v(100);
         v.resize(50);
         assert(v.size() == 50);
-        assert(v.capacity() == 100);
+        assert(v.capacity() >= 100);
         v.resize(200);
         assert(v.size() == 200);
         assert(v.capacity() >= 200);

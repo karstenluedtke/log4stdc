@@ -194,9 +194,23 @@ namespace barefootc {
 	};
 
 	template<class T>
+	int distance(const iterator<T>& lhs, const iterator<T>& rhs)
+	{
+		return (lhs.distance(rhs));
+	}
+
+	template<class T>
 	int operator-(const iterator<T>& lhs, const iterator<T>& rhs)
 	{
 		return (rhs.distance(lhs));
+	}
+
+	template<class T>
+	iterator<T> next(const iterator<T>& iter, ptrdiff_t n=1)
+	{
+		iterator<T> it(iter);
+		it.advance(n);
+		return (it);
 	}
 
 	template<class T>

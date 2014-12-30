@@ -221,6 +221,7 @@ OFILES= \
 	iterators/utf8_iterator.obj \
 	iterators/wstr_iterator.obj \
 	iterators/cstr_iterator.obj \
+	iterators/intarray_iterator.obj \
 	iterators/source_iterator.obj \
 	iterators/xmltag_iterator.obj \
 	iterators/bfc_parse_xmltags.obj \
@@ -655,8 +656,11 @@ TESTS= \
 	tests/datetime/advance.exe \
 	tests/datetime/to_isodate.exe \
 	tests/vector.modifiers/push_back.pass.exe \
+	tests/vector.modifiers/erase_iter.pass.exe \
+	tests/vector.modifiers/erase_iter_iter.pass.exe \
 	tests/vector.modifiers/insert_iter_size_value.pass.exe \
 	tests/vector.modifiers/insert_iter_value.pass.exe \
+	tests/vector.modifiers/insert_iter_iter_iter.pass.exe \
 	tests/vector.modifiers/pop_back.pass.exe \
 
 
@@ -960,8 +964,11 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\datetime\advance.exe
 	tests\datetime\to_isodate.exe
 	tests\vector.modifiers\push_back.pass.exe
+	tests\vector.modifiers\erase_iter.pass.exe
+	tests\vector.modifiers\erase_iter_iter.pass.exe
 	tests\vector.modifiers\insert_iter_size_value.pass.exe
 	tests\vector.modifiers\insert_iter_value.pass.exe
+	tests\vector.modifiers\insert_iter_iter_iter.pass.exe
 	tests\vector.modifiers\pop_back.pass.exe
 	echo "check done"
 
@@ -1498,6 +1505,9 @@ iterators/wstr_iterator.obj: iterators/wstr_iterator.c $(HEADERS)
 
 iterators/cstr_iterator.obj: iterators/cstr_iterator.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/cstr_iterator.c
+
+iterators/intarray_iterator.obj: iterators/intarray_iterator.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/intarray_iterator.c
 
 iterators/source_iterator.obj: iterators/source_iterator.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/source_iterator.c
@@ -4233,6 +4243,22 @@ tests/vector.modifiers/push_back.pass.exe: \
 tests/vector.modifiers/push_back.pass.obj: tests/vector.modifiers/push_back.pass.cpp $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/push_back.pass.cpp
 
+tests/vector.modifiers/erase_iter.pass.exe: \
+		tests/vector.modifiers/erase_iter.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/erase_iter.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.modifiers/erase_iter.pass.obj: tests/vector.modifiers/erase_iter.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/erase_iter.pass.cpp
+
+tests/vector.modifiers/erase_iter_iter.pass.exe: \
+		tests/vector.modifiers/erase_iter_iter.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/erase_iter_iter.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.modifiers/erase_iter_iter.pass.obj: tests/vector.modifiers/erase_iter_iter.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/erase_iter_iter.pass.cpp
+
 tests/vector.modifiers/insert_iter_size_value.pass.exe: \
 		tests/vector.modifiers/insert_iter_size_value.pass.obj \
 		barefootc.lib log4stdc.lib
@@ -4248,6 +4274,14 @@ tests/vector.modifiers/insert_iter_value.pass.exe: \
 
 tests/vector.modifiers/insert_iter_value.pass.obj: tests/vector.modifiers/insert_iter_value.pass.cpp $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_value.pass.cpp
+
+tests/vector.modifiers/insert_iter_iter_iter.pass.exe: \
+		tests/vector.modifiers/insert_iter_iter_iter.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/insert_iter_iter_iter.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.modifiers/insert_iter_iter_iter.pass.obj: tests/vector.modifiers/insert_iter_iter_iter.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_iter_iter.pass.cpp
 
 tests/vector.modifiers/pop_back.pass.exe: \
 		tests/vector.modifiers/pop_back.pass.obj \

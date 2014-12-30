@@ -3617,6 +3617,18 @@ TESTS += tests/vector.modifiers/push_back.pass
 #tests_vector_modifiers_emplace_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/vector.modifiers/emplace.pass
 
+check_PROGRAMS += tests/vector.modifiers/erase_iter.pass
+tests_vector_modifiers_erase_iter_pass_SOURCES = tests/vector.modifiers/erase_iter.pass.cpp
+tests_vector_modifiers_erase_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_modifiers_erase_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.modifiers/erase_iter.pass
+
+check_PROGRAMS += tests/vector.modifiers/erase_iter_iter.pass
+tests_vector_modifiers_erase_iter_iter_pass_SOURCES = tests/vector.modifiers/erase_iter_iter.pass.cpp
+tests_vector_modifiers_erase_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_modifiers_erase_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.modifiers/erase_iter_iter.pass
+
 #check_PROGRAMS += tests/vector.modifiers/erase_iter_db1.pass
 #tests_vector_modifiers_erase_iter_db1_pass_SOURCES = tests/vector.modifiers/erase_iter_db1.pass.cpp
 #tests_vector_modifiers_erase_iter_db1_pass_LDADD = libbarefootc.a liblog4stdc.a
@@ -3652,18 +3664,6 @@ TESTS += tests/vector.modifiers/push_back.pass
 #tests_vector_modifiers_erase_iter_iter_db4_pass_LDADD = libbarefootc.a liblog4stdc.a
 #tests_vector_modifiers_erase_iter_iter_db4_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/vector.modifiers/erase_iter_iter_db4.pass
-
-#check_PROGRAMS += tests/vector.modifiers/erase_iter_iter.pass
-#tests_vector_modifiers_erase_iter_iter_pass_SOURCES = tests/vector.modifiers/erase_iter_iter.pass.cpp
-#tests_vector_modifiers_erase_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_vector_modifiers_erase_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/vector.modifiers/erase_iter_iter.pass
-
-#check_PROGRAMS += tests/vector.modifiers/erase_iter.pass
-#tests_vector_modifiers_erase_iter_pass_SOURCES = tests/vector.modifiers/erase_iter.pass.cpp
-#tests_vector_modifiers_erase_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_vector_modifiers_erase_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/vector.modifiers/erase_iter.pass
 
 #check_PROGRAMS += tests/vector.modifiers/insert_iter_initializer_list.pass
 #tests_vector_modifiers_insert_iter_initializer_list_pass_SOURCES = tests/vector.modifiers/insert_iter_initializer_list.pass.cpp

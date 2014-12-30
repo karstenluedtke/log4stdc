@@ -48,15 +48,9 @@ namespace barefootc {
 		typedef T value_type;
 		typedef value_type& reference;
 		typedef const value_type& const_reference;
-		typedef size_t size_type; // see 23.2
-		typedef ptrdiff_t difference_type;// see 23.2
+		typedef size_t size_type;
+		typedef ptrdiff_t difference_type;
 		typedef Allocator allocator_type;
-		//typedef typename allocator_traits<Allocator>::pointer pointer;
-		//typedef typename allocator_traits<Allocator>::const_pointer const_pointer;
-		//typedef implementation-defined iterator; // see 23.2
-		//typedef implementation-defined const_iterator; // see 23.2
-		//typedef std::reverse_iterator<iterator> reverse_iterator;
-		//typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef barefootc::iterator<T> iterator;
 		typedef iterator const_iterator;
 		typedef iterator reverse_iterator;
@@ -91,7 +85,7 @@ namespace barefootc {
 			init_vector(get_stdc_mempool());
 		}
 
-		explicit vector(const Allocator&)
+		explicit vector(const Allocator& a)
 		{
 			init_vector(get_stdc_mempool());
 		}
@@ -103,10 +97,45 @@ namespace barefootc {
 		}
 
 		vector(size_type n, const T& value,
-			const Allocator& = Allocator());
+			const Allocator& a = Allocator())
+		{
+			int rc;
+			init_vector(get_stdc_mempool());
+			rc = bfc_container_assign_fill((bfc_contptr_t)&bfcvec,
+							n, &value);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+		}
+
+#if 0
 		template <class InputIterator>
 		vector(InputIterator first, InputIterator last,
 			const Allocator& = Allocator());
+#endif
+		vector(const_iterator first, const_iterator last)
+		{
+			int rc;
+			init_vector(get_stdc_mempool());
+			rc = bfc_container_assign_range((bfc_contptr_t)&bfcvec,
+					first.bfciter(), last.bfciter());
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+		}
+
+		vector(const_iterator first, const_iterator last,
+			const Allocator& a)
+		{
+			int rc;
+			init_vector(get_stdc_mempool());
+			rc = bfc_container_assign_range((bfc_contptr_t)&bfcvec,
+					first.bfciter(), last.bfciter());
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+		}
+
 		vector(const vector<T,Allocator>& x);
 		vector(const vector&, const Allocator&);
 #if __cplusplus >= 201103L
@@ -117,6 +146,11 @@ namespace barefootc {
 		~vector()
 		{
 			bfc_destroy(&bfcvec);
+		}
+
+		bfc_contptr_t contptr() const
+		{
+			return ((bfc_contptr_t) &bfcvec);
 		}
 
 		vector<T,Allocator>& operator=(const vector<T,Allocator>& x);
@@ -347,8 +381,28 @@ namespace barefootc {
 		iterator emplace(const_iterator position, Args&&... args);
 
 #endif
-		iterator erase(const_iterator position);
-		iterator erase(const_iterator first, const_iterator last);
+		iterator erase(const_iterator position)
+		{
+			int rc;
+			rc = bfc_container_erase_element((bfc_contptr_t)&bfcvec,
+							 position.bfciter());
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+			return(position);
+		}
+
+		iterator erase(const_iterator first, const_iterator last)
+		{
+			int rc;
+			rc = bfc_container_erase_range((bfc_contptr_t)&bfcvec,
+					 first.bfciter(), last.bfciter());
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+			return(first);
+		}
+
 
 		void swap(vector<T,Allocator>&);
 		void clear();
@@ -356,7 +410,10 @@ namespace barefootc {
 
 	template <class T, class Allocator>
 	bool operator==(const vector<T,Allocator>& x,
-			const vector<T,Allocator>& y);
+			const vector<T,Allocator>& y)
+	{
+		return bfc_equal_object(x.contptr(), y.contptr());
+	}
 
 	template <class T, class Allocator>
 	bool operator< (const vector<T,Allocator>& x,

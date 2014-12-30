@@ -18,9 +18,13 @@
 
 #include "tests/support/min_allocator.h"
 
+static l4sc_logger_ptr_t logger;
+
 int main()
 {
     int a1[] = {1, 2, 3};
+    l4sc_configure_from_xml_file("log4j.xml");
+    logger = l4sc_get_logger("barefootc.container", 0);
     {
         barefootc::vector<int> l1(a1, a1+3);
         barefootc::vector<int>::iterator i = l1.erase(l1.cbegin(), l1.cbegin());

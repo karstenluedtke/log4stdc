@@ -182,13 +182,28 @@ vector_hashcode(bfc_cvecptr_t vec)
 static int
 vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
 {
+	size_t idx, size;
+	const void *p, *q;
+
 	if (vec == other) {
 		return (1);
 	}
 	if (bfc_object_length(vec) != bfc_object_length(other)) {
 		return (0);
 	}
-	return (memcmp (vec, other, sizeof(*vec)) == 0);
+	size = bfc_object_length(vec);
+	for (idx=0; idx < size; idx++) {
+		p = bfc_container_index((bfc_contptr_t)other, idx);
+		q = bfc_container_index((bfc_contptr_t)other, idx);
+		if (p && q) {
+			if (memcmp(p, q, vec->elem_size) != 0) {
+				return (0);
+			}
+		} else if (p != q) /* one of them != NULL */ {
+			return (0);
+		}
+	}
+	return (1);
 }
 
 static size_t
@@ -599,20 +614,34 @@ vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 	size_t idx, pos = bfc_iterator_position(first);
 	int n = bfc_iterator_distance(first, last);
 	void *ref, *src;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %p): pos %ld+%ld/%ld",
+		__FUNCTION__, vec, first, last, (long)pos, (long)n, (long)size);
+	bfc_object_dump(vec, 1, logger);
+	bfc_object_dump(first, 1, logger);
+	bfc_object_dump(last, 1, logger);
 
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);
 	}
-	if (n < (int) size) {
+	if (pos+n < size) {
 		for (idx = size-n-1; idx >= pos; idx--) {
+			L4SC_TRACE(logger, "%s: idx %ld", __FUNCTION__, (long) idx);
+			if ((int) idx < 0) {
+				return (-EFAULT);
+			}
 			if (((src = bfc_vector_ref(vec, idx+n)) != NULL)
 			 && ((ref = bfc_vector_have(vec, idx)) != NULL)) {
 				memcpy(ref, src, vec->elem_size);
 			}
+			if (idx == pos) {
+				break;
+			}
 		}
 		size -= n;
 	} else {
-		size = 0;
+		size = pos;
 	}
 	return (bfc_container_resize((bfc_contptr_t) vec, size, NULL));
 }

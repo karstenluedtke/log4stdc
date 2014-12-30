@@ -501,6 +501,12 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 	size_t idx, pos = bfc_iterator_position(position);
 	void *ref, *src;
 	int rc;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %ld, %p): pos %ld/%ld",
+		__FUNCTION__, vec, position, (long)n, p, (long)pos, (long)size);
+	bfc_object_dump(vec, 1, logger);
+	bfc_object_dump(position, 1, logger);
 
 	if (n < 1) {
 		return (BFC_SUCCESS);

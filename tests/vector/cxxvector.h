@@ -65,27 +65,41 @@ namespace barefootc {
 	private:
 		BFC_VECTOR(bfcvec_s, T, 4) bfcvec;
 
+		void init_vector(struct mempool *pool)
+		{
+			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
+			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
+		}
+
+		static void throw_replace_error(int rc)
+		{
+			switch (rc) {
+			case ERANGE:
+				throw(std::out_of_range("bad position"));
+				return;
+			default:
+				char m[80];
+				snprintf(m, sizeof(m), "substr error %d", rc);
+				throw(std::runtime_error(m));
+			}
+		}
+
 	public:
 		// 23.3.6.2, construct/copy/destroy:
 		vector()
 		{
-			struct mempool *pool = get_stdc_mempool();
-			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
-			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
+			init_vector(get_stdc_mempool());
 		}
 
 		explicit vector(const Allocator&)
 		{
-			struct mempool *pool = get_stdc_mempool();
-			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
-			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
+			init_vector(get_stdc_mempool());
 		}
 
 		explicit vector(size_type n)
 		{
-			struct mempool *pool = get_stdc_mempool();
-			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
-			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
+			init_vector(get_stdc_mempool());
+			BFC_VECTOR_SET_SIZE(&bfcvec, n);
 		}
 
 		vector(size_type n, const T& value,
@@ -119,16 +133,47 @@ namespace barefootc {
 		allocator_type get_allocator() const;
 
 		// iterators:
-		iterator begin();
-		const_iterator begin() const;
-		iterator end();
-		const_iterator end() const;
+		iterator begin()
+		{
+			bfc_iterator_t tmp;
+			bfc_init_iterator(&tmp, sizeof(tmp),
+					  (bfc_objptr_t) &bfcvec, 0);
+			barefootc::iterator<vector,T> it(tmp);
+			return (it);
+		}
+
+		iterator end()
+		{
+			bfc_iterator_t tmp;
+			bfc_init_iterator(&tmp, sizeof(tmp),
+					  (bfc_objptr_t) &bfcvec, BFC_NPOS);
+			barefootc::iterator<vector,T> it(tmp);
+			return (it);
+		}
+
 		reverse_iterator rbegin();
 		const_reverse_iterator rbegin() const;
 		reverse_iterator rend();
 		const_reverse_iterator rend() const;
-		const_iterator cbegin() const;
-		const_iterator cend() const;
+
+		const_iterator cbegin() const
+		{
+			bfc_iterator_t tmp;
+			bfc_init_iterator(&tmp, sizeof(tmp),
+					  (bfc_objptr_t) &bfcvec, 0);
+			barefootc::iterator<vector,T> it(tmp);
+			return (it);
+		}
+
+		const_iterator cend() const
+		{
+			bfc_iterator_t tmp;
+			bfc_init_iterator(&tmp, sizeof(tmp),
+					  (bfc_objptr_t) &bfcvec, BFC_NPOS);
+			barefootc::iterator<vector,T> it(tmp);
+			return (it);
+		}
+
 		const_reverse_iterator crbegin() const;
 		const_reverse_iterator crend() const;
 
@@ -240,9 +285,56 @@ namespace barefootc {
 			bfc_container_pop_back((bfc_contptr_t)&bfcvec);
 		}
 
-		iterator insert(const_iterator position, const T& x);
+		iterator insert(const_iterator position, const T& x)
+		{
+			iterator it(position);
+			int rc;
+			rc = bfc_container_insert_element(
+				(bfc_contptr_t)&bfcvec, it.bfciter(), &x);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+			return(it);
+		}
+
 		iterator insert(const_iterator position,
-				size_type n, const T& x);
+				size_type n, const T& x)
+		{
+			iterator it(position);
+			int rc;
+			rc = bfc_container_insert_fill(
+				(bfc_contptr_t)&bfcvec, it.bfciter(), n, &x);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+			return(it);
+		}
+
+		iterator insert(const_iterator position, int n, const T& x)
+		{
+			iterator it(position);
+			int rc;
+			rc = bfc_container_insert_fill(
+				(bfc_contptr_t)&bfcvec, it.bfciter(), n, &x);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+			return(it);
+		}
+
+		iterator insert(const_iterator position,
+				const_iterator first, const_iterator last)
+		{
+			iterator it(position);
+			int rc;
+			rc = bfc_container_insert_range((bfc_contptr_t)&bfcvec,
+				it.bfciter(), first.bfciter(), last.bfciter());
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+			return(it);
+		}
+
 		template <class InputIterator>
 		iterator insert(const_iterator position,
 				InputIterator first, InputIterator last);

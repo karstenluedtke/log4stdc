@@ -59,6 +59,12 @@ namespace barefootc {
 				clone, (&it.bfcit, &bfcit, sizeof(bfcit)));
 		}
 
+		iterator(const bfc_iterator_t& bfciter)
+		{
+			VOID_METHCALL(bfc_iterator_classptr_t, &bfciter,
+				clone, (&bfciter, &bfcit, sizeof(bfcit)));
+		}
+
 		iterator(const stringT *s, bfc_cstrptr_t bfcstr, size_t p)
 		{
 			if (p == 0) {

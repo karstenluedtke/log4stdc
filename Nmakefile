@@ -655,6 +655,8 @@ TESTS= \
 	tests/datetime/advance.exe \
 	tests/datetime/to_isodate.exe \
 	tests/vector.modifiers/push_back.pass.exe \
+	tests/vector.modifiers/insert_iter_size_value.pass.exe \
+	tests/vector.modifiers/insert_iter_value.pass.exe \
 	tests/vector.modifiers/pop_back.pass.exe \
 
 
@@ -958,6 +960,8 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\datetime\advance.exe
 	tests\datetime\to_isodate.exe
 	tests\vector.modifiers\push_back.pass.exe
+	tests\vector.modifiers\insert_iter_size_value.pass.exe
+	tests\vector.modifiers\insert_iter_value.pass.exe
 	tests\vector.modifiers\pop_back.pass.exe
 	echo "check done"
 
@@ -4228,6 +4232,22 @@ tests/vector.modifiers/push_back.pass.exe: \
 
 tests/vector.modifiers/push_back.pass.obj: tests/vector.modifiers/push_back.pass.cpp $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/push_back.pass.cpp
+
+tests/vector.modifiers/insert_iter_size_value.pass.exe: \
+		tests/vector.modifiers/insert_iter_size_value.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/insert_iter_size_value.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.modifiers/insert_iter_size_value.pass.obj: tests/vector.modifiers/insert_iter_size_value.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_size_value.pass.cpp
+
+tests/vector.modifiers/insert_iter_value.pass.exe: \
+		tests/vector.modifiers/insert_iter_value.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/insert_iter_value.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.modifiers/insert_iter_value.pass.obj: tests/vector.modifiers/insert_iter_value.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_value.pass.cpp
 
 tests/vector.modifiers/pop_back.pass.exe: \
 		tests/vector.modifiers/pop_back.pass.obj \

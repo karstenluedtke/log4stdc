@@ -130,7 +130,7 @@ bfc_init_iterator(void *buf, size_t bufsize, bfc_cobjptr_t obj, size_t pos)
 
 	if ((rc = default_init_iterator(buf, bufsize, NULL)) == BFC_SUCCESS) {
 		bfc_iterptr_t it = (bfc_iterptr_t) buf;
-		size_t len = bfc_object_length(obj);
+		size_t len = (obj == NULL)? 0: bfc_object_length(obj);
 		it->obj = (bfc_objptr_t) (uintptr_t) obj;
 		if (pos == BFC_NPOS) {
 			it->pos = len;

@@ -22,8 +22,12 @@
 #include "tests/support/stack_allocator.h"
 #include "tests/support/min_allocator.h"
 
+static l4sc_logger_ptr_t logger;
+
 int main()
 {
+    l4sc_configure_from_xml_file("log4j.xml");
+    logger = l4sc_get_logger("barefootc.container", 0);
     {
         barefootc::vector<int> v(100);
         barefootc::vector<int>::iterator i = v.insert(v.cbegin() + 10, 1);

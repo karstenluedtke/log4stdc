@@ -22,6 +22,7 @@ static unsigned bfc_iterator_hashcode(bfc_citerptr_t it);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
 static int iterator_tostring(bfc_citerptr_t it, char *buf, size_t bufsize);
 
+static size_t element_size(bfc_citerptr_t);
 static const void *iterator_first(bfc_citerptr_t);
 static void *forward_index(bfc_iterptr_t, size_t pos);
 static long forward_getlong(bfc_citerptr_t, size_t pos);
@@ -63,7 +64,7 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .rbegin	*/ NULL,
 	/* .rlimit	*/ NULL,
 	/* .max_size	*/ NULL,
-	/* .element_size*/ NULL,
+	/* .element_size*/ element_size,
 	/* .capacity	*/ NULL,
 	/* .reserve	*/ NULL,
 	/* .spare26 	*/ NULL,
@@ -103,7 +104,7 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* .rbegin	*/ NULL,
 	/* .rlimit	*/ NULL,
 	/* .max_size	*/ NULL,
-	/* .element_size*/ NULL,
+	/* .element_size*/ element_size,
 	/* .capacity	*/ NULL,
 	/* .reserve	*/ NULL,
 	/* .spare26 	*/ NULL,
@@ -189,6 +190,16 @@ size_t
 bfc_iterator_objsize(bfc_citerptr_t it)
 {
 	return (sizeof(struct bfc_iterator));
+}
+
+static size_t
+element_size(bfc_citerptr_t it)
+{
+	if (it->obj) {
+		RETURN_METHCALL(bfc_classptr_t, it->obj,
+				element_size, (it->obj), 0);
+	}
+	return (0);
 }
 
 static unsigned  

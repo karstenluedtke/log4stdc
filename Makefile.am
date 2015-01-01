@@ -213,6 +213,7 @@ libbarefootc_a_SOURCES+= iterators/bfc_tag_get_attrs.c
 libbarefootc_a_SOURCES+= iterators/bfc_iterator_index.c
 libbarefootc_a_SOURCES+= iterators/bfc_iterator_getlong.c
 libbarefootc_a_SOURCES+= iterators/bfc_iterator_setlong.c
+libbarefootc_a_SOURCES+= iterators/bfc_iterator_element_size.c
 libbarefootc_a_SOURCES+= containers/bfc_container_first.c
 libbarefootc_a_SOURCES+= containers/bfc_container_index.c
 libbarefootc_a_SOURCES+= containers/bfc_container_getlong.c

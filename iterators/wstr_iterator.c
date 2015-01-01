@@ -18,6 +18,8 @@
 static int init_iterator(void *buf,size_t bufsize,struct mempool *pool);
 static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
+
+static size_t element_size(bfc_citerptr_t);
 static const void *iterator_first(bfc_citerptr_t);
 static void *forward_index(bfc_iterptr_t, size_t pos);
 static long forward_getchar(bfc_citerptr_t, size_t pos);
@@ -48,6 +50,7 @@ struct bfc_iterator_class bfc_wstr_forward_iterator_class = {
 	.first	= iterator_first,
 	.index	= forward_index,
 	.getl	= forward_getchar,
+	.element_size = element_size,
 	/* Iterator functions */
 	.advance    = advance_forward,
 	.distance   = forward_distance,
@@ -63,6 +66,7 @@ struct bfc_iterator_class bfc_wstr_reverse_iterator_class = {
 	.first	= iterator_first,
 	.index	= reverse_index,
 	.getl	= reverse_getchar,
+	.element_size = element_size,
 	/* Iterator functions */
 	.advance    = advance_reverse,
 	.distance   = reverse_distance,
@@ -157,6 +161,12 @@ dump_iterator(bfc_citerptr_t it, int depth, struct l4sc_logger *log)
 	}
 }
 #endif
+
+static size_t
+element_size(bfc_citerptr_t it)
+{
+	return (sizeof(wchar_t));
+}
 
 static const void *
 iterator_first(bfc_citerptr_t it)

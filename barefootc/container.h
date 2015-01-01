@@ -38,6 +38,7 @@ typedef const struct bfc_container *bfc_ccontptr_t;
 	int	(*resize)(contptrT c, size_t n, const elemT *p);	\
 	size_t	(*capacity)(ccontptrT c);				\
 	int	(*reserve)(contptrT c, size_t n);			\
+	size_t	(*element_size)(ccontptrT c);				\
 	/* Modifiers */							\
 	int	(*assign_fill)(contptrT c, size_t n, const elemT *p);	\
 	int	(*assign_range)(contptrT c,				\
@@ -76,10 +77,12 @@ size_t bfc_container_max_size(bfc_ccontptr_t c);
 size_t bfc_container_capacity(bfc_ccontptr_t c);
 int  bfc_container_reserve(bfc_contptr_t c, size_t n);
 int  bfc_container_resize(bfc_contptr_t c, size_t n, const void *p);
+size_t bfc_container_element_size(bfc_ccontptr_t c);
 
 int  bfc_container_assign_fill(bfc_contptr_t c, size_t n, const void *p);
+int  bfc_container_assign_copy(bfc_contptr_t c, bfc_ccontptr_t src);
 int  bfc_container_assign_range(bfc_contptr_t c,
-				bfc_iterptr_t first,bfc_iterptr_t last);
+				bfc_iterptr_t first, bfc_iterptr_t last);
 int  bfc_container_push_front(bfc_contptr_t c, const void *p);
 void bfc_container_pop_front(bfc_contptr_t c);
 int  bfc_container_push_back(bfc_contptr_t c, const void *p);

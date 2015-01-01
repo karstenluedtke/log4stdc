@@ -59,6 +59,8 @@ namespace barefootc {
 	private:
 		BFC_VECTOR(bfcvec_s, T, 4) bfcvec;
 
+		const Allocator saved_allocator;
+
 		void init_vector(struct mempool *pool)
 		{
 			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
@@ -80,24 +82,35 @@ namespace barefootc {
 
 	public:
 		// 23.3.6.2, construct/copy/destroy:
-		vector()
+		vector(): saved_allocator()
 		{
 			init_vector(get_stdc_mempool());
 		}
 
-		explicit vector(const Allocator& a)
+		explicit vector(const Allocator& a): saved_allocator(a)
 		{
 			init_vector(get_stdc_mempool());
 		}
 
-		explicit vector(size_type n)
+		explicit vector(size_type n): saved_allocator()
 		{
 			init_vector(get_stdc_mempool());
 			BFC_VECTOR_SET_SIZE(&bfcvec, n);
 		}
 
+		vector(size_type n, const T& value): saved_allocator()
+		{
+			int rc;
+			init_vector(get_stdc_mempool());
+			rc = bfc_container_assign_fill((bfc_contptr_t)&bfcvec,
+							n, &value);
+			if (rc < 0) {
+				throw_replace_error(-rc);
+			}
+		}
+
 		vector(size_type n, const T& value,
-			const Allocator& a = Allocator())
+			const Allocator& a): saved_allocator(a)
 		{
 			int rc;
 			init_vector(get_stdc_mempool());
@@ -113,7 +126,8 @@ namespace barefootc {
 		vector(InputIterator first, InputIterator last,
 			const Allocator& = Allocator());
 #endif
-		vector(const_iterator first, const_iterator last)
+		vector(const_iterator first, const_iterator last):
+			saved_allocator()
 		{
 			int rc;
 			init_vector(get_stdc_mempool());
@@ -125,7 +139,7 @@ namespace barefootc {
 		}
 
 		vector(const_iterator first, const_iterator last,
-			const Allocator& a)
+			const Allocator& a): saved_allocator(a)
 		{
 			int rc;
 			init_vector(get_stdc_mempool());
@@ -136,8 +150,19 @@ namespace barefootc {
 			}
 		}
 
-		vector(const vector<T,Allocator>& x);
-		vector(const vector&, const Allocator&);
+		vector(const vector<T,Allocator>& x):
+			saved_allocator(x.get_allocator())
+		{
+			bfc_init_vector_copy(&bfcvec, sizeof(bfcvec),
+					     get_stdc_mempool(), x.contptr());
+		}
+
+		vector(const vector& x, const Allocator& a): saved_allocator(a)
+		{
+			bfc_init_vector_copy(&bfcvec, sizeof(bfcvec),
+					     get_stdc_mempool(), x.contptr());
+		}
+
 #if __cplusplus >= 201103L
 		vector(vector&&);
 		vector(vector&&, const Allocator&);
@@ -153,7 +178,13 @@ namespace barefootc {
 			return ((bfc_contptr_t) &bfcvec);
 		}
 
-		vector<T,Allocator>& operator=(const vector<T,Allocator>& x);
+		vector<T,Allocator>& operator=(const vector<T,Allocator>& x)
+		{
+			bfc_init_vector_copy(&bfcvec, sizeof(bfcvec),
+					     get_stdc_mempool(), x.contptr());
+			return (*this);
+		}
+
 #if __cplusplus >= 201103L
 		vector<T,Allocator>& operator=(vector<T,Allocator>&& x);
 		vector& operator=(initializer_list<T>);
@@ -164,7 +195,10 @@ namespace barefootc {
 #if __cplusplus >= 201103L
 		void assign(initializer_list<T>);
 #endif
-		allocator_type get_allocator() const;
+		allocator_type get_allocator() const
+		{
+			return (saved_allocator);
+		}
 
 		// iterators:
 		iterator begin()
@@ -406,6 +440,11 @@ namespace barefootc {
 
 		void swap(vector<T,Allocator>&);
 		void clear();
+
+		int __invariants()  // required by test bench
+		{
+			return (1); // whatever this is ???
+		}
 	};
 
 	template <class T, class Allocator>

@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -14,9 +16,9 @@
 #include <vector>
 #include <cassert>
 
-#include "DefaultOnly.h"
-#include "min_allocator.h"
-#include "test_allocator.h"
+//#include "DefaultOnly.h"
+#include "tests/support/min_allocator.h"
+#include "tests/support/test_allocator.h"
 
 template <class C>
 void
@@ -58,13 +60,13 @@ test(typename C::size_type n)
 
 int main()
 {
-    test<std::vector<int> >(50);
-    test<std::vector<DefaultOnly> >(500);
-    assert(DefaultOnly::count == 0);
+    test<barefootc::vector<int> >(50);
+    //test<barefootc::vector<DefaultOnly> >(500);
+    //assert(DefaultOnly::count == 0);
 #if __cplusplus >= 201103L
-    test<std::vector<int, min_allocator<int>> >(50);
-    test<std::vector<DefaultOnly, min_allocator<DefaultOnly>> >(500);
-    test2<std::vector<DefaultOnly, test_allocator<DefaultOnly>> >( 100, test_allocator<DefaultOnly>(23));
+    test<barefootc::vector<int, min_allocator<int>> >(50);
+    test<barefootc::vector<DefaultOnly, min_allocator<DefaultOnly>> >(500);
+    test2<barefootc::vector<DefaultOnly, test_allocator<DefaultOnly>> >( 100, test_allocator<DefaultOnly>(23));
     assert(DefaultOnly::count == 0);
 #endif
 }

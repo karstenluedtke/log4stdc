@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -16,8 +18,8 @@
 
 #include "test_allocator.h"
 #include "../../../NotConstructible.h"
-#include "../../../stack_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/stack_allocator.h"
+#include "tests/support/min_allocator.h"
 
 template <class C>
 void
@@ -48,26 +50,26 @@ test1(const typename C::allocator_type& a)
 int main()
 {
     {
-    test0<std::vector<int> >();
-    test0<std::vector<NotConstructible> >();
-    test1<std::vector<int, test_allocator<int> > >(test_allocator<int>(3));
-    test1<std::vector<NotConstructible, test_allocator<NotConstructible> > >
+    test0<barefootc::vector<int> >();
+    test0<barefootc::vector<NotConstructible> >();
+    test1<barefootc::vector<int, test_allocator<int> > >(test_allocator<int>(3));
+    test1<barefootc::vector<NotConstructible, test_allocator<NotConstructible> > >
         (test_allocator<NotConstructible>(5));
     }
     {
-        std::vector<int, stack_allocator<int, 10> > v;
+        barefootc::vector<int, stack_allocator<int, 10> > v;
         assert(v.empty());
     }
 #if __cplusplus >= 201103L
     {
-    test0<std::vector<int, min_allocator<int>> >();
-    test0<std::vector<NotConstructible, min_allocator<NotConstructible>> >();
-    test1<std::vector<int, min_allocator<int> > >(min_allocator<int>{});
-    test1<std::vector<NotConstructible, min_allocator<NotConstructible> > >
+    test0<barefootc::vector<int, min_allocator<int>> >();
+    test0<barefootc::vector<NotConstructible, min_allocator<NotConstructible>> >();
+    test1<barefootc::vector<int, min_allocator<int> > >(min_allocator<int>{});
+    test1<barefootc::vector<NotConstructible, min_allocator<NotConstructible> > >
         (min_allocator<NotConstructible>{});
     }
     {
-        std::vector<int, min_allocator<int> > v;
+        barefootc::vector<int, min_allocator<int> > v;
         assert(v.empty());
     }
 #endif

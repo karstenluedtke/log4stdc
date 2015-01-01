@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -33,19 +35,19 @@ int main()
 {
 #if __has_feature(cxx_noexcept)
     {
-        typedef std::vector<MoveOnly> C;
+        typedef barefootc::vector<MoveOnly> C;
         static_assert(std::is_nothrow_destructible<C>::value, "");
     }
     {
-        typedef std::vector<MoveOnly, test_allocator<MoveOnly>> C;
+        typedef barefootc::vector<MoveOnly, test_allocator<MoveOnly>> C;
         static_assert(std::is_nothrow_destructible<C>::value, "");
     }
     {
-        typedef std::vector<MoveOnly, other_allocator<MoveOnly>> C;
+        typedef barefootc::vector<MoveOnly, other_allocator<MoveOnly>> C;
         static_assert(std::is_nothrow_destructible<C>::value, "");
     }
     {
-        typedef std::vector<MoveOnly, some_alloc<MoveOnly>> C;
+        typedef barefootc::vector<MoveOnly, some_alloc<MoveOnly>> C;
         static_assert(!std::is_nothrow_destructible<C>::value, "");
     }
 #endif

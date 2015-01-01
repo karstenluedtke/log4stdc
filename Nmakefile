@@ -241,6 +241,8 @@ OFILES= \
 	containers/bfc_container_capacity.obj \
 	containers/bfc_container_reserve.obj \
 	containers/bfc_container_resize.obj \
+	containers/bfc_container_element_size.obj \
+	containers/bfc_container_assign_copy.obj \
 	containers/bfc_container_assign_fill.obj \
 	containers/bfc_container_assign_range.obj \
 	containers/bfc_container_push_front.obj \
@@ -655,6 +657,14 @@ TESTS= \
 	tests/datetime/nsecs_between.exe \
 	tests/datetime/advance.exe \
 	tests/datetime/to_isodate.exe \
+	tests/vector.cons/assign_copy.pass.exe \
+	tests/vector.cons/construct_iter_iter_alloc.pass.exe \
+	tests/vector.cons/construct_iter_iter.pass.exe \
+	tests/vector.cons/construct_size.pass.exe \
+	tests/vector.cons/construct_size_value_alloc.pass.exe \
+	tests/vector.cons/construct_size_value.pass.exe \
+	tests/vector.cons/copy_alloc.pass.exe \
+	tests/vector.cons/copy.pass.exe \
 	tests/vector.modifiers/push_back.pass.exe \
 	tests/vector.modifiers/erase_iter.pass.exe \
 	tests/vector.modifiers/erase_iter_iter.pass.exe \
@@ -963,6 +973,14 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\datetime\nsecs_between.exe
 	tests\datetime\advance.exe
 	tests\datetime\to_isodate.exe
+	tests\vector.cons\assign_copy.pass.exe
+	tests\vector.cons\construct_iter_iter_alloc.pass.exe
+	tests\vector.cons\construct_iter_iter.pass.exe
+	tests\vector.cons\construct_size.pass.exe
+	tests\vector.cons\construct_size_value_alloc.pass.exe
+	tests\vector.cons\construct_size_value.pass.exe
+	tests\vector.cons\copy_alloc.pass.exe
+	tests\vector.cons\copy.pass.exe
 	tests\vector.modifiers\push_back.pass.exe
 	tests\vector.modifiers\erase_iter.pass.exe
 	tests\vector.modifiers\erase_iter_iter.pass.exe
@@ -1565,6 +1583,12 @@ containers/bfc_container_reserve.obj: containers/bfc_container_reserve.c $(HEADE
 
 containers/bfc_container_resize.obj: containers/bfc_container_resize.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_resize.c
+
+containers/bfc_container_element_size.obj: containers/bfc_container_element_size.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_element_size.c
+
+containers/bfc_container_assign_copy.obj: containers/bfc_container_assign_copy.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_assign_copy.c
 
 containers/bfc_container_assign_fill.obj: containers/bfc_container_assign_fill.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_assign_fill.c
@@ -4234,6 +4258,70 @@ tests/datetime/to_isodate.exe: \
 
 tests/datetime/to_isodate.obj: tests/datetime/to_isodate.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/to_isodate.c
+
+tests/vector.cons/assign_copy.pass.exe: \
+		tests/vector.cons/assign_copy.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/assign_copy.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/assign_copy.pass.obj: tests/vector.cons/assign_copy.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/assign_copy.pass.cpp
+
+tests/vector.cons/construct_iter_iter_alloc.pass.exe: \
+		tests/vector.cons/construct_iter_iter_alloc.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_iter_iter_alloc.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/construct_iter_iter_alloc.pass.obj: tests/vector.cons/construct_iter_iter_alloc.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_iter_iter_alloc.pass.cpp
+
+tests/vector.cons/construct_iter_iter.pass.exe: \
+		tests/vector.cons/construct_iter_iter.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_iter_iter.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/construct_iter_iter.pass.obj: tests/vector.cons/construct_iter_iter.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_iter_iter.pass.cpp
+
+tests/vector.cons/construct_size.pass.exe: \
+		tests/vector.cons/construct_size.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_size.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/construct_size.pass.obj: tests/vector.cons/construct_size.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_size.pass.cpp
+
+tests/vector.cons/construct_size_value_alloc.pass.exe: \
+		tests/vector.cons/construct_size_value_alloc.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_size_value_alloc.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/construct_size_value_alloc.pass.obj: tests/vector.cons/construct_size_value_alloc.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_size_value_alloc.pass.cpp
+
+tests/vector.cons/construct_size_value.pass.exe: \
+		tests/vector.cons/construct_size_value.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_size_value.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/construct_size_value.pass.obj: tests/vector.cons/construct_size_value.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_size_value.pass.cpp
+
+tests/vector.cons/copy_alloc.pass.exe: \
+		tests/vector.cons/copy_alloc.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/copy_alloc.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/copy_alloc.pass.obj: tests/vector.cons/copy_alloc.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/copy_alloc.pass.cpp
+
+tests/vector.cons/copy.pass.exe: \
+		tests/vector.cons/copy.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/copy.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.cons/copy.pass.obj: tests/vector.cons/copy.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/copy.pass.cpp
 
 tests/vector.modifiers/push_back.pass.exe: \
 		tests/vector.modifiers/push_back.pass.obj \

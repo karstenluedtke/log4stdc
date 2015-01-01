@@ -223,6 +223,8 @@ libbarefootc_a_SOURCES+= containers/bfc_container_max_size.c
 libbarefootc_a_SOURCES+= containers/bfc_container_capacity.c
 libbarefootc_a_SOURCES+= containers/bfc_container_reserve.c
 libbarefootc_a_SOURCES+= containers/bfc_container_resize.c
+libbarefootc_a_SOURCES+= containers/bfc_container_element_size.c
+libbarefootc_a_SOURCES+= containers/bfc_container_assign_copy.c
 libbarefootc_a_SOURCES+= containers/bfc_container_assign_fill.c
 libbarefootc_a_SOURCES+= containers/bfc_container_assign_range.c
 libbarefootc_a_SOURCES+= containers/bfc_container_push_front.c
@@ -3592,6 +3594,54 @@ tests_datetime_to_isodate_SOURCES = tests/datetime/to_isodate.c
 tests_datetime_to_isodate_LDADD = libbarefootc.a liblog4stdc.a
 tests_datetime_to_isodate_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/datetime/to_isodate
+
+check_PROGRAMS += tests/vector.cons/assign_copy.pass
+tests_vector_cons_assign_copy_pass_SOURCES = tests/vector.cons/assign_copy.pass.cpp
+tests_vector_cons_assign_copy_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_assign_copy_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/assign_copy.pass
+
+check_PROGRAMS += tests/vector.cons/construct_iter_iter_alloc.pass
+tests_vector_cons_construct_iter_iter_alloc_pass_SOURCES = tests/vector.cons/construct_iter_iter_alloc.pass.cpp
+tests_vector_cons_construct_iter_iter_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_construct_iter_iter_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/construct_iter_iter_alloc.pass
+
+check_PROGRAMS += tests/vector.cons/construct_iter_iter.pass
+tests_vector_cons_construct_iter_iter_pass_SOURCES = tests/vector.cons/construct_iter_iter.pass.cpp
+tests_vector_cons_construct_iter_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_construct_iter_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/construct_iter_iter.pass
+
+check_PROGRAMS += tests/vector.cons/construct_size.pass
+tests_vector_cons_construct_size_pass_SOURCES = tests/vector.cons/construct_size.pass.cpp
+tests_vector_cons_construct_size_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_construct_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/construct_size.pass
+
+check_PROGRAMS += tests/vector.cons/construct_size_value_alloc.pass
+tests_vector_cons_construct_size_value_alloc_pass_SOURCES = tests/vector.cons/construct_size_value_alloc.pass.cpp
+tests_vector_cons_construct_size_value_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_construct_size_value_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/construct_size_value_alloc.pass
+
+check_PROGRAMS += tests/vector.cons/construct_size_value.pass
+tests_vector_cons_construct_size_value_pass_SOURCES = tests/vector.cons/construct_size_value.pass.cpp
+tests_vector_cons_construct_size_value_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_construct_size_value_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/construct_size_value.pass
+
+check_PROGRAMS += tests/vector.cons/copy_alloc.pass
+tests_vector_cons_copy_alloc_pass_SOURCES = tests/vector.cons/copy_alloc.pass.cpp
+tests_vector_cons_copy_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_copy_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/copy_alloc.pass
+
+check_PROGRAMS += tests/vector.cons/copy.pass
+tests_vector_cons_copy_pass_SOURCES = tests/vector.cons/copy.pass.cpp
+tests_vector_cons_copy_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_cons_copy_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.cons/copy.pass
 
 check_PROGRAMS += tests/vector.modifiers/push_back.pass
 tests_vector_modifiers_push_back_pass_SOURCES = tests/vector.modifiers/push_back.pass.cpp

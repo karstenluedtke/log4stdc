@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -15,7 +17,7 @@
 
 struct X
 {
-    std::vector<X> q;
+    barefootc::vector<X> q;
 };
 
 int main()

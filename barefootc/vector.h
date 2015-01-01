@@ -843,6 +843,8 @@ do {									\
 extern "C" {
 #endif
 
+struct bfc_container;
+
 void *bfc_vector_have(void *, unsigned);
 void *bfc_vector_set (void *, unsigned, void *);
 void *bfc_vector_ref (void *, unsigned);
@@ -853,6 +855,9 @@ do {									\
 	BFC_VECTOR_INIT_POOL(vec,pool);					\
 	bfc_init_vector_class(vec,bufsize,pool);			\
 } while (0)
+
+int bfc_init_vector_copy(void *, size_t, struct mempool *,
+			 const struct bfc_container *);
 
 #ifdef __cplusplus
 };

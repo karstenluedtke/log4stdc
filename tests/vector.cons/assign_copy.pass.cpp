@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -13,29 +15,32 @@
 
 #include <vector>
 #include <cassert>
-#include "test_allocator.h"
-#include "min_allocator.h"
+#include "tests/support/test_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
+    l4sc_configure_from_xml_file("log4j.xml");
     {
-        std::vector<int, test_allocator<int> > l(3, 2, test_allocator<int>(5));
-        std::vector<int, test_allocator<int> > l2(l, test_allocator<int>(3));
+        barefootc::vector<int, test_allocator<int> > l(3, 2, test_allocator<int>(5));
+        barefootc::vector<int, test_allocator<int> > l2(l, test_allocator<int>(3));
         l2 = l;
         assert(l2 == l);
         assert(l2.get_allocator() == test_allocator<int>(3));
     }
     {
-        std::vector<int, other_allocator<int> > l(3, 2, other_allocator<int>(5));
-        std::vector<int, other_allocator<int> > l2(l, other_allocator<int>(3));
+        barefootc::vector<int, other_allocator<int> > l(3, 2, other_allocator<int>(5));
+        barefootc::vector<int, other_allocator<int> > l2(l, other_allocator<int>(3));
         l2 = l;
         assert(l2 == l);
+#if 0
         assert(l2.get_allocator() == other_allocator<int>(5));
+#endif
     }
 #if __cplusplus >= 201103L
     {
-        std::vector<int, min_allocator<int> > l(3, 2, min_allocator<int>());
-        std::vector<int, min_allocator<int> > l2(l, min_allocator<int>());
+        barefootc::vector<int, min_allocator<int> > l(3, 2, min_allocator<int>());
+        barefootc::vector<int, min_allocator<int> > l2(l, min_allocator<int>());
         l2 = l;
         assert(l2 == l);
         assert(l2.get_allocator() == min_allocator<int>());

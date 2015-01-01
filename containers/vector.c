@@ -33,6 +33,7 @@ static void destroy_vector(bfc_vecptr_t vec);
 
 static size_t vector_objsize(bfc_cvecptr_t vec);
 static size_t vector_size(bfc_cvecptr_t vec);
+static size_t vector_element_size(bfc_cvecptr_t vec);
 static int vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other);
 static unsigned vector_hashcode(bfc_cvecptr_t vec);
 static void dump_vector(bfc_cvecptr_t vec,int depth,struct l4sc_logger*log);
@@ -105,6 +106,7 @@ struct bfc_vector_class bfc_vector_class = {
 	.resize		= vector_resize,
 	.capacity	= vector_capacity,
 	.reserve	= vector_reserve,
+	.element_size	= vector_element_size,
 	/* Modifiers */
 	.assign_fill	= vector_assign_fill,
 	.assign_range	= vector_assign_range,
@@ -122,6 +124,8 @@ struct bfc_vector_class bfc_vector_class = {
 	.last_method	= last_method
 };
 
+static const size_t zeroelement[64] = { 0 };
+
 int
 bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 {
@@ -137,15 +141,40 @@ bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 int
-bfc_init_vector_copy(void *buf, size_t bufsize, const void *src)
+bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
+		     const struct bfc_container *src)
 {
-	size_t size = bfc_object_size(src);
-	bfc_vecptr_t vec = (bfc_vecptr_t) buf;
-	if (bufsize < size) {
+
+	BFC_VECTOR(minvec_s, char, 0) *vec = (struct minvec_s *) buf;
+	size_t elem_size = bfc_container_element_size(src);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	BFC_INIT_PROLOGUE(const struct bfc_vector_class *,
+			  struct minvec_s *, obj, buf, bufsize, pool,
+			  &bfc_vector_class);
+
+	L4SC_TRACE(logger, "%s(vec @%p, size %ld, src @%p)",
+			__FUNCTION__, vec, (long) bufsize, src);
+
+	vec->pool = pool;
+	vec->elem_size = elem_size;
+	vec->elem_direct = 0;
+	if (bufsize >= bfc_object_size(vec)) {
+		int spare = bufsize - offsetof(struct bfc_char_vector, direct);
+		vec->elem_direct = (spare > 0)? spare / elem_size: 0;
+	} else {
 		return (-ENOSPC);
 	}
-	memcpy(vec, src, size);
-	vec->vptr = &bfc_vector_class;
+	vec->log2_indirect = 0;
+	while (elem_size * CV1_ELEMENTS(vec) <= 4096) {
+		vec->log2_indirect++;
+	}
+	vec->log2_double_indirect = 10; /* 1024 pointers per block */
+	*((const size_t **) &vec->zero_element) = zeroelement;
+
+	bfc_container_assign_copy((bfc_contptr_t) vec, src);
+
+	dump_vector((bfc_cvecptr_t) vec, 1, logger);
 	return (BFC_SUCCESS);
 }
 
@@ -210,6 +239,12 @@ static size_t
 vector_size(bfc_cvecptr_t vec)
 {
 	return (BFC_VECTOR_GET_SIZE(vec));
+}
+
+static size_t
+vector_element_size(bfc_cvecptr_t vec)
+{
+	return (vec->elem_size);
 }
 
 static int

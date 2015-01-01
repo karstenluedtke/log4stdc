@@ -71,7 +71,7 @@
 #define	bfc_shared_wstring_replace_range_fill	bfc_shared_string_replace_range_fill
 #define	bfc_shared_wstring_replace_ranges	bfc_shared_string_replace_ranges
 
-#define	bfc_wstring_length			bfc_string_length
+#define	bfc_wstring_length			bfc_cstring_length
 #define	bfc_basic_wstring_max_size		bfc_basic_string_max_size
 
 #define	bfc_wstrlen				bfc_strlen

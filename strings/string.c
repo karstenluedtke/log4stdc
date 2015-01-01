@@ -35,6 +35,7 @@
 #define dump_wstring				dump_cstring
 #define	bfc_wstring_length			bfc_cstring_length
 #define	bfc_wstring_max_size			bfc_cstring_max_size
+#define	bfc_wstring_charsize			bfc_cstring_charsize
 #define	bfc_wstring_resize			bfc_cstring_resize
 #define	bfc_wstring_capacity			bfc_cstring_capacity
 #define	bfc_wstring_reserve			bfc_cstring_reserve

@@ -36,10 +36,10 @@ struct bfc_string_class bfc_basic_wstring_class = {
 	.init 		= bfc_init_basic_wstring,
 	.destroy 	= bfc_destroy_basic_wstring,
 	.clonesize 	= bfc_basic_wstring_objsize,
+	.length 	= bfc_basic_wstring_length,
 
 	.traits		= (void *) &bfc_wchar_traits_class,
 
-	.size 		= bfc_basic_wstring_length,
 	.max_size	= bfc_basic_wstring_max_size,
 	.resize		= bfc_basic_wstring_resize,
 	.capacity	= bfc_basic_wstring_capacity,

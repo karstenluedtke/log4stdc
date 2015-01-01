@@ -32,14 +32,8 @@ typedef struct bfc_container *bfc_contptr_t;
 typedef const struct bfc_container *bfc_ccontptr_t;
 
 #define BFC_CONTAINER_METHODS(contptrT,ccontptrT,elemT)			\
-	/* Capacity */							\
-	size_t	(*size)(ccontptrT c);					\
-	size_t	(*max_size)(ccontptrT c);				\
-	int	(*resize)(contptrT c, size_t n, const elemT *p);	\
-	size_t	(*capacity)(ccontptrT c);				\
-	int	(*reserve)(contptrT c, size_t n);			\
-	size_t	(*element_size)(ccontptrT c);				\
 	/* Modifiers */							\
+	int	(*resize)(contptrT c, size_t n, const elemT *p);	\
 	int	(*assign_fill)(contptrT c, size_t n, const elemT *p);	\
 	int	(*assign_range)(contptrT c,				\
 				bfc_iterptr_t first,bfc_iterptr_t last);\

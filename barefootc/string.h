@@ -84,13 +84,8 @@ typedef const struct bfc_string *bfc_cstrptr_t;
 	} *	traits;
 
 #define BFC_STRING_METHODS(strptrT,cstrptrT,charT,fillT,iterptrT) \
-	/* Capacity */							\
-	size_t	(*size)(cstrptrT s);		/* == length */		\
-	size_t	(*max_size)(cstrptrT s);				\
-	int	(*resize)(strptrT s, size_t n, fillT c);		\
-	size_t	(*capacity)(cstrptrT s);				\
-	int	(*reserve)(strptrT s, size_t n);			\
 	/* Modifiers */							\
+	int	(*resize)(strptrT s, size_t n, fillT c);		\
 	int	(*assign_buffer)(strptrT s, const charT *s2, size_t n);	\
 	int	(*assign_fill)(strptrT s, size_t n, fillT c);		\
 	int	(*append_buffer)(strptrT s, const charT *s2, size_t n);	\
@@ -362,6 +357,7 @@ size_t	bfc_cstring_max_size(bfc_cstrptr_t s);
 int	bfc_cstring_resize(bfc_strptr_t s, size_t n, int c);
 size_t	bfc_cstring_capacity(bfc_cstrptr_t s);
 int	bfc_cstring_reserve(bfc_strptr_t s, size_t n);
+size_t	bfc_cstring_charsize(bfc_cstrptr_t s);
 
 /* Element access */
 char *bfc_cstring_index(bfc_strptr_t s, size_t pos);
@@ -444,6 +440,7 @@ int	bfc_wstring_resize(bfc_strptr_t s, size_t n, int c);
 size_t	bfc_wstring_capacity(bfc_cstrptr_t s);
 int	bfc_wstring_reserve(bfc_strptr_t s, size_t n);
 size_t	bfc_wstring_sublen(bfc_cstrptr_t s, size_t pos, size_t n);
+size_t	bfc_wstring_charsize(bfc_cstrptr_t s);
 
 /* Element access */
 wchar_t *bfc_wstring_index(bfc_strptr_t s, size_t pos);

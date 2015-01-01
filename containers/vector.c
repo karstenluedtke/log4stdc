@@ -101,13 +101,12 @@ struct bfc_vector_class bfc_vector_class = {
 	.rbegin		= rbegin_iterator,
 	.rlimit		= rlimit_iterator,
 	/* Capacity */
-	.size		= vector_size,
 	.max_size	= vector_max_size,
-	.resize		= vector_resize,
 	.capacity	= vector_capacity,
 	.reserve	= vector_reserve,
 	.element_size	= vector_element_size,
 	/* Modifiers */
+	.resize		= vector_resize,
 	.assign_fill	= vector_assign_fill,
 	.assign_range	= vector_assign_range,
 	.push_front	= vector_push_front,

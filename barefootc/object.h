@@ -72,8 +72,12 @@ struct bfc_objhdr {
 	int	      (*ilimit)   (cobjptrT, struct bfc_iterator *, size_t); \
 	int	      (*rbegin)   (cobjptrT, struct bfc_iterator *, size_t); \
 	int	      (*rlimit)   (cobjptrT, struct bfc_iterator *, size_t); \
-	void *		spare22;					     \
-	void *		spare23;
+	size_t	      (*max_size) (cobjptrT c);				     \
+	size_t	      (*element_size)(cobjptrT c);			     \
+	size_t	      (*capacity) (cobjptrT c);				     \
+	int	      (*reserve)  (objptrT c, size_t n);		     \
+	void *		spare26;					     \
+	void *		spare27;
 
 #define BFC_CLASSHDR(classptrT,objptrT,cobjptrT) \
 	BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,void)

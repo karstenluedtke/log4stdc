@@ -58,10 +58,10 @@ struct bfc_string_class bfc_shared_wstring_class = {
 	.init 		= bfc_init_shared_wstring,
 	.destroy 	= bfc_destroy_shared_wstring,
 	.clonesize 	= bfc_shared_wstring_objsize,
+	.length 	= bfc_wstring_length,
 
 	.traits		= (void *) &bfc_wchar_traits_class,
 
-	.size 		= bfc_wstring_length,
 	.max_size	= bfc_basic_wstring_max_size,
 	.resize		= bfc_shared_wstring_resize,
 	.capacity	= bfc_shared_wstring_capacity,

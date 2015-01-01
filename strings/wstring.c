@@ -72,20 +72,20 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .ilimit	*/ init_limit_iterator,
 	/* .rbegin	*/ init_rbegin_iterator,
 	/* .rlimit	*/ init_rlimit_iterator,
-	/* .spare22 	*/ NULL,
-	/* .spare23 	*/ NULL,
+
+	/* Capacity	*/
+	/* .max_size	*/ bfc_wstring_max_size,
+	/* .element_size*/ bfc_wstring_charsize,
+	/* .capacity	*/ bfc_wstring_capacity,
+	/* .reserve	*/ bfc_wstring_reserve,
+	/* .spare26 	*/ NULL,
+	/* .spare27 	*/ NULL,
 
 	/* Char traits	*/
 	/* .traits	*/ (void *) &bfc_wchar_traits_class,
 
-	/* Capacity	*/
-	/* .size 	*/ bfc_wstring_length,
-	/* .max_size	*/ bfc_wstring_max_size,
-	/* .resize	*/ bfc_wstring_resize,
-	/* .capacity	*/ bfc_wstring_capacity,
-	/* .reserve	*/ bfc_wstring_reserve,
-
 	/* Modifiers	*/
+	/* .resize		*/ bfc_wstring_resize,
 	/* .assign_buffer	*/ bfc_wstring_assign_buffer,
 	/* .assign_fill 	*/ bfc_wstring_assign_fill,
 	/* .append_buffer	*/ bfc_wstring_append_buffer,
@@ -279,6 +279,12 @@ size_t
 bfc_wstring_length(bfc_cstrptr_t s)
 {
 	return (s->len);
+}
+
+size_t
+bfc_wstring_charsize(bfc_cstrptr_t s)
+{
+	return (sizeof(wchar_t));
 }
 
 size_t

@@ -180,7 +180,10 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 static void
 destroy_vector(bfc_vecptr_t vec)
 {
-	vec->vptr = NULL;
+	const struct bfc_vector_class *cls = BFC_CLASS(vec);
+
+	BFC_VECTOR_DESTROY(vec);
+	BFC_DESTROY_EPILOGUE(vec, cls);
 }
 
 static int

@@ -18,11 +18,11 @@ CPPFLAGS=-I. -Ilog4stdc \
 	-DPACKAGE="barefootc" \
 	-DPACKAGE_BUGREPORT="bug-barefootc@example.org" \
 	-DPACKAGE_NAME="barefootc" \
-	-DPACKAGE_STRING="barefootc 0.6.1" \
+	-DPACKAGE_STRING="barefootc 0.7.0" \
 	-DPACKAGE_TARNAME="barefootc" \
 	-DPACKAGE_URL="" \
-	-DPACKAGE_VERSION="0.6.1" \
-	-DVERSION="0.6.1"
+	-DPACKAGE_VERSION="0.7.0" \
+	-DVERSION="0.7.0"
 CFLAGS=
 CXXFLAGS=-EHsc
 
@@ -1985,7 +1985,7 @@ testlink.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ testlink.obj barefootc.lib log4stdc.lib
 
 testlink.obj: testlink.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ testlink.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ testlink.cpp
 
 vector_test.exe: \
 		containers/vector_test.obj \
@@ -1993,7 +1993,7 @@ vector_test.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ containers/vector_test.obj barefootc.lib log4stdc.lib
 
 containers/vector_test.obj: containers/vector_test.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/vector_test.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ containers/vector_test.c
 
 string_test.exe: \
 		strings/string_test.obj \
@@ -2001,7 +2001,7 @@ string_test.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ strings/string_test.obj barefootc.lib log4stdc.lib
 
 strings/string_test.obj: strings/string_test.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/string_test.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ strings/string_test.c
 
 cxxwrapper_test.exe: \
 		strings/cxxwrapper_test.obj \
@@ -2009,7 +2009,7 @@ cxxwrapper_test.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ strings/cxxwrapper_test.obj barefootc.lib log4stdc.lib
 
 strings/cxxwrapper_test.obj: strings/cxxwrapper_test.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/cxxwrapper_test.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ strings/cxxwrapper_test.cpp
 
 examples/barefootc_log_redirect.exe: \
 		examples/barefootc_log_redirect.obj \
@@ -2017,7 +2017,7 @@ examples/barefootc_log_redirect.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ examples/barefootc_log_redirect.obj barefootc.lib log4stdc.lib
 
 examples/barefootc_log_redirect.obj: examples/barefootc_log_redirect.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ examples/barefootc_log_redirect.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ examples/barefootc_log_redirect.c
 
 tests/log4stdc/configure.xml/level.exe: \
 		tests/log4stdc/configure.xml/level.obj \
@@ -2025,7 +2025,7 @@ tests/log4stdc/configure.xml/level.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/log4stdc/configure.xml/level.obj barefootc.lib log4stdc.lib
 
 tests/log4stdc/configure.xml/level.obj: tests/log4stdc/configure.xml/level.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/log4stdc/configure.xml/level.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/log4stdc/configure.xml/level.c
 
 tests/log4stdc/configure.prop/level.exe: \
 		tests/log4stdc/configure.prop/level.obj \
@@ -2033,7 +2033,7 @@ tests/log4stdc/configure.prop/level.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/log4stdc/configure.prop/level.obj barefootc.lib log4stdc.lib
 
 tests/log4stdc/configure.prop/level.obj: tests/log4stdc/configure.prop/level.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/log4stdc/configure.prop/level.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/log4stdc/configure.prop/level.c
 
 tests/synchronization/atomic_counter.exe: \
 		tests/synchronization/atomic_counter.obj \
@@ -2041,7 +2041,7 @@ tests/synchronization/atomic_counter.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/synchronization/atomic_counter.obj barefootc.lib log4stdc.lib
 
 tests/synchronization/atomic_counter.obj: tests/synchronization/atomic_counter.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/synchronization/atomic_counter.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/synchronization/atomic_counter.c
 
 tests/string.ops/string.accessors/data.pass.exe: \
 		tests/string.ops/string.accessors/data.pass.obj \
@@ -2049,7 +2049,7 @@ tests/string.ops/string.accessors/data.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string.accessors/data.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string.accessors/data.pass.obj: tests/string.ops/string.accessors/data.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string.accessors/data.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string.accessors/data.pass.cpp
 
 tests/string.ops/string.accessors/c_str.pass.exe: \
 		tests/string.ops/string.accessors/c_str.pass.obj \
@@ -2057,7 +2057,7 @@ tests/string.ops/string.accessors/c_str.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string.accessors/c_str.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string.accessors/c_str.pass.obj: tests/string.ops/string.accessors/c_str.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string.accessors/c_str.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string.accessors/c_str.pass.cpp
 
 tests/string.ops/string_substr/substr.pass.exe: \
 		tests/string.ops/string_substr/substr.pass.obj \
@@ -2065,7 +2065,7 @@ tests/string.ops/string_substr/substr.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_substr/substr.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_substr/substr.pass.obj: tests/string.ops/string_substr/substr.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_substr/substr.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_substr/substr.pass.cpp
 
 tests/string.ops/string_find.last.of/pointer_size.pass.exe: \
 		tests/string.ops/string_find.last.of/pointer_size.pass.obj \
@@ -2073,7 +2073,7 @@ tests/string.ops/string_find.last.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.of/pointer_size.pass.obj: tests/string.ops/string_find.last.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.of/pointer_size.pass.cpp
 
 tests/string.ops/string_find.last.of/char_size.pass.exe: \
 		tests/string.ops/string_find.last.of/char_size.pass.obj \
@@ -2081,7 +2081,7 @@ tests/string.ops/string_find.last.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.of/char_size.pass.obj: tests/string.ops/string_find.last.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.of/char_size.pass.cpp
 
 tests/string.ops/string_find.last.of/pointer_size_size.pass.exe: \
 		tests/string.ops/string_find.last.of/pointer_size_size.pass.obj \
@@ -2089,7 +2089,7 @@ tests/string.ops/string_find.last.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.of/pointer_size_size.pass.obj: tests/string.ops/string_find.last.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.of/pointer_size_size.pass.cpp
 
 tests/string.ops/string_find.last.of/string_size.pass.exe: \
 		tests/string.ops/string_find.last.of/string_size.pass.obj \
@@ -2097,7 +2097,7 @@ tests/string.ops/string_find.last.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.of/string_size.pass.obj: tests/string.ops/string_find.last.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.of/string_size.pass.cpp
 
 tests/string.ops/string_find.first.not.of/pointer_size.pass.exe: \
 		tests/string.ops/string_find.first.not.of/pointer_size.pass.obj \
@@ -2105,7 +2105,7 @@ tests/string.ops/string_find.first.not.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.not.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.not.of/pointer_size.pass.obj: tests/string.ops/string_find.first.not.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/pointer_size.pass.cpp
 
 tests/string.ops/string_find.first.not.of/char_size.pass.exe: \
 		tests/string.ops/string_find.first.not.of/char_size.pass.obj \
@@ -2113,7 +2113,7 @@ tests/string.ops/string_find.first.not.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.not.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.not.of/char_size.pass.obj: tests/string.ops/string_find.first.not.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/char_size.pass.cpp
 
 tests/string.ops/string_find.first.not.of/pointer_size_size.pass.exe: \
 		tests/string.ops/string_find.first.not.of/pointer_size_size.pass.obj \
@@ -2121,7 +2121,7 @@ tests/string.ops/string_find.first.not.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.not.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.not.of/pointer_size_size.pass.obj: tests/string.ops/string_find.first.not.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/pointer_size_size.pass.cpp
 
 tests/string.ops/string_find.first.not.of/string_size.pass.exe: \
 		tests/string.ops/string_find.first.not.of/string_size.pass.obj \
@@ -2129,7 +2129,7 @@ tests/string.ops/string_find.first.not.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.not.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.not.of/string_size.pass.obj: tests/string.ops/string_find.first.not.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.not.of/string_size.pass.cpp
 
 tests/string.ops/string_find.last.not.of/pointer_size.pass.exe: \
 		tests/string.ops/string_find.last.not.of/pointer_size.pass.obj \
@@ -2137,7 +2137,7 @@ tests/string.ops/string_find.last.not.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.not.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.not.of/pointer_size.pass.obj: tests/string.ops/string_find.last.not.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/pointer_size.pass.cpp
 
 tests/string.ops/string_find.last.not.of/char_size.pass.exe: \
 		tests/string.ops/string_find.last.not.of/char_size.pass.obj \
@@ -2145,7 +2145,7 @@ tests/string.ops/string_find.last.not.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.not.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.not.of/char_size.pass.obj: tests/string.ops/string_find.last.not.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/char_size.pass.cpp
 
 tests/string.ops/string_find.last.not.of/pointer_size_size.pass.exe: \
 		tests/string.ops/string_find.last.not.of/pointer_size_size.pass.obj \
@@ -2153,7 +2153,7 @@ tests/string.ops/string_find.last.not.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.not.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.not.of/pointer_size_size.pass.obj: tests/string.ops/string_find.last.not.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/pointer_size_size.pass.cpp
 
 tests/string.ops/string_find.last.not.of/string_size.pass.exe: \
 		tests/string.ops/string_find.last.not.of/string_size.pass.obj \
@@ -2161,7 +2161,7 @@ tests/string.ops/string_find.last.not.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.last.not.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.last.not.of/string_size.pass.obj: tests/string.ops/string_find.last.not.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.last.not.of/string_size.pass.cpp
 
 tests/string.ops/string_find/pointer_size.pass.exe: \
 		tests/string.ops/string_find/pointer_size.pass.obj \
@@ -2169,7 +2169,7 @@ tests/string.ops/string_find/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find/pointer_size.pass.obj: tests/string.ops/string_find/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find/pointer_size.pass.cpp
 
 tests/string.ops/string_find/char_size.pass.exe: \
 		tests/string.ops/string_find/char_size.pass.obj \
@@ -2177,7 +2177,7 @@ tests/string.ops/string_find/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find/char_size.pass.obj: tests/string.ops/string_find/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find/char_size.pass.cpp
 
 tests/string.ops/string_find/pointer_size_size.pass.exe: \
 		tests/string.ops/string_find/pointer_size_size.pass.obj \
@@ -2185,7 +2185,7 @@ tests/string.ops/string_find/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find/pointer_size_size.pass.obj: tests/string.ops/string_find/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find/pointer_size_size.pass.cpp
 
 tests/string.ops/string_find/string_size.pass.exe: \
 		tests/string.ops/string_find/string_size.pass.obj \
@@ -2193,7 +2193,7 @@ tests/string.ops/string_find/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find/string_size.pass.obj: tests/string.ops/string_find/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find/string_size.pass.cpp
 
 tests/string.ops/string_compare/string.pass.exe: \
 		tests/string.ops/string_compare/string.pass.obj \
@@ -2201,7 +2201,7 @@ tests/string.ops/string_compare/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_compare/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_compare/string.pass.obj: tests/string.ops/string_compare/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_compare/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_compare/string.pass.cpp
 
 tests/string.ops/string_compare/size_size_pointer_size.pass.exe: \
 		tests/string.ops/string_compare/size_size_pointer_size.pass.obj \
@@ -2209,7 +2209,7 @@ tests/string.ops/string_compare/size_size_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_compare/size_size_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_compare/size_size_pointer_size.pass.obj: tests/string.ops/string_compare/size_size_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_pointer_size.pass.cpp
 
 tests/string.ops/string_compare/size_size_string_size_size.pass.exe: \
 		tests/string.ops/string_compare/size_size_string_size_size.pass.obj \
@@ -2217,7 +2217,7 @@ tests/string.ops/string_compare/size_size_string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_compare/size_size_string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_compare/size_size_string_size_size.pass.obj: tests/string.ops/string_compare/size_size_string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_string_size_size.pass.cpp
 
 tests/string.ops/string_compare/size_size_pointer.pass.exe: \
 		tests/string.ops/string_compare/size_size_pointer.pass.obj \
@@ -2225,7 +2225,7 @@ tests/string.ops/string_compare/size_size_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_compare/size_size_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_compare/size_size_pointer.pass.obj: tests/string.ops/string_compare/size_size_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_pointer.pass.cpp
 
 tests/string.ops/string_compare/pointer.pass.exe: \
 		tests/string.ops/string_compare/pointer.pass.obj \
@@ -2233,7 +2233,7 @@ tests/string.ops/string_compare/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_compare/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_compare/pointer.pass.obj: tests/string.ops/string_compare/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_compare/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_compare/pointer.pass.cpp
 
 tests/string.ops/string_compare/size_size_string.pass.exe: \
 		tests/string.ops/string_compare/size_size_string.pass.obj \
@@ -2241,7 +2241,7 @@ tests/string.ops/string_compare/size_size_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_compare/size_size_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_compare/size_size_string.pass.obj: tests/string.ops/string_compare/size_size_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_compare/size_size_string.pass.cpp
 
 tests/string.ops/string_find.first.of/pointer_size.pass.exe: \
 		tests/string.ops/string_find.first.of/pointer_size.pass.obj \
@@ -2249,7 +2249,7 @@ tests/string.ops/string_find.first.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.of/pointer_size.pass.obj: tests/string.ops/string_find.first.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.of/pointer_size.pass.cpp
 
 tests/string.ops/string_find.first.of/char_size.pass.exe: \
 		tests/string.ops/string_find.first.of/char_size.pass.obj \
@@ -2257,7 +2257,7 @@ tests/string.ops/string_find.first.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.of/char_size.pass.obj: tests/string.ops/string_find.first.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.of/char_size.pass.cpp
 
 tests/string.ops/string_find.first.of/pointer_size_size.pass.exe: \
 		tests/string.ops/string_find.first.of/pointer_size_size.pass.obj \
@@ -2265,7 +2265,7 @@ tests/string.ops/string_find.first.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.of/pointer_size_size.pass.obj: tests/string.ops/string_find.first.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.of/pointer_size_size.pass.cpp
 
 tests/string.ops/string_find.first.of/string_size.pass.exe: \
 		tests/string.ops/string_find.first.of/string_size.pass.obj \
@@ -2273,7 +2273,7 @@ tests/string.ops/string_find.first.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_find.first.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_find.first.of/string_size.pass.obj: tests/string.ops/string_find.first.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_find.first.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_find.first.of/string_size.pass.cpp
 
 tests/string.ops/string_rfind/pointer_size.pass.exe: \
 		tests/string.ops/string_rfind/pointer_size.pass.obj \
@@ -2281,7 +2281,7 @@ tests/string.ops/string_rfind/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_rfind/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_rfind/pointer_size.pass.obj: tests/string.ops/string_rfind/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_rfind/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_rfind/pointer_size.pass.cpp
 
 tests/string.ops/string_rfind/char_size.pass.exe: \
 		tests/string.ops/string_rfind/char_size.pass.obj \
@@ -2289,7 +2289,7 @@ tests/string.ops/string_rfind/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_rfind/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_rfind/char_size.pass.obj: tests/string.ops/string_rfind/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_rfind/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_rfind/char_size.pass.cpp
 
 tests/string.ops/string_rfind/pointer_size_size.pass.exe: \
 		tests/string.ops/string_rfind/pointer_size_size.pass.obj \
@@ -2297,7 +2297,7 @@ tests/string.ops/string_rfind/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_rfind/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_rfind/pointer_size_size.pass.obj: tests/string.ops/string_rfind/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_rfind/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_rfind/pointer_size_size.pass.cpp
 
 tests/string.ops/string_rfind/string_size.pass.exe: \
 		tests/string.ops/string_rfind/string_size.pass.obj \
@@ -2305,7 +2305,7 @@ tests/string.ops/string_rfind/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.ops/string_rfind/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.ops/string_rfind/string_size.pass.obj: tests/string.ops/string_rfind/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.ops/string_rfind/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.ops/string_rfind/string_size.pass.cpp
 
 tests/string.capacity/resize_size_char.pass.exe: \
 		tests/string.capacity/resize_size_char.pass.obj \
@@ -2313,7 +2313,7 @@ tests/string.capacity/resize_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/resize_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/resize_size_char.pass.obj: tests/string.capacity/resize_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/resize_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/resize_size_char.pass.cpp
 
 tests/string.capacity/empty.pass.exe: \
 		tests/string.capacity/empty.pass.obj \
@@ -2321,7 +2321,7 @@ tests/string.capacity/empty.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/empty.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/empty.pass.obj: tests/string.capacity/empty.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/empty.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/empty.pass.cpp
 
 tests/string.capacity/size.pass.exe: \
 		tests/string.capacity/size.pass.obj \
@@ -2329,7 +2329,7 @@ tests/string.capacity/size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/size.pass.obj: tests/string.capacity/size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/size.pass.cpp
 
 tests/string.capacity/shrink_to_fit.pass.exe: \
 		tests/string.capacity/shrink_to_fit.pass.obj \
@@ -2337,7 +2337,7 @@ tests/string.capacity/shrink_to_fit.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/shrink_to_fit.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/shrink_to_fit.pass.obj: tests/string.capacity/shrink_to_fit.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/shrink_to_fit.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/shrink_to_fit.pass.cpp
 
 tests/string.capacity/clear.pass.exe: \
 		tests/string.capacity/clear.pass.obj \
@@ -2345,7 +2345,7 @@ tests/string.capacity/clear.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/clear.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/clear.pass.obj: tests/string.capacity/clear.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/clear.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/clear.pass.cpp
 
 tests/string.capacity/reserve.pass.exe: \
 		tests/string.capacity/reserve.pass.obj \
@@ -2353,7 +2353,7 @@ tests/string.capacity/reserve.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/reserve.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/reserve.pass.obj: tests/string.capacity/reserve.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/reserve.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/reserve.pass.cpp
 
 tests/string.capacity/length.pass.exe: \
 		tests/string.capacity/length.pass.obj \
@@ -2361,7 +2361,7 @@ tests/string.capacity/length.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/length.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/length.pass.obj: tests/string.capacity/length.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/length.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/length.pass.cpp
 
 tests/string.capacity/resize_size.pass.exe: \
 		tests/string.capacity/resize_size.pass.obj \
@@ -2369,7 +2369,7 @@ tests/string.capacity/resize_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.capacity/resize_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.capacity/resize_size.pass.obj: tests/string.capacity/resize_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.capacity/resize_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.capacity/resize_size.pass.cpp
 
 tests/string.modifiers/string_swap/swap.pass.exe: \
 		tests/string.modifiers/string_swap/swap.pass.obj \
@@ -2377,7 +2377,7 @@ tests/string.modifiers/string_swap/swap.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_swap/swap.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_swap/swap.pass.obj: tests/string.modifiers/string_swap/swap.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_swap/swap.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_swap/swap.pass.cpp
 
 tests/string.modifiers/string_op_plus_equal/string.pass.exe: \
 		tests/string.modifiers/string_op_plus_equal/string.pass.obj \
@@ -2385,7 +2385,7 @@ tests/string.modifiers/string_op_plus_equal/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_op_plus_equal/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_op_plus_equal/string.pass.obj: tests/string.modifiers/string_op_plus_equal/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_op_plus_equal/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_op_plus_equal/string.pass.cpp
 
 tests/string.modifiers/string_op_plus_equal/char.pass.exe: \
 		tests/string.modifiers/string_op_plus_equal/char.pass.obj \
@@ -2393,7 +2393,7 @@ tests/string.modifiers/string_op_plus_equal/char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_op_plus_equal/char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_op_plus_equal/char.pass.obj: tests/string.modifiers/string_op_plus_equal/char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_op_plus_equal/char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_op_plus_equal/char.pass.cpp
 
 tests/string.modifiers/string_op_plus_equal/pointer.pass.exe: \
 		tests/string.modifiers/string_op_plus_equal/pointer.pass.obj \
@@ -2401,7 +2401,7 @@ tests/string.modifiers/string_op_plus_equal/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_op_plus_equal/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_op_plus_equal/pointer.pass.obj: tests/string.modifiers/string_op_plus_equal/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_op_plus_equal/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_op_plus_equal/pointer.pass.cpp
 
 tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.exe: \
 		tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.obj \
@@ -2409,7 +2409,7 @@ tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.obj: tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_pointer_size.pass.cpp
 
 tests/string.modifiers/string_replace/size_size_pointer_size.pass.exe: \
 		tests/string.modifiers/string_replace/size_size_pointer_size.pass.obj \
@@ -2417,7 +2417,7 @@ tests/string.modifiers/string_replace/size_size_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/size_size_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/size_size_pointer_size.pass.obj: tests/string.modifiers/string_replace/size_size_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_pointer_size.pass.cpp
 
 tests/string.modifiers/string_replace/iter_iter_pointer.pass.exe: \
 		tests/string.modifiers/string_replace/iter_iter_pointer.pass.obj \
@@ -2425,7 +2425,7 @@ tests/string.modifiers/string_replace/iter_iter_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/iter_iter_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/iter_iter_pointer.pass.obj: tests/string.modifiers/string_replace/iter_iter_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_pointer.pass.cpp
 
 tests/string.modifiers/string_replace/size_size_string_size_size.pass.exe: \
 		tests/string.modifiers/string_replace/size_size_string_size_size.pass.obj \
@@ -2433,7 +2433,7 @@ tests/string.modifiers/string_replace/size_size_string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/size_size_string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/size_size_string_size_size.pass.obj: tests/string.modifiers/string_replace/size_size_string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_string_size_size.pass.cpp
 
 tests/string.modifiers/string_replace/iter_iter_size_char.pass.exe: \
 		tests/string.modifiers/string_replace/iter_iter_size_char.pass.obj \
@@ -2441,7 +2441,7 @@ tests/string.modifiers/string_replace/iter_iter_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/iter_iter_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/iter_iter_size_char.pass.obj: tests/string.modifiers/string_replace/iter_iter_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_size_char.pass.cpp
 
 tests/string.modifiers/string_replace/size_size_size_char.pass.exe: \
 		tests/string.modifiers/string_replace/size_size_size_char.pass.obj \
@@ -2449,7 +2449,7 @@ tests/string.modifiers/string_replace/size_size_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/size_size_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/size_size_size_char.pass.obj: tests/string.modifiers/string_replace/size_size_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_size_char.pass.cpp
 
 tests/string.modifiers/string_replace/size_size_pointer.pass.exe: \
 		tests/string.modifiers/string_replace/size_size_pointer.pass.obj \
@@ -2457,7 +2457,7 @@ tests/string.modifiers/string_replace/size_size_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/size_size_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/size_size_pointer.pass.obj: tests/string.modifiers/string_replace/size_size_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_pointer.pass.cpp
 
 tests/string.modifiers/string_replace/size_size_string.pass.exe: \
 		tests/string.modifiers/string_replace/size_size_string.pass.obj \
@@ -2465,7 +2465,7 @@ tests/string.modifiers/string_replace/size_size_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/size_size_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/size_size_string.pass.obj: tests/string.modifiers/string_replace/size_size_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/size_size_string.pass.cpp
 
 tests/string.modifiers/string_replace/iter_iter_string.pass.exe: \
 		tests/string.modifiers/string_replace/iter_iter_string.pass.obj \
@@ -2473,7 +2473,7 @@ tests/string.modifiers/string_replace/iter_iter_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/iter_iter_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/iter_iter_string.pass.obj: tests/string.modifiers/string_replace/iter_iter_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_string.pass.cpp
 
 tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.exe: \
 		tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.obj \
@@ -2481,7 +2481,7 @@ tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.obj: tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_replace/iter_iter_iter_iter.pass.cpp
 
 tests/string.modifiers/string_copy/copy.pass.exe: \
 		tests/string.modifiers/string_copy/copy.pass.obj \
@@ -2489,7 +2489,7 @@ tests/string.modifiers/string_copy/copy.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_copy/copy.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_copy/copy.pass.obj: tests/string.modifiers/string_copy/copy.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_copy/copy.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_copy/copy.pass.cpp
 
 tests/string.modifiers/string_assign/string.pass.exe: \
 		tests/string.modifiers/string_assign/string.pass.obj \
@@ -2497,7 +2497,7 @@ tests/string.modifiers/string_assign/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_assign/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_assign/string.pass.obj: tests/string.modifiers/string_assign/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_assign/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_assign/string.pass.cpp
 
 tests/string.modifiers/string_assign/size_char.pass.exe: \
 		tests/string.modifiers/string_assign/size_char.pass.obj \
@@ -2505,7 +2505,7 @@ tests/string.modifiers/string_assign/size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_assign/size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_assign/size_char.pass.obj: tests/string.modifiers/string_assign/size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_assign/size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_assign/size_char.pass.cpp
 
 tests/string.modifiers/string_assign/pointer_size.pass.exe: \
 		tests/string.modifiers/string_assign/pointer_size.pass.obj \
@@ -2513,7 +2513,7 @@ tests/string.modifiers/string_assign/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_assign/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_assign/pointer_size.pass.obj: tests/string.modifiers/string_assign/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_assign/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_assign/pointer_size.pass.cpp
 
 tests/string.modifiers/string_assign/string_size_size.pass.exe: \
 		tests/string.modifiers/string_assign/string_size_size.pass.obj \
@@ -2521,7 +2521,7 @@ tests/string.modifiers/string_assign/string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_assign/string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_assign/string_size_size.pass.obj: tests/string.modifiers/string_assign/string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_assign/string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_assign/string_size_size.pass.cpp
 
 tests/string.modifiers/string_assign/iterator.pass.exe: \
 		tests/string.modifiers/string_assign/iterator.pass.obj \
@@ -2529,7 +2529,7 @@ tests/string.modifiers/string_assign/iterator.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_assign/iterator.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_assign/iterator.pass.obj: tests/string.modifiers/string_assign/iterator.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_assign/iterator.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_assign/iterator.pass.cpp
 
 tests/string.modifiers/string_assign/pointer.pass.exe: \
 		tests/string.modifiers/string_assign/pointer.pass.obj \
@@ -2537,7 +2537,7 @@ tests/string.modifiers/string_assign/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_assign/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_assign/pointer.pass.obj: tests/string.modifiers/string_assign/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_assign/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_assign/pointer.pass.cpp
 
 tests/string.modifiers/string_insert/size_string_size_size.pass.exe: \
 		tests/string.modifiers/string_insert/size_string_size_size.pass.obj \
@@ -2545,7 +2545,7 @@ tests/string.modifiers/string_insert/size_string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/size_string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/size_string_size_size.pass.obj: tests/string.modifiers/string_insert/size_string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_string_size_size.pass.cpp
 
 tests/string.modifiers/string_insert/size_pointer_size.pass.exe: \
 		tests/string.modifiers/string_insert/size_pointer_size.pass.obj \
@@ -2553,7 +2553,7 @@ tests/string.modifiers/string_insert/size_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/size_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/size_pointer_size.pass.obj: tests/string.modifiers/string_insert/size_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_pointer_size.pass.cpp
 
 tests/string.modifiers/string_insert/size_pointer.pass.exe: \
 		tests/string.modifiers/string_insert/size_pointer.pass.obj \
@@ -2561,7 +2561,7 @@ tests/string.modifiers/string_insert/size_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/size_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/size_pointer.pass.obj: tests/string.modifiers/string_insert/size_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_pointer.pass.cpp
 
 tests/string.modifiers/string_insert/iter_char.pass.exe: \
 		tests/string.modifiers/string_insert/iter_char.pass.obj \
@@ -2569,7 +2569,7 @@ tests/string.modifiers/string_insert/iter_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/iter_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/iter_char.pass.obj: tests/string.modifiers/string_insert/iter_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/iter_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/iter_char.pass.cpp
 
 tests/string.modifiers/string_insert/size_size_char.pass.exe: \
 		tests/string.modifiers/string_insert/size_size_char.pass.obj \
@@ -2577,7 +2577,7 @@ tests/string.modifiers/string_insert/size_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/size_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/size_size_char.pass.obj: tests/string.modifiers/string_insert/size_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_size_char.pass.cpp
 
 tests/string.modifiers/string_insert/iter_iter_iter.pass.exe: \
 		tests/string.modifiers/string_insert/iter_iter_iter.pass.obj \
@@ -2585,7 +2585,7 @@ tests/string.modifiers/string_insert/iter_iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/iter_iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/iter_iter_iter.pass.obj: tests/string.modifiers/string_insert/iter_iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/iter_iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/iter_iter_iter.pass.cpp
 
 tests/string.modifiers/string_insert/iter_size_char.pass.exe: \
 		tests/string.modifiers/string_insert/iter_size_char.pass.obj \
@@ -2593,7 +2593,7 @@ tests/string.modifiers/string_insert/iter_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/iter_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/iter_size_char.pass.obj: tests/string.modifiers/string_insert/iter_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/iter_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/iter_size_char.pass.cpp
 
 tests/string.modifiers/string_insert/size_string.pass.exe: \
 		tests/string.modifiers/string_insert/size_string.pass.obj \
@@ -2601,7 +2601,7 @@ tests/string.modifiers/string_insert/size_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_insert/size_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_insert/size_string.pass.obj: tests/string.modifiers/string_insert/size_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_insert/size_string.pass.cpp
 
 tests/string.modifiers/string_erase/size_size.pass.exe: \
 		tests/string.modifiers/string_erase/size_size.pass.obj \
@@ -2609,7 +2609,7 @@ tests/string.modifiers/string_erase/size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/size_size.pass.obj: tests/string.modifiers/string_erase/size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/size_size.pass.cpp
 
 tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.exe: \
 		tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.obj \
@@ -2617,7 +2617,7 @@ tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.obj: tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db1.pass.cpp
 
 tests/string.modifiers/string_erase/pop_back.pass.exe: \
 		tests/string.modifiers/string_erase/pop_back.pass.obj \
@@ -2625,7 +2625,7 @@ tests/string.modifiers/string_erase/pop_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/pop_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/pop_back.pass.obj: tests/string.modifiers/string_erase/pop_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/pop_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/pop_back.pass.cpp
 
 tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.exe: \
 		tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.obj \
@@ -2633,7 +2633,7 @@ tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.obj: tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db4.pass.cpp
 
 tests/string.modifiers/string_erase/erase_iter_db2.pass.exe: \
 		tests/string.modifiers/string_erase/erase_iter_db2.pass.obj \
@@ -2641,7 +2641,7 @@ tests/string.modifiers/string_erase/erase_iter_db2.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/erase_iter_db2.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/erase_iter_db2.pass.obj: tests/string.modifiers/string_erase/erase_iter_db2.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_db2.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_db2.pass.cpp
 
 tests/string.modifiers/string_erase/iter_iter.pass.exe: \
 		tests/string.modifiers/string_erase/iter_iter.pass.obj \
@@ -2649,7 +2649,7 @@ tests/string.modifiers/string_erase/iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/iter_iter.pass.obj: tests/string.modifiers/string_erase/iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/iter_iter.pass.cpp
 
 tests/string.modifiers/string_erase/erase_iter_db1.pass.exe: \
 		tests/string.modifiers/string_erase/erase_iter_db1.pass.obj \
@@ -2657,7 +2657,7 @@ tests/string.modifiers/string_erase/erase_iter_db1.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/erase_iter_db1.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/erase_iter_db1.pass.obj: tests/string.modifiers/string_erase/erase_iter_db1.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_db1.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_db1.pass.cpp
 
 tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.exe: \
 		tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.obj \
@@ -2665,7 +2665,7 @@ tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.obj: tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db3.pass.cpp
 
 tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.exe: \
 		tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.obj \
@@ -2673,7 +2673,7 @@ tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.obj: tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/erase_iter_iter_db2.pass.cpp
 
 tests/string.modifiers/string_erase/iter.pass.exe: \
 		tests/string.modifiers/string_erase/iter.pass.obj \
@@ -2681,7 +2681,7 @@ tests/string.modifiers/string_erase/iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_erase/iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_erase/iter.pass.obj: tests/string.modifiers/string_erase/iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_erase/iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_erase/iter.pass.cpp
 
 tests/string.modifiers/string_append/string.pass.exe: \
 		tests/string.modifiers/string_append/string.pass.obj \
@@ -2689,7 +2689,7 @@ tests/string.modifiers/string_append/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_append/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_append/string.pass.obj: tests/string.modifiers/string_append/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_append/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_append/string.pass.cpp
 
 tests/string.modifiers/string_append/size_char.pass.exe: \
 		tests/string.modifiers/string_append/size_char.pass.obj \
@@ -2697,7 +2697,7 @@ tests/string.modifiers/string_append/size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_append/size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_append/size_char.pass.obj: tests/string.modifiers/string_append/size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_append/size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_append/size_char.pass.cpp
 
 tests/string.modifiers/string_append/pointer_size.pass.exe: \
 		tests/string.modifiers/string_append/pointer_size.pass.obj \
@@ -2705,7 +2705,7 @@ tests/string.modifiers/string_append/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_append/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_append/pointer_size.pass.obj: tests/string.modifiers/string_append/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_append/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_append/pointer_size.pass.cpp
 
 tests/string.modifiers/string_append/string_size_size.pass.exe: \
 		tests/string.modifiers/string_append/string_size_size.pass.obj \
@@ -2713,7 +2713,7 @@ tests/string.modifiers/string_append/string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_append/string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_append/string_size_size.pass.obj: tests/string.modifiers/string_append/string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_append/string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_append/string_size_size.pass.cpp
 
 tests/string.modifiers/string_append/iterator.pass.exe: \
 		tests/string.modifiers/string_append/iterator.pass.obj \
@@ -2721,7 +2721,7 @@ tests/string.modifiers/string_append/iterator.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_append/iterator.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_append/iterator.pass.obj: tests/string.modifiers/string_append/iterator.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_append/iterator.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_append/iterator.pass.cpp
 
 tests/string.modifiers/string_append/push_back.pass.exe: \
 		tests/string.modifiers/string_append/push_back.pass.obj \
@@ -2729,7 +2729,7 @@ tests/string.modifiers/string_append/push_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_append/push_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_append/push_back.pass.obj: tests/string.modifiers/string_append/push_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_append/push_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_append/push_back.pass.cpp
 
 tests/string.modifiers/string_append/pointer.pass.exe: \
 		tests/string.modifiers/string_append/pointer.pass.obj \
@@ -2737,7 +2737,7 @@ tests/string.modifiers/string_append/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.modifiers/string_append/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.modifiers/string_append/pointer.pass.obj: tests/string.modifiers/string_append/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.modifiers/string_append/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.modifiers/string_append/pointer.pass.cpp
 
 tests/string.iterators/begin.pass.exe: \
 		tests/string.iterators/begin.pass.obj \
@@ -2745,7 +2745,7 @@ tests/string.iterators/begin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/begin.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/begin.pass.obj: tests/string.iterators/begin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/begin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/begin.pass.cpp
 
 tests/string.iterators/end.pass.exe: \
 		tests/string.iterators/end.pass.obj \
@@ -2753,7 +2753,7 @@ tests/string.iterators/end.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/end.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/end.pass.obj: tests/string.iterators/end.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/end.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/end.pass.cpp
 
 tests/string.iterators/iterators.pass.exe: \
 		tests/string.iterators/iterators.pass.obj \
@@ -2761,7 +2761,7 @@ tests/string.iterators/iterators.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/iterators.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/iterators.pass.obj: tests/string.iterators/iterators.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/iterators.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/iterators.pass.cpp
 
 tests/string.iterators/db_iterators_2.pass.exe: \
 		tests/string.iterators/db_iterators_2.pass.obj \
@@ -2769,7 +2769,7 @@ tests/string.iterators/db_iterators_2.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/db_iterators_2.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/db_iterators_2.pass.obj: tests/string.iterators/db_iterators_2.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/db_iterators_2.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/db_iterators_2.pass.cpp
 
 tests/string.iterators/db_iterators_3.pass.exe: \
 		tests/string.iterators/db_iterators_3.pass.obj \
@@ -2777,7 +2777,7 @@ tests/string.iterators/db_iterators_3.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/db_iterators_3.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/db_iterators_3.pass.obj: tests/string.iterators/db_iterators_3.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/db_iterators_3.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/db_iterators_3.pass.cpp
 
 tests/string.iterators/db_iterators_4.pass.exe: \
 		tests/string.iterators/db_iterators_4.pass.obj \
@@ -2785,7 +2785,7 @@ tests/string.iterators/db_iterators_4.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/db_iterators_4.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/db_iterators_4.pass.obj: tests/string.iterators/db_iterators_4.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/db_iterators_4.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/db_iterators_4.pass.cpp
 
 tests/string.iterators/db_iterators_5.pass.exe: \
 		tests/string.iterators/db_iterators_5.pass.obj \
@@ -2793,7 +2793,7 @@ tests/string.iterators/db_iterators_5.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/db_iterators_5.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/db_iterators_5.pass.obj: tests/string.iterators/db_iterators_5.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/db_iterators_5.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/db_iterators_5.pass.cpp
 
 tests/string.iterators/db_iterators_6.pass.exe: \
 		tests/string.iterators/db_iterators_6.pass.obj \
@@ -2801,7 +2801,7 @@ tests/string.iterators/db_iterators_6.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/db_iterators_6.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/db_iterators_6.pass.obj: tests/string.iterators/db_iterators_6.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/db_iterators_6.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/db_iterators_6.pass.cpp
 
 tests/string.iterators/db_iterators_7.pass.exe: \
 		tests/string.iterators/db_iterators_7.pass.obj \
@@ -2809,7 +2809,7 @@ tests/string.iterators/db_iterators_7.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/db_iterators_7.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/db_iterators_7.pass.obj: tests/string.iterators/db_iterators_7.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/db_iterators_7.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/db_iterators_7.pass.cpp
 
 tests/string.iterators/db_iterators_8.pass.exe: \
 		tests/string.iterators/db_iterators_8.pass.obj \
@@ -2817,7 +2817,7 @@ tests/string.iterators/db_iterators_8.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/db_iterators_8.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/db_iterators_8.pass.obj: tests/string.iterators/db_iterators_8.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/db_iterators_8.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/db_iterators_8.pass.cpp
 
 tests/string.iterators/cbegin.pass.exe: \
 		tests/string.iterators/cbegin.pass.obj \
@@ -2825,7 +2825,7 @@ tests/string.iterators/cbegin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/cbegin.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/cbegin.pass.obj: tests/string.iterators/cbegin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/cbegin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/cbegin.pass.cpp
 
 tests/string.iterators/cend.pass.exe: \
 		tests/string.iterators/cend.pass.obj \
@@ -2833,7 +2833,7 @@ tests/string.iterators/cend.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/cend.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/cend.pass.obj: tests/string.iterators/cend.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/cend.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/cend.pass.cpp
 
 tests/string.iterators/rbegin.pass.exe: \
 		tests/string.iterators/rbegin.pass.obj \
@@ -2841,7 +2841,7 @@ tests/string.iterators/rbegin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/rbegin.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/rbegin.pass.obj: tests/string.iterators/rbegin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/rbegin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/rbegin.pass.cpp
 
 tests/string.iterators/rend.pass.exe: \
 		tests/string.iterators/rend.pass.obj \
@@ -2849,7 +2849,7 @@ tests/string.iterators/rend.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/rend.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/rend.pass.obj: tests/string.iterators/rend.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/rend.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/rend.pass.cpp
 
 tests/string.iterators/crbegin.pass.exe: \
 		tests/string.iterators/crbegin.pass.obj \
@@ -2857,7 +2857,7 @@ tests/string.iterators/crbegin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/crbegin.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/crbegin.pass.obj: tests/string.iterators/crbegin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/crbegin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/crbegin.pass.cpp
 
 tests/string.iterators/crend.pass.exe: \
 		tests/string.iterators/crend.pass.obj \
@@ -2865,7 +2865,7 @@ tests/string.iterators/crend.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.iterators/crend.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.iterators/crend.pass.obj: tests/string.iterators/crend.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.iterators/crend.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.iterators/crend.pass.cpp
 
 tests/string.cons/pointer_size_alloc.pass.exe: \
 		tests/string.cons/pointer_size_alloc.pass.obj \
@@ -2873,7 +2873,7 @@ tests/string.cons/pointer_size_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/pointer_size_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/pointer_size_alloc.pass.obj: tests/string.cons/pointer_size_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/pointer_size_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/pointer_size_alloc.pass.cpp
 
 tests/string.cons/pointer_assignment.pass.exe: \
 		tests/string.cons/pointer_assignment.pass.obj \
@@ -2881,7 +2881,7 @@ tests/string.cons/pointer_assignment.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/pointer_assignment.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/pointer_assignment.pass.obj: tests/string.cons/pointer_assignment.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/pointer_assignment.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/pointer_assignment.pass.cpp
 
 tests/string.cons/copy_assignment.pass.exe: \
 		tests/string.cons/copy_assignment.pass.obj \
@@ -2889,7 +2889,7 @@ tests/string.cons/copy_assignment.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/copy_assignment.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/copy_assignment.pass.obj: tests/string.cons/copy_assignment.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/copy_assignment.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/copy_assignment.pass.cpp
 
 tests/string.cons/copy.pass.exe: \
 		tests/string.cons/copy.pass.obj \
@@ -2897,7 +2897,7 @@ tests/string.cons/copy.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/copy.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/copy.pass.obj: tests/string.cons/copy.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/copy.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/copy.pass.cpp
 
 tests/string.cons/char_assignment.pass.exe: \
 		tests/string.cons/char_assignment.pass.obj \
@@ -2905,7 +2905,7 @@ tests/string.cons/char_assignment.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/char_assignment.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/char_assignment.pass.obj: tests/string.cons/char_assignment.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/char_assignment.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/char_assignment.pass.cpp
 
 tests/string.cons/pointer_alloc.pass.exe: \
 		tests/string.cons/pointer_alloc.pass.obj \
@@ -2913,7 +2913,7 @@ tests/string.cons/pointer_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/pointer_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/pointer_alloc.pass.obj: tests/string.cons/pointer_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/pointer_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/pointer_alloc.pass.cpp
 
 tests/string.cons/size_char_alloc.pass.exe: \
 		tests/string.cons/size_char_alloc.pass.obj \
@@ -2921,7 +2921,7 @@ tests/string.cons/size_char_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/size_char_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/size_char_alloc.pass.obj: tests/string.cons/size_char_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/size_char_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/size_char_alloc.pass.cpp
 
 tests/string.cons/substr.pass.exe: \
 		tests/string.cons/substr.pass.obj \
@@ -2929,7 +2929,7 @@ tests/string.cons/substr.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/substr.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/substr.pass.obj: tests/string.cons/substr.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/substr.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/substr.pass.cpp
 
 tests/string.cons/copy_alloc.pass.exe: \
 		tests/string.cons/copy_alloc.pass.obj \
@@ -2937,7 +2937,7 @@ tests/string.cons/copy_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.cons/copy_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.cons/copy_alloc.pass.obj: tests/string.cons/copy_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.cons/copy_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.cons/copy_alloc.pass.cpp
 
 tests/string.access/back.pass.exe: \
 		tests/string.access/back.pass.obj \
@@ -2945,7 +2945,7 @@ tests/string.access/back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/back.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/back.pass.obj: tests/string.access/back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/back.pass.cpp
 
 tests/string.access/at.pass.exe: \
 		tests/string.access/at.pass.obj \
@@ -2953,7 +2953,7 @@ tests/string.access/at.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/at.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/at.pass.obj: tests/string.access/at.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/at.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/at.pass.cpp
 
 tests/string.access/db_cback.pass.exe: \
 		tests/string.access/db_cback.pass.obj \
@@ -2961,7 +2961,7 @@ tests/string.access/db_cback.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/db_cback.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/db_cback.pass.obj: tests/string.access/db_cback.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/db_cback.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/db_cback.pass.cpp
 
 tests/string.access/db_back.pass.exe: \
 		tests/string.access/db_back.pass.obj \
@@ -2969,7 +2969,7 @@ tests/string.access/db_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/db_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/db_back.pass.obj: tests/string.access/db_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/db_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/db_back.pass.cpp
 
 tests/string.access/db_cfront.pass.exe: \
 		tests/string.access/db_cfront.pass.obj \
@@ -2977,7 +2977,7 @@ tests/string.access/db_cfront.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/db_cfront.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/db_cfront.pass.obj: tests/string.access/db_cfront.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/db_cfront.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/db_cfront.pass.cpp
 
 tests/string.access/db_cindex.pass.exe: \
 		tests/string.access/db_cindex.pass.obj \
@@ -2985,7 +2985,7 @@ tests/string.access/db_cindex.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/db_cindex.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/db_cindex.pass.obj: tests/string.access/db_cindex.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/db_cindex.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/db_cindex.pass.cpp
 
 tests/string.access/db_index.pass.exe: \
 		tests/string.access/db_index.pass.obj \
@@ -2993,7 +2993,7 @@ tests/string.access/db_index.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/db_index.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/db_index.pass.obj: tests/string.access/db_index.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/db_index.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/db_index.pass.cpp
 
 tests/string.access/front.pass.exe: \
 		tests/string.access/front.pass.obj \
@@ -3001,7 +3001,7 @@ tests/string.access/front.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/front.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/front.pass.obj: tests/string.access/front.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/front.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/front.pass.cpp
 
 tests/string.access/index.pass.exe: \
 		tests/string.access/index.pass.obj \
@@ -3009,7 +3009,7 @@ tests/string.access/index.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/index.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/index.pass.obj: tests/string.access/index.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/index.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/index.pass.cpp
 
 tests/string.access/db_front.pass.exe: \
 		tests/string.access/db_front.pass.obj \
@@ -3017,7 +3017,7 @@ tests/string.access/db_front.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.access/db_front.pass.obj barefootc.lib log4stdc.lib
 
 tests/string.access/db_front.pass.obj: tests/string.access/db_front.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.access/db_front.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.access/db_front.pass.cpp
 
 tests/wstring.ops/string.accessors/data.pass.exe: \
 		tests/wstring.ops/string.accessors/data.pass.obj \
@@ -3025,7 +3025,7 @@ tests/wstring.ops/string.accessors/data.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string.accessors/data.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string.accessors/data.pass.obj: tests/wstring.ops/string.accessors/data.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string.accessors/data.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string.accessors/data.pass.cpp
 
 tests/wstring.ops/string.accessors/c_str.pass.exe: \
 		tests/wstring.ops/string.accessors/c_str.pass.obj \
@@ -3033,7 +3033,7 @@ tests/wstring.ops/string.accessors/c_str.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string.accessors/c_str.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string.accessors/c_str.pass.obj: tests/wstring.ops/string.accessors/c_str.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string.accessors/c_str.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string.accessors/c_str.pass.cpp
 
 tests/wstring.ops/string_substr/substr.pass.exe: \
 		tests/wstring.ops/string_substr/substr.pass.obj \
@@ -3041,7 +3041,7 @@ tests/wstring.ops/string_substr/substr.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_substr/substr.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_substr/substr.pass.obj: tests/wstring.ops/string_substr/substr.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_substr/substr.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_substr/substr.pass.cpp
 
 tests/wstring.ops/string_find.last.of/pointer_size.pass.exe: \
 		tests/wstring.ops/string_find.last.of/pointer_size.pass.obj \
@@ -3049,7 +3049,7 @@ tests/wstring.ops/string_find.last.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.of/pointer_size.pass.obj: tests/wstring.ops/string_find.last.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/pointer_size.pass.cpp
 
 tests/wstring.ops/string_find.last.of/char_size.pass.exe: \
 		tests/wstring.ops/string_find.last.of/char_size.pass.obj \
@@ -3057,7 +3057,7 @@ tests/wstring.ops/string_find.last.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.of/char_size.pass.obj: tests/wstring.ops/string_find.last.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/char_size.pass.cpp
 
 tests/wstring.ops/string_find.last.of/pointer_size_size.pass.exe: \
 		tests/wstring.ops/string_find.last.of/pointer_size_size.pass.obj \
@@ -3065,7 +3065,7 @@ tests/wstring.ops/string_find.last.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.of/pointer_size_size.pass.obj: tests/wstring.ops/string_find.last.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/pointer_size_size.pass.cpp
 
 tests/wstring.ops/string_find.last.of/string_size.pass.exe: \
 		tests/wstring.ops/string_find.last.of/string_size.pass.obj \
@@ -3073,7 +3073,7 @@ tests/wstring.ops/string_find.last.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.of/string_size.pass.obj: tests/wstring.ops/string_find.last.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.of/string_size.pass.cpp
 
 tests/wstring.ops/string_find.first.not.of/pointer_size.pass.exe: \
 		tests/wstring.ops/string_find.first.not.of/pointer_size.pass.obj \
@@ -3081,7 +3081,7 @@ tests/wstring.ops/string_find.first.not.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.not.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.not.of/pointer_size.pass.obj: tests/wstring.ops/string_find.first.not.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/pointer_size.pass.cpp
 
 tests/wstring.ops/string_find.first.not.of/char_size.pass.exe: \
 		tests/wstring.ops/string_find.first.not.of/char_size.pass.obj \
@@ -3089,7 +3089,7 @@ tests/wstring.ops/string_find.first.not.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.not.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.not.of/char_size.pass.obj: tests/wstring.ops/string_find.first.not.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/char_size.pass.cpp
 
 tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.exe: \
 		tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.obj \
@@ -3097,7 +3097,7 @@ tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.obj: tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/pointer_size_size.pass.cpp
 
 tests/wstring.ops/string_find.first.not.of/string_size.pass.exe: \
 		tests/wstring.ops/string_find.first.not.of/string_size.pass.obj \
@@ -3105,7 +3105,7 @@ tests/wstring.ops/string_find.first.not.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.not.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.not.of/string_size.pass.obj: tests/wstring.ops/string_find.first.not.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.not.of/string_size.pass.cpp
 
 tests/wstring.ops/string_find.last.not.of/pointer_size.pass.exe: \
 		tests/wstring.ops/string_find.last.not.of/pointer_size.pass.obj \
@@ -3113,7 +3113,7 @@ tests/wstring.ops/string_find.last.not.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.not.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.not.of/pointer_size.pass.obj: tests/wstring.ops/string_find.last.not.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/pointer_size.pass.cpp
 
 tests/wstring.ops/string_find.last.not.of/char_size.pass.exe: \
 		tests/wstring.ops/string_find.last.not.of/char_size.pass.obj \
@@ -3121,7 +3121,7 @@ tests/wstring.ops/string_find.last.not.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.not.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.not.of/char_size.pass.obj: tests/wstring.ops/string_find.last.not.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/char_size.pass.cpp
 
 tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.exe: \
 		tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.obj \
@@ -3129,7 +3129,7 @@ tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.obj: tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/pointer_size_size.pass.cpp
 
 tests/wstring.ops/string_find.last.not.of/string_size.pass.exe: \
 		tests/wstring.ops/string_find.last.not.of/string_size.pass.obj \
@@ -3137,7 +3137,7 @@ tests/wstring.ops/string_find.last.not.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.last.not.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.last.not.of/string_size.pass.obj: tests/wstring.ops/string_find.last.not.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.last.not.of/string_size.pass.cpp
 
 tests/wstring.ops/string_find/pointer_size.pass.exe: \
 		tests/wstring.ops/string_find/pointer_size.pass.obj \
@@ -3145,7 +3145,7 @@ tests/wstring.ops/string_find/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find/pointer_size.pass.obj: tests/wstring.ops/string_find/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find/pointer_size.pass.cpp
 
 tests/wstring.ops/string_find/char_size.pass.exe: \
 		tests/wstring.ops/string_find/char_size.pass.obj \
@@ -3153,7 +3153,7 @@ tests/wstring.ops/string_find/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find/char_size.pass.obj: tests/wstring.ops/string_find/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find/char_size.pass.cpp
 
 tests/wstring.ops/string_find/pointer_size_size.pass.exe: \
 		tests/wstring.ops/string_find/pointer_size_size.pass.obj \
@@ -3161,7 +3161,7 @@ tests/wstring.ops/string_find/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find/pointer_size_size.pass.obj: tests/wstring.ops/string_find/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find/pointer_size_size.pass.cpp
 
 tests/wstring.ops/string_find/string_size.pass.exe: \
 		tests/wstring.ops/string_find/string_size.pass.obj \
@@ -3169,7 +3169,7 @@ tests/wstring.ops/string_find/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find/string_size.pass.obj: tests/wstring.ops/string_find/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find/string_size.pass.cpp
 
 tests/wstring.ops/string_compare/string.pass.exe: \
 		tests/wstring.ops/string_compare/string.pass.obj \
@@ -3177,7 +3177,7 @@ tests/wstring.ops/string_compare/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_compare/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_compare/string.pass.obj: tests/wstring.ops/string_compare/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_compare/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_compare/string.pass.cpp
 
 tests/wstring.ops/string_compare/size_size_pointer_size.pass.exe: \
 		tests/wstring.ops/string_compare/size_size_pointer_size.pass.obj \
@@ -3185,7 +3185,7 @@ tests/wstring.ops/string_compare/size_size_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_compare/size_size_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_compare/size_size_pointer_size.pass.obj: tests/wstring.ops/string_compare/size_size_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_pointer_size.pass.cpp
 
 tests/wstring.ops/string_compare/size_size_string_size_size.pass.exe: \
 		tests/wstring.ops/string_compare/size_size_string_size_size.pass.obj \
@@ -3193,7 +3193,7 @@ tests/wstring.ops/string_compare/size_size_string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_compare/size_size_string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_compare/size_size_string_size_size.pass.obj: tests/wstring.ops/string_compare/size_size_string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_string_size_size.pass.cpp
 
 tests/wstring.ops/string_compare/size_size_pointer.pass.exe: \
 		tests/wstring.ops/string_compare/size_size_pointer.pass.obj \
@@ -3201,7 +3201,7 @@ tests/wstring.ops/string_compare/size_size_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_compare/size_size_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_compare/size_size_pointer.pass.obj: tests/wstring.ops/string_compare/size_size_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_pointer.pass.cpp
 
 tests/wstring.ops/string_compare/pointer.pass.exe: \
 		tests/wstring.ops/string_compare/pointer.pass.obj \
@@ -3209,7 +3209,7 @@ tests/wstring.ops/string_compare/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_compare/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_compare/pointer.pass.obj: tests/wstring.ops/string_compare/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_compare/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_compare/pointer.pass.cpp
 
 tests/wstring.ops/string_compare/size_size_string.pass.exe: \
 		tests/wstring.ops/string_compare/size_size_string.pass.obj \
@@ -3217,7 +3217,7 @@ tests/wstring.ops/string_compare/size_size_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_compare/size_size_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_compare/size_size_string.pass.obj: tests/wstring.ops/string_compare/size_size_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_compare/size_size_string.pass.cpp
 
 tests/wstring.ops/string_find.first.of/pointer_size.pass.exe: \
 		tests/wstring.ops/string_find.first.of/pointer_size.pass.obj \
@@ -3225,7 +3225,7 @@ tests/wstring.ops/string_find.first.of/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.of/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.of/pointer_size.pass.obj: tests/wstring.ops/string_find.first.of/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/pointer_size.pass.cpp
 
 tests/wstring.ops/string_find.first.of/char_size.pass.exe: \
 		tests/wstring.ops/string_find.first.of/char_size.pass.obj \
@@ -3233,7 +3233,7 @@ tests/wstring.ops/string_find.first.of/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.of/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.of/char_size.pass.obj: tests/wstring.ops/string_find.first.of/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/char_size.pass.cpp
 
 tests/wstring.ops/string_find.first.of/pointer_size_size.pass.exe: \
 		tests/wstring.ops/string_find.first.of/pointer_size_size.pass.obj \
@@ -3241,7 +3241,7 @@ tests/wstring.ops/string_find.first.of/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.of/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.of/pointer_size_size.pass.obj: tests/wstring.ops/string_find.first.of/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/pointer_size_size.pass.cpp
 
 tests/wstring.ops/string_find.first.of/string_size.pass.exe: \
 		tests/wstring.ops/string_find.first.of/string_size.pass.obj \
@@ -3249,7 +3249,7 @@ tests/wstring.ops/string_find.first.of/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_find.first.of/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_find.first.of/string_size.pass.obj: tests/wstring.ops/string_find.first.of/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_find.first.of/string_size.pass.cpp
 
 tests/wstring.ops/string_rfind/pointer_size.pass.exe: \
 		tests/wstring.ops/string_rfind/pointer_size.pass.obj \
@@ -3257,7 +3257,7 @@ tests/wstring.ops/string_rfind/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_rfind/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_rfind/pointer_size.pass.obj: tests/wstring.ops/string_rfind/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_rfind/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_rfind/pointer_size.pass.cpp
 
 tests/wstring.ops/string_rfind/char_size.pass.exe: \
 		tests/wstring.ops/string_rfind/char_size.pass.obj \
@@ -3265,7 +3265,7 @@ tests/wstring.ops/string_rfind/char_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_rfind/char_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_rfind/char_size.pass.obj: tests/wstring.ops/string_rfind/char_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_rfind/char_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_rfind/char_size.pass.cpp
 
 tests/wstring.ops/string_rfind/pointer_size_size.pass.exe: \
 		tests/wstring.ops/string_rfind/pointer_size_size.pass.obj \
@@ -3273,7 +3273,7 @@ tests/wstring.ops/string_rfind/pointer_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_rfind/pointer_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_rfind/pointer_size_size.pass.obj: tests/wstring.ops/string_rfind/pointer_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_rfind/pointer_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_rfind/pointer_size_size.pass.cpp
 
 tests/wstring.ops/string_rfind/string_size.pass.exe: \
 		tests/wstring.ops/string_rfind/string_size.pass.obj \
@@ -3281,7 +3281,7 @@ tests/wstring.ops/string_rfind/string_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.ops/string_rfind/string_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.ops/string_rfind/string_size.pass.obj: tests/wstring.ops/string_rfind/string_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.ops/string_rfind/string_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.ops/string_rfind/string_size.pass.cpp
 
 tests/wstring.capacity/resize_size_char.pass.exe: \
 		tests/wstring.capacity/resize_size_char.pass.obj \
@@ -3289,7 +3289,7 @@ tests/wstring.capacity/resize_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/resize_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/resize_size_char.pass.obj: tests/wstring.capacity/resize_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/resize_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/resize_size_char.pass.cpp
 
 tests/wstring.capacity/empty.pass.exe: \
 		tests/wstring.capacity/empty.pass.obj \
@@ -3297,7 +3297,7 @@ tests/wstring.capacity/empty.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/empty.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/empty.pass.obj: tests/wstring.capacity/empty.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/empty.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/empty.pass.cpp
 
 tests/wstring.capacity/size.pass.exe: \
 		tests/wstring.capacity/size.pass.obj \
@@ -3305,7 +3305,7 @@ tests/wstring.capacity/size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/size.pass.obj: tests/wstring.capacity/size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/size.pass.cpp
 
 tests/wstring.capacity/shrink_to_fit.pass.exe: \
 		tests/wstring.capacity/shrink_to_fit.pass.obj \
@@ -3313,7 +3313,7 @@ tests/wstring.capacity/shrink_to_fit.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/shrink_to_fit.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/shrink_to_fit.pass.obj: tests/wstring.capacity/shrink_to_fit.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/shrink_to_fit.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/shrink_to_fit.pass.cpp
 
 tests/wstring.capacity/clear.pass.exe: \
 		tests/wstring.capacity/clear.pass.obj \
@@ -3321,7 +3321,7 @@ tests/wstring.capacity/clear.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/clear.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/clear.pass.obj: tests/wstring.capacity/clear.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/clear.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/clear.pass.cpp
 
 tests/wstring.capacity/reserve.pass.exe: \
 		tests/wstring.capacity/reserve.pass.obj \
@@ -3329,7 +3329,7 @@ tests/wstring.capacity/reserve.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/reserve.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/reserve.pass.obj: tests/wstring.capacity/reserve.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/reserve.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/reserve.pass.cpp
 
 tests/wstring.capacity/length.pass.exe: \
 		tests/wstring.capacity/length.pass.obj \
@@ -3337,7 +3337,7 @@ tests/wstring.capacity/length.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/length.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/length.pass.obj: tests/wstring.capacity/length.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/length.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/length.pass.cpp
 
 tests/wstring.capacity/resize_size.pass.exe: \
 		tests/wstring.capacity/resize_size.pass.obj \
@@ -3345,7 +3345,7 @@ tests/wstring.capacity/resize_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.capacity/resize_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.capacity/resize_size.pass.obj: tests/wstring.capacity/resize_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.capacity/resize_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.capacity/resize_size.pass.cpp
 
 tests/wstring.modifiers/string_swap/swap.pass.exe: \
 		tests/wstring.modifiers/string_swap/swap.pass.obj \
@@ -3353,7 +3353,7 @@ tests/wstring.modifiers/string_swap/swap.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_swap/swap.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_swap/swap.pass.obj: tests/wstring.modifiers/string_swap/swap.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_swap/swap.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_swap/swap.pass.cpp
 
 tests/wstring.modifiers/string_op_plus_equal/string.pass.exe: \
 		tests/wstring.modifiers/string_op_plus_equal/string.pass.obj \
@@ -3361,7 +3361,7 @@ tests/wstring.modifiers/string_op_plus_equal/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_op_plus_equal/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_op_plus_equal/string.pass.obj: tests/wstring.modifiers/string_op_plus_equal/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_op_plus_equal/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_op_plus_equal/string.pass.cpp
 
 tests/wstring.modifiers/string_op_plus_equal/char.pass.exe: \
 		tests/wstring.modifiers/string_op_plus_equal/char.pass.obj \
@@ -3369,7 +3369,7 @@ tests/wstring.modifiers/string_op_plus_equal/char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_op_plus_equal/char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_op_plus_equal/char.pass.obj: tests/wstring.modifiers/string_op_plus_equal/char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_op_plus_equal/char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_op_plus_equal/char.pass.cpp
 
 tests/wstring.modifiers/string_op_plus_equal/pointer.pass.exe: \
 		tests/wstring.modifiers/string_op_plus_equal/pointer.pass.obj \
@@ -3377,7 +3377,7 @@ tests/wstring.modifiers/string_op_plus_equal/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_op_plus_equal/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_op_plus_equal/pointer.pass.obj: tests/wstring.modifiers/string_op_plus_equal/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_op_plus_equal/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_op_plus_equal/pointer.pass.cpp
 
 tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.exe: \
 		tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.obj \
@@ -3385,7 +3385,7 @@ tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.obj: tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_pointer_size.pass.cpp
 
 tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.exe: \
 		tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.obj \
@@ -3393,7 +3393,7 @@ tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.obj: tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_pointer_size.pass.cpp
 
 tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.exe: \
 		tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.obj \
@@ -3401,7 +3401,7 @@ tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.obj: tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_pointer.pass.cpp
 
 tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.exe: \
 		tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.obj \
@@ -3409,7 +3409,7 @@ tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.obj: tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_string_size_size.pass.cpp
 
 tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.exe: \
 		tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.obj \
@@ -3417,7 +3417,7 @@ tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.obj: tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_size_char.pass.cpp
 
 tests/wstring.modifiers/string_replace/size_size_size_char.pass.exe: \
 		tests/wstring.modifiers/string_replace/size_size_size_char.pass.obj \
@@ -3425,7 +3425,7 @@ tests/wstring.modifiers/string_replace/size_size_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/size_size_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/size_size_size_char.pass.obj: tests/wstring.modifiers/string_replace/size_size_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_size_char.pass.cpp
 
 tests/wstring.modifiers/string_replace/size_size_pointer.pass.exe: \
 		tests/wstring.modifiers/string_replace/size_size_pointer.pass.obj \
@@ -3433,7 +3433,7 @@ tests/wstring.modifiers/string_replace/size_size_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/size_size_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/size_size_pointer.pass.obj: tests/wstring.modifiers/string_replace/size_size_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_pointer.pass.cpp
 
 tests/wstring.modifiers/string_replace/size_size_string.pass.exe: \
 		tests/wstring.modifiers/string_replace/size_size_string.pass.obj \
@@ -3441,7 +3441,7 @@ tests/wstring.modifiers/string_replace/size_size_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/size_size_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/size_size_string.pass.obj: tests/wstring.modifiers/string_replace/size_size_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/size_size_string.pass.cpp
 
 tests/wstring.modifiers/string_replace/iter_iter_string.pass.exe: \
 		tests/wstring.modifiers/string_replace/iter_iter_string.pass.obj \
@@ -3449,7 +3449,7 @@ tests/wstring.modifiers/string_replace/iter_iter_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/iter_iter_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/iter_iter_string.pass.obj: tests/wstring.modifiers/string_replace/iter_iter_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_string.pass.cpp
 
 tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.exe: \
 		tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.obj \
@@ -3457,7 +3457,7 @@ tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.obj: tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_replace/iter_iter_iter_iter.pass.cpp
 
 tests/wstring.modifiers/string_copy/copy.pass.exe: \
 		tests/wstring.modifiers/string_copy/copy.pass.obj \
@@ -3465,7 +3465,7 @@ tests/wstring.modifiers/string_copy/copy.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_copy/copy.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_copy/copy.pass.obj: tests/wstring.modifiers/string_copy/copy.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_copy/copy.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_copy/copy.pass.cpp
 
 tests/wstring.modifiers/string_assign/string.pass.exe: \
 		tests/wstring.modifiers/string_assign/string.pass.obj \
@@ -3473,7 +3473,7 @@ tests/wstring.modifiers/string_assign/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_assign/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_assign/string.pass.obj: tests/wstring.modifiers/string_assign/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/string.pass.cpp
 
 tests/wstring.modifiers/string_assign/size_char.pass.exe: \
 		tests/wstring.modifiers/string_assign/size_char.pass.obj \
@@ -3481,7 +3481,7 @@ tests/wstring.modifiers/string_assign/size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_assign/size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_assign/size_char.pass.obj: tests/wstring.modifiers/string_assign/size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/size_char.pass.cpp
 
 tests/wstring.modifiers/string_assign/pointer_size.pass.exe: \
 		tests/wstring.modifiers/string_assign/pointer_size.pass.obj \
@@ -3489,7 +3489,7 @@ tests/wstring.modifiers/string_assign/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_assign/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_assign/pointer_size.pass.obj: tests/wstring.modifiers/string_assign/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/pointer_size.pass.cpp
 
 tests/wstring.modifiers/string_assign/string_size_size.pass.exe: \
 		tests/wstring.modifiers/string_assign/string_size_size.pass.obj \
@@ -3497,7 +3497,7 @@ tests/wstring.modifiers/string_assign/string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_assign/string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_assign/string_size_size.pass.obj: tests/wstring.modifiers/string_assign/string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/string_size_size.pass.cpp
 
 tests/wstring.modifiers/string_assign/iterator.pass.exe: \
 		tests/wstring.modifiers/string_assign/iterator.pass.obj \
@@ -3505,7 +3505,7 @@ tests/wstring.modifiers/string_assign/iterator.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_assign/iterator.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_assign/iterator.pass.obj: tests/wstring.modifiers/string_assign/iterator.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/iterator.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/iterator.pass.cpp
 
 tests/wstring.modifiers/string_assign/pointer.pass.exe: \
 		tests/wstring.modifiers/string_assign/pointer.pass.obj \
@@ -3513,7 +3513,7 @@ tests/wstring.modifiers/string_assign/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_assign/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_assign/pointer.pass.obj: tests/wstring.modifiers/string_assign/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_assign/pointer.pass.cpp
 
 tests/wstring.modifiers/string_insert/size_string_size_size.pass.exe: \
 		tests/wstring.modifiers/string_insert/size_string_size_size.pass.obj \
@@ -3521,7 +3521,7 @@ tests/wstring.modifiers/string_insert/size_string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/size_string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/size_string_size_size.pass.obj: tests/wstring.modifiers/string_insert/size_string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_string_size_size.pass.cpp
 
 tests/wstring.modifiers/string_insert/size_pointer_size.pass.exe: \
 		tests/wstring.modifiers/string_insert/size_pointer_size.pass.obj \
@@ -3529,7 +3529,7 @@ tests/wstring.modifiers/string_insert/size_pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/size_pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/size_pointer_size.pass.obj: tests/wstring.modifiers/string_insert/size_pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_pointer_size.pass.cpp
 
 tests/wstring.modifiers/string_insert/size_pointer.pass.exe: \
 		tests/wstring.modifiers/string_insert/size_pointer.pass.obj \
@@ -3537,7 +3537,7 @@ tests/wstring.modifiers/string_insert/size_pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/size_pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/size_pointer.pass.obj: tests/wstring.modifiers/string_insert/size_pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_pointer.pass.cpp
 
 tests/wstring.modifiers/string_insert/iter_char.pass.exe: \
 		tests/wstring.modifiers/string_insert/iter_char.pass.obj \
@@ -3545,7 +3545,7 @@ tests/wstring.modifiers/string_insert/iter_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/iter_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/iter_char.pass.obj: tests/wstring.modifiers/string_insert/iter_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/iter_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/iter_char.pass.cpp
 
 tests/wstring.modifiers/string_insert/size_size_char.pass.exe: \
 		tests/wstring.modifiers/string_insert/size_size_char.pass.obj \
@@ -3553,7 +3553,7 @@ tests/wstring.modifiers/string_insert/size_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/size_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/size_size_char.pass.obj: tests/wstring.modifiers/string_insert/size_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_size_char.pass.cpp
 
 tests/wstring.modifiers/string_insert/iter_iter_iter.pass.exe: \
 		tests/wstring.modifiers/string_insert/iter_iter_iter.pass.obj \
@@ -3561,7 +3561,7 @@ tests/wstring.modifiers/string_insert/iter_iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/iter_iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/iter_iter_iter.pass.obj: tests/wstring.modifiers/string_insert/iter_iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/iter_iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/iter_iter_iter.pass.cpp
 
 tests/wstring.modifiers/string_insert/iter_size_char.pass.exe: \
 		tests/wstring.modifiers/string_insert/iter_size_char.pass.obj \
@@ -3569,7 +3569,7 @@ tests/wstring.modifiers/string_insert/iter_size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/iter_size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/iter_size_char.pass.obj: tests/wstring.modifiers/string_insert/iter_size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/iter_size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/iter_size_char.pass.cpp
 
 tests/wstring.modifiers/string_insert/size_string.pass.exe: \
 		tests/wstring.modifiers/string_insert/size_string.pass.obj \
@@ -3577,7 +3577,7 @@ tests/wstring.modifiers/string_insert/size_string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_insert/size_string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_insert/size_string.pass.obj: tests/wstring.modifiers/string_insert/size_string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_insert/size_string.pass.cpp
 
 tests/wstring.modifiers/string_erase/size_size.pass.exe: \
 		tests/wstring.modifiers/string_erase/size_size.pass.obj \
@@ -3585,7 +3585,7 @@ tests/wstring.modifiers/string_erase/size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/size_size.pass.obj: tests/wstring.modifiers/string_erase/size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/size_size.pass.cpp
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.exe: \
 		tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.obj \
@@ -3593,7 +3593,7 @@ tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.obj: tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db1.pass.cpp
 
 tests/wstring.modifiers/string_erase/pop_back.pass.exe: \
 		tests/wstring.modifiers/string_erase/pop_back.pass.obj \
@@ -3601,7 +3601,7 @@ tests/wstring.modifiers/string_erase/pop_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/pop_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/pop_back.pass.obj: tests/wstring.modifiers/string_erase/pop_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/pop_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/pop_back.pass.cpp
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.exe: \
 		tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.obj \
@@ -3609,7 +3609,7 @@ tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.obj: tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db4.pass.cpp
 
 tests/wstring.modifiers/string_erase/erase_iter_db2.pass.exe: \
 		tests/wstring.modifiers/string_erase/erase_iter_db2.pass.obj \
@@ -3617,7 +3617,7 @@ tests/wstring.modifiers/string_erase/erase_iter_db2.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/erase_iter_db2.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/erase_iter_db2.pass.obj: tests/wstring.modifiers/string_erase/erase_iter_db2.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_db2.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_db2.pass.cpp
 
 tests/wstring.modifiers/string_erase/iter_iter.pass.exe: \
 		tests/wstring.modifiers/string_erase/iter_iter.pass.obj \
@@ -3625,7 +3625,7 @@ tests/wstring.modifiers/string_erase/iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/iter_iter.pass.obj: tests/wstring.modifiers/string_erase/iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/iter_iter.pass.cpp
 
 tests/wstring.modifiers/string_erase/erase_iter_db1.pass.exe: \
 		tests/wstring.modifiers/string_erase/erase_iter_db1.pass.obj \
@@ -3633,7 +3633,7 @@ tests/wstring.modifiers/string_erase/erase_iter_db1.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/erase_iter_db1.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/erase_iter_db1.pass.obj: tests/wstring.modifiers/string_erase/erase_iter_db1.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_db1.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_db1.pass.cpp
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.exe: \
 		tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.obj \
@@ -3641,7 +3641,7 @@ tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.obj: tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db3.pass.cpp
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.exe: \
 		tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.obj \
@@ -3649,7 +3649,7 @@ tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.obj: tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/erase_iter_iter_db2.pass.cpp
 
 tests/wstring.modifiers/string_erase/iter.pass.exe: \
 		tests/wstring.modifiers/string_erase/iter.pass.obj \
@@ -3657,7 +3657,7 @@ tests/wstring.modifiers/string_erase/iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_erase/iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_erase/iter.pass.obj: tests/wstring.modifiers/string_erase/iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_erase/iter.pass.cpp
 
 tests/wstring.modifiers/string_append/string.pass.exe: \
 		tests/wstring.modifiers/string_append/string.pass.obj \
@@ -3665,7 +3665,7 @@ tests/wstring.modifiers/string_append/string.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_append/string.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_append/string.pass.obj: tests/wstring.modifiers/string_append/string.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_append/string.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_append/string.pass.cpp
 
 tests/wstring.modifiers/string_append/size_char.pass.exe: \
 		tests/wstring.modifiers/string_append/size_char.pass.obj \
@@ -3673,7 +3673,7 @@ tests/wstring.modifiers/string_append/size_char.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_append/size_char.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_append/size_char.pass.obj: tests/wstring.modifiers/string_append/size_char.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_append/size_char.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_append/size_char.pass.cpp
 
 tests/wstring.modifiers/string_append/pointer_size.pass.exe: \
 		tests/wstring.modifiers/string_append/pointer_size.pass.obj \
@@ -3681,7 +3681,7 @@ tests/wstring.modifiers/string_append/pointer_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_append/pointer_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_append/pointer_size.pass.obj: tests/wstring.modifiers/string_append/pointer_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_append/pointer_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_append/pointer_size.pass.cpp
 
 tests/wstring.modifiers/string_append/string_size_size.pass.exe: \
 		tests/wstring.modifiers/string_append/string_size_size.pass.obj \
@@ -3689,7 +3689,7 @@ tests/wstring.modifiers/string_append/string_size_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_append/string_size_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_append/string_size_size.pass.obj: tests/wstring.modifiers/string_append/string_size_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_append/string_size_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_append/string_size_size.pass.cpp
 
 tests/wstring.modifiers/string_append/iterator.pass.exe: \
 		tests/wstring.modifiers/string_append/iterator.pass.obj \
@@ -3697,7 +3697,7 @@ tests/wstring.modifiers/string_append/iterator.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_append/iterator.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_append/iterator.pass.obj: tests/wstring.modifiers/string_append/iterator.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_append/iterator.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_append/iterator.pass.cpp
 
 tests/wstring.modifiers/string_append/push_back.pass.exe: \
 		tests/wstring.modifiers/string_append/push_back.pass.obj \
@@ -3705,7 +3705,7 @@ tests/wstring.modifiers/string_append/push_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_append/push_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_append/push_back.pass.obj: tests/wstring.modifiers/string_append/push_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_append/push_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_append/push_back.pass.cpp
 
 tests/wstring.modifiers/string_append/pointer.pass.exe: \
 		tests/wstring.modifiers/string_append/pointer.pass.obj \
@@ -3713,7 +3713,7 @@ tests/wstring.modifiers/string_append/pointer.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.modifiers/string_append/pointer.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.modifiers/string_append/pointer.pass.obj: tests/wstring.modifiers/string_append/pointer.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.modifiers/string_append/pointer.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.modifiers/string_append/pointer.pass.cpp
 
 tests/wstring.iterators/begin.pass.exe: \
 		tests/wstring.iterators/begin.pass.obj \
@@ -3721,7 +3721,7 @@ tests/wstring.iterators/begin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/begin.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/begin.pass.obj: tests/wstring.iterators/begin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/begin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/begin.pass.cpp
 
 tests/wstring.iterators/end.pass.exe: \
 		tests/wstring.iterators/end.pass.obj \
@@ -3729,7 +3729,7 @@ tests/wstring.iterators/end.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/end.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/end.pass.obj: tests/wstring.iterators/end.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/end.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/end.pass.cpp
 
 tests/wstring.iterators/iterators.pass.exe: \
 		tests/wstring.iterators/iterators.pass.obj \
@@ -3737,7 +3737,7 @@ tests/wstring.iterators/iterators.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/iterators.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/iterators.pass.obj: tests/wstring.iterators/iterators.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/iterators.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/iterators.pass.cpp
 
 tests/wstring.iterators/db_iterators_2.pass.exe: \
 		tests/wstring.iterators/db_iterators_2.pass.obj \
@@ -3745,7 +3745,7 @@ tests/wstring.iterators/db_iterators_2.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/db_iterators_2.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/db_iterators_2.pass.obj: tests/wstring.iterators/db_iterators_2.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_2.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_2.pass.cpp
 
 tests/wstring.iterators/db_iterators_3.pass.exe: \
 		tests/wstring.iterators/db_iterators_3.pass.obj \
@@ -3753,7 +3753,7 @@ tests/wstring.iterators/db_iterators_3.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/db_iterators_3.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/db_iterators_3.pass.obj: tests/wstring.iterators/db_iterators_3.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_3.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_3.pass.cpp
 
 tests/wstring.iterators/db_iterators_4.pass.exe: \
 		tests/wstring.iterators/db_iterators_4.pass.obj \
@@ -3761,7 +3761,7 @@ tests/wstring.iterators/db_iterators_4.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/db_iterators_4.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/db_iterators_4.pass.obj: tests/wstring.iterators/db_iterators_4.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_4.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_4.pass.cpp
 
 tests/wstring.iterators/db_iterators_5.pass.exe: \
 		tests/wstring.iterators/db_iterators_5.pass.obj \
@@ -3769,7 +3769,7 @@ tests/wstring.iterators/db_iterators_5.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/db_iterators_5.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/db_iterators_5.pass.obj: tests/wstring.iterators/db_iterators_5.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_5.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_5.pass.cpp
 
 tests/wstring.iterators/db_iterators_6.pass.exe: \
 		tests/wstring.iterators/db_iterators_6.pass.obj \
@@ -3777,7 +3777,7 @@ tests/wstring.iterators/db_iterators_6.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/db_iterators_6.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/db_iterators_6.pass.obj: tests/wstring.iterators/db_iterators_6.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_6.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_6.pass.cpp
 
 tests/wstring.iterators/db_iterators_7.pass.exe: \
 		tests/wstring.iterators/db_iterators_7.pass.obj \
@@ -3785,7 +3785,7 @@ tests/wstring.iterators/db_iterators_7.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/db_iterators_7.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/db_iterators_7.pass.obj: tests/wstring.iterators/db_iterators_7.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_7.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_7.pass.cpp
 
 tests/wstring.iterators/db_iterators_8.pass.exe: \
 		tests/wstring.iterators/db_iterators_8.pass.obj \
@@ -3793,7 +3793,7 @@ tests/wstring.iterators/db_iterators_8.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/db_iterators_8.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/db_iterators_8.pass.obj: tests/wstring.iterators/db_iterators_8.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_8.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/db_iterators_8.pass.cpp
 
 tests/wstring.iterators/cbegin.pass.exe: \
 		tests/wstring.iterators/cbegin.pass.obj \
@@ -3801,7 +3801,7 @@ tests/wstring.iterators/cbegin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/cbegin.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/cbegin.pass.obj: tests/wstring.iterators/cbegin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/cbegin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/cbegin.pass.cpp
 
 tests/wstring.iterators/cend.pass.exe: \
 		tests/wstring.iterators/cend.pass.obj \
@@ -3809,7 +3809,7 @@ tests/wstring.iterators/cend.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/cend.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/cend.pass.obj: tests/wstring.iterators/cend.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/cend.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/cend.pass.cpp
 
 tests/wstring.iterators/rbegin.pass.exe: \
 		tests/wstring.iterators/rbegin.pass.obj \
@@ -3817,7 +3817,7 @@ tests/wstring.iterators/rbegin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/rbegin.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/rbegin.pass.obj: tests/wstring.iterators/rbegin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/rbegin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/rbegin.pass.cpp
 
 tests/wstring.iterators/rend.pass.exe: \
 		tests/wstring.iterators/rend.pass.obj \
@@ -3825,7 +3825,7 @@ tests/wstring.iterators/rend.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/rend.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/rend.pass.obj: tests/wstring.iterators/rend.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/rend.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/rend.pass.cpp
 
 tests/wstring.iterators/crbegin.pass.exe: \
 		tests/wstring.iterators/crbegin.pass.obj \
@@ -3833,7 +3833,7 @@ tests/wstring.iterators/crbegin.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/crbegin.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/crbegin.pass.obj: tests/wstring.iterators/crbegin.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/crbegin.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/crbegin.pass.cpp
 
 tests/wstring.iterators/crend.pass.exe: \
 		tests/wstring.iterators/crend.pass.obj \
@@ -3841,7 +3841,7 @@ tests/wstring.iterators/crend.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.iterators/crend.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.iterators/crend.pass.obj: tests/wstring.iterators/crend.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.iterators/crend.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.iterators/crend.pass.cpp
 
 tests/wstring.cons/pointer_size_alloc.pass.exe: \
 		tests/wstring.cons/pointer_size_alloc.pass.obj \
@@ -3849,7 +3849,7 @@ tests/wstring.cons/pointer_size_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/pointer_size_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/pointer_size_alloc.pass.obj: tests/wstring.cons/pointer_size_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/pointer_size_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/pointer_size_alloc.pass.cpp
 
 tests/wstring.cons/pointer_assignment.pass.exe: \
 		tests/wstring.cons/pointer_assignment.pass.obj \
@@ -3857,7 +3857,7 @@ tests/wstring.cons/pointer_assignment.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/pointer_assignment.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/pointer_assignment.pass.obj: tests/wstring.cons/pointer_assignment.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/pointer_assignment.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/pointer_assignment.pass.cpp
 
 tests/wstring.cons/copy_assignment.pass.exe: \
 		tests/wstring.cons/copy_assignment.pass.obj \
@@ -3865,7 +3865,7 @@ tests/wstring.cons/copy_assignment.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/copy_assignment.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/copy_assignment.pass.obj: tests/wstring.cons/copy_assignment.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/copy_assignment.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/copy_assignment.pass.cpp
 
 tests/wstring.cons/copy.pass.exe: \
 		tests/wstring.cons/copy.pass.obj \
@@ -3873,7 +3873,7 @@ tests/wstring.cons/copy.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/copy.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/copy.pass.obj: tests/wstring.cons/copy.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/copy.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/copy.pass.cpp
 
 tests/wstring.cons/char_assignment.pass.exe: \
 		tests/wstring.cons/char_assignment.pass.obj \
@@ -3881,7 +3881,7 @@ tests/wstring.cons/char_assignment.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/char_assignment.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/char_assignment.pass.obj: tests/wstring.cons/char_assignment.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/char_assignment.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/char_assignment.pass.cpp
 
 tests/wstring.cons/pointer_alloc.pass.exe: \
 		tests/wstring.cons/pointer_alloc.pass.obj \
@@ -3889,7 +3889,7 @@ tests/wstring.cons/pointer_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/pointer_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/pointer_alloc.pass.obj: tests/wstring.cons/pointer_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/pointer_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/pointer_alloc.pass.cpp
 
 tests/wstring.cons/size_char_alloc.pass.exe: \
 		tests/wstring.cons/size_char_alloc.pass.obj \
@@ -3897,7 +3897,7 @@ tests/wstring.cons/size_char_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/size_char_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/size_char_alloc.pass.obj: tests/wstring.cons/size_char_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/size_char_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/size_char_alloc.pass.cpp
 
 tests/wstring.cons/substr.pass.exe: \
 		tests/wstring.cons/substr.pass.obj \
@@ -3905,7 +3905,7 @@ tests/wstring.cons/substr.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/substr.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/substr.pass.obj: tests/wstring.cons/substr.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/substr.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/substr.pass.cpp
 
 tests/wstring.cons/copy_alloc.pass.exe: \
 		tests/wstring.cons/copy_alloc.pass.obj \
@@ -3913,7 +3913,7 @@ tests/wstring.cons/copy_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.cons/copy_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.cons/copy_alloc.pass.obj: tests/wstring.cons/copy_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.cons/copy_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.cons/copy_alloc.pass.cpp
 
 tests/wstring.access/back.pass.exe: \
 		tests/wstring.access/back.pass.obj \
@@ -3921,7 +3921,7 @@ tests/wstring.access/back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/back.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/back.pass.obj: tests/wstring.access/back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/back.pass.cpp
 
 tests/wstring.access/at.pass.exe: \
 		tests/wstring.access/at.pass.obj \
@@ -3929,7 +3929,7 @@ tests/wstring.access/at.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/at.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/at.pass.obj: tests/wstring.access/at.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/at.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/at.pass.cpp
 
 tests/wstring.access/db_cback.pass.exe: \
 		tests/wstring.access/db_cback.pass.obj \
@@ -3937,7 +3937,7 @@ tests/wstring.access/db_cback.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/db_cback.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/db_cback.pass.obj: tests/wstring.access/db_cback.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/db_cback.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/db_cback.pass.cpp
 
 tests/wstring.access/db_back.pass.exe: \
 		tests/wstring.access/db_back.pass.obj \
@@ -3945,7 +3945,7 @@ tests/wstring.access/db_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/db_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/db_back.pass.obj: tests/wstring.access/db_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/db_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/db_back.pass.cpp
 
 tests/wstring.access/db_cfront.pass.exe: \
 		tests/wstring.access/db_cfront.pass.obj \
@@ -3953,7 +3953,7 @@ tests/wstring.access/db_cfront.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/db_cfront.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/db_cfront.pass.obj: tests/wstring.access/db_cfront.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/db_cfront.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/db_cfront.pass.cpp
 
 tests/wstring.access/db_cindex.pass.exe: \
 		tests/wstring.access/db_cindex.pass.obj \
@@ -3961,7 +3961,7 @@ tests/wstring.access/db_cindex.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/db_cindex.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/db_cindex.pass.obj: tests/wstring.access/db_cindex.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/db_cindex.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/db_cindex.pass.cpp
 
 tests/wstring.access/db_index.pass.exe: \
 		tests/wstring.access/db_index.pass.obj \
@@ -3969,7 +3969,7 @@ tests/wstring.access/db_index.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/db_index.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/db_index.pass.obj: tests/wstring.access/db_index.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/db_index.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/db_index.pass.cpp
 
 tests/wstring.access/front.pass.exe: \
 		tests/wstring.access/front.pass.obj \
@@ -3977,7 +3977,7 @@ tests/wstring.access/front.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/front.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/front.pass.obj: tests/wstring.access/front.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/front.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/front.pass.cpp
 
 tests/wstring.access/index.pass.exe: \
 		tests/wstring.access/index.pass.obj \
@@ -3985,7 +3985,7 @@ tests/wstring.access/index.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/index.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/index.pass.obj: tests/wstring.access/index.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/index.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/index.pass.cpp
 
 tests/wstring.access/db_front.pass.exe: \
 		tests/wstring.access/db_front.pass.obj \
@@ -3993,7 +3993,7 @@ tests/wstring.access/db_front.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.access/db_front.pass.obj barefootc.lib log4stdc.lib
 
 tests/wstring.access/db_front.pass.obj: tests/wstring.access/db_front.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.access/db_front.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.access/db_front.pass.cpp
 
 tests/shared_string.erase/erase_seq.exe: \
 		tests/shared_string.erase/erase_seq.obj \
@@ -4001,7 +4001,7 @@ tests/shared_string.erase/erase_seq.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/shared_string.erase/erase_seq.obj barefootc.lib log4stdc.lib
 
 tests/shared_string.erase/erase_seq.obj: tests/shared_string.erase/erase_seq.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/shared_string.erase/erase_seq.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/shared_string.erase/erase_seq.c
 
 tests/shared_string.erase/erase_char.exe: \
 		tests/shared_string.erase/erase_char.obj \
@@ -4009,7 +4009,7 @@ tests/shared_string.erase/erase_char.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/shared_string.erase/erase_char.obj barefootc.lib log4stdc.lib
 
 tests/shared_string.erase/erase_char.obj: tests/shared_string.erase/erase_char.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/shared_string.erase/erase_char.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/shared_string.erase/erase_char.c
 
 tests/shared_string.erase/erase_range.exe: \
 		tests/shared_string.erase/erase_range.obj \
@@ -4017,7 +4017,7 @@ tests/shared_string.erase/erase_range.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/shared_string.erase/erase_range.obj barefootc.lib log4stdc.lib
 
 tests/shared_string.erase/erase_range.obj: tests/shared_string.erase/erase_range.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/shared_string.erase/erase_range.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/shared_string.erase/erase_range.c
 
 tests/string.conversions/assign_wstring.exe: \
 		tests/string.conversions/assign_wstring.obj \
@@ -4025,7 +4025,7 @@ tests/string.conversions/assign_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/assign_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/assign_wstring.obj: tests/string.conversions/assign_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/assign_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/assign_wstring.c
 
 tests/string.conversions/assign_iso8859_string.exe: \
 		tests/string.conversions/assign_iso8859_string.obj \
@@ -4033,7 +4033,7 @@ tests/string.conversions/assign_iso8859_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/assign_iso8859_string.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/assign_iso8859_string.obj: tests/string.conversions/assign_iso8859_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/assign_iso8859_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/assign_iso8859_string.c
 
 tests/string.conversions/append_to_iso8859_string.exe: \
 		tests/string.conversions/append_to_iso8859_string.obj \
@@ -4041,7 +4041,7 @@ tests/string.conversions/append_to_iso8859_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/append_to_iso8859_string.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/append_to_iso8859_string.obj: tests/string.conversions/append_to_iso8859_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/append_to_iso8859_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/append_to_iso8859_string.c
 
 tests/string.conversions/append_wstring.exe: \
 		tests/string.conversions/append_wstring.obj \
@@ -4049,7 +4049,7 @@ tests/string.conversions/append_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/append_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/append_wstring.obj: tests/string.conversions/append_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/append_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/append_wstring.c
 
 tests/string.conversions/insert_size_wstring.exe: \
 		tests/string.conversions/insert_size_wstring.obj \
@@ -4057,7 +4057,7 @@ tests/string.conversions/insert_size_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/insert_size_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/insert_size_wstring.obj: tests/string.conversions/insert_size_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/insert_size_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/insert_size_wstring.c
 
 tests/string.conversions/insert_size_cp1252_string.exe: \
 		tests/string.conversions/insert_size_cp1252_string.obj \
@@ -4065,7 +4065,7 @@ tests/string.conversions/insert_size_cp1252_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/insert_size_cp1252_string.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/insert_size_cp1252_string.obj: tests/string.conversions/insert_size_cp1252_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/insert_size_cp1252_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/insert_size_cp1252_string.c
 
 tests/string.conversions/replace_size_size_wstring.exe: \
 		tests/string.conversions/replace_size_size_wstring.obj \
@@ -4073,7 +4073,7 @@ tests/string.conversions/replace_size_size_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/replace_size_size_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/replace_size_size_wstring.obj: tests/string.conversions/replace_size_size_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/replace_size_size_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/replace_size_size_wstring.c
 
 tests/string.conversions/replace_range_wstring.exe: \
 		tests/string.conversions/replace_range_wstring.obj \
@@ -4081,7 +4081,7 @@ tests/string.conversions/replace_range_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/replace_range_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/replace_range_wstring.obj: tests/string.conversions/replace_range_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/replace_range_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/replace_range_wstring.c
 
 tests/string.conversions/find_wstring.exe: \
 		tests/string.conversions/find_wstring.obj \
@@ -4089,7 +4089,7 @@ tests/string.conversions/find_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/find_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/find_wstring.obj: tests/string.conversions/find_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/find_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/find_wstring.c
 
 tests/string.conversions/rfind_wstring.exe: \
 		tests/string.conversions/rfind_wstring.obj \
@@ -4097,7 +4097,7 @@ tests/string.conversions/rfind_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/rfind_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/rfind_wstring.obj: tests/string.conversions/rfind_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/rfind_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/rfind_wstring.c
 
 tests/string.conversions/find_first_of_wstring.exe: \
 		tests/string.conversions/find_first_of_wstring.obj \
@@ -4105,7 +4105,7 @@ tests/string.conversions/find_first_of_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/find_first_of_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/find_first_of_wstring.obj: tests/string.conversions/find_first_of_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/find_first_of_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/find_first_of_wstring.c
 
 tests/string.conversions/find_first_not_of_wstring.exe: \
 		tests/string.conversions/find_first_not_of_wstring.obj \
@@ -4113,7 +4113,7 @@ tests/string.conversions/find_first_not_of_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/find_first_not_of_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/find_first_not_of_wstring.obj: tests/string.conversions/find_first_not_of_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/find_first_not_of_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/find_first_not_of_wstring.c
 
 tests/string.conversions/find_last_of_wstring.exe: \
 		tests/string.conversions/find_last_of_wstring.obj \
@@ -4121,7 +4121,7 @@ tests/string.conversions/find_last_of_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/find_last_of_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/find_last_of_wstring.obj: tests/string.conversions/find_last_of_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/find_last_of_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/find_last_of_wstring.c
 
 tests/string.conversions/find_last_not_of_wstring.exe: \
 		tests/string.conversions/find_last_not_of_wstring.obj \
@@ -4129,7 +4129,7 @@ tests/string.conversions/find_last_not_of_wstring.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/string.conversions/find_last_not_of_wstring.obj barefootc.lib log4stdc.lib
 
 tests/string.conversions/find_last_not_of_wstring.obj: tests/string.conversions/find_last_not_of_wstring.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/string.conversions/find_last_not_of_wstring.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/string.conversions/find_last_not_of_wstring.c
 
 tests/wstring.conversions/assign_string.exe: \
 		tests/wstring.conversions/assign_string.obj \
@@ -4137,7 +4137,7 @@ tests/wstring.conversions/assign_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/assign_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/assign_string.obj: tests/wstring.conversions/assign_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/assign_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/assign_string.c
 
 tests/wstring.conversions/append_string.exe: \
 		tests/wstring.conversions/append_string.obj \
@@ -4145,7 +4145,7 @@ tests/wstring.conversions/append_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/append_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/append_string.obj: tests/wstring.conversions/append_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/append_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/append_string.c
 
 tests/wstring.conversions/insert_size_string.exe: \
 		tests/wstring.conversions/insert_size_string.obj \
@@ -4153,7 +4153,7 @@ tests/wstring.conversions/insert_size_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/insert_size_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/insert_size_string.obj: tests/wstring.conversions/insert_size_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/insert_size_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/insert_size_string.c
 
 tests/wstring.conversions/replace_size_size_string.exe: \
 		tests/wstring.conversions/replace_size_size_string.obj \
@@ -4161,7 +4161,7 @@ tests/wstring.conversions/replace_size_size_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/replace_size_size_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/replace_size_size_string.obj: tests/wstring.conversions/replace_size_size_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/replace_size_size_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/replace_size_size_string.c
 
 tests/wstring.conversions/replace_range_string.exe: \
 		tests/wstring.conversions/replace_range_string.obj \
@@ -4169,7 +4169,7 @@ tests/wstring.conversions/replace_range_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/replace_range_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/replace_range_string.obj: tests/wstring.conversions/replace_range_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/replace_range_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/replace_range_string.c
 
 tests/wstring.conversions/find_string.exe: \
 		tests/wstring.conversions/find_string.obj \
@@ -4177,7 +4177,7 @@ tests/wstring.conversions/find_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/find_string.obj: tests/wstring.conversions/find_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/find_string.c
 
 tests/wstring.conversions/rfind_string.exe: \
 		tests/wstring.conversions/rfind_string.obj \
@@ -4185,7 +4185,7 @@ tests/wstring.conversions/rfind_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/rfind_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/rfind_string.obj: tests/wstring.conversions/rfind_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/rfind_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/rfind_string.c
 
 tests/wstring.conversions/find_first_of_string.exe: \
 		tests/wstring.conversions/find_first_of_string.obj \
@@ -4193,7 +4193,7 @@ tests/wstring.conversions/find_first_of_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_first_of_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/find_first_of_string.obj: tests/wstring.conversions/find_first_of_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_first_of_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/find_first_of_string.c
 
 tests/wstring.conversions/find_first_not_of_string.exe: \
 		tests/wstring.conversions/find_first_not_of_string.obj \
@@ -4201,7 +4201,7 @@ tests/wstring.conversions/find_first_not_of_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_first_not_of_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/find_first_not_of_string.obj: tests/wstring.conversions/find_first_not_of_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_first_not_of_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/find_first_not_of_string.c
 
 tests/wstring.conversions/find_last_of_string.exe: \
 		tests/wstring.conversions/find_last_of_string.obj \
@@ -4209,7 +4209,7 @@ tests/wstring.conversions/find_last_of_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_last_of_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/find_last_of_string.obj: tests/wstring.conversions/find_last_of_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_last_of_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/find_last_of_string.c
 
 tests/wstring.conversions/find_last_not_of_string.exe: \
 		tests/wstring.conversions/find_last_not_of_string.obj \
@@ -4217,7 +4217,7 @@ tests/wstring.conversions/find_last_not_of_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/wstring.conversions/find_last_not_of_string.obj barefootc.lib log4stdc.lib
 
 tests/wstring.conversions/find_last_not_of_string.obj: tests/wstring.conversions/find_last_not_of_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/wstring.conversions/find_last_not_of_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/wstring.conversions/find_last_not_of_string.c
 
 tests/iterators/parse_xmltags_string.exe: \
 		tests/iterators/parse_xmltags_string.obj \
@@ -4225,7 +4225,7 @@ tests/iterators/parse_xmltags_string.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/iterators/parse_xmltags_string.obj barefootc.lib log4stdc.lib
 
 tests/iterators/parse_xmltags_string.obj: tests/iterators/parse_xmltags_string.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/iterators/parse_xmltags_string.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/iterators/parse_xmltags_string.c
 
 tests/datetime/init_isotime.exe: \
 		tests/datetime/init_isotime.obj \
@@ -4233,7 +4233,7 @@ tests/datetime/init_isotime.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/init_isotime.obj barefootc.lib log4stdc.lib
 
 tests/datetime/init_isotime.obj: tests/datetime/init_isotime.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/init_isotime.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/init_isotime.c
 
 tests/datetime/init_current.exe: \
 		tests/datetime/init_current.obj \
@@ -4241,7 +4241,7 @@ tests/datetime/init_current.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/init_current.obj barefootc.lib log4stdc.lib
 
 tests/datetime/init_current.obj: tests/datetime/init_current.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/init_current.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/init_current.c
 
 tests/datetime/secs_between.exe: \
 		tests/datetime/secs_between.obj \
@@ -4249,7 +4249,7 @@ tests/datetime/secs_between.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/secs_between.obj barefootc.lib log4stdc.lib
 
 tests/datetime/secs_between.obj: tests/datetime/secs_between.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/secs_between.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/secs_between.c
 
 tests/datetime/msecs_between.exe: \
 		tests/datetime/msecs_between.obj \
@@ -4257,7 +4257,7 @@ tests/datetime/msecs_between.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/msecs_between.obj barefootc.lib log4stdc.lib
 
 tests/datetime/msecs_between.obj: tests/datetime/msecs_between.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/msecs_between.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/msecs_between.c
 
 tests/datetime/usecs_between.exe: \
 		tests/datetime/usecs_between.obj \
@@ -4265,7 +4265,7 @@ tests/datetime/usecs_between.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/usecs_between.obj barefootc.lib log4stdc.lib
 
 tests/datetime/usecs_between.obj: tests/datetime/usecs_between.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/usecs_between.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/usecs_between.c
 
 tests/datetime/nsecs_between.exe: \
 		tests/datetime/nsecs_between.obj \
@@ -4273,7 +4273,7 @@ tests/datetime/nsecs_between.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/nsecs_between.obj barefootc.lib log4stdc.lib
 
 tests/datetime/nsecs_between.obj: tests/datetime/nsecs_between.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/nsecs_between.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/nsecs_between.c
 
 tests/datetime/advance.exe: \
 		tests/datetime/advance.obj \
@@ -4281,7 +4281,7 @@ tests/datetime/advance.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/advance.obj barefootc.lib log4stdc.lib
 
 tests/datetime/advance.obj: tests/datetime/advance.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/advance.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/advance.c
 
 tests/datetime/to_isodate.exe: \
 		tests/datetime/to_isodate.obj \
@@ -4289,7 +4289,7 @@ tests/datetime/to_isodate.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/datetime/to_isodate.obj barefootc.lib log4stdc.lib
 
 tests/datetime/to_isodate.obj: tests/datetime/to_isodate.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/datetime/to_isodate.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/datetime/to_isodate.c
 
 tests/vector.cons/assign_copy.pass.exe: \
 		tests/vector.cons/assign_copy.pass.obj \
@@ -4297,7 +4297,7 @@ tests/vector.cons/assign_copy.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/assign_copy.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/assign_copy.pass.obj: tests/vector.cons/assign_copy.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/assign_copy.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/assign_copy.pass.cpp
 
 tests/vector.cons/construct_iter_iter_alloc.pass.exe: \
 		tests/vector.cons/construct_iter_iter_alloc.pass.obj \
@@ -4305,7 +4305,7 @@ tests/vector.cons/construct_iter_iter_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_iter_iter_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/construct_iter_iter_alloc.pass.obj: tests/vector.cons/construct_iter_iter_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_iter_iter_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/construct_iter_iter_alloc.pass.cpp
 
 tests/vector.cons/construct_iter_iter.pass.exe: \
 		tests/vector.cons/construct_iter_iter.pass.obj \
@@ -4313,7 +4313,7 @@ tests/vector.cons/construct_iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/construct_iter_iter.pass.obj: tests/vector.cons/construct_iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/construct_iter_iter.pass.cpp
 
 tests/vector.cons/construct_size.pass.exe: \
 		tests/vector.cons/construct_size.pass.obj \
@@ -4321,7 +4321,7 @@ tests/vector.cons/construct_size.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_size.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/construct_size.pass.obj: tests/vector.cons/construct_size.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_size.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/construct_size.pass.cpp
 
 tests/vector.cons/construct_size_value_alloc.pass.exe: \
 		tests/vector.cons/construct_size_value_alloc.pass.obj \
@@ -4329,7 +4329,7 @@ tests/vector.cons/construct_size_value_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_size_value_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/construct_size_value_alloc.pass.obj: tests/vector.cons/construct_size_value_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_size_value_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/construct_size_value_alloc.pass.cpp
 
 tests/vector.cons/construct_size_value.pass.exe: \
 		tests/vector.cons/construct_size_value.pass.obj \
@@ -4337,7 +4337,7 @@ tests/vector.cons/construct_size_value.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/construct_size_value.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/construct_size_value.pass.obj: tests/vector.cons/construct_size_value.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/construct_size_value.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/construct_size_value.pass.cpp
 
 tests/vector.cons/copy_alloc.pass.exe: \
 		tests/vector.cons/copy_alloc.pass.obj \
@@ -4345,7 +4345,7 @@ tests/vector.cons/copy_alloc.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/copy_alloc.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/copy_alloc.pass.obj: tests/vector.cons/copy_alloc.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/copy_alloc.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/copy_alloc.pass.cpp
 
 tests/vector.cons/copy.pass.exe: \
 		tests/vector.cons/copy.pass.obj \
@@ -4353,7 +4353,7 @@ tests/vector.cons/copy.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.cons/copy.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.cons/copy.pass.obj: tests/vector.cons/copy.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.cons/copy.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.cons/copy.pass.cpp
 
 tests/vector.modifiers/push_back.pass.exe: \
 		tests/vector.modifiers/push_back.pass.obj \
@@ -4361,7 +4361,7 @@ tests/vector.modifiers/push_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/push_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.modifiers/push_back.pass.obj: tests/vector.modifiers/push_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/push_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.modifiers/push_back.pass.cpp
 
 tests/vector.modifiers/erase_iter.pass.exe: \
 		tests/vector.modifiers/erase_iter.pass.obj \
@@ -4369,7 +4369,7 @@ tests/vector.modifiers/erase_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/erase_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.modifiers/erase_iter.pass.obj: tests/vector.modifiers/erase_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/erase_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.modifiers/erase_iter.pass.cpp
 
 tests/vector.modifiers/erase_iter_iter.pass.exe: \
 		tests/vector.modifiers/erase_iter_iter.pass.obj \
@@ -4377,7 +4377,7 @@ tests/vector.modifiers/erase_iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/erase_iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.modifiers/erase_iter_iter.pass.obj: tests/vector.modifiers/erase_iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/erase_iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.modifiers/erase_iter_iter.pass.cpp
 
 tests/vector.modifiers/insert_iter_size_value.pass.exe: \
 		tests/vector.modifiers/insert_iter_size_value.pass.obj \
@@ -4385,7 +4385,7 @@ tests/vector.modifiers/insert_iter_size_value.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/insert_iter_size_value.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.modifiers/insert_iter_size_value.pass.obj: tests/vector.modifiers/insert_iter_size_value.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_size_value.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_size_value.pass.cpp
 
 tests/vector.modifiers/insert_iter_value.pass.exe: \
 		tests/vector.modifiers/insert_iter_value.pass.obj \
@@ -4393,7 +4393,7 @@ tests/vector.modifiers/insert_iter_value.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/insert_iter_value.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.modifiers/insert_iter_value.pass.obj: tests/vector.modifiers/insert_iter_value.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_value.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_value.pass.cpp
 
 tests/vector.modifiers/insert_iter_iter_iter.pass.exe: \
 		tests/vector.modifiers/insert_iter_iter_iter.pass.obj \
@@ -4401,7 +4401,7 @@ tests/vector.modifiers/insert_iter_iter_iter.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/insert_iter_iter_iter.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.modifiers/insert_iter_iter_iter.pass.obj: tests/vector.modifiers/insert_iter_iter_iter.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_iter_iter.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.modifiers/insert_iter_iter_iter.pass.cpp
 
 tests/vector.modifiers/pop_back.pass.exe: \
 		tests/vector.modifiers/pop_back.pass.obj \
@@ -4409,7 +4409,7 @@ tests/vector.modifiers/pop_back.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.modifiers/pop_back.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.modifiers/pop_back.pass.obj: tests/vector.modifiers/pop_back.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/pop_back.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.modifiers/pop_back.pass.cpp
 
 tests/vector.data/data.pass.exe: \
 		tests/vector.data/data.pass.obj \
@@ -4417,7 +4417,7 @@ tests/vector.data/data.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.data/data.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.data/data.pass.obj: tests/vector.data/data.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.data/data.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.data/data.pass.cpp
 
 tests/vector.data/data_const.pass.exe: \
 		tests/vector.data/data_const.pass.obj \
@@ -4425,5 +4425,5 @@ tests/vector.data/data_const.pass.exe: \
 	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.data/data_const.pass.obj barefootc.lib log4stdc.lib
 
 tests/vector.data/data_const.pass.obj: tests/vector.data/data_const.pass.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.data/data_const.pass.cpp
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.data/data_const.pass.cpp
 

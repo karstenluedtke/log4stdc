@@ -7,6 +7,8 @@ SOURCES=`grep 'barefootc_a_SOURCES.*=.*c$' Makefile.am | sed -e'1,$s/^.*= *//g'`
 LOG4STDC=`grep 'log4stdc_a_SOURCES.*=.*c$' Makefile.am | sed -e'1,$s/^.*= *//g'`
 TESTS=`grep '^TESTS.*=' Makefile.am | sed -e'1,$s/^.*= *//g'`
 
+V=`grep AC_INIT configure.ac | sed -e'1,$s/^.*footc.,..//' -e'1,$s/.,..bug.*//'`
+
 echo ""	> $M
 echo 'CC=cl'							>> $M
 echo 'CPPFLAGS=-I. -Ilog4stdc' "\\"				>> $M
@@ -27,11 +29,11 @@ echo '	-DHAVE__LOCALTIME64_S=1' "\\"				>> $M
 echo '	-DPACKAGE="barefootc"' "\\"				>> $M
 echo '	-DPACKAGE_BUGREPORT="bug-barefootc@example.org"' "\\"	>> $M
 echo '	-DPACKAGE_NAME="barefootc"' "\\"			>> $M
-echo '	-DPACKAGE_STRING="barefootc 0.6.1"' "\\"		>> $M
+echo '	-DPACKAGE_STRING="barefootc '"$V"'"' "\\"		>> $M
 echo '	-DPACKAGE_TARNAME="barefootc"' "\\"			>> $M
 echo '	-DPACKAGE_URL=""' "\\"					>> $M
-echo '	-DPACKAGE_VERSION="0.6.1"' "\\"				>> $M
-echo '	-DVERSION="0.6.1"'					>> $M
+echo '	-DPACKAGE_VERSION="'"$V"'"' "\\"			>> $M
+echo '	-DVERSION="'"$V"'"'					>> $M
 echo 'CFLAGS='							>> $M
 echo 'CXXFLAGS=-EHsc'						>> $M
 echo "" >> $M
@@ -111,7 +113,7 @@ for i in $TESTS ; do
 	for c in $s ; do
 		o=`echo $c | sed -e'1,$s/.cp*$/.obj/g'`
 		echo "$o: $c" '$(HEADERS)'		>> $M
-		echo '	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@' "$c" >> $M
+		echo '	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@' "$c" >> $M
 		echo "" >> $M
 	done
 	echo "$x"

@@ -10,8 +10,8 @@
  * Copyright (c)  2014  Karsten Luedtke, Berlin, Germany.
  */
 
-#ifndef _BFC_STRING_CXX_WRAPPER_H_
-#define _BFC_STRING_CXX_WRAPPER_H_
+#ifndef _BFC_STRING_CXX_ITERATOR_H_
+#define _BFC_STRING_CXX_ITERATOR_H_
 
 #ifdef __cplusplus
 

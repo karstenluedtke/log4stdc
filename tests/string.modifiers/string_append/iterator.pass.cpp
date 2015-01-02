@@ -20,8 +20,7 @@
 #include "../../input_iterator.h"
 #define INPUT_ITERATOR(s)	input_iterator<const char*>(s)
 #else
-#define INPUT_ITERATOR(s) \
-	barefootc::iterator<barefootc::basic_string<char>,char>(s)
+#define INPUT_ITERATOR(s)	barefootc::iterator<char>(s)
 #endif
 
 #include "tests/support/min_allocator.h"

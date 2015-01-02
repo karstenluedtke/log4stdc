@@ -25,7 +25,7 @@
  	input_iterator<const char*>(s)
 #else
 #define INPUT_ITERATOR(s) \
-	barefootc::iterator<barefootc::basic_string<wchar_t>, wchar_t>(s)
+	barefootc::iterator<wchar_t>(s)
 #endif
 
 #include "tests/support/min_allocator.h"

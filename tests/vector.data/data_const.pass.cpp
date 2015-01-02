@@ -1,3 +1,5 @@
+#include "tests/vector/cxxvector.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -14,25 +16,25 @@
 #include <vector>
 #include <cassert>
 
-#include "min_allocator.h"
+#include "tests/support/min_allocator.h"
 
 int main()
 {
     {
-        const std::vector<int> v;
+        const barefootc::vector<int> v;
         assert(v.data() == 0);
     }
     {
-        const std::vector<int> v(100);
+        const barefootc::vector<int> v(100);
         assert(v.data() == &v.front());
     }
 #if __cplusplus >= 201103L
     {
-        const std::vector<int, min_allocator<int>> v;
+        const barefootc::vector<int, min_allocator<int>> v;
         assert(v.data() == 0);
     }
     {
-        const std::vector<int, min_allocator<int>> v(100);
+        const barefootc::vector<int, min_allocator<int>> v(100);
         assert(v.data() == &v.front());
     }
 #endif

@@ -3764,6 +3764,18 @@ TESTS += tests/vector.modifiers/pop_back.pass
 #tests_vector_modifiers_push_back_rvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/vector.modifiers/push_back_rvalue.pass
 
+check_PROGRAMS += tests/vector.data/data.pass
+tests_vector_data_data_pass_SOURCES = tests/vector.data/data.pass.cpp
+tests_vector_data_data_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_data_data_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.data/data.pass
+
+check_PROGRAMS += tests/vector.data/data_const.pass
+tests_vector_data_data_const_pass_SOURCES = tests/vector.data/data_const.pass.cpp
+tests_vector_data_data_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_data_data_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector.data/data_const.pass
+
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp
 #tests_strings_version_pass_LDADD = libbarefootc.a liblog4stdc.a

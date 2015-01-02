@@ -314,12 +314,16 @@ namespace barefootc {
 
 		reference front()
 		{
-			return (at(0));
+			T *p;
+			p = (T*)bfc_container_index((bfc_contptr_t)&bfcvec, 0);
+			return (*p);
 		}
 
 		const_reference front() const
 		{
-			return (at(0));
+			const T *p;
+			p = (const T*)bfc_container_first((bfc_ccontptr_t)&bfcvec);
+			return (*p);
 		}
 
 		reference back()
@@ -334,8 +338,21 @@ namespace barefootc {
 
 
 		// 23.3.6.4, data access
-		T* data() noexcept;
-		const T* data() const noexcept;
+		// WARNING: Elements are NOT organized as an array!
+		T* data() noexcept
+		{
+			T *p;
+			p = (T*)bfc_container_index((bfc_contptr_t)&bfcvec, 0);
+			return (p);
+		}
+
+		const T* data() const noexcept
+		{
+			const T *p;
+			p = (const T*)bfc_container_first((bfc_contptr_t)&bfcvec);
+			return (p);
+		}
+
 
 		// 23.3.6.5, modifiers:
 		void push_back(const T& x)

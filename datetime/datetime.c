@@ -47,6 +47,9 @@ struct tm *_localtime64(const __time64_t *);
 #include "umul32_hiword.h"
 
 static int init_datetime(void *buf, size_t bufsize, struct mempool *pool);
+static void init_refcount(bfc_dateptr_t date, int n);
+static void incr_refcount(bfc_dateptr_t date);
+static int decr_refcount(bfc_dateptr_t date);
 static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
 static unsigned bfc_datetime_hashcode(bfc_cdateptr_t date);
 static void dump_datetime(bfc_cdateptr_t date,int depth,struct l4sc_logger*log);
@@ -70,6 +73,9 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ init_datetime,
+	/* .initrefc 	*/ init_refcount,
+	/* .incrrefc 	*/ incr_refcount,
+	/* .decrrefc 	*/ decr_refcount,
 	/* .destroy 	*/ bfc_destroy_datetime,
 	/* .clone 	*/ bfc_clone_datetime,
 	/* .clonesize 	*/ bfc_datetime_objsize,
@@ -92,8 +98,9 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .element_size*/ NULL,
 	/* .capacity	*/ NULL,
 	/* .reserve	*/ NULL,
-	/* .spare26 	*/ NULL,
-	/* .spare27 	*/ NULL,
+	/* .spare29 	*/ NULL,
+	/* .spare30 	*/ NULL,
+	/* .spare31 	*/ NULL,
 	/* comparision */
 	/* .secs_between	*/ bfc_datetime_secs_between,
 	/* .msecs_between	*/ bfc_datetime_msecs_between,
@@ -233,6 +240,22 @@ bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 		date->frac = (umul32_hiword(tv->tv_usec, 2251799814uL) << 13);
 	}
 	return (rc);
+}
+
+static void init_refcount(bfc_dateptr_t date, int n)
+{
+	/* no refcount */
+}
+
+static void incr_refcount(bfc_dateptr_t date)
+{
+	/* no refcount */
+}
+
+static int decr_refcount(bfc_dateptr_t date)
+{
+	/* no refcount */
+	return (-ENOSYS);
 }
 
 void

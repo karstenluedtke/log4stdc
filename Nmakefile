@@ -56,6 +56,9 @@ OFILES= \
 	barefootc/bfc_object_length.obj \
 	barefootc/bfc_object_tostring.obj \
 	barefootc/bfc_object_dump.obj \
+	barefootc/bfc_init_refcount.obj \
+	barefootc/bfc_incr_refcount.obj \
+	barefootc/bfc_decr_refcount.obj \
 	barefootc/posix_mutex.obj \
 	barefootc/win32_mutex.obj \
 	datetime/datetime.obj \
@@ -231,6 +234,7 @@ OFILES= \
 	iterators/bfc_iterator_index.obj \
 	iterators/bfc_iterator_getlong.obj \
 	iterators/bfc_iterator_setlong.obj \
+	iterators/bfc_iterator_element_size.obj \
 	containers/bfc_container_first.obj \
 	containers/bfc_container_index.obj \
 	containers/bfc_container_getlong.obj \
@@ -292,6 +296,9 @@ OFL4SC= \
 	barefootc/bfc_object_tostring.obj \
 	barefootc/bfc_object_dump.obj \
 	barefootc/bfc_swap_objects.obj \
+	barefootc/bfc_init_refcount.obj \
+	barefootc/bfc_incr_refcount.obj \
+	barefootc/bfc_decr_refcount.obj \
 	barefootc/baseobject.obj \
 	barefootc/posix_mutex.obj \
 	barefootc/win32_mutex.obj \
@@ -672,6 +679,8 @@ TESTS= \
 	tests/vector.modifiers/insert_iter_value.pass.exe \
 	tests/vector.modifiers/insert_iter_iter_iter.pass.exe \
 	tests/vector.modifiers/pop_back.pass.exe \
+	tests/vector.data/data.pass.exe \
+	tests/vector.data/data_const.pass.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -988,6 +997,8 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\vector.modifiers\insert_iter_value.pass.exe
 	tests\vector.modifiers\insert_iter_iter_iter.pass.exe
 	tests\vector.modifiers\pop_back.pass.exe
+	tests\vector.data\data.pass.exe
+	tests\vector.data\data_const.pass.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
@@ -1028,6 +1039,15 @@ barefootc/bfc_object_tostring.obj: barefootc/bfc_object_tostring.c $(HEADERS)
 
 barefootc/bfc_object_dump.obj: barefootc/bfc_object_dump.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_object_dump.c
+
+barefootc/bfc_init_refcount.obj: barefootc/bfc_init_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_init_refcount.c
+
+barefootc/bfc_incr_refcount.obj: barefootc/bfc_incr_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_incr_refcount.c
+
+barefootc/bfc_decr_refcount.obj: barefootc/bfc_decr_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_decr_refcount.c
 
 barefootc/posix_mutex.obj: barefootc/posix_mutex.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/posix_mutex.c
@@ -1554,6 +1574,9 @@ iterators/bfc_iterator_getlong.obj: iterators/bfc_iterator_getlong.c $(HEADERS)
 iterators/bfc_iterator_setlong.obj: iterators/bfc_iterator_setlong.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/bfc_iterator_setlong.c
 
+iterators/bfc_iterator_element_size.obj: iterators/bfc_iterator_element_size.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/bfc_iterator_element_size.c
+
 containers/bfc_container_first.obj: containers/bfc_container_first.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_first.c
 
@@ -1727,6 +1750,15 @@ barefootc/bfc_object_dump.obj: barefootc/bfc_object_dump.c $(HEADERS)
 
 barefootc/bfc_swap_objects.obj: barefootc/bfc_swap_objects.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_swap_objects.c
+
+barefootc/bfc_init_refcount.obj: barefootc/bfc_init_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_init_refcount.c
+
+barefootc/bfc_incr_refcount.obj: barefootc/bfc_incr_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_incr_refcount.c
+
+barefootc/bfc_decr_refcount.obj: barefootc/bfc_decr_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_decr_refcount.c
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/baseobject.c
@@ -4378,4 +4410,20 @@ tests/vector.modifiers/pop_back.pass.exe: \
 
 tests/vector.modifiers/pop_back.pass.obj: tests/vector.modifiers/pop_back.pass.cpp $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.modifiers/pop_back.pass.cpp
+
+tests/vector.data/data.pass.exe: \
+		tests/vector.data/data.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.data/data.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.data/data.pass.obj: tests/vector.data/data.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.data/data.pass.cpp
+
+tests/vector.data/data_const.pass.exe: \
+		tests/vector.data/data_const.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector.data/data_const.pass.obj barefootc.lib log4stdc.lib
+
+tests/vector.data/data_const.pass.obj: tests/vector.data/data_const.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ tests/vector.data/data_const.pass.cpp
 

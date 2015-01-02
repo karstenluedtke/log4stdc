@@ -20,6 +20,8 @@ extern "C" {
 #include <stddef.h>
 #include <errno.h>
 
+#include "barefootc/atomic.h"
+
 struct bfc_objhdr;
 typedef struct bfc_objhdr bfc_object_t;
 typedef struct bfc_objhdr *bfc_objptr_t;
@@ -43,7 +45,7 @@ struct l4sc_logger;
 	struct bfc_mutex *lock;					\
 	objptrT 	next;					\
 	objptrT 	prev;					\
-	unsigned	refc;
+	bfc_atomic_counter_t refc;
 
 struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
@@ -55,6 +57,9 @@ struct bfc_objhdr {
 	void *		spare2;						     \
 	void *		spare3;						     \
 	int	      (*init)     (void *, size_t, struct mempool *);	     \
+	void	      (*initrefc) (objptrT, int);			     \
+	void	      (*incrrefc) (objptrT);				     \
+	int	      (*decrrefc) (objptrT);				     \
 	void	      (*destroy)  (objptrT);				     \
 	int	      (*clone)    (cobjptrT, void *, size_t);		     \
 	size_t	      (*clonesize)(cobjptrT);				     \
@@ -76,8 +81,9 @@ struct bfc_objhdr {
 	size_t	      (*element_size)(cobjptrT c);			     \
 	size_t	      (*capacity) (cobjptrT c);				     \
 	int	      (*reserve)  (objptrT c, size_t n);		     \
-	void *		spare26;					     \
-	void *		spare27;
+	void *		spare29;					     \
+	void *		spare30;					     \
+	void *		spare31;
 
 #define BFC_CLASSHDR(classptrT,objptrT,cobjptrT) \
 	BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,void)
@@ -208,6 +214,9 @@ int  bfc_new(void **, bfc_classptr_t, struct mempool *);
 int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
 int  bfc_clone_object(const void *, void *, size_t);
 int  bfc_swap_objects(void *, void *);
+void bfc_init_refcount(void *, int);
+void bfc_incr_refcount(void *);
+int  bfc_decr_refcount(void *);
 void bfc_destroy(void *);
 void bfc_delete(void *);
 
@@ -230,6 +239,9 @@ int  bfc_container_end_iterator(const void *obj,
 size_t bfc_get_base_object_size(bfc_cobjptr_t);
 
 int  bfc_default_init_object(void *, size_t, struct mempool *);
+void bfc_default_init_refcount(bfc_objptr_t, int);
+void bfc_default_incr_refcount(bfc_objptr_t);
+int  bfc_default_decr_refcount(bfc_objptr_t);
 int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t);
 void bfc_default_destroy_object(bfc_objptr_t);
 

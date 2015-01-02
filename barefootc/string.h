@@ -21,6 +21,7 @@ extern "C" {
 
 #include "barefootc/object.h"
 #include "barefootc/iterator.h"
+#include "barefootc/atomic.h"
 
 struct mempool;
 struct bfc_mutex;
@@ -43,7 +44,8 @@ extern struct bfc_string_class bfc_shared_wstring_class;
 	size_t 		len;					\
 	unsigned 	offs;					\
 	unsigned 	bufsize;				\
-	struct mempool *pool;
+	struct mempool *pool;					\
+	bfc_atomic_counter_t refc;
 
 struct bfc_string {
 	BFC_STRINGHDR(bfc_string_classptr_t, void)

@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "object.h"
+#include "barefootc/object.h"
+#include "barefootc/atomic.h"
 #include "log4stdc.h"
 
 #if defined(_MSC_VER)
@@ -22,6 +23,9 @@ const struct bfc_classhdr bfc_object_class = {
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ bfc_default_init_object,
+	/* .initrefc 	*/ bfc_default_init_refcount,
+	/* .incrrefc 	*/ bfc_default_incr_refcount,
+	/* .decrrefc 	*/ bfc_default_decr_refcount,
 	/* .destroy 	*/ bfc_destroy_base_object,
 	/* .clone 	*/ bfc_default_clone_object,
 	/* .clonesize 	*/ bfc_get_base_object_size,
@@ -42,6 +46,28 @@ bfc_default_init_object(void *buf, size_t bufsize, struct mempool *pool)
 			  bfc_objptr_t, object, buf, bufsize, pool,
 			  &bfc_object_class);
 	return (BFC_SUCCESS);
+}
+
+void
+bfc_default_init_refcount(bfc_objptr_t obj, int n)
+{
+	bfc_init_atomic_counter(obj->refc, n);
+}
+
+void
+bfc_default_incr_refcount(bfc_objptr_t obj)
+{
+	(void) bfc_incr_atomic_counter(obj->refc);
+}
+
+int
+bfc_default_decr_refcount(bfc_objptr_t obj)
+{
+	int unrefd = bfc_decr_and_test_atomic_counter(obj->refc);
+	if (unrefd) {
+		bfc_destroy(obj);
+	}
+	return (!unrefd);
 }
 
 void
@@ -73,8 +99,8 @@ bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
 		object->lock = NULL;
 		object->next = NULL;
 		object->prev = NULL;
-		object->refc = 0;
 	}
+	bfc_init_refcount(object, 0);
 	return (BFC_SUCCESS);
 }
 

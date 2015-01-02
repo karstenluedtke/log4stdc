@@ -59,6 +59,18 @@ typedef atomic_int_least32_t bfc_atomic_counter_t;
 
 #define bfc_decr_and_test_atomic_counter(ctr) (atomic_fetch_sub(&(ctr),1) == 1)
 
+#elif defined(__GNUC__) && ( __GNUC__ >= 4 )
+
+typedef int bfc_atomic_counter_t;
+
+#define bfc_init_atomic_counter(ctr,v)	ctr = (v)
+#define bfc_incr_atomic_counter(ctr)	__sync_add_and_fetch(&(ctr),1)
+#define bfc_decr_atomic_counter(ctr)	__sync_sub_and_fetch(&(ctr),1)
+#define bfc_add_atomic_counter(ctr,v)	__sync_add_and_fetch(&(ctr),(v))
+
+#define bfc_decr_and_test_atomic_counter(ctr) \
+					(__sync_fetch_and_sub(&(ctr),1) == 1)
+
 #elif defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__) || defined(__amd64)
 
 #include <inttypes.h>

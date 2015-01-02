@@ -17,6 +17,9 @@
 #include "log4stdc.h"
 
 static int default_init_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static void init_refcount(bfc_iterptr_t it, int n);
+static void incr_refcount(bfc_iterptr_t it);
+static int decr_refcount(bfc_iterptr_t it);
 static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 static unsigned bfc_iterator_hashcode(bfc_citerptr_t it);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
@@ -45,6 +48,9 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ default_init_iterator,
+	/* .initrefc 	*/ init_refcount,
+	/* .incrrefc 	*/ incr_refcount,
+	/* .decrrefc 	*/ decr_refcount,
 	/* .destroy 	*/ bfc_destroy_iterator,
 	/* .clone 	*/ bfc_clone_iterator,
 	/* .clonesize 	*/ bfc_iterator_objsize,
@@ -67,8 +73,9 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .element_size*/ element_size,
 	/* .capacity	*/ NULL,
 	/* .reserve	*/ NULL,
-	/* .spare26 	*/ NULL,
-	/* .spare27 	*/ NULL,
+	/* .spare29 	*/ NULL,
+	/* .spare30 	*/ NULL,
+	/* .spare31 	*/ NULL,
 	/* Additional constructors */
 	/* .initialize	*/ bfc_init_iterator,
 	/* Iterator functions */
@@ -85,6 +92,9 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ default_init_iterator,
+	/* .initrefc 	*/ init_refcount,
+	/* .incrrefc 	*/ incr_refcount,
+	/* .decrrefc 	*/ decr_refcount,
 	/* .destroy 	*/ bfc_destroy_iterator,
 	/* .clone 	*/ bfc_clone_iterator,
 	/* .clonesize 	*/ bfc_iterator_objsize,
@@ -107,8 +117,9 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* .element_size*/ element_size,
 	/* .capacity	*/ NULL,
 	/* .reserve	*/ NULL,
-	/* .spare26 	*/ NULL,
-	/* .spare27 	*/ NULL,
+	/* .spare29 	*/ NULL,
+	/* .spare30 	*/ NULL,
+	/* .spare31 	*/ NULL,
 	/* Additional constructors */
 	/* .initialize	*/ bfc_init_iterator,
 	/* Iterator functions */
@@ -166,6 +177,22 @@ bfc_init_reverse_iterator(void *buf,size_t bufsize,bfc_cobjptr_t obj,size_t pos)
 		it->pos = pos; /* reverse end iterator */
 	}
 	return (rc);
+}
+
+static void init_refcount(bfc_iterptr_t it, int n)
+{
+	/* no refcount */
+}
+
+static void incr_refcount(bfc_iterptr_t it)
+{
+	/* no refcount */
+}
+
+static int decr_refcount(bfc_iterptr_t it)
+{
+	/* no refcount */
+	return (-ENOSYS);
 }
 
 void

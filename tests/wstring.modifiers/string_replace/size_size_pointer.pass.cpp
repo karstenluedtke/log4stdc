@@ -36,7 +36,10 @@ test(S s, typename S::size_type pos, typename S::size_type n1,
         assert(s.__invariants());
         assert(pos <= old_size);
         assert(s == expected);
-        typename S::size_type xlen = std::min(n1, old_size - pos);
+        typename S::size_type xlen = old_size - pos;
+	if (xlen > n1) {
+		xlen = n1;
+	}
         typename S::size_type rlen = S::traits_type::length(str);
         assert(s.size() == old_size - xlen + rlen);
     }

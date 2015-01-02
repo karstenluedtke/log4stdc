@@ -17,7 +17,7 @@ test(const char *s, signed long d, int unit, const char *expected)
 	bfc_datetime_t t0, t1;
 	int rc;
 	size_t bufsize = strlen(expected)+1;
-	char *buf;
+	char buf[200];
 
 	rc = bfc_init_datetime_from_isotime(&t0, sizeof(t0), s, strlen(s));
 	assert (rc >= 0);
@@ -40,7 +40,6 @@ test(const char *s, signed long d, int unit, const char *expected)
 	}
 	assert (rc >= 0);
 
-	buf = alloca(bufsize);
 	bfc_datetime_to_isodate(&t1, buf, bufsize);
 	L4SC_DEBUG(logger, "%s: %s+%ld%c -> %s", __FUNCTION__, s, d, unit, buf);
 	assert (strcmp(buf, expected) == 0);

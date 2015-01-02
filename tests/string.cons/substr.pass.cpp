@@ -56,7 +56,10 @@ test(S str, unsigned pos, unsigned n)
         S s2(str, pos, n);
         assert(s2.__invariants());
         assert(pos <= str.size());
-        unsigned rlen = std::min<unsigned>(str.size() - pos, n);
+        unsigned rlen = str.size() - pos;
+	if (rlen > n) {
+		rlen = n;
+	}
         assert(s2.size() == rlen);
         assert(T::compare(s2.data(), str.data() + pos, rlen) == 0);
         assert(s2.get_allocator() == A());
@@ -79,7 +82,10 @@ test(S str, unsigned pos, unsigned n, const typename S::allocator_type& a)
         S s2(str, pos, n, a);
         assert(s2.__invariants());
         assert(pos <= str.size());
-        unsigned rlen = std::min<unsigned>(str.size() - pos, n);
+        unsigned rlen = str.size() - pos;
+	if (rlen > n) {
+		rlen = n;
+	}
         assert(s2.size() == rlen);
         assert(T::compare(s2.data(), str.data() + pos, rlen) == 0);
         assert(s2.get_allocator() == a);

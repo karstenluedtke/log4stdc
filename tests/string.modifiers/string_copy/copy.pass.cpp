@@ -29,7 +29,10 @@ test(S str, typename S::value_type* s, typename S::size_type n,
         const S& cs = str;
         typename S::size_type r = cs.copy(s, n, pos);
         assert(pos <= cs.size());
-        typename S::size_type rlen = std::min(n, cs.size() - pos);
+        typename S::size_type rlen = cs.size() - pos;
+	if (rlen > n) {
+		rlen = n;
+	}
         assert(r == rlen);
         for (r = 0; r < rlen; ++r)
             assert(S::traits_type::eq(cs[pos+r], s[r]));

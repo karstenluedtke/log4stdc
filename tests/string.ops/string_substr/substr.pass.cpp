@@ -29,7 +29,10 @@ test(const S& s, typename S::size_type pos, typename S::size_type n)
         S str = s.substr(pos, n);
         assert(str.__invariants());
         assert(pos <= s.size());
-        typename S::size_type rlen = std::min(n, s.size() - pos);
+        typename S::size_type rlen = s.size() - pos;
+	if (rlen > n) {
+		rlen = n;
+	}
         assert(str.size() == rlen);
         assert(S::traits_type::compare(s.data()+pos, str.data(), rlen) == 0);
     }

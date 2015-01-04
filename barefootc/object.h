@@ -197,6 +197,7 @@ struct bfc_classhdr {
 		}							\
 		obj->vptr = (cls);					\
 		obj->name = #obj;					\
+		bfc_init_refcount(obj, 1);				\
 	}
 
 #define BFC_DESTROY_EPILOGUE(obj,cls)					\

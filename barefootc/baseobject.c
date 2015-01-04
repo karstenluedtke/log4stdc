@@ -100,7 +100,7 @@ bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
 		object->next = NULL;
 		object->prev = NULL;
 	}
-	bfc_init_refcount(object, 0);
+	bfc_init_refcount(object, 1);
 	return (BFC_SUCCESS);
 }
 

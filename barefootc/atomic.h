@@ -47,21 +47,29 @@ typedef volatile LONG bfc_atomic_counter_t;
 
 #include <stdatomic.h>
 
-typedef atomic_int_least32_t bfc_atomic_counter_t;
+typedef atomic_int bfc_atomic_counter_t;
 
 /*
  * The atomic_fetch_xxx functions return the old value before modification
  */
-#define bfc_init_atomic_counter(ctr,v)	atomic_init(&(ctr),(v))
-#define bfc_incr_atomic_counter(ctr)	(atomic_fetch_add(&(ctr),1) + 1)
-#define bfc_decr_atomic_counter(ctr)	(atomic_fetch_sub(&(ctr),1) - 1)
-#define bfc_add_atomic_counter(ctr,v)	(atomic_fetch_add(&(ctr),(v)) + (v))
+#define bfc_init_atomic_counter(ctr,v) \
+	atomic_init((bfc_atomic_counter_t*)&(ctr),(v))
 
-#define bfc_decr_and_test_atomic_counter(ctr) (atomic_fetch_sub(&(ctr),1) == 1)
+#define bfc_incr_atomic_counter(ctr) \
+	(atomic_fetch_add((bfc_atomic_counter_t*)&(ctr),1) + 1)
+
+#define bfc_decr_atomic_counter(ctr) \
+	(atomic_fetch_sub((bfc_atomic_counter_t*)&(ctr),1) - 1)
+
+#define bfc_add_atomic_counter(ctr,v) \
+	(atomic_fetch_add((bfc_atomic_counter_t*)&(ctr),(v)) + (v))
+
+#define bfc_decr_and_test_atomic_counter(ctr) \
+	(atomic_fetch_sub((bfc_atomic_counter_t*)&(ctr),1) == 1)
 
 #elif defined(__GNUC__) && ( __GNUC__ >= 4 )
 
-typedef int bfc_atomic_counter_t;
+typedef volatile int bfc_atomic_counter_t;
 
 #define bfc_init_atomic_counter(ctr,v)	ctr = (v)
 #define bfc_incr_atomic_counter(ctr)	__sync_add_and_fetch(&(ctr),1)

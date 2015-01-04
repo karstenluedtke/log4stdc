@@ -20,8 +20,6 @@ extern "C" {
 #include <stddef.h>
 #include <errno.h>
 
-#include "barefootc/atomic.h"
-
 struct bfc_objhdr;
 typedef struct bfc_objhdr bfc_object_t;
 typedef struct bfc_objhdr *bfc_objptr_t;
@@ -45,7 +43,7 @@ struct l4sc_logger;
 	struct bfc_mutex *lock;					\
 	objptrT 	next;					\
 	objptrT 	prev;					\
-	bfc_atomic_counter_t refc;
+	volatile int	refc;
 
 struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)

@@ -25,9 +25,6 @@
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
-static void init_refcount(bfc_strptr_t s, int n);
-static void incr_refcount(bfc_strptr_t s);
-static int decr_refcount(bfc_strptr_t s);
 static int clone_wstring(bfc_cstrptr_t obj, void *buf, size_t bufsize);
 static unsigned wstring_hashcode(bfc_cstrptr_t s);
 static int wstring_equals(bfc_cstrptr_t s, bfc_cstrptr_t other);
@@ -54,9 +51,9 @@ struct bfc_string_class bfc_wstring_class = {
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ bfc_init_wstring,
-	/* .initrefc 	*/ init_refcount,
-	/* .incrrefc 	*/ incr_refcount,
-	/* .decrrefc 	*/ decr_refcount,
+	/* .initrefc 	*/ bfc_string_init_refcount,
+	/* .incrrefc 	*/ bfc_string_incr_refcount,
+	/* .decrrefc 	*/ bfc_string_decr_refcount,
 	/* .destroy 	*/ bfc_destroy_wstring,
 	/* .clone 	*/ clone_wstring,
 	/* .clonesize 	*/ bfc_wstring_objsize,
@@ -182,28 +179,6 @@ bfc_init_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
 	obj->buf = (void *) (intptr_t) s;
 	obj->bufsize = obj->len = (*obj->vptr->traits->szlen)(s);
 	return (rc);
-}
-
-void
-init_refcount(bfc_strptr_t s, int n)
-{
-	bfc_init_atomic_counter(s->refc, n);
-}
-
-void
-incr_refcount(bfc_strptr_t s)
-{
-	(void) bfc_incr_atomic_counter(s->refc);
-}
-
-int
-decr_refcount(bfc_strptr_t s)
-{
-	int unrefd = bfc_decr_and_test_atomic_counter(s->refc);
-	if (unrefd) {
-		bfc_destroy(s);
-	}
-	return (!unrefd);
 }
 
 void

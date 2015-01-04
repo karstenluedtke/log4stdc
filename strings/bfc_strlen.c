@@ -8,6 +8,10 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 
+#ifdef bfc_strlen
+#undef bfc_strlen
+#endif
+
 /**
  * @brief    bfc_strlen
  */

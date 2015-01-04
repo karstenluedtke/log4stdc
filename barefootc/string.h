@@ -158,7 +158,11 @@ struct bfc_string_class {
 			bfc_init_object(super, obj, size, pool);	\
 		}							\
 		obj->vptr = (cls);					\
+		bfc_string_init_refcount(obj, 1);			\
 	}
+
+#define	bfc_strlen(s)	((s)->len)
+#define bfc_strdata(s)	(((s)->offs == 0)? (s)->buf: bfc_string_data(s))
 
 /*
  * bfc_string_t
@@ -186,7 +190,6 @@ void	bfc_string_incr_refcount(bfc_strptr_t s);
 int	bfc_string_decr_refcount(bfc_strptr_t s);
 
 /* Capacity */
-size_t	bfc_strlen(bfc_cstrptr_t s);
 size_t	bfc_string_length(bfc_cstrptr_t s);
 size_t	bfc_string_max_size(bfc_cstrptr_t s);
 int	bfc_string_resize(bfc_strptr_t s, size_t n, int c);
@@ -195,7 +198,6 @@ int	bfc_string_reserve(bfc_strptr_t s, size_t n);
 size_t	bfc_string_sublen(bfc_cstrptr_t s, size_t pos, size_t n);
 
 /* Element access */
-const char *bfc_strdata(bfc_cstrptr_t s);
 const char *bfc_string_subdata(bfc_cstrptr_t s, size_t pos);
 char *bfc_string_index(bfc_strptr_t s, size_t pos);
 const char *bfc_string_data(bfc_cstrptr_t s);  /* not zero terminated */

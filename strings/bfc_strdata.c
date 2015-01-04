@@ -8,6 +8,10 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 
+#ifdef bfc_strdata
+#undef bfc_strdata
+#endif
+
 /**
  * @brief    bfc_strdata
  */

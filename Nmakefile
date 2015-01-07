@@ -684,6 +684,7 @@ TESTS= \
 	tests/vector.modifiers/pop_back.pass.exe \
 	tests/vector.data/data.pass.exe \
 	tests/vector.data/data_const.pass.exe \
+	tests/vector/assign_string_vector.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -1002,6 +1003,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\vector.modifiers\pop_back.pass.exe
 	tests\vector.data\data.pass.exe
 	tests\vector.data\data_const.pass.exe
+	tests\vector\assign_string_vector.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
@@ -4438,4 +4440,12 @@ tests/vector.data/data_const.pass.exe: \
 
 tests/vector.data/data_const.pass.obj: tests/vector.data/data_const.pass.cpp $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector.data/data_const.pass.cpp
+
+tests/vector/assign_string_vector.exe: \
+		tests/vector/assign_string_vector.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector/assign_string_vector.obj barefootc.lib log4stdc.lib
+
+tests/vector/assign_string_vector.obj: tests/vector/assign_string_vector.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector/assign_string_vector.c
 

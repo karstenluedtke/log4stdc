@@ -92,8 +92,7 @@ bfc_init_object_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 	bfc_vecptr_t vec = (bfc_vecptr_t) buf;
 	bfc_objptr_t ref;
 	bfc_cobjptr_t obj;
-	unsigned idx;
-	void *elem;
+	unsigned idx, n;
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -103,15 +102,16 @@ bfc_init_object_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 	if ((rc = bfc_init_vector_copy(buf, bufsize, pool, src)) >= 0) {
 		vec->vptr = &bfc_object_vector_class;
 		dump_vector(vec, 1, logger);
-		BFC_VECTOR_FOREACH(elem, idx, vec) {
-			ref = (bfc_objptr_t) elem;
+		n = (unsigned) bfc_object_length(src);
+		for (idx=0; idx < n; idx++) {
 			obj = (bfc_cobjptr_t) bfc_container_index(
 					(bfc_contptr_t)(uintptr_t)src, idx);
 			if (obj && BFC_CLASS(obj)) {
+				ref = (bfc_objptr_t) bfc_vector_have(vec, idx);
 				bfc_clone_object(obj, ref, vec->elem_size);
 				bfc_object_dump(ref, 1, logger);
 			}
-		} END_BFC_VECTOR_FOREACH;
+		}
 	}
 	return (rc);
 }
@@ -121,15 +121,15 @@ destroy_vector(bfc_vecptr_t vec)
 {
 	const struct bfc_vector_class *cls = BFC_CLASS(vec);
 	bfc_objptr_t obj;
-	unsigned idx;
-	char *elem;
+	unsigned idx, n;
 
-	BFC_VECTOR_FOREACH(elem, idx, vec) {
-		obj = (bfc_objptr_t) elem;
+	n = BFC_VECTOR_GET_SIZE(vec);
+	for (idx=0; idx < n; idx++) {
+		obj = (bfc_objptr_t) bfc_vector_ref(vec, idx);
 		if (obj && BFC_CLASS(obj)) {
 			bfc_destroy(obj);
 		}
-	} END_BFC_VECTOR_FOREACH;
+	}
 	BFC_VECTOR_DESTROY(vec);
 	BFC_DESTROY_EPILOGUE(vec, cls);
 }
@@ -184,20 +184,21 @@ vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
 static void
 dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
 {
-	char *elem;
-	unsigned idx;
+	unsigned idx, n;
 	bfc_cobjptr_t obj;
 
 	bfc_vector_dump_structure(vec, log);
 
 	if (depth > 1) {
 		bfc_vecptr_t v = (bfc_vecptr_t)(uintptr_t) vec;
-		BFC_VECTOR_FOREACH(elem, idx, v) {
-			obj = (bfc_cobjptr_t) elem;
+		n = BFC_VECTOR_GET_SIZE(vec);
+		for (idx=0; idx < n; idx++) {
+			obj = (bfc_cobjptr_t) bfc_vector_ref(v, idx);
+			L4SC_DEBUG(log, "%s: #%u at %p",__FUNCTION__,idx, obj);
 			if (obj && BFC_CLASS(obj)) {
 				bfc_object_dump(obj, depth-1, log);
 			}
-		} END_BFC_VECTOR_FOREACH;
+		}
 	}
 }
 

@@ -40,6 +40,8 @@
 #define	bfc_wstrbuf				bfc_strbuf
 #define	bfc_wstrdata				bfc_strdata
 #define	bfc_wstring_sublen			bfc_string_sublen
+#define	bfc_wstring_length			bfc_string_length
+#define	bfc_wstring_data			bfc_string_data
 #define	bfc_wstr_reserve			bfc_str_reserve
 
 #include "basic_wstring.c"

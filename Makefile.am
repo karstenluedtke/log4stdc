@@ -246,6 +246,7 @@ libbarefootc_a_SOURCES+= containers/bfc_container_swap.c
 libbarefootc_a_SOURCES+= containers/vector.c
 libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
+libbarefootc_a_SOURCES+= containers/object_vector.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
 libbarefootc_a_SOURCES+= log4stdc/l4sc_logprintf.c

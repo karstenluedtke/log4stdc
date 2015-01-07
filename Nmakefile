@@ -120,6 +120,7 @@ OFILES= \
 	strings/bfc_strdata.obj \
 	strings/bfc_string_sublen.obj \
 	strings/bfc_string_subdata.obj \
+	strings/bfc_string_refcount.obj \
 	strings/bfc_string_append.obj \
 	strings/bfc_string_append_c_str.obj \
 	strings/bfc_string_append_iter_range.obj \
@@ -263,6 +264,7 @@ OFILES= \
 	containers/vector.obj \
 	containers/vector_ref.obj \
 	containers/vector_set.obj \
+	containers/object_vector.obj \
 	mempools/stdcpool.obj \
 	mempools/defaultpool.obj \
 	log4stdc/l4sc_logprintf.obj \
@@ -310,6 +312,7 @@ OFL4SC= \
 	strings/bfc_strdata.obj \
 	strings/bfc_string_sublen.obj \
 	strings/bfc_string_subdata.obj \
+	strings/bfc_string_refcount.obj \
 	strings/bfc_string_shared_substr.obj \
 	strings/bfc_string_buffered_substr.obj \
 	strings/bfc_string_decode_html_entities.obj \
@@ -1232,6 +1235,9 @@ strings/bfc_string_sublen.obj: strings/bfc_string_sublen.c $(HEADERS)
 strings/bfc_string_subdata.obj: strings/bfc_string_subdata.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/bfc_string_subdata.c
 
+strings/bfc_string_refcount.obj: strings/bfc_string_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/bfc_string_refcount.c
+
 strings/bfc_string_append.obj: strings/bfc_string_append.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/bfc_string_append.c
 
@@ -1661,6 +1667,9 @@ containers/vector_ref.obj: containers/vector_ref.c $(HEADERS)
 containers/vector_set.obj: containers/vector_set.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/vector_set.c
 
+containers/object_vector.obj: containers/object_vector.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/object_vector.c
+
 mempools/stdcpool.obj: mempools/stdcpool.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/stdcpool.c
 
@@ -1792,6 +1801,9 @@ strings/bfc_string_sublen.obj: strings/bfc_string_sublen.c $(HEADERS)
 
 strings/bfc_string_subdata.obj: strings/bfc_string_subdata.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/bfc_string_subdata.c
+
+strings/bfc_string_refcount.obj: strings/bfc_string_refcount.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/bfc_string_refcount.c
 
 strings/bfc_string_shared_substr.obj: strings/bfc_string_shared_substr.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ strings/bfc_string_shared_substr.c

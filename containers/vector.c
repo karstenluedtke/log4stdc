@@ -260,9 +260,28 @@ vector_tostring(bfc_cvecptr_t vec, char *buf, size_t bufsize)
 }
 
 static void
-dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
+dump_double_loop(bfc_cvecptr_t vec, char **dp,
+		 const char *label, struct l4sc_logger *log)
 {
-	int di, ti;
+	int di;
+	char *ip;
+	const int __dblcnt = CV2_POINTERS(vec);
+
+	L4SC_DEBUG(log, "%6ld %s elements @%p",
+			(long)CV2_ELEMENTS(vec), label, dp);
+	for (di=0; di < __dblcnt; di++) {
+		if ((ip = dp[di]) != NULL) {
+			L4SC_DEBUG(log, "%6ld %s elements @%p",
+				    (long)CV1_ELEMENTS(vec), label, ip);
+		}
+	}
+}
+
+void
+bfc_vector_dump_structure(const void *obj, struct l4sc_logger *log)
+{
+	bfc_cvecptr_t vec = (bfc_cvecptr_t) obj;
+	int ti;
 	char *ip, **dp, ***tp;
 	const int __dblcnt = CV2_POINTERS(vec);
 
@@ -278,37 +297,27 @@ dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
 				(long)CV1_ELEMENTS(vec), ip);
 		}
 
-		if ((dp = (vec)->double_indirect) != NULL) {
-			L4SC_DEBUG(log, "%6ld double indirect elements @%p",
-				(long)CV2_ELEMENTS(vec), dp);
-			for (di=0; di < __dblcnt; di++) {
-				if ((ip = dp[di]) != NULL) {
-					L4SC_DEBUG(log,
-					    "%6ld double indirect elements @%p",
-					    (long)CV1_ELEMENTS(vec), ip);
-				}
-			}
+		if ((dp = vec->double_indirect) != NULL) {
+			dump_double_loop(vec, dp, "double indirect", log);
 		}
 	
-		if ((tp = (vec)->triple_indirect) != NULL) {
+		if ((tp = vec->triple_indirect) != NULL) {
 			L4SC_DEBUG(log, "%6ld triple indirect elements @%p",
 				(long)CV3_ELEMENTS(vec), tp);
 			for (ti=0; ti < __dblcnt; ti++) {
 				if ((dp = tp[ti]) != NULL) {
-					L4SC_DEBUG(log,
-					    "%6ld triple indirect elements @%p",
-					    (long)CV2_ELEMENTS(vec), dp);
-					for (di=0; di < __dblcnt; di++) {
-						if ((ip = dp[di]) != NULL) {
-							L4SC_DEBUG(log,
-							    "%6ld triple indirect elements @%p",
-							    (long)CV1_ELEMENTS(vec), ip);
-						}
-					}
+					dump_double_loop(vec, dp,
+						"triple indirect", log);
 				}
 			}
 		}
 	}
+}
+
+static void
+dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
+{
+	bfc_vector_dump_structure(vec, log);
 }
 
 // element access:

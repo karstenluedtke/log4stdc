@@ -859,6 +859,13 @@ do {									\
 int bfc_init_vector_copy(void *, size_t, struct mempool *,
 			 const struct bfc_container *);
 
+int bfc_init_object_vector_class(void *, size_t, struct mempool *);
+int bfc_init_object_vector_copy(void *, size_t, struct mempool *,
+		     const struct bfc_container *);
+
+struct l4sc_logger;
+void bfc_vector_dump_structure(const void *, struct l4sc_logger *);
+
 #ifdef __cplusplus
 };
 #endif

@@ -777,7 +777,8 @@ do {									     \
 	unsigned _cvf_contiguous_ptrs  = CV2_POINTERS(vec);		     \
 									     \
 	for (idx=0, ptr=(vec)->direct;					     \
-	     idx < (vec)->size; idx++, ptr++, _cvf_k++) {		     \
+	     idx < (vec)->size;						     \
+	     idx++, ptr+=CV_ELEMSIZE_FACTOR(vec), _cvf_k++) {		     \
 		CV_FOREACH_NEXT(vec, idx, ptr,				     \
 				_cvf_stage, _cvf_i,_cvf_j,_cvf_k,	     \
 				_cvf_contiguous_ptrs,_cvf_contiguous_elems); \
@@ -856,12 +857,14 @@ do {									\
 	bfc_init_vector_class(vec,bufsize,pool);			\
 } while (0)
 
+int bfc_init_vector_by_element_size(void *buf, size_t bufsize,
+				struct mempool *pool, size_t elem_size);
 int bfc_init_vector_copy(void *, size_t, struct mempool *,
-			 const struct bfc_container *);
+				const struct bfc_container *);
 
 int bfc_init_object_vector_class(void *, size_t, struct mempool *);
 int bfc_init_object_vector_copy(void *, size_t, struct mempool *,
-		     const struct bfc_container *);
+				const struct bfc_container *);
 
 struct l4sc_logger;
 void bfc_vector_dump_structure(const void *, struct l4sc_logger *);

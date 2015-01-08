@@ -140,20 +140,18 @@ bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 int
-bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
-		     const struct bfc_container *src)
+bfc_init_vector_by_element_size(void *buf, size_t bufsize,
+				struct mempool *pool, size_t elem_size)
 {
-
 	BFC_VECTOR(minvec_s, char, 0) *vec = (struct minvec_s *) buf;
-	size_t elem_size = bfc_container_element_size(src);
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	BFC_INIT_PROLOGUE(const struct bfc_vector_class *,
 			  struct minvec_s *, obj, buf, bufsize, pool,
 			  &bfc_vector_class);
 
-	L4SC_TRACE(logger, "%s(vec @%p, size %ld, src @%p)",
-			__FUNCTION__, vec, (long) bufsize, src);
+	L4SC_TRACE(logger, "%s(vec @%p, size %ld, pool %p, elem_size %ld)",
+			__FUNCTION__,vec,(long)bufsize,pool,(long)elem_size);
 
 	vec->pool = pool;
 	vec->elem_size = elem_size;
@@ -171,9 +169,31 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 	vec->log2_double_indirect = 10; /* 1024 pointers per block */
 	*((const size_t **) &vec->zero_element) = zeroelement;
 
+	BFC_VECTOR_SET_SIZE(vec, 0);
+	dump_vector((bfc_cvecptr_t) vec, 1, logger);
+	return (BFC_SUCCESS);
+}
+
+int
+bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
+		     const struct bfc_container *src)
+{
+	int rc;
+	bfc_vecptr_t vec = (bfc_vecptr_t) buf;
+	size_t elem_size = bfc_container_element_size(src);
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	L4SC_TRACE(logger, "%s(vec @%p, size %ld, pool %p, src @%p)",
+			__FUNCTION__, buf, (long) bufsize, pool, src);
+
+	rc = bfc_init_vector_by_element_size(buf, bufsize, pool, elem_size);
+	if (rc < 0) {
+		return (rc);
+	}
+
 	bfc_container_assign_copy((bfc_contptr_t) vec, src);
 
-	dump_vector((bfc_cvecptr_t) vec, 1, logger);
+	dump_vector(vec, 1, logger);
 	return (BFC_SUCCESS);
 }
 

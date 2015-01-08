@@ -16,6 +16,7 @@ nobase_include_HEADERS+= barefootc/synchronization.h
 nobase_include_HEADERS+= barefootc/atomic.h
 nobase_include_HEADERS+= barefootc/datetime.h
 nobase_include_HEADERS+= barefootc/utf8.h
+nobase_include_HEADERS+= barefootc/unconst.h
 
 noinst_PROGRAMS = testlink
 noinst_PROGRAMS+= vector_test

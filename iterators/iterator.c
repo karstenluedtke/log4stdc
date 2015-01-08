@@ -333,8 +333,8 @@ forward_setlong(bfc_iterptr_t it, size_t pos, long val)
 static int
 advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 {
-	l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 16);
-	L4SC_TRACE(logger, "%s(%p, %ld)", __FUNCTION__, it, (long) n);
+	//l4sc_logger_ptr_t logger = l4sc_get_logger("barefootc.string", 16);
+	//L4SC_TRACE(logger, "%s(%p, %ld)", __FUNCTION__, it, (long) n);
 
 	if (n > 0) {
 		size_t objlen = bfc_object_length(it->obj);
@@ -352,7 +352,7 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 			it->pos = BFC_NPOS;
 		}
 	}
-	bfc_object_dump(it, 1, logger);
+	//bfc_object_dump(it, 1, logger);
 	return (BFC_SUCCESS);
 }
 

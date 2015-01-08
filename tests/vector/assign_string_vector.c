@@ -92,15 +92,13 @@ main(int argc, char *argv[])
 	do {
 		size_t s1[] = { 0, 10, 100, 1000, 10000, 100000, 1000000 };
 		test(1, s1);
-		test(2, s1);
-		test(4, s1);
-		//test(7, s1);
+		test(3, s1);
+		test(7, s1);
 	} while (0 /*just once*/);
 
 	do {
 		size_t s1[] = { 10, 11, 1000, 1001, 1000000, 1000001 };
-		test(4, s1);
-		//test(6, s1);
+		test(6, s1);
 	} while (0 /*just once*/);
 
 	return (0);

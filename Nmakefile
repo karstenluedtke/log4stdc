@@ -229,6 +229,7 @@ OFILES= \
 	iterators/intarray_iterator.obj \
 	iterators/source_iterator.obj \
 	iterators/xmltag_iterator.obj \
+	iterators/vector_iterator.obj \
 	iterators/bfc_parse_xmltags.obj \
 	iterators/bfc_tag_get_name.obj \
 	iterators/bfc_tag_get_namespace_prefix.obj \
@@ -1563,6 +1564,9 @@ iterators/source_iterator.obj: iterators/source_iterator.c $(HEADERS)
 
 iterators/xmltag_iterator.obj: iterators/xmltag_iterator.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/xmltag_iterator.c
+
+iterators/vector_iterator.obj: iterators/vector_iterator.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/vector_iterator.c
 
 iterators/bfc_parse_xmltags.obj: iterators/bfc_parse_xmltags.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ iterators/bfc_parse_xmltags.c

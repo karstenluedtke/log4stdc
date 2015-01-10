@@ -78,9 +78,9 @@ ptrdiff_t bfc_iterator_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 int	bfc_iterator_advance(bfc_iterptr_t it, ptrdiff_t n);
 
 int	bfc_init_utf8_iterator(void *buf, size_t bufsize,
-					bfc_cobjptr_t, size_t pos);
+					bfc_cobjptr_t obj, size_t pos);
 int	bfc_init_utf8_reverse_iterator(void *buf, size_t bufsize,
-					bfc_cobjptr_t, size_t pos);
+					bfc_cobjptr_t obj, size_t pos);
 
 int	bfc_init_cstr_iterator(void *buf, size_t bufsize,
 					const char *s, size_t pos);
@@ -102,6 +102,8 @@ int	bfc_init_source_iterator(void *buf, size_t bufsize,
 
 int	bfc_init_null_iterator(void *buf, size_t bufsize, size_t pos);
 
+int	bfc_init_vector_iterator(void *buf, size_t bufsize,
+					bfc_cobjptr_t obj, size_t pos);
 #ifdef __cplusplus
 }	/* C++ */
 #endif

@@ -211,6 +211,7 @@ libbarefootc_a_SOURCES+= iterators/cstr_iterator.c
 libbarefootc_a_SOURCES+= iterators/intarray_iterator.c
 libbarefootc_a_SOURCES+= iterators/source_iterator.c
 libbarefootc_a_SOURCES+= iterators/xmltag_iterator.c
+libbarefootc_a_SOURCES+= iterators/vector_iterator.c
 libbarefootc_a_SOURCES+= iterators/bfc_parse_xmltags.c
 libbarefootc_a_SOURCES+= iterators/bfc_tag_get_name.c
 libbarefootc_a_SOURCES+= iterators/bfc_tag_get_namespace_prefix.c

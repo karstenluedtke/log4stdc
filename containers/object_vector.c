@@ -36,8 +36,6 @@ static long vector_getlong(bfc_cvecptr_t vec, size_t pos);
 static int vector_setlong(bfc_vecptr_t vec, size_t pos, long val);
 
 static int vector_resize(bfc_vecptr_t vec, size_t n, const void *p);
-static int vector_assign_range(bfc_vecptr_t vec,
-				bfc_iterptr_t first,bfc_iterptr_t last);
 static int vector_push_back(bfc_vecptr_t vec, const void *p);
 static void vector_pop_back(bfc_vecptr_t vec);
 
@@ -68,7 +66,6 @@ struct bfc_vector_class bfc_object_vector_class = {
 	.getl		= vector_getlong,
 	.setl		= vector_setlong,
 	/* Modifiers */
-	.assign_range	= vector_assign_range,
 	.push_back	= vector_push_back,
 	.pop_back	= vector_pop_back,
 	.insert_fill	= vector_insert_fill,
@@ -277,28 +274,6 @@ vector_resize(bfc_vecptr_t vec, size_t n, const void *p)
 }
 
 static int
-vector_assign_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
-{
-	int count = 0;
-	bfc_objptr_t ref;
-	bfc_cobjptr_t obj;
-	bfc_iterator_t it = *first;
-
-	bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
-	while (bfc_iterator_distance(&it, last) > 0) {
-		obj = (bfc_cobjptr_t) bfc_iterator_index(&it);
-		bfc_iterator_advance(&it, 1);
-		if (obj && BFC_CLASS(obj)) {
-			ref = (bfc_objptr_t) bfc_vector_have(vec, count);
-			bfc_clone_object(obj, ref, vec->elem_size);
-		}
-		count++;
-	}
-	BFC_VECTOR_SET_SIZE(vec, count);
-	return (count);
-}
-
-static int
 vector_push_back(bfc_vecptr_t vec, const void *p)
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
@@ -364,13 +339,10 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, size+n)) < 0) {
 		return (rc);
 	}
-	for (idx = size-1; idx >= pos; idx--) {
+	for (idx = size; (idx--) > pos; ) {
 		if (((src = bfc_vector_ref(vec, idx)) != NULL)
 		 && ((ref = bfc_vector_have(vec, idx+n)) != NULL)) {
 			memcpy(ref, src, vec->elem_size);
-		}
-		if (idx == 0) {
-			break;
 		}
 	}
 	size += n;
@@ -398,8 +370,8 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
 	size_t idx, pos = bfc_iterator_position(position);
-	int n = bfc_iterator_distance(first, last);
-	bfc_objptr_t obj;
+	ptrdiff_t offs, n = bfc_iterator_distance(first, last);
+	bfc_cobjptr_t obj;
 	void *ref, *src;
 	int rc;
 	bfc_iterator_t it;
@@ -418,13 +390,11 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, size+n)) < 0) {
 		return (rc);
 	}
-	for (idx = size-1; idx >= pos; idx--) {
+	for (idx = size; (idx--) > pos; ) {
 		if (((src = bfc_vector_ref(vec, idx)) != NULL)
 		 && ((ref = bfc_vector_have(vec, idx+n)) != NULL)) {
 			memcpy(ref, src, vec->elem_size);
-		}
-		if (idx == 0) {
-			break;
+			memset(src,  0,  vec->elem_size);
 		}
 	}
 	size += n;
@@ -432,14 +402,17 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 
 	it = *first;
 	for (idx = pos; bfc_iterator_distance(&it, last) > 0; idx++) {
-		src = bfc_iterator_index(&it);
+		obj = (bfc_cobjptr_t) bfc_iterator_index(&it);
+		offs = bfc_iterator_distance(first, &it);
 		bfc_iterator_advance(&it, 1);
-		if (src && ((ref = bfc_vector_have(vec, idx)) != NULL)) {
-			obj = (bfc_objptr_t) src;
-			if (obj && BFC_CLASS(obj)) {
+		if ((offs > 0) && (idx < (size_t)(pos + offs))) {
+			idx = pos + offs;
+		}
+		if (obj && BFC_CLASS(obj)) {
+			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
 				bfc_clone_object(obj, ref, vec->elem_size);
 			} else {
-				memset(ref, 0, vec->elem_size);
+				return (-ENOMEM);
 			}
 		}
 	}
@@ -478,13 +451,13 @@ vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 	}
 	if (pos+n < size) {
 		for (idx = pos; idx+n < size; idx++) {
-			L4SC_TRACE(logger, "%s: idx %ld", __FUNCTION__, (long) idx);
 			if ((int) idx < 0) {
 				return (-EFAULT);
 			}
 			if (((src = bfc_vector_ref(vec, idx+n)) != NULL)
 			 && ((ref = bfc_vector_have(vec, idx)) != NULL)) {
 				memcpy(ref, src, vec->elem_size);
+				memset(src,  0,  vec->elem_size);
 			}
 		}
 		size -= n;

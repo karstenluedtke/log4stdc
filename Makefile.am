@@ -3795,6 +3795,12 @@ tests_vector_assign_string_vector_LDADD = libbarefootc.a liblog4stdc.a
 tests_vector_assign_string_vector_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/vector/assign_string_vector
 
+check_PROGRAMS += tests/vector/large_element
+tests_vector_large_element_SOURCES = tests/vector/large_element.c
+tests_vector_large_element_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_large_element_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector/large_element
+
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp
 #tests_strings_version_pass_LDADD = libbarefootc.a liblog4stdc.a

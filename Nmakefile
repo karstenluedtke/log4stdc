@@ -40,6 +40,7 @@ HEADERS= \
 	barefootc/atomic.h \
 	barefootc/datetime.h \
 	barefootc/utf8.h \
+	barefootc/unconst.h \
 
 
 OFILES= \
@@ -685,6 +686,7 @@ TESTS= \
 	tests/vector.data/data.pass.exe \
 	tests/vector.data/data_const.pass.exe \
 	tests/vector/assign_string_vector.exe \
+	tests/vector/large_element.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -1004,6 +1006,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\vector.data\data.pass.exe
 	tests\vector.data\data_const.pass.exe
 	tests\vector\assign_string_vector.exe
+	tests\vector\large_element.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
@@ -4448,4 +4451,12 @@ tests/vector/assign_string_vector.exe: \
 
 tests/vector/assign_string_vector.obj: tests/vector/assign_string_vector.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector/assign_string_vector.c
+
+tests/vector/large_element.exe: \
+		tests/vector/large_element.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/vector/large_element.obj barefootc.lib log4stdc.lib
+
+tests/vector/large_element.obj: tests/vector/large_element.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector/large_element.c
 

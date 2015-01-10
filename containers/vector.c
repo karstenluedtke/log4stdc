@@ -168,6 +168,13 @@ bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 	}
 	vec->log2_double_indirect = 10; /* 1024 pointers per block */
 	*((const size_t **) &vec->zero_element) = zeroelement;
+	if ((vec->elem_size > sizeof(zeroelement)) && pool) {
+		unsigned n = CV1_ELEMENTS(vec);
+		vec->indirect = mempool_calloc(pool, n+1, vec->elem_size);
+		if (vec->indirect) {
+			vec->zero_element = vec->indirect + n * vec->elem_size;
+		}
+	}
 
 	BFC_VECTOR_SET_SIZE(vec, 0);
 	dump_vector((bfc_cvecptr_t) vec, 1, logger);

@@ -269,6 +269,7 @@ vector_push_back(bfc_vecptr_t vec, const void *p)
 	BFC_VECTOR_SET_SIZE(vec, size);
 	if (obj && BFC_CLASS(obj)) {
 		bfc_clone_object(obj, ref, vec->elem_size, vec->pool);
+		bfc_init_refcount(ref, 1);
 		bfc_object_dump(ref, 1, logger);
 	} else {
 		memset(ref, 0, vec->elem_size);
@@ -331,6 +332,7 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 		for (idx = pos; idx < pos+n; idx++) {
 			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
 				bfc_clone_object(obj, ref, elemsize, pool);
+				bfc_init_refcount(ref, 1);
 			}
 		}
 	} else {
@@ -393,6 +395,7 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 		if (obj && BFC_CLASS(obj)) {
 			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
 				bfc_clone_object(obj, ref, elemsize, pool);
+				bfc_init_refcount(ref, 1);
 			} else {
 				return (-ENOMEM);
 			}

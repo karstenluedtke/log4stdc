@@ -37,14 +37,14 @@ struct bfc_iterator;
 struct l4sc_logger;
 
 #define BFC_OBJHDR(classptrT,objptrT) \
-	classptrT	vptr;	  /**< virtual methods */	\
-	const char *	name;					\
-	struct mempool *pool;					\
-	struct bfc_mutex *lock;					\
-	objptrT 	next;					\
-	objptrT 	prev;					\
-	volatile int	refc;					\
-	struct mempool *parent_pool; /**< for freeing the object */
+	classptrT	vptr;		/**< virtual methods	*/	\
+	const char *	name;		/**< object name	*/	\
+	volatile int	refc;		/**< reference count	*/	\
+	struct mempool *parent_pool;	/**< for freeing the object */	\
+	struct mempool *pool;		/**< for allocating children */	\
+	struct bfc_mutex *lock;		/**< for locking the object */	\
+	objptrT 	next;		/**< next in object list */	\
+	objptrT 	prev;		/**< previous in object list */
 
 struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)

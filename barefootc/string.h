@@ -43,8 +43,7 @@ extern struct bfc_string_class bfc_shared_wstring_class;
 	size_t 		len;					\
 	unsigned 	offs;					\
 	unsigned 	bufsize;				\
-	struct mempool *pool;					\
-	volatile int	refc;
+	struct mempool *pool;
 
 struct bfc_string {
 	BFC_STRINGHDR(bfc_string_classptr_t, void)

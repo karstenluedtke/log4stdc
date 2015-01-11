@@ -59,7 +59,6 @@ struct mempool {
 	int		line;
 	const char *	file;
 	const char *	func;
-	struct mempool *parent_pool;
 	struct mempool_children {
 		struct mempool *first;
 		struct mempool *last;

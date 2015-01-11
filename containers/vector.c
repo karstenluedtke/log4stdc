@@ -235,8 +235,11 @@ clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize, struct mempool *pool)
 static size_t
 vector_objsize(bfc_cvecptr_t vec)
 {
-	return (offsetof(struct bfc_char_vector, direct)
-		+ (vec->elem_direct * vec->elem_size));
+	size_t minsize = offsetof(struct bfc_char_vector, direct), extra = 0;
+	if (vec && BFC_CLASS(vec)) {
+		extra = vec->elem_direct * vec->elem_size;
+	}
+	return (minsize + extra);
 }
 
 static unsigned  

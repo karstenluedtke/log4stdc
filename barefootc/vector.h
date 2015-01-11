@@ -71,14 +71,14 @@ struct vecname {							\
 	unsigned	size;						\
 									\
 	/**								\
-	 * Number of elements stored direcly within the vector.		\
+	 * Number of elements stored directly within the vector.	\
 	 */								\
 	unsigned	elem_direct;					\
 									\
 	/**								\
 	 * Element class.						\
 	 */								\
-	unsigned	elem_class;					\
+	bfc_classptr_t	elem_class;					\
 									\
 	/**								\
 	 * Size of each element.					\

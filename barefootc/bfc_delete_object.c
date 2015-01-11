@@ -11,10 +11,11 @@ bfc_delete(void *obj)
 	struct mempool *pool;
 
 	if (o && BFC_CLASS(o)) {
-		pool = o->pool;
+		pool = o->parent_pool;
 		bfc_destroy(o);
 		if (pool) {
 			o->pool = NULL;
+			o->parent_pool = NULL;
 			mempool_free(pool, o);
 		}
 	}

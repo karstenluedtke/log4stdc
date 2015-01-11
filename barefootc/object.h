@@ -43,7 +43,8 @@ struct l4sc_logger;
 	struct bfc_mutex *lock;					\
 	objptrT 	next;					\
 	objptrT 	prev;					\
-	volatile int	refc;
+	volatile int	refc;					\
+	struct mempool *parent_pool; /**< for freeing the object */
 
 struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
@@ -212,6 +213,7 @@ struct bfc_classhdr {
 int  bfc_new(void **, bfc_classptr_t, struct mempool *);
 int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
 int  bfc_clone_object(const void *, void *, size_t, struct mempool *);
+int  bfc_clone_new(const void *, void **, struct mempool *);
 int  bfc_swap_objects(void *, void *);
 void bfc_init_refcount(void *, int);
 void bfc_incr_refcount(void *);

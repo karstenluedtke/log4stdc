@@ -65,7 +65,11 @@ bfc_default_decr_refcount(bfc_objptr_t obj)
 {
 	int unrefd = bfc_decr_and_test_atomic_counter(obj->refc);
 	if (unrefd) {
-		bfc_destroy(obj);
+		if (obj->parent_pool) {
+			bfc_delete(obj);
+		} else {
+			bfc_destroy(obj);
+		}
 	}
 	return (!unrefd);
 }
@@ -102,6 +106,7 @@ bfc_default_clone_object(bfc_cobjptr_t obj,
 		object->lock = NULL;
 		object->next = NULL;
 		object->prev = NULL;
+		object->parent_pool = NULL;
 	}
 	bfc_init_refcount(object, 1);
 	return (BFC_SUCCESS);

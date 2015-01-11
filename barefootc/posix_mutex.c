@@ -42,7 +42,7 @@ struct posix_mutex {
 };
 
 static int  init_mutex(void *, size_t, struct mempool *);
-static int  clone_mutex(bfc_mutex_ptr_t, void *, size_t);
+static int  clone_mutex(bfc_mutex_ptr_t, void *, size_t, struct mempool *);
 static void destroy_mutex(bfc_mutex_ptr_t);
 static size_t mutex_size(bfc_mutex_ptr_t);
 static void dump_mutex(bfc_mutex_ptr_t, int, struct l4sc_logger *);
@@ -100,9 +100,10 @@ destroy_mutex(bfc_mutex_ptr_t obj)
 }
 
 static int
-clone_mutex(bfc_mutex_ptr_t obj, void *buf, size_t bufsize)
+clone_mutex(bfc_mutex_ptr_t obj,
+	    void *buf, size_t bufsize, struct mempool *pool)
 {
-	return (init_mutex(buf, bufsize, obj->pool));
+	return (init_mutex(buf, bufsize, pool? pool: obj->pool));
 }
 
 static size_t

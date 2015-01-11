@@ -59,7 +59,7 @@ struct bfc_objhdr {
 	void	      (*incrrefc) (objptrT);				     \
 	int	      (*decrrefc) (objptrT);				     \
 	void	      (*destroy)  (objptrT);				     \
-	int	      (*clone)    (cobjptrT, void *, size_t);		     \
+	int	      (*clone)    (cobjptrT, void*, size_t, struct mempool*);\
 	size_t	      (*clonesize)(cobjptrT);				     \
 	unsigned      (*hashcode) (cobjptrT);				     \
 	int	      (*equals)   (cobjptrT, cobjptrT);			     \
@@ -211,7 +211,7 @@ struct bfc_classhdr {
 
 int  bfc_new(void **, bfc_classptr_t, struct mempool *);
 int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
-int  bfc_clone_object(const void *, void *, size_t);
+int  bfc_clone_object(const void *, void *, size_t, struct mempool *);
 int  bfc_swap_objects(void *, void *);
 void bfc_init_refcount(void *, int);
 void bfc_incr_refcount(void *);
@@ -241,7 +241,7 @@ int  bfc_default_init_object(void *, size_t, struct mempool *);
 void bfc_default_init_refcount(bfc_objptr_t, int);
 void bfc_default_incr_refcount(bfc_objptr_t);
 int  bfc_default_decr_refcount(bfc_objptr_t);
-int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t);
+int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t, struct mempool *);
 void bfc_default_destroy_object(bfc_objptr_t);
 
 unsigned bfc_default_get_object_hashcode(bfc_cobjptr_t);

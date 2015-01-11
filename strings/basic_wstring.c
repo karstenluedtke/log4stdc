@@ -16,7 +16,8 @@
 #define STRING_CLASS_NAME "basic_wstring"
 #endif
 
-static int clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize);
+static int clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize,
+						struct mempool *pool);
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
@@ -190,11 +191,12 @@ bfc_destroy_basic_wstring(bfc_strptr_t obj)
 }
 
 static int
-clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize)
+clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize, struct mempool *pool)
 {
 	size_t len = bfc_wstring_length(obj);
 	const wchar_t *p = bfc_wstring_data(obj);
-	return (bfc_init_basic_wstring_buffer(buf, bufsize, obj->pool, p, len));
+	struct mempool *newpool = pool? pool: obj->pool;
+	return (bfc_init_basic_wstring_buffer(buf, bufsize, newpool, p, len));
 }
 
 size_t

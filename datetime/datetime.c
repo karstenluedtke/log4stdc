@@ -50,6 +50,8 @@ static int init_datetime(void *buf, size_t bufsize, struct mempool *pool);
 static void init_refcount(bfc_dateptr_t date, int n);
 static void incr_refcount(bfc_dateptr_t date);
 static int decr_refcount(bfc_dateptr_t date);
+static int clone_datetime(bfc_cdateptr_t date,
+		   void *buf, size_t bufsize, struct mempool *pool);
 static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
 static unsigned bfc_datetime_hashcode(bfc_cdateptr_t date);
 static void dump_datetime(bfc_cdateptr_t date,int depth,struct l4sc_logger*log);
@@ -77,7 +79,7 @@ struct bfc_datetime_class bfc_datetime_class = {
 	/* .incrrefc 	*/ incr_refcount,
 	/* .decrrefc 	*/ decr_refcount,
 	/* .destroy 	*/ bfc_destroy_datetime,
-	/* .clone 	*/ bfc_clone_datetime,
+	/* .clone 	*/ clone_datetime,
 	/* .clonesize 	*/ bfc_datetime_objsize,
 	/* .hashcode 	*/ bfc_datetime_hashcode,
 	/* .equals 	*/ datetime_equals,
@@ -273,6 +275,13 @@ bfc_clone_datetime(bfc_cdateptr_t date, void *buf, size_t bufsize)
 	}
 	memcpy(buf, date, size);
 	return (BFC_SUCCESS);
+}
+
+static int
+clone_datetime(bfc_cdateptr_t date,
+		void *buf, size_t bufsize, struct mempool *pool)
+{
+	return (bfc_clone_datetime(date, buf, bufsize));
 }
 
 size_t

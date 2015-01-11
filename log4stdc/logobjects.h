@@ -185,7 +185,8 @@ struct l4sc_configurator {
 
 int  l4sc_default_init_object(void *buf, size_t bufsize, struct mempool *pool);
 void l4sc_default_destroy_object(l4sc_objptr_t obj);
-int  l4sc_default_clone_object(l4sc_objcptr_t obj, void *buf, size_t bufsize);
+int  l4sc_default_clone_object(l4sc_objcptr_t obj, void *buf, size_t bufsize,
+							struct mempool *pool);
 size_t l4sc_default_get_object_size(l4sc_objcptr_t obj);
 unsigned l4sc_default_get_object_hashcode(l4sc_objcptr_t obj);
 int l4sc_default_is_equal_object(l4sc_objcptr_t obj, l4sc_objcptr_t other);

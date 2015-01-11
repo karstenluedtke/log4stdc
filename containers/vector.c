@@ -28,7 +28,8 @@
 typedef struct bfc_char_vector *bfc_vecptr_t;
 typedef const struct bfc_char_vector *bfc_cvecptr_t;
 
-static int clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize);
+static int clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize,
+						struct mempool *pool);
 static void destroy_vector(bfc_vecptr_t vec);
 
 static size_t vector_objsize(bfc_cvecptr_t vec);
@@ -198,10 +199,10 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 		return (rc);
 	}
 
-	bfc_container_assign_copy((bfc_contptr_t) vec, src);
+	rc = bfc_container_assign_copy((bfc_contptr_t) vec, src);
 
 	dump_vector(vec, 1, logger);
-	return (BFC_SUCCESS);
+	return (rc);
 }
 
 static void
@@ -214,14 +215,21 @@ destroy_vector(bfc_vecptr_t vec)
 }
 
 static int
-clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize)
+clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize, struct mempool *pool)
 {
-	size_t size = bfc_object_size(vec);
-	if (bufsize < size) {
-		return (-ENOSPC);
+	bfc_vecptr_t v = buf;
+	struct mempool *newpool = pool? pool: vec->pool;
+	const size_t elemsize = vec->elem_size;
+	int rc;
+
+	rc = bfc_init_vector_by_element_size(buf, bufsize, newpool, elemsize);
+	if (rc < 0) {
+		return (rc);
 	}
-	memcpy(buf, vec, size);
-	return (BFC_SUCCESS);
+	v->vptr = vec->vptr;
+	v->elem_class = vec->elem_class;
+	rc = bfc_container_assign_copy((bfc_contptr_t)v, (bfc_ccontptr_t)vec);
+	return (rc);
 }
 
 static size_t

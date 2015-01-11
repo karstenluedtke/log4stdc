@@ -20,6 +20,8 @@ static int default_init_iterator(void *buf,size_t bufsize,struct mempool *pool);
 static void init_refcount(bfc_iterptr_t it, int n);
 static void incr_refcount(bfc_iterptr_t it);
 static int decr_refcount(bfc_iterptr_t it);
+static int clone_iterator(bfc_citerptr_t it,
+		void *buf, size_t bufsize, struct mempool *pool);
 static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 static unsigned bfc_iterator_hashcode(bfc_citerptr_t it);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
@@ -52,7 +54,7 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .incrrefc 	*/ incr_refcount,
 	/* .decrrefc 	*/ decr_refcount,
 	/* .destroy 	*/ bfc_destroy_iterator,
-	/* .clone 	*/ bfc_clone_iterator,
+	/* .clone 	*/ clone_iterator,
 	/* .clonesize 	*/ bfc_iterator_objsize,
 	/* .hashcode 	*/ bfc_iterator_hashcode,
 	/* .equals 	*/ iterator_equals,
@@ -96,7 +98,7 @@ struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* .incrrefc 	*/ incr_refcount,
 	/* .decrrefc 	*/ decr_refcount,
 	/* .destroy 	*/ bfc_destroy_iterator,
-	/* .clone 	*/ bfc_clone_iterator,
+	/* .clone 	*/ clone_iterator,
 	/* .clonesize 	*/ bfc_iterator_objsize,
 	/* .hashcode 	*/ bfc_iterator_hashcode,
 	/* .equals 	*/ iterator_equals,
@@ -211,6 +213,13 @@ bfc_clone_iterator(bfc_citerptr_t obj, void *buf, size_t bufsize)
 	}
 	memcpy(iter, obj, size);
 	return (BFC_SUCCESS);
+}
+
+static int
+clone_iterator(bfc_citerptr_t it,
+		void *buf, size_t bufsize, struct mempool *pool)
+{
+	return (bfc_clone_iterator(it, buf, bufsize));
 }
 
 size_t

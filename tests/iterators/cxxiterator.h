@@ -55,14 +55,12 @@ namespace barefootc {
 
 		iterator(const iterator& it)
 		{
-			VOID_METHCALL(bfc_iterator_classptr_t, &it.bfcit,
-				clone, (&it.bfcit, &bfcit, sizeof(bfcit)));
+			bfc_clone_iterator(&it.bfcit, &bfcit, sizeof(bfcit));
 		}
 
 		iterator(const bfc_iterator_t& bfciter)
 		{
-			VOID_METHCALL(bfc_iterator_classptr_t, &bfciter,
-				clone, (&bfciter, &bfcit, sizeof(bfcit)));
+			bfc_clone_iterator(&bfciter, &bfcit, sizeof(bfcit));
 		}
 
 		iterator(const char *s)
@@ -86,8 +84,7 @@ namespace barefootc {
 
 		void operator=(const iterator& rhs)
 		{
-			VOID_METHCALL(bfc_iterator_classptr_t, &rhs.bfcit,
-				clone, (&rhs.bfcit, &bfcit, sizeof(bfcit)));
+			bfc_clone_iterator(&rhs.bfcit, &bfcit, sizeof(bfcit));
 		}
 
 		int equals(const iterator& rhs) const

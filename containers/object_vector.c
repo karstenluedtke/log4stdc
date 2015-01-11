@@ -25,7 +25,6 @@
 typedef struct bfc_char_vector *bfc_vecptr_t;
 typedef const struct bfc_char_vector *bfc_cvecptr_t;
 
-static int clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize);
 static void destroy_vector(bfc_vecptr_t vec);
 
 static int vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other);
@@ -58,7 +57,6 @@ struct bfc_vector_class bfc_object_vector_class = {
 	.name 		= "object vector",
 	.init 		= bfc_init_object_vector_class,
 	.destroy 	= destroy_vector,
-	.clone 		= clone_vector,
 	.hashcode 	= vector_hashcode,
 	.equals 	= vector_equals,
 	.dump	 	= dump_vector,
@@ -93,9 +91,6 @@ bfc_init_object_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 {
 	bfc_vecptr_t vec = (bfc_vecptr_t) buf;
 	size_t elem_size = bfc_container_element_size(src);
-	bfc_objptr_t ref;
-	bfc_cobjptr_t obj;
-	unsigned idx, n;
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -106,17 +101,7 @@ bfc_init_object_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 	if (rc < 0) {
 		return (rc);
 	}
-	vec->vptr = &bfc_object_vector_class;
-	n = (unsigned) bfc_object_length(src);
-	for (idx=0; idx < n; idx++) {
-		obj = (bfc_cobjptr_t) bfc_container_index(
-					BFC_UNCONST(bfc_contptr_t, src), idx);
-		if (obj && BFC_CLASS(obj)) {
-			ref = (bfc_objptr_t) bfc_vector_have(vec, idx);
-			bfc_clone_object(obj, ref, vec->elem_size);
-		}
-	}
-	bfc_object_dump(ref, 2, logger);
+	rc = bfc_container_assign_copy((bfc_contptr_t) vec, src);
 	return (rc);
 }
 
@@ -128,13 +113,6 @@ destroy_vector(bfc_vecptr_t vec)
 	vector_resize(vec, 0, NULL);
 	BFC_VECTOR_DESTROY(vec);
 	BFC_DESTROY_EPILOGUE(vec, cls);
-}
-
-static int
-clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize)
-{
-	return (bfc_init_object_vector_copy(buf, bufsize, vec->pool,
-						(bfc_ccontptr_t) vec));
 }
 
 static unsigned  
@@ -290,7 +268,7 @@ vector_push_back(bfc_vecptr_t vec, const void *p)
 	size++;
 	BFC_VECTOR_SET_SIZE(vec, size);
 	if (obj && BFC_CLASS(obj)) {
-		bfc_clone_object(obj, ref, vec->elem_size);
+		bfc_clone_object(obj, ref, vec->elem_size, vec->pool);
 		bfc_object_dump(ref, 1, logger);
 	} else {
 		memset(ref, 0, vec->elem_size);
@@ -325,6 +303,8 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 	size_t idx, pos = bfc_iterator_position(position);
 	bfc_cobjptr_t obj = (bfc_cobjptr_t) p;
 	void *ref, *src;
+	struct mempool *pool = vec->pool;
+	const size_t elemsize = vec->elem_size;
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -342,7 +322,7 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 	for (idx = size; (idx--) > pos; ) {
 		if (((src = bfc_vector_ref(vec, idx)) != NULL)
 		 && ((ref = bfc_vector_have(vec, idx+n)) != NULL)) {
-			memcpy(ref, src, vec->elem_size);
+			memcpy(ref, src, elemsize);
 		}
 	}
 	size += n;
@@ -350,13 +330,13 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 	if (obj && BFC_CLASS(obj)) {
 		for (idx = pos; idx < pos+n; idx++) {
 			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
-				bfc_clone_object(obj, ref, vec->elem_size);
+				bfc_clone_object(obj, ref, elemsize, pool);
 			}
 		}
 	} else {
 		for (idx = pos; idx < pos+n; idx++) {
 			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
-				memset(ref, 0, vec->elem_size);
+				memset(ref, 0, elemsize);
 			}
 		}
 	}
@@ -373,6 +353,8 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	ptrdiff_t offs, n = bfc_iterator_distance(first, last);
 	bfc_cobjptr_t obj;
 	void *ref, *src;
+	struct mempool *pool = vec->pool;
+	const size_t elemsize = vec->elem_size;
 	int rc;
 	bfc_iterator_t it;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
@@ -393,8 +375,8 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	for (idx = size; (idx--) > pos; ) {
 		if (((src = bfc_vector_ref(vec, idx)) != NULL)
 		 && ((ref = bfc_vector_have(vec, idx+n)) != NULL)) {
-			memcpy(ref, src, vec->elem_size);
-			memset(src,  0,  vec->elem_size);
+			memcpy(ref, src, elemsize);
+			memset(src,  0,  elemsize);
 		}
 	}
 	size += n;
@@ -410,7 +392,7 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 		}
 		if (obj && BFC_CLASS(obj)) {
 			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
-				bfc_clone_object(obj, ref, vec->elem_size);
+				bfc_clone_object(obj, ref, elemsize, pool);
 			} else {
 				return (-ENOMEM);
 			}

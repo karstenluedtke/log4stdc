@@ -25,7 +25,8 @@
 
 extern struct bfc_classhdr bfc_wchar_traits_class;
 
-static int clone_wstring(bfc_cstrptr_t obj, void *buf, size_t bufsize);
+static int clone_wstring(bfc_cstrptr_t obj, void *buf, size_t bufsize,
+						struct mempool *pool);
 static unsigned wstring_hashcode(bfc_cstrptr_t s);
 static int wstring_equals(bfc_cstrptr_t s, bfc_cstrptr_t other);
 static int wstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize);
@@ -192,7 +193,8 @@ bfc_destroy_wstring(bfc_strptr_t obj)
 }
 
 static int
-clone_wstring(bfc_cstrptr_t obj, void *buf, size_t bufsize)
+clone_wstring(bfc_cstrptr_t obj,
+	      void *buf, size_t bufsize, struct mempool *pool)
 {
 	bfc_strptr_t s = (bfc_strptr_t) buf;
 	size_t size = bfc_object_size(obj);

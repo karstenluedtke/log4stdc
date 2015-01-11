@@ -87,7 +87,8 @@ bfc_destroy_base_object(bfc_objptr_t obj)
 }
 
 int
-bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
+bfc_default_clone_object(bfc_cobjptr_t obj,
+			 void *buf, size_t bufsize, struct mempool *pool)
 {
 	bfc_objptr_t object = (bfc_objptr_t) buf;
 	size_t size = bfc_object_size(obj);
@@ -95,6 +96,8 @@ bfc_default_clone_object(bfc_cobjptr_t obj, void *buf, size_t bufsize)
 		return (-ENOSPC);
 	}
 	memcpy(object, obj, size);
+	/* Not overwriting the pool. */
+	/* An object allocating from pool shall have its own clone method */
 	if (size >= sizeof(struct bfc_objhdr)) {
 		object->lock = NULL;
 		object->next = NULL;

@@ -11,7 +11,8 @@
 
 static int  init_pool(void *buf,size_t bufsize,struct mempool *pool);
 static void destroy_pool(struct mempool *pool);
-static int  clone_pool(const struct mempool *pool, void *buf, size_t bufsize);
+static int  clone_pool(const struct mempool *pool, void *buf, size_t bufsize,
+							struct mempool *other);
 static size_t get_pool_object_size(const struct mempool *pool);
 static unsigned get_pool_hashcode(const struct mempool *pool);
 static int is_equal_pool(const struct mempool *obj,const struct mempool *other);
@@ -87,15 +88,19 @@ destroy_pool(struct mempool *pool)
 }
 
 static int
-clone_pool(const struct mempool *pool, void *buf, size_t bufsize)
+clone_pool(const struct mempool *pool, void *buf, size_t bufsize,
+						struct mempool *other)
 {
-	struct stdc_mempool *obj = (struct stdc_mempool *) pool;
-	bfc_objptr_t object = (bfc_objptr_t) buf;
-	size_t size = VMETHCALL(obj, clonesize, (pool), sizeof(*object));
+	struct mempool *newpool = (struct mempool *) buf;
+	size_t size = bfc_object_size(pool);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
-	memcpy(object, pool, size);
+	memcpy(newpool, pool, size);
+	newpool->next = NULL;
+	newpool->prev = NULL;
+	memset(&newpool->sub_pools, 0, sizeof(newpool->sub_pools));
+	
 	return (BFC_SUCCESS);
 }
 

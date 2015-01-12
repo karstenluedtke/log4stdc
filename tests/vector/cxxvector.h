@@ -102,10 +102,26 @@ namespace barefootc {
 		{
 			int rc;
 			init_vector(get_stdc_mempool());
-			rc = bfc_container_assign_fill((bfc_contptr_t)&bfcvec,
-							n, &value);
-			if (rc < 0) {
-				throw_replace_error(-rc);
+			if (sizeof(T) > 8) {
+				// might be a C++ object, so we create copies
+				// here, in order to use the proper constructor.
+				// Since the "C" implementation does not know
+				// about C++ objects, the destructor will never
+				// be called, even when the vector is destroyed
+				// and the memory is released.
+				for (int i=0; i < n; i++) {
+					void *p = bfc_vector_have(&bfcvec, i);
+					if (!p) {
+						throw_replace_error(ENOMEM);
+					}
+					T *copy = new(p) T(value);
+				}
+			} else {
+				rc = bfc_container_assign_fill(
+					(bfc_contptr_t)&bfcvec, n, &value);
+				if (rc < 0) {
+					throw_replace_error(-rc);
+				}
 			}
 		}
 
@@ -114,10 +130,21 @@ namespace barefootc {
 		{
 			int rc;
 			init_vector(get_stdc_mempool());
-			rc = bfc_container_assign_fill((bfc_contptr_t)&bfcvec,
-							n, &value);
-			if (rc < 0) {
-				throw_replace_error(-rc);
+			if (sizeof(T) > 8) {
+				// might be a C++ object, see comment above.
+				for (int i=0; i < n; i++) {
+					void *p = bfc_vector_have(&bfcvec, i);
+					if (!p) {
+						throw_replace_error(ENOMEM);
+					}
+					T *copy = new(p) T(value);
+				}
+			} else {
+				rc = bfc_container_assign_fill(
+					(bfc_contptr_t)&bfcvec, n, &value);
+				if (rc < 0) {
+					throw_replace_error(-rc);
+				}
 			}
 		}
 

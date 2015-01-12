@@ -22,6 +22,8 @@
 #include "barefootc/iterator.h"
 #include "barefootc/container.h"
 #include "barefootc/vector.h"
+#include "barefootc/synchronization.h"
+#include "barefootc/unconst.h"
 #include "log4stdc.h"
 
 /* for the remainder of this file ... */
@@ -137,6 +139,7 @@ bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 		return (-ENOSPC);
 	}
 	vec->pool = pool;
+	bfc_new_mutex(&vec->lock, pool);
 	return (BFC_SUCCESS);
 }
 
@@ -155,6 +158,7 @@ bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 			__FUNCTION__,vec,(long)bufsize,pool,(long)elem_size);
 
 	vec->pool = pool;
+	bfc_new_mutex(&vec->lock, pool);
 	vec->elem_size = elem_size;
 	vec->elem_direct = 0;
 	if (bufsize >= bfc_object_size(vec)) {
@@ -208,10 +212,23 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 static void
 destroy_vector(bfc_vecptr_t vec)
 {
-	const struct bfc_vector_class *cls = BFC_CLASS(vec);
+	const struct bfc_vector_class *cls;
+	bfc_mutex_ptr_t lock, locked;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
-	BFC_VECTOR_DESTROY(vec);
-	BFC_DESTROY_EPILOGUE(vec, cls);
+	if (vec && (cls = BFC_CLASS(vec))) {
+		L4SC_DEBUG(logger, "%s: vec %p, lock %p, class %p",
+			__FUNCTION__, vec, vec->lock,
+			(vec->lock)? BFC_CLASS(vec->lock): 0);
+		if ((lock = vec->lock) != NULL) {
+			locked = bfc_mutex_lock(lock);
+			vec->lock = NULL;
+			BFC_VECTOR_DESTROY(vec);
+			bfc_mutex_unlock(locked);
+			bfc_decr_refcount(lock);
+		}
+		BFC_DESTROY_EPILOGUE(vec, cls);
+	}
 }
 
 static int
@@ -220,15 +237,21 @@ clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize, struct mempool *pool)
 	bfc_vecptr_t v = buf;
 	struct mempool *newpool = pool? pool: vec->pool;
 	const size_t elemsize = vec->elem_size;
+	bfc_mutex_ptr_t locked;
 	int rc;
 
+	if (!vec->lock || !(locked = bfc_mutex_lock(vec->lock))) {
+		return (-EBUSY);
+	}
 	rc = bfc_init_vector_by_element_size(buf, bufsize, newpool, elemsize);
 	if (rc < 0) {
+		bfc_mutex_unlock(locked);
 		return (rc);
 	}
 	v->vptr = vec->vptr;
 	v->elem_class = vec->elem_class;
 	rc = bfc_container_assign_copy((bfc_contptr_t)v, (bfc_ccontptr_t)vec);
+	bfc_mutex_unlock(locked);
 	return (rc);
 }
 
@@ -251,8 +274,10 @@ vector_hashcode(bfc_cvecptr_t vec)
 static int
 vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
 {
+	int eq;
 	size_t idx, size;
 	const void *p, *q;
+	bfc_mutex_ptr_t lock1 = NULL, lock2 = NULL;
 
 	if (vec == other) {
 		return (1);
@@ -260,19 +285,33 @@ vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
 	if (bfc_object_length(vec) != bfc_object_length(other)) {
 		return (0);
 	}
+	if (vec->lock) {
+		lock1 = bfc_mutex_lock(vec->lock);
+	}
+	if (other->lock) {
+		lock2 = bfc_mutex_lock(other->lock);
+	}
 	size = bfc_object_length(vec);
-	for (idx=0; idx < size; idx++) {
+	for (idx=0, eq=1; idx < size; idx++) {
 		p = bfc_container_index((bfc_contptr_t)other, idx);
 		q = bfc_container_index((bfc_contptr_t)other, idx);
 		if (p && q) {
 			if (memcmp(p, q, vec->elem_size) != 0) {
-				return (0);
+				eq = 0;
+				break;
 			}
 		} else if (p != q) /* one of them != NULL */ {
-			return (0);
+			eq = 0;
+			break;
 		}
 	}
-	return (1);
+	if (lock2) {
+		bfc_mutex_unlock(lock2);
+	}
+	if (lock1) {
+		bfc_mutex_unlock(lock1);
+	}
+	return (eq);
 }
 
 static size_t
@@ -324,9 +363,10 @@ bfc_vector_dump_structure(const void *obj, struct l4sc_logger *log)
 	const int __dblcnt = CV2_POINTERS(vec);
 
 	if (vec && BFC_CLASS(vec)) {
-		L4SC_DEBUG(log, "%s @%p size %ld, pool %p",
-			BFC_CLASS(vec)->name, vec,
-			(long)BFC_VECTOR_GET_SIZE(vec), vec->pool);
+		L4SC_DEBUG(log, "%s @%p size %ld, pool %p, lock %p",
+			BFC_CLASS(vec)->name, vec, 
+			(long)BFC_VECTOR_GET_SIZE(vec), vec->pool, vec->lock);
+
 		L4SC_DEBUG(log, "%6ld direct elements @%p size %d",
 			(long)CV0_ELEMENTS(vec), vec->direct, vec->elem_size);
 
@@ -355,81 +395,129 @@ bfc_vector_dump_structure(const void *obj, struct l4sc_logger *log)
 static void
 dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
 {
-	bfc_vector_dump_structure(vec, log);
+	bfc_mutex_ptr_t locked = NULL;
+
+	if (vec && BFC_CLASS(vec)) {
+		if (vec->lock) {
+			locked = bfc_mutex_lock(vec->lock);
+		}
+		bfc_vector_dump_structure(vec, log);
+		if (locked) {
+			bfc_mutex_unlock(locked);
+		}
+	}
 }
 
 // element access:
 static void *
 vector_index(bfc_vecptr_t vec, size_t pos)
 {
-	void *p = bfc_vector_ref(vec, pos);
+	bfc_mutex_ptr_t locked;
+	void *p = NULL;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		p = bfc_vector_ref(vec, pos);
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld): cannot lock",
+				__FUNCTION__, vec, (long) pos);
+	}
 	return (p);
 }
 
 static const void *
 vector_first(bfc_cvecptr_t vec)
 {
-	void *p = bfc_vector_ref((void *)(uintptr_t)vec, 0);
+	bfc_mutex_ptr_t locked;
+	void *p = NULL;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		p = bfc_vector_ref(BFC_UNCONST(bfc_vecptr_t, vec), 0);
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p): cannot lock", __FUNCTION__, vec);
+	}
 	return (p);
 }
 
 static long
 vector_getlong(bfc_cvecptr_t vec, size_t pos)
 {
-	void *p = bfc_vector_ref((void *)(uintptr_t)vec, 0);
-	if (p) {
-		if (vec->elem_size == sizeof(long)) {
-			return (*(const long *)p);
-		} else if (vec->elem_size == sizeof(int)) {
-			return (*(const int *)p);
-		} else if (vec->elem_size == sizeof(short)) {
-			return (*(const short *)p);
-		} else if (vec->elem_size == sizeof(char)) {
-			return (*(const char *)p);
+	bfc_mutex_ptr_t locked;
+	void *p;
+	long v = 0;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		p = bfc_vector_ref((void *)(uintptr_t)vec, 0);
+		if (p) {
+			if (vec->elem_size == sizeof(long)) {
+				v = *(const long *)p;
+			} else if (vec->elem_size == sizeof(int)) {
+				v = *(const int *)p;
+			} else if (vec->elem_size == sizeof(short)) {
+				v = *(const short *)p;
+			} else if (vec->elem_size == sizeof(char)) {
+				v = *(const char *)p;
+			}
 		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld): cannot lock",
+				__FUNCTION__, vec, (long) pos);
 	}
-	return (0);
+	return (v);
 }
 
 static int
 vector_setlong(bfc_vecptr_t vec, size_t pos, long val)
 {
+	bfc_mutex_ptr_t locked;
 	void *p;
+	int rc = BFC_SUCCESS;
 
-	if ((pos == BFC_NPOS) || (pos > bfc_object_length(vec))) {
-		return (-ERANGE);
-	}
-	if ((p = bfc_vector_have(vec, pos)) == NULL) {
-		return (-ENOMEM);
-	}
-	if (val == 0) {
-		memset(p, 0, vec->elem_size);
-	} else if (vec->elem_size == sizeof(long)) {
-		*(long *)p = val;
-	} else if (vec->elem_size == sizeof(int)) {
-		*(int *)p = (int) val;
-	} else if (vec->elem_size == sizeof(short)) {
-		*(short *)p = (short) val;
-	} else if (vec->elem_size == sizeof(char)) {
-		*(char *)p = (char) val;
-	} else {
-		signed long x = val;
-		char *cp = (char *) p;
-		char *ep = cp + vec->elem_size;
-		static const long endiantest = 0x12;
-		if (*(const char *)&endiantest == 0x12) {
-			while (cp < ep) {	/* little endian */
-				*(cp++) = (char) x;
-				x >>= sizeof(char);
-			}
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		if ((pos == BFC_NPOS) || (pos > bfc_object_length(vec))) {
+			rc = -ERANGE;
+		} else if ((p = bfc_vector_have(vec, pos)) == NULL) {
+			rc = -ENOMEM;
+		} else if (val == 0) {
+			memset(p, 0, vec->elem_size);
+		} else if (vec->elem_size == sizeof(long)) {
+			*(long *)p = val;
+		} else if (vec->elem_size == sizeof(int)) {
+			*(int *)p = (int) val;
+		} else if (vec->elem_size == sizeof(short)) {
+			*(short *)p = (short) val;
+		} else if (vec->elem_size == sizeof(char)) {
+			*(char *)p = (char) val;
 		} else {
-			while (ep > cp) {	/* big endian */
-				*(--ep) = (char) x;
-				x >>= sizeof(char);
+			signed long x = val;
+			char *cp = (char *) p;
+			char *ep = cp + vec->elem_size;
+			static const long endiantest = 0x12;
+			if (*(const char *)&endiantest == 0x12) {
+				while (cp < ep) {	/* little endian */
+					*(cp++) = (char) x;
+					x >>= sizeof(char);
+				}
+			} else {
+				while (ep > cp) {	/* big endian */
+					*(--ep) = (char) x;
+					x >>= sizeof(char);
+				}
 			}
 		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld, %ld): cannot lock",
+				__FUNCTION__, vec, (long) pos, val);
+		rc = -EBUSY;
 	}
-	return (BFC_SUCCESS);
+	return (rc);
 }
 
 static int
@@ -470,17 +558,29 @@ vector_max_size(bfc_cvecptr_t vec)
 
 static int vector_resize(bfc_vecptr_t vec, size_t n, const void *p)
 {
-	size_t size = BFC_VECTOR_GET_SIZE(vec);
-	if (n < size) {
-		BFC_VECTOR_SET_SIZE(vec, n);
-	} else if (n > size) {
-		while (size < n) {
-			bfc_container_push_back((bfc_contptr_t) vec, p);
-			size++;
+	size_t size;
+	bfc_mutex_ptr_t locked;
+	int rc = BFC_SUCCESS;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		size = BFC_VECTOR_GET_SIZE(vec);
+		if (n < size) {
+			BFC_VECTOR_SET_SIZE(vec, n);
+		} else if (n > size) {
+			while (size < n) {
+				bfc_container_push_back((bfc_contptr_t) vec, p);
+				size++;
+			}
+			BFC_VECTOR_SET_SIZE(vec, n);
 		}
-		BFC_VECTOR_SET_SIZE(vec, n);
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld, %p): cannot lock",
+				__FUNCTION__, vec, (long) n, p);
+		rc = -EBUSY;
 	}
-	return (BFC_SUCCESS);
+	return (rc);
 }
 
 static size_t
@@ -499,30 +599,49 @@ vector_capacity(bfc_cvecptr_t vec)
 static int
 vector_reserve(bfc_vecptr_t vec, size_t n)
 {
-	size_t size = BFC_VECTOR_GET_SIZE(vec);
+	size_t size;
+	bfc_mutex_ptr_t locked;
+	int rc = BFC_SUCCESS;
 
-	if ((n > size) && (n > vector_capacity(vec))) {
-		bfc_vector_have(vec, n-1);
-		BFC_VECTOR_SET_SIZE(vec, size);
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		size = BFC_VECTOR_GET_SIZE(vec);
+		if ((n > size) && (n > vector_capacity(vec))) {
+			bfc_vector_have(vec, n-1);
+			BFC_VECTOR_SET_SIZE(vec, size);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld): cannot lock",
+				__FUNCTION__, vec, (long) n);
+		rc = -EBUSY;
 	}
-	return (BFC_SUCCESS);
+	return (rc);
 }
 
 /* Modifiers */
 static int
 vector_assign_fill(bfc_vecptr_t vec, size_t n, const void *p)
 {
-	int rc, count = 0;
+	int rc = 0, count = 0;
+	bfc_mutex_ptr_t locked;
 
-	bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
-	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, n)) < 0) {
-		return (rc);
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
+		if ((rc = bfc_container_reserve((bfc_contptr_t) vec, n)) >= 0) {
+			while (count < (int) n) {
+				bfc_container_push_back((bfc_contptr_t) vec, p);
+				count++;
+			}
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld, %p): cannot lock",
+				__FUNCTION__, vec, (long) n, p);
+		rc = -EBUSY;
 	}
-	while (count < (int) n) {
-		bfc_container_push_back((bfc_contptr_t) vec, p);
-		count++;
-	}
-	return (count);
+	return ((rc < 0)? rc: count);
 }
 
 static int
@@ -530,15 +649,27 @@ vector_assign_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	int rc;
 	bfc_iterator_t it;
+	bfc_mutex_ptr_t locked;
 
-	bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
-	bfc_container_end_iterator((bfc_contptr_t) vec, &it, sizeof(it));
-	rc = bfc_container_insert_range((bfc_contptr_t) vec, &it, first, last);
-	if (rc < 0) {
-		return (rc);
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
+		bfc_container_end_iterator((bfc_contptr_t) vec,&it,sizeof(it));
+		rc = bfc_container_insert_range((bfc_contptr_t) vec,
+							&it, first, last);
+		if (rc >= 0) {
+			rc = bfc_object_length(vec);
+			if (rc < 0) {
+				rc = BFC_SUCCESS;
+			}
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p, %p): cannot lock",
+				__FUNCTION__, vec, first, last);
+		rc = -EBUSY;
 	}
-	rc = bfc_object_length(vec);
-	return ((rc >= 0)? rc: BFC_SUCCESS);
+	return (rc);
 }
 
 static int
@@ -555,34 +686,55 @@ vector_pop_front(bfc_vecptr_t vec)
 static int
 vector_push_back(bfc_vecptr_t vec, const void *p)
 {
-	size_t size = BFC_VECTOR_GET_SIZE(vec);
+	size_t size;
 	void *ref;
+	bfc_mutex_ptr_t locked;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	int rc = 0;
 
 	L4SC_TRACE(logger, "%s(vec @%p, elem @%p)", __FUNCTION__, vec, p);
-	dump_vector(vec, 1, logger);
 
-	if ((ref = bfc_vector_have(vec, size)) == NULL) {
-		return (-ENOMEM);
-	}
-	size++;
-	BFC_VECTOR_SET_SIZE(vec, size);
-	if (p) {
-		memcpy(ref, p, vec->elem_size);
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		size = BFC_VECTOR_GET_SIZE(vec);
+		if ((ref = bfc_vector_have(vec, size)) != NULL) {
+			size++;
+			BFC_VECTOR_SET_SIZE(vec, size);
+			if (p) {
+				memcpy(ref, p, vec->elem_size);
+			} else {
+				memset(ref, 0, vec->elem_size);
+			}
+			rc = (int) size;
+			if (rc < 0) {
+				rc = BFC_SUCCESS;
+			}
+		} else {
+			rc = -ENOMEM;
+		}
+		bfc_mutex_unlock(locked);
 	} else {
-		memset(ref, 0, vec->elem_size);
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p): cannot lock",__FUNCTION__,vec,p);
+		rc = -EBUSY;
 	}
-	dump_vector(vec, 1, logger);
-	return ((int) size);
+	return (rc);
 }
 
 static void
 vector_pop_back(bfc_vecptr_t vec)
 {
-	size_t size = BFC_VECTOR_GET_SIZE(vec);
+	size_t size;
+	bfc_mutex_ptr_t locked;
 
-	if (size > 0) {
-		bfc_container_resize((bfc_contptr_t) vec, size-1, NULL);
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		size = BFC_VECTOR_GET_SIZE(vec);
+		if (size > 0) {
+			bfc_container_resize((bfc_contptr_t) vec, size-1, NULL);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p): cannot lock",__FUNCTION__, vec);
 	}
 }
 
@@ -592,15 +744,83 @@ vector_insert_element(bfc_vecptr_t vec, bfc_iterptr_t pos, const void *p)
 	return (vector_insert_fill(vec, pos, 1, p));
 }
 
+static void
+zero_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit)
+{
+	size_t idx;
+	void *ref;
+
+	for (idx = pos; idx < limit; idx++) {
+		if ((ref = bfc_vector_ref(vec, idx)) != NULL) {
+			memset(ref, 0, vec->elem_size);
+		}
+	}
+}
+
+static int
+init_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit, const void *p)
+{
+	size_t idx;
+	void *ref;
+	int rc = BFC_SUCCESS;
+
+	for (idx = pos; idx < limit; idx++) {
+		if ((ref = bfc_vector_have(vec, idx)) != NULL) {
+			memcpy(ref, p, vec->elem_size);
+		} else {
+			rc = -ENOMEM;
+			break;
+		}
+	}
+	return (rc);
+}
+
+static int
+move_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit, size_t dest)
+{
+	size_t idx, n;
+	void *cp, *dp;
+	int rc = BFC_SUCCESS;
+
+	if (dest < pos) {
+		n = pos - dest;
+		for (idx = pos; idx < limit; idx++) {
+			if ((cp = bfc_vector_ref(vec, idx)) != NULL) {
+				if ((dp = bfc_vector_have(vec, idx-n))!= NULL) {
+					memcpy(dp, cp, vec->elem_size);
+					memset(cp,  0, vec->elem_size);
+				} else {
+					rc = -ENOMEM;
+					break;
+				}
+			}
+		}
+	} else if (dest > pos) {
+		n = dest - pos;
+		for (idx = limit; (idx--) > pos; ) {
+			if ((cp = bfc_vector_ref(vec, idx)) != NULL) {
+				if ((dp = bfc_vector_have(vec, idx+n))!= NULL) {
+					memcpy(dp, cp, vec->elem_size);
+					memset(cp,  0, vec->elem_size);
+				} else {
+					rc = -ENOMEM;
+					break;
+				}
+			}
+		}
+	}
+	return (rc);
+}
+
 static int
 vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 		   const void *p)
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
-	size_t idx, pos = bfc_iterator_position(position);
-	void *ref, *src;
-	int rc;
+	size_t pos = bfc_iterator_position(position);
+	int rc = 0;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_mutex_ptr_t locked;
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %ld, %p): pos %ld/%ld",
 		__FUNCTION__, vec, position, (long)n, p, (long)pos, (long)size);
@@ -610,32 +830,32 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 	if (n < 1) {
 		return (BFC_SUCCESS);
 	}
-	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, size+n)) < 0) {
-		return (rc);
-	}
-	for (idx = size; (idx--) > pos; ) {
-		if (((src = bfc_vector_ref(vec, idx)) != NULL)
-		 && ((ref = bfc_vector_have(vec, idx+n)) != NULL)) {
-			memcpy(ref, src, vec->elem_size);
-		}
-	}
-	size += n;
-	BFC_VECTOR_SET_SIZE(vec, size);
-	if (p) {
-		for (idx = pos; idx < pos+n; idx++) {
-			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
-				memcpy(ref, p, vec->elem_size);
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		size = BFC_VECTOR_GET_SIZE(vec);
+		rc = bfc_container_reserve((bfc_contptr_t) vec, size+n);
+		if ((rc >= 0)
+		 && ((rc = move_vector_elements(vec, pos, size, pos+n)) >= 0)) {
+			size += n;
+			BFC_VECTOR_SET_SIZE(vec, size);
+			if (p) {
+				init_vector_elements(vec, pos, pos+n, p);
+			} else {
+				zero_vector_elements(vec, pos, pos+n);
+			}
+			rc = (int) size;
+			if (rc < 0) {
+				rc = BFC_SUCCESS;
 			}
 		}
+		bfc_mutex_unlock(locked);
 	} else {
-		for (idx = pos; idx < pos+n; idx++) {
-			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
-				memset(ref, 0, vec->elem_size);
-			}
-		}
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p, %ld, %p): cannot lock",
+				__FUNCTION__, vec, position, (long) n, p);
+		rc = -EBUSY;
 	}
-	rc = (int) size;
-	return ((rc > 0)? rc: BFC_SUCCESS);
+	return (rc);
 }
 
 static int
@@ -645,6 +865,7 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
 	size_t idx, pos = bfc_iterator_position(position);
 	ptrdiff_t offs, n = bfc_iterator_distance(first, last);
+	bfc_mutex_ptr_t locked;
 	void *ref, *src;
 	int rc;
 	bfc_iterator_t it;
@@ -660,37 +881,40 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);
 	}
-	if ((rc = bfc_container_reserve((bfc_contptr_t) vec, size+n)) < 0) {
-		return (rc);
-	}
-	for (idx = size; (idx--) > pos; ) {
-		if ((src = bfc_vector_ref(vec, idx)) != NULL) {
-			if ((ref = bfc_vector_have(vec, idx+n)) != NULL) {
-				memcpy(ref, src, vec->elem_size);
-				memset(src,  0,  vec->elem_size);
-			} else {
-				return (-ENOMEM);
-			}
-		}
-	}
-	size += n;
-	BFC_VECTOR_SET_SIZE(vec, size);
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		size = BFC_VECTOR_GET_SIZE(vec);
+		rc = bfc_container_reserve((bfc_contptr_t) vec, size + n);
+		if ((rc >= 0)
+		 && ((rc = move_vector_elements(vec, pos, size, pos+n)) >= 0)) {
+			size += n;
+			BFC_VECTOR_SET_SIZE(vec, size);
 
-	it = *first;
-	for (idx = pos; bfc_iterator_distance(&it, last) > 0; idx++) {
-		src = bfc_iterator_index(&it);
-		offs = bfc_iterator_distance(first, &it);
-		bfc_iterator_advance(&it, 1);
-		if ((offs > 0) && (idx < (size_t)(pos + offs))) {
-			idx = pos + offs;
-		}
-		if (src) {
-			if ((ref = bfc_vector_have(vec, idx)) != NULL) {
-				memcpy(ref, src, vec->elem_size);
-			} else {
-				return (-ENOMEM);
+			it = *first;
+			idx = pos;
+			for ( ; bfc_iterator_distance(&it, last) > 0; idx++) {
+				src = bfc_iterator_index(&it);
+				offs = bfc_iterator_distance(first, &it);
+				bfc_iterator_advance(&it, 1);
+				if ((offs > 0) && (idx < (size_t)(pos+offs))) {
+					idx = pos + offs;
+				}
+				if (src) {
+					ref = bfc_vector_have(vec, idx);
+					if (ref) {
+						memcpy(ref,src,vec->elem_size);
+					} else {
+						rc = -ENOMEM;
+						break;
+					}
+				}
 			}
 		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p, %p, %p): cannot lock",
+				__FUNCTION__, vec, position, first, last);
+		rc = -EBUSY;
 	}
 	return (BFC_SUCCESS);
 }
@@ -707,9 +931,10 @@ static int
 vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
-	size_t idx, pos = bfc_iterator_position(first);
+	size_t pos = bfc_iterator_position(first);
 	int n = bfc_iterator_distance(first, last);
-	void *ref, *src;
+	int rc = BFC_SUCCESS;
+	bfc_mutex_ptr_t locked;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %p): pos %ld+%ld/%ld",
@@ -721,22 +946,23 @@ vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);
 	}
-	if (pos+n < size) {
-		for (idx = pos; idx+n < size; idx++) {
-			L4SC_TRACE(logger, "%s: idx %ld", __FUNCTION__, (long) idx);
-			if ((int) idx < 0) {
-				return (-EFAULT);
-			}
-			if (((src = bfc_vector_ref(vec, idx+n)) != NULL)
-			 && ((ref = bfc_vector_have(vec, idx)) != NULL)) {
-				memcpy(ref, src, vec->elem_size);
-			}
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		size = BFC_VECTOR_GET_SIZE(vec);
+		if (pos+n < size) {
+			move_vector_elements(vec, pos+n, size, pos);
+			size -= n;
+		} else {
+			size = pos;
 		}
-		size -= n;
+		rc = bfc_container_resize((bfc_contptr_t) vec, size, NULL);
+		bfc_mutex_unlock(locked);
 	} else {
-		size = pos;
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p, %p): cannot lock",
+				__FUNCTION__, vec, first, last);
+		rc = -EBUSY;
 	}
-	return (bfc_container_resize((bfc_contptr_t) vec, size, NULL));
+	return (rc);
 }
 
 static size_t vector_copy_out(bfc_cvecptr_t vec,void* buf,size_t n,size_t pos)

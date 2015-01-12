@@ -56,11 +56,13 @@ int main()
         assert(i == l1.begin());
     }
     {
+	L4SC_DEBUG(logger, "%s: vector-of-vector test", __FUNCTION__);
         barefootc::vector<barefootc::vector<int> > outer(2, barefootc::vector<int>(1));
         outer.erase(outer.begin(), outer.begin());
         assert(outer.size() == 2);
         assert(outer[0].size() == 1);
         assert(outer[1].size() == 1);
+	L4SC_DEBUG(logger, "%s: vector-of-vector test done.", __FUNCTION__);
     }
 #if __cplusplus >= 201103L
     {

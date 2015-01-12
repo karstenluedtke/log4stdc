@@ -57,6 +57,15 @@ int bfc_new_posix_mutex(struct bfc_mutex **, struct mempool *,
 			const char *, int, const char *);
 int bfc_new_win32_mutex(struct bfc_mutex **, struct mempool *,
 			const char *, int, const char *);
+#ifndef bfc_new_mutex
+#if defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+#define bfc_new_mutex(mpp,pool)\
+	bfc_new_win32_mutex(mpp,pool,__FILE__,__LINE__,__FUNCTION__)
+#else
+#define bfc_new_mutex(mpp,pool)\
+	bfc_new_posix_mutex(mpp,pool,__FILE__,__LINE__,__FUNCTION__)
+#endif
+#endif
 
 #ifdef __cplusplus
 }	/* C++ */

@@ -293,7 +293,7 @@ vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
 	}
 	size = bfc_object_length(vec);
 	for (idx=0, eq=1; idx < size; idx++) {
-		p = bfc_container_index((bfc_contptr_t)other, idx);
+		p = bfc_container_index((bfc_contptr_t)vec, idx);
 		q = bfc_container_index((bfc_contptr_t)other, idx);
 		if (p && q) {
 			if (memcmp(p, q, vec->elem_size) != 0) {
@@ -445,9 +445,9 @@ vector_first(bfc_cvecptr_t vec)
 static long
 vector_getlong(bfc_cvecptr_t vec, size_t pos)
 {
-	bfc_mutex_ptr_t locked;
 	void *p;
 	long v = 0;
+	bfc_mutex_ptr_t locked;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		p = bfc_vector_ref((void *)(uintptr_t)vec, 0);
@@ -888,7 +888,10 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 		 && ((rc = move_vector_elements(vec, pos, size, pos+n)) >= 0)) {
 			size += n;
 			BFC_VECTOR_SET_SIZE(vec, size);
-
+			rc = (int) size;
+			if (rc < 0) {
+				rc = BFC_SUCCESS;
+			}
 			it = *first;
 			idx = pos;
 			for ( ; bfc_iterator_distance(&it, last) > 0; idx++) {
@@ -916,7 +919,7 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 				__FUNCTION__, vec, position, first, last);
 		rc = -EBUSY;
 	}
-	return (BFC_SUCCESS);
+	return (rc);
 }
 
 static int

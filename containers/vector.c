@@ -26,60 +26,59 @@
 #include "barefootc/unconst.h"
 #include "log4stdc.h"
 
-/* for the remainder of this file ... */
-typedef struct bfc_char_vector *bfc_vecptr_t;
-typedef const struct bfc_char_vector *bfc_cvecptr_t;
+/* define struct bfc_container for the remainer of this file */
+BFC_VECTOR(bfc_container, char, 0);
 
-static int clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize,
+static int clone_vector(bfc_ccontptr_t vec, void *buf, size_t bufsize,
 						struct mempool *pool);
-static void destroy_vector(bfc_vecptr_t vec);
+static void destroy_vector(bfc_contptr_t vec);
 
-static size_t vector_objsize(bfc_cvecptr_t vec);
-static size_t vector_size(bfc_cvecptr_t vec);
-static size_t vector_element_size(bfc_cvecptr_t vec);
-static int vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other);
-static unsigned vector_hashcode(bfc_cvecptr_t vec);
-static void dump_vector(bfc_cvecptr_t vec,int depth,struct l4sc_logger*log);
-static int vector_tostring(bfc_cvecptr_t vec, char *buf, size_t bufsize);
+static size_t vector_objsize(bfc_ccontptr_t vec);
+static size_t vector_size(bfc_ccontptr_t vec);
+static size_t vector_element_size(bfc_ccontptr_t vec);
+static int vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other);
+static unsigned vector_hashcode(bfc_ccontptr_t vec);
+static void dump_vector(bfc_ccontptr_t vec,int depth,struct l4sc_logger*log);
+static int vector_tostring(bfc_ccontptr_t vec, char *buf, size_t bufsize);
 
-static void *vector_index(bfc_vecptr_t vec, size_t pos);
-static const void *vector_first(bfc_cvecptr_t vec);
-static long vector_getlong(bfc_cvecptr_t vec, size_t pos);
-static int vector_setlong(bfc_vecptr_t vec, size_t pos, long val);
-static int begin_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize);
-static int limit_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize);
-static int rbegin_iterator(bfc_cvecptr_t vec,bfc_iterptr_t it, size_t bufsize);
-static int rlimit_iterator(bfc_cvecptr_t vec,bfc_iterptr_t it, size_t bufsize);
+static void *vector_index(bfc_contptr_t vec, size_t pos);
+static const void *vector_first(bfc_ccontptr_t vec);
+static long vector_getlong(bfc_ccontptr_t vec, size_t pos);
+static int vector_setlong(bfc_contptr_t vec, size_t pos, long val);
+static int begin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize);
+static int limit_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize);
+static int rbegin_iterator(bfc_ccontptr_t vec,bfc_iterptr_t it, size_t bufsize);
+static int rlimit_iterator(bfc_ccontptr_t vec,bfc_iterptr_t it, size_t bufsize);
 
-static size_t vector_max_size(bfc_cvecptr_t vec);
-static int vector_resize(bfc_vecptr_t vec, size_t n, const void *p);
-static size_t vector_capacity(bfc_cvecptr_t vec);
-static int vector_reserve(bfc_vecptr_t vec, size_t n);
+static size_t vector_max_size(bfc_ccontptr_t vec);
+static int vector_resize(bfc_contptr_t vec, size_t n, const void *p);
+static size_t vector_capacity(bfc_ccontptr_t vec);
+static int vector_reserve(bfc_contptr_t vec, size_t n);
 
-static int vector_assign_fill(bfc_vecptr_t vec, size_t n, const void *p);
-static int vector_assign_range(bfc_vecptr_t vec,
+static int vector_assign_fill(bfc_contptr_t vec, size_t n, const void *p);
+static int vector_assign_range(bfc_contptr_t vec,
 				bfc_iterptr_t first,bfc_iterptr_t last);
-static int vector_push_front(bfc_vecptr_t vec, const void *p);
-static void vector_pop_front(bfc_vecptr_t vec);
-static int vector_push_back(bfc_vecptr_t vec, const void *p);
-static void vector_pop_back(bfc_vecptr_t vec);
-static int vector_insert_element(bfc_vecptr_t vec, bfc_iterptr_t position,
+static int vector_push_front(bfc_contptr_t vec, const void *p);
+static void vector_pop_front(bfc_contptr_t vec);
+static int vector_push_back(bfc_contptr_t vec, const void *p);
+static void vector_pop_back(bfc_contptr_t vec);
+static int vector_insert_element(bfc_contptr_t vec, bfc_iterptr_t position,
 				const void *p);
-static int vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position,
+static int vector_insert_fill(bfc_contptr_t vec, bfc_iterptr_t position,
 				size_t n, const void *p);
-static int vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
+static int vector_insert_range(bfc_contptr_t vec, bfc_iterptr_t position,
 				bfc_iterptr_t first,bfc_iterptr_t last);
-static int vector_erase_element(bfc_vecptr_t vec, bfc_iterptr_t position);
-static int vector_erase_range(bfc_vecptr_t vec,
+static int vector_erase_element(bfc_contptr_t vec, bfc_iterptr_t position);
+static int vector_erase_range(bfc_contptr_t vec,
 				bfc_iterptr_t first,bfc_iterptr_t last);
-static size_t vector_copy_out(bfc_cvecptr_t vec,void* buf,size_t n,size_t pos);
-static void vector_swap(bfc_vecptr_t vec, bfc_vecptr_t other);
+static size_t vector_copy_out(bfc_ccontptr_t vec,void* buf,size_t n,size_t pos);
+static void vector_swap(bfc_contptr_t vec, bfc_contptr_t other);
 
 static void last_method(void) { }
 
 struct bfc_vector_class {
 	BFC_CONTAINER_CLASS_DEF(const struct bfc_vector_class *,
-				bfc_vecptr_t, bfc_cvecptr_t, void)
+				bfc_contptr_t, bfc_ccontptr_t, void)
 };
 
 struct bfc_vector_class bfc_vector_class = {
@@ -131,7 +130,8 @@ static const size_t zeroelement[64] = { 0 };
 int
 bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 {
-	bfc_vecptr_t vec = (bfc_vecptr_t) buf;
+	bfc_contptr_t vec = (bfc_contptr_t) buf;
+	/* be careful not to overwrite elem_size and elem_direct */
 	BFC_INIT_PROLOGUE(const struct bfc_vector_class *,
 			  bfc_objptr_t, obj, buf, bufsize, pool,
 			  (bfc_classptr_t) &bfc_vector_class);
@@ -182,7 +182,7 @@ bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 	}
 
 	BFC_VECTOR_SET_SIZE(vec, 0);
-	dump_vector((bfc_cvecptr_t) vec, 1, logger);
+	dump_vector((bfc_ccontptr_t) vec, 1, logger);
 	return (BFC_SUCCESS);
 }
 
@@ -191,7 +191,7 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 		     const struct bfc_container *src)
 {
 	int rc;
-	bfc_vecptr_t vec = (bfc_vecptr_t) buf;
+	bfc_contptr_t vec = (bfc_contptr_t) buf;
 	size_t elem_size = bfc_container_element_size(src);
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -203,14 +203,14 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 		return (rc);
 	}
 
-	rc = bfc_container_assign_copy((bfc_contptr_t) vec, src);
+	rc = bfc_container_assign_copy(vec, src);
 
 	dump_vector(vec, 1, logger);
 	return (rc);
 }
 
 static void
-destroy_vector(bfc_vecptr_t vec)
+destroy_vector(bfc_contptr_t vec)
 {
 	const struct bfc_vector_class *cls;
 	bfc_mutex_ptr_t lock, locked;
@@ -232,9 +232,9 @@ destroy_vector(bfc_vecptr_t vec)
 }
 
 static int
-clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize, struct mempool *pool)
+clone_vector(bfc_ccontptr_t vec, void *buf,size_t bufsize,struct mempool *pool)
 {
-	bfc_vecptr_t v = buf;
+	bfc_contptr_t v = buf;
 	struct mempool *newpool = pool? pool: vec->pool;
 	const size_t elemsize = vec->elem_size;
 	bfc_mutex_ptr_t locked;
@@ -250,13 +250,13 @@ clone_vector(bfc_cvecptr_t vec, void *buf, size_t bufsize, struct mempool *pool)
 	}
 	v->vptr = vec->vptr;
 	v->elem_class = vec->elem_class;
-	rc = bfc_container_assign_copy((bfc_contptr_t)v, (bfc_ccontptr_t)vec);
+	rc = bfc_container_assign_copy(v, vec);
 	bfc_mutex_unlock(locked);
 	return (rc);
 }
 
 static size_t
-vector_objsize(bfc_cvecptr_t vec)
+vector_objsize(bfc_ccontptr_t vec)
 {
 	size_t minsize = offsetof(struct bfc_char_vector, direct), extra = 0;
 	if (vec && BFC_CLASS(vec)) {
@@ -266,13 +266,13 @@ vector_objsize(bfc_cvecptr_t vec)
 }
 
 static unsigned  
-vector_hashcode(bfc_cvecptr_t vec)
+vector_hashcode(bfc_ccontptr_t vec)
 {
 	return (0);
 }
 
 static int
-vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
+vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other)
 {
 	int eq;
 	size_t idx, size;
@@ -293,8 +293,8 @@ vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
 	}
 	size = bfc_object_length(vec);
 	for (idx=0, eq=1; idx < size; idx++) {
-		p = bfc_container_index((bfc_contptr_t)vec, idx);
-		q = bfc_container_index((bfc_contptr_t)other, idx);
+		p = bfc_container_index(BFC_UNCONST(bfc_contptr_t,vec), idx);
+		q = bfc_container_index(BFC_UNCONST(bfc_contptr_t,other), idx);
 		if (p && q) {
 			if (memcmp(p, q, vec->elem_size) != 0) {
 				eq = 0;
@@ -315,19 +315,19 @@ vector_equals(bfc_cvecptr_t vec, bfc_cvecptr_t other)
 }
 
 static size_t
-vector_size(bfc_cvecptr_t vec)
+vector_size(bfc_ccontptr_t vec)
 {
 	return (BFC_VECTOR_GET_SIZE(vec));
 }
 
 static size_t
-vector_element_size(bfc_cvecptr_t vec)
+vector_element_size(bfc_ccontptr_t vec)
 {
 	return (vec->elem_size);
 }
 
 static int
-vector_tostring(bfc_cvecptr_t vec, char *buf, size_t bufsize)
+vector_tostring(bfc_ccontptr_t vec, char *buf, size_t bufsize)
 {
 	if (vec && BFC_CLASS(vec)) {
 		snprintf(buf, bufsize, "%s @%p",
@@ -337,7 +337,7 @@ vector_tostring(bfc_cvecptr_t vec, char *buf, size_t bufsize)
 }
 
 static void
-dump_double_loop(bfc_cvecptr_t vec, char **dp,
+dump_double_loop(bfc_ccontptr_t vec, char **dp,
 		 const char *label, struct l4sc_logger *log)
 {
 	int di;
@@ -357,7 +357,7 @@ dump_double_loop(bfc_cvecptr_t vec, char **dp,
 void
 bfc_vector_dump_structure(const void *obj, struct l4sc_logger *log)
 {
-	bfc_cvecptr_t vec = (bfc_cvecptr_t) obj;
+	bfc_ccontptr_t vec = (bfc_ccontptr_t) obj;
 	int ti;
 	char *ip, **dp, ***tp;
 	const int __dblcnt = CV2_POINTERS(vec);
@@ -393,7 +393,7 @@ bfc_vector_dump_structure(const void *obj, struct l4sc_logger *log)
 }
 
 static void
-dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
+dump_vector(bfc_ccontptr_t vec, int depth, struct l4sc_logger *log)
 {
 	bfc_mutex_ptr_t locked = NULL;
 
@@ -410,7 +410,7 @@ dump_vector(bfc_cvecptr_t vec, int depth, struct l4sc_logger *log)
 
 // element access:
 static void *
-vector_index(bfc_vecptr_t vec, size_t pos)
+vector_index(bfc_contptr_t vec, size_t pos)
 {
 	bfc_mutex_ptr_t locked;
 	void *p = NULL;
@@ -427,13 +427,13 @@ vector_index(bfc_vecptr_t vec, size_t pos)
 }
 
 static const void *
-vector_first(bfc_cvecptr_t vec)
+vector_first(bfc_ccontptr_t vec)
 {
 	bfc_mutex_ptr_t locked;
 	void *p = NULL;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		p = bfc_vector_ref(BFC_UNCONST(bfc_vecptr_t, vec), 0);
+		p = bfc_vector_ref(BFC_UNCONST(bfc_contptr_t, vec), 0);
 		bfc_mutex_unlock(locked);
 	} else {
 		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
@@ -443,7 +443,7 @@ vector_first(bfc_cvecptr_t vec)
 }
 
 static long
-vector_getlong(bfc_cvecptr_t vec, size_t pos)
+vector_getlong(bfc_ccontptr_t vec, size_t pos)
 {
 	void *p;
 	long v = 0;
@@ -472,7 +472,7 @@ vector_getlong(bfc_cvecptr_t vec, size_t pos)
 }
 
 static int
-vector_setlong(bfc_vecptr_t vec, size_t pos, long val)
+vector_setlong(bfc_contptr_t vec, size_t pos, long val)
 {
 	bfc_mutex_ptr_t locked;
 	void *p;
@@ -521,13 +521,13 @@ vector_setlong(bfc_vecptr_t vec, size_t pos, long val)
 }
 
 static int
-begin_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize)
+begin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 {
 	return (bfc_init_vector_iterator(it, bufsize, (bfc_cobjptr_t)vec, 0));
 }
 
 static int
-limit_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize)
+limit_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 {
 	int n = bfc_object_length(vec);
 	size_t pos = (n > 0)? n: 0;
@@ -535,7 +535,7 @@ limit_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize)
 }
 
 static int
-rbegin_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize)
+rbegin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 {
 	int n = bfc_object_length(vec);
 	size_t pos = (n > 0)? (n-1): BFC_NPOS;
@@ -544,19 +544,19 @@ rbegin_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize)
 }
 
 static int
-rlimit_iterator(bfc_cvecptr_t vec, bfc_iterptr_t it, size_t bufsize)
+rlimit_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 {
 	return (bfc_init_reverse_iterator(it, bufsize,
 					  (bfc_cobjptr_t)vec, BFC_NPOS));
 }
 
 static size_t
-vector_max_size(bfc_cvecptr_t vec)
+vector_max_size(bfc_ccontptr_t vec)
 {
 	return (BFC_VECTOR_MAX_SIZE(vec));
 }
 
-static int vector_resize(bfc_vecptr_t vec, size_t n, const void *p)
+static int vector_resize(bfc_contptr_t vec, size_t n, const void *p)
 {
 	size_t size;
 	bfc_mutex_ptr_t locked;
@@ -568,7 +568,7 @@ static int vector_resize(bfc_vecptr_t vec, size_t n, const void *p)
 			BFC_VECTOR_SET_SIZE(vec, n);
 		} else if (n > size) {
 			while (size < n) {
-				bfc_container_push_back((bfc_contptr_t) vec, p);
+				bfc_container_push_back(vec, p);
 				size++;
 			}
 			BFC_VECTOR_SET_SIZE(vec, n);
@@ -584,7 +584,7 @@ static int vector_resize(bfc_vecptr_t vec, size_t n, const void *p)
 }
 
 static size_t
-vector_capacity(bfc_cvecptr_t vec)
+vector_capacity(bfc_ccontptr_t vec)
 {
 	if (vec->triple_indirect) {
 		return (CV3_BOUNDARY(vec));
@@ -597,7 +597,7 @@ vector_capacity(bfc_cvecptr_t vec)
 }
 
 static int
-vector_reserve(bfc_vecptr_t vec, size_t n)
+vector_reserve(bfc_contptr_t vec, size_t n)
 {
 	size_t size;
 	bfc_mutex_ptr_t locked;
@@ -621,16 +621,16 @@ vector_reserve(bfc_vecptr_t vec, size_t n)
 
 /* Modifiers */
 static int
-vector_assign_fill(bfc_vecptr_t vec, size_t n, const void *p)
+vector_assign_fill(bfc_contptr_t vec, size_t n, const void *p)
 {
 	int rc = 0, count = 0;
 	bfc_mutex_ptr_t locked;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
-		if ((rc = bfc_container_reserve((bfc_contptr_t) vec, n)) >= 0) {
+		bfc_container_resize(vec, 0, NULL);
+		if ((rc = bfc_container_reserve(vec, n)) >= 0) {
 			while (count < (int) n) {
-				bfc_container_push_back((bfc_contptr_t) vec, p);
+				bfc_container_push_back(vec, p);
 				count++;
 			}
 		}
@@ -645,17 +645,16 @@ vector_assign_fill(bfc_vecptr_t vec, size_t n, const void *p)
 }
 
 static int
-vector_assign_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
+vector_assign_range(bfc_contptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	int rc;
 	bfc_iterator_t it;
 	bfc_mutex_ptr_t locked;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		bfc_container_resize((bfc_contptr_t) vec, 0, NULL);
-		bfc_container_end_iterator((bfc_contptr_t) vec,&it,sizeof(it));
-		rc = bfc_container_insert_range((bfc_contptr_t) vec,
-							&it, first, last);
+		bfc_container_resize(vec, 0, NULL);
+		bfc_container_end_iterator(vec, &it, sizeof(it));
+		rc = bfc_container_insert_range(vec, &it, first, last);
 		if (rc >= 0) {
 			rc = bfc_object_length(vec);
 			if (rc < 0) {
@@ -673,18 +672,18 @@ vector_assign_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 }
 
 static int
-vector_push_front(bfc_vecptr_t vec, const void *p)
+vector_push_front(bfc_contptr_t vec, const void *p)
 {
 	return (-ENOSYS);
 }
 
 static void
-vector_pop_front(bfc_vecptr_t vec)
+vector_pop_front(bfc_contptr_t vec)
 {
 }
 
 static int
-vector_push_back(bfc_vecptr_t vec, const void *p)
+vector_push_back(bfc_contptr_t vec, const void *p)
 {
 	size_t size;
 	void *ref;
@@ -721,7 +720,7 @@ vector_push_back(bfc_vecptr_t vec, const void *p)
 }
 
 static void
-vector_pop_back(bfc_vecptr_t vec)
+vector_pop_back(bfc_contptr_t vec)
 {
 	size_t size;
 	bfc_mutex_ptr_t locked;
@@ -729,7 +728,7 @@ vector_pop_back(bfc_vecptr_t vec)
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		size = BFC_VECTOR_GET_SIZE(vec);
 		if (size > 0) {
-			bfc_container_resize((bfc_contptr_t) vec, size-1, NULL);
+			bfc_container_resize(vec, size-1, NULL);
 		}
 		bfc_mutex_unlock(locked);
 	} else {
@@ -739,13 +738,13 @@ vector_pop_back(bfc_vecptr_t vec)
 }
 
 static int
-vector_insert_element(bfc_vecptr_t vec, bfc_iterptr_t pos, const void *p)
+vector_insert_element(bfc_contptr_t vec, bfc_iterptr_t pos, const void *p)
 {
 	return (vector_insert_fill(vec, pos, 1, p));
 }
 
 static void
-zero_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit)
+zero_vector_elements(bfc_contptr_t vec, size_t pos, size_t limit)
 {
 	size_t idx;
 	void *ref;
@@ -758,7 +757,7 @@ zero_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit)
 }
 
 static int
-init_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit, const void *p)
+init_vector_elements(bfc_contptr_t vec, size_t pos, size_t limit, const void *p)
 {
 	size_t idx;
 	void *ref;
@@ -776,7 +775,7 @@ init_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit, const void *p)
 }
 
 static int
-move_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit, size_t dest)
+move_vector_elements(bfc_contptr_t vec, size_t pos, size_t limit, size_t dest)
 {
 	size_t idx, n;
 	void *cp, *dp;
@@ -813,7 +812,7 @@ move_vector_elements(bfc_vecptr_t vec, size_t pos, size_t limit, size_t dest)
 }
 
 static int
-vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
+vector_insert_fill(bfc_contptr_t vec, bfc_iterptr_t position, size_t n,
 		   const void *p)
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
@@ -833,8 +832,7 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		size = BFC_VECTOR_GET_SIZE(vec);
-		rc = bfc_container_reserve((bfc_contptr_t) vec, size+n);
-		if ((rc >= 0)
+		if (((rc = bfc_container_reserve(vec, size+n)) >= 0)
 		 && ((rc = move_vector_elements(vec, pos, size, pos+n)) >= 0)) {
 			size += n;
 			BFC_VECTOR_SET_SIZE(vec, size);
@@ -859,7 +857,7 @@ vector_insert_fill(bfc_vecptr_t vec, bfc_iterptr_t position, size_t n,
 }
 
 static int
-vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
+vector_insert_range(bfc_contptr_t vec, bfc_iterptr_t position,
 		    bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
@@ -883,8 +881,7 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 	}
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		size = BFC_VECTOR_GET_SIZE(vec);
-		rc = bfc_container_reserve((bfc_contptr_t) vec, size + n);
-		if ((rc >= 0)
+		if (((rc = bfc_container_reserve(vec, size + n)) >= 0)
 		 && ((rc = move_vector_elements(vec, pos, size, pos+n)) >= 0)) {
 			size += n;
 			BFC_VECTOR_SET_SIZE(vec, size);
@@ -923,7 +920,7 @@ vector_insert_range(bfc_vecptr_t vec, bfc_iterptr_t position,
 }
 
 static int
-vector_erase_element(bfc_vecptr_t vec, bfc_iterptr_t position)
+vector_erase_element(bfc_contptr_t vec, bfc_iterptr_t position)
 {
 	bfc_iterator_t limit = *position;
 	bfc_iterator_advance(&limit, 1);
@@ -931,7 +928,7 @@ vector_erase_element(bfc_vecptr_t vec, bfc_iterptr_t position)
 }
 
 static int
-vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
+vector_erase_range(bfc_contptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	size_t size = BFC_VECTOR_GET_SIZE(vec);
 	size_t pos = bfc_iterator_position(first);
@@ -957,7 +954,7 @@ vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 		} else {
 			size = pos;
 		}
-		rc = bfc_container_resize((bfc_contptr_t) vec, size, NULL);
+		rc = bfc_container_resize(vec, size, NULL);
 		bfc_mutex_unlock(locked);
 	} else {
 		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
@@ -968,12 +965,12 @@ vector_erase_range(bfc_vecptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 	return (rc);
 }
 
-static size_t vector_copy_out(bfc_cvecptr_t vec,void* buf,size_t n,size_t pos)
+static size_t vector_copy_out(bfc_ccontptr_t vec,void* buf,size_t n,size_t pos)
 {
 	return (-ENOSYS);
 }
 
 static void
-vector_swap(bfc_vecptr_t vec, bfc_vecptr_t other)
+vector_swap(bfc_contptr_t vec, bfc_contptr_t other)
 {
 }

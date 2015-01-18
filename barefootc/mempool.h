@@ -52,17 +52,20 @@ struct bfc_mempool_class {
 extern const struct bfc_mempool_class bfc_stdc_mempool_class;
 extern const struct bfc_mempool_class bfc_linear_mempool_class;
 extern const struct bfc_mempool_class bfc_chained_mempool_class;
-extern const struct bfc_mempool_class bfc_chained_mempool_class;
+extern const struct bfc_mempool_class bfc_sorting_mempool_class;
+
+#define BFC_MEMPOOLHDR(classptrT,objptrT) \
+	BFC_OBJHDR(classptrT, objptrT)	\
+	int		line;					\
+	const char *	file;					\
+	const char *	func;					\
+	struct {						\
+		objptrT	first;					\
+		objptrT	last;					\
+	}		sub_pools;
 
 struct mempool {
-	BFC_OBJHDR(bfc_mempool_class_ptr_t, struct mempool *)
-	int		line;
-	const char *	file;
-	const char *	func;
-	struct mempool_children {
-		struct mempool *first;
-		struct mempool *last;
-	}		sub_pools;
+	BFC_MEMPOOLHDR(bfc_mempool_class_ptr_t, struct mempool *)
 };
 
 

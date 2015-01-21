@@ -161,7 +161,7 @@ struct bfc_string_class {
 	}
 
 #define	bfc_strlen(s)	((s)->len)
-#define bfc_strdata(s)	(((s)->offs == 0)? (s)->buf: bfc_string_data(s))
+#define bfc_strdata(s)	(((s)->offs == 0)? (char*)(s)->buf: bfc_string_data(s))
 
 /*
  * bfc_string_t

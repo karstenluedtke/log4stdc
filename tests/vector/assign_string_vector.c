@@ -12,6 +12,10 @@
 #include "barefootc/mempool.h"
 #include "barefootc/utf8.h"
 
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
 static struct mempool *pool;
 static l4sc_logger_ptr_t logger;
 

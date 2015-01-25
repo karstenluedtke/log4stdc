@@ -27,6 +27,7 @@ test(int n1, const size_t s1[])
 	BFC_VECTOR(v2s, bfc_string_t, 1) v2;
 	const size_t expected_size = (n1 > 0)? s1[n1-1]+1: 0;
 	const size_t initial_poolsize = bfc_object_length(pool);
+	size_t stringbytes = 0;
 	char buf[200];
 
 	L4SC_DEBUG(logger, "%s(n1 %d, s1 %ld %ld %ld ...)",
@@ -46,11 +47,16 @@ test(int n1, const size_t s1[])
 		snprintf(buf, sizeof(buf), "element #%d @%ld", i, (long)s1[i]);
 		rc = bfc_init_basic_string_c_str(s, v1.elem_size, pool, buf);
 		assert(rc >= 0);
+		stringbytes += sizeof(*s) + bfc_string_length(s);
 	}
 	bfc_object_dump(&v1, 2, logger);
 	L4SC_DEBUG(logger, "%s: v1 size is %ld, expect %ld", __FUNCTION__,
 		(long)bfc_object_length(&v1), (long)expected_size);
 	assert(bfc_object_length(&v1) == expected_size);
+
+	L4SC_DEBUG(logger, "%s: current pool size %ld",
+			__FUNCTION__, (long) bfc_object_length(pool));
+	assert(bfc_object_length(pool) >= initial_poolsize + stringbytes);
 
 	bfc_container_assign_copy((bfc_contptr_t) &v2, (bfc_ccontptr_t) &v1);
 	bfc_object_dump(&v2, 2, logger);
@@ -58,6 +64,10 @@ test(int n1, const size_t s1[])
 		(long)bfc_object_length(&v2), (long)bfc_object_length(&v1));
 	assert(bfc_object_length(&v2) == bfc_object_length(&v1));
 	assert(bfc_equal_object(&v2, &v1));
+
+	L4SC_DEBUG(logger, "%s: current pool size %ld",
+			__FUNCTION__, (long) bfc_object_length(pool));
+	assert(bfc_object_length(pool) >= initial_poolsize + 2*stringbytes);
 
 	bfc_destroy(&v1);
 
@@ -72,6 +82,8 @@ test(int n1, const size_t s1[])
 
 	bfc_destroy(&v2);
 
+	L4SC_DEBUG(logger, "%s: final pool size %ld",
+			__FUNCTION__, (long) bfc_object_length(pool));
 	assert(bfc_object_length(pool) == initial_poolsize);
 
 	L4SC_DEBUG(logger, "%s(n1 %d, s1 %ld %ld %ld ...)",

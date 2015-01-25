@@ -58,6 +58,8 @@ static int is_equal_pool(const struct mempool *obj,const struct mempool *other);
 static size_t get_pool_size(const struct mempool *pool);
 static int pool_tostring(const struct mempool *pool, char *buf, size_t bufsize);
 
+size_t bfc_get_chainedpool_size(const struct mempool *pool);
+
 const struct bfc_mempool_class bfc_sortingpool_class = {
 	.super = NULL,
 	.name = "sorting mempool",
@@ -165,7 +167,38 @@ is_equal_pool(const struct mempool *obj, const struct mempool *other)
 static size_t
 get_pool_size(const struct mempool *pool)
 {
-	return (0);
+	struct sortingpool *impl = (struct sortingpool *) pool;
+	bfc_mutex_ptr_t locked;
+	struct smallitems *blk;
+	unsigned i, j, k, shift, usage;
+	size_t netto = 0;
+
+	if (impl->lock && (locked = bfc_mutex_lock(impl->lock))) {
+		for (shift = 0; shift < MAX_SHIFT; shift++) {
+			BFC_LIST_FOREACH(blk, &impl->smallblks[shift], next) {
+				usage = 0;
+				for (i=0; i < MAP_LIMIT(shift); i++) {
+					k = i / 32;
+					j = i & 31;
+					if (blk->map[k] == 0x00000000u) {
+						i += 31;
+						continue;
+					} else if (blk->map[k] == 0xFFFFFFFFu) {
+						usage += 32;
+						i += 31;
+						continue;
+					} else if (blk->map[k] & (1u << j)) {
+						usage++;
+					}
+				}
+				/* item_size = 8u << shift = 1 << (shift+3) */
+				netto += (size_t) usage << (shift+3);
+			}
+		}
+		bfc_mutex_unlock(locked);
+		netto += bfc_get_chainedpool_size((struct mempool *) impl);
+	}
+	return (netto);
 }
 
 static int

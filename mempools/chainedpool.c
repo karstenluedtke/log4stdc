@@ -35,8 +35,9 @@ static int  clone_pool(const struct mempool *pool, void *buf, size_t bufsize,
 static size_t get_pool_object_size(const struct mempool *pool);
 static unsigned get_pool_hashcode(const struct mempool *pool);
 static int is_equal_pool(const struct mempool *obj,const struct mempool *other);
-static size_t get_pool_size(const struct mempool *pool);
 static int pool_tostring(const struct mempool *pool, char *buf, size_t bufsize);
+
+size_t bfc_get_chainedpool_size(const struct mempool *pool);
 
 const struct bfc_mempool_class bfc_chainedpool_class = {
 	.super = NULL,
@@ -47,7 +48,7 @@ const struct bfc_mempool_class bfc_chainedpool_class = {
 	.clonesize = get_pool_object_size,
 	.hashcode = get_pool_hashcode,
 	.equals = is_equal_pool,
-	.length = get_pool_size,
+	.length = bfc_get_chainedpool_size,
 	.tostring = pool_tostring,
 	.dump = bfc_chainedpool_dump,
 	.alloc = bfc_chainedpool_malloc,
@@ -119,10 +120,21 @@ is_equal_pool(const struct mempool *obj, const struct mempool *other)
 	return (obj == other);
 }
 
-static size_t
-get_pool_size(const struct mempool *pool)
+size_t
+bfc_get_chainedpool_size(const struct mempool *pool)
 {
-	return (0);
+	struct chainedpool *impl = (struct chainedpool *) pool;
+	bfc_mutex_ptr_t locked;
+	struct largeitem *lblk;
+	size_t netto = 0;
+
+	if (impl->lock && (locked = bfc_mutex_lock(impl->lock))) {
+		BFC_LIST_FOREACH(lblk, &impl->largeblks, next) {
+			netto += lblk->item_size;
+		}
+		bfc_mutex_unlock(locked);
+	}
+	return (netto);
 }
 
 static int

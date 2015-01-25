@@ -51,6 +51,9 @@
 	<logger name="barefootc.container">
 		<level value="TRACE"/>
 	</logger>
+	<logger name="barefootc.memory">
+		<level value="TRACE"/>
+	</logger>
 	
 	
 	<logger name="com.teles.softphone.app">

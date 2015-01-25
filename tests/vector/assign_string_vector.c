@@ -26,6 +26,7 @@ test(int n1, const size_t s1[])
 	BFC_VECTOR(v1s, bfc_string_t, 0) v1;
 	BFC_VECTOR(v2s, bfc_string_t, 1) v2;
 	const size_t expected_size = (n1 > 0)? s1[n1-1]+1: 0;
+	const size_t initial_poolsize = bfc_object_length(pool);
 	char buf[200];
 
 	L4SC_DEBUG(logger, "%s(n1 %d, s1 %ld %ld %ld ...)",
@@ -71,6 +72,8 @@ test(int n1, const size_t s1[])
 
 	bfc_destroy(&v2);
 
+	assert(bfc_object_length(pool) == initial_poolsize);
+
 	L4SC_DEBUG(logger, "%s(n1 %d, s1 %ld %ld %ld ...)",
 		"PASS", n1, (long)s1[0], (long)s1[1], (long)s1[2]);
 
@@ -83,6 +86,7 @@ main(int argc, char *argv[])
 	l4sc_configure_from_xml_file("log4j.xml");
 	logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	pool = bfc_get_stdc_mempool(__FILE__, __LINE__, __FUNCTION__);
+	pool = bfc_new_sorting_mempool(pool, __FILE__, __LINE__, __FUNCTION__);
 
 	do {
 		size_t s1[] = { 0, 1, 2, 3 };

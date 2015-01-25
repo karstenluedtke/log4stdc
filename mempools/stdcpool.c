@@ -40,7 +40,7 @@ static void
 stdc_pool_dump (const struct mempool *pool, int depth, struct l4sc_logger *log);
 
 struct stdc_mempool {
-	BFC_OBJHDR(bfc_mempool_class_ptr_t, struct mempool *)
+	BFC_CHAINEDPOOLHDR(bfc_mempool_class_ptr_t, struct mempool *)
 };
 
 const struct bfc_mempool_class bfc_stdc_mempool_class = {

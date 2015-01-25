@@ -81,7 +81,7 @@ struct bfc_vector_class {
 				bfc_contptr_t, bfc_ccontptr_t, void)
 };
 
-struct bfc_vector_class bfc_vector_class = {
+const struct bfc_vector_class bfc_vector_class = {
 	.super 		= (void *) &bfc_object_class,
 	.name 		= "generic vector",
 	.init 		= bfc_init_vector_class,

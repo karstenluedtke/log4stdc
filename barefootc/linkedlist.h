@@ -1,6 +1,6 @@
 /**
  * @file        linkedlist.h
- * @brief       Mocros for maintaining linked lists.
+ * @brief       Macros for maintaining linked lists.
  * @author      Karsten Luedtke
  * @date        2014-06-21
  */

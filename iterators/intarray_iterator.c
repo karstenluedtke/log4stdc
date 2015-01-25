@@ -30,8 +30,8 @@ static long reverse_getlong(bfc_citerptr_t it, size_t pos);
 static int advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 
-extern struct bfc_iterator_class bfc_forward_iterator_class;
-extern struct bfc_iterator_class bfc_reverse_iterator_class;
+extern const struct bfc_iterator_class bfc_forward_iterator_class;
+extern const struct bfc_iterator_class bfc_reverse_iterator_class;
 
 #ifndef FORWARD_CLASS_NAME
 #define FORWARD_CLASS_NAME			"int array forward iterator"
@@ -39,7 +39,7 @@ extern struct bfc_iterator_class bfc_reverse_iterator_class;
 #define IMPLEMENT_DUMP 1
 #endif
 
-struct bfc_iterator_class bfc_intarray_forward_iterator_class = {
+const struct bfc_iterator_class bfc_intarray_forward_iterator_class = {
 	.super	= &bfc_forward_iterator_class,
 	.name	= FORWARD_CLASS_NAME,
 	.init 	= init_iterator,
@@ -55,7 +55,7 @@ struct bfc_iterator_class bfc_intarray_forward_iterator_class = {
 	.distance   = forward_distance,
 };
 
-struct bfc_iterator_class bfc_intarray_reverse_iterator_class = {
+const struct bfc_iterator_class bfc_intarray_reverse_iterator_class = {
 	.super	= &bfc_reverse_iterator_class,
 	.name	= REVERSE_CLASS_NAME,
 	.init 	= init_iterator,

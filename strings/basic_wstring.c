@@ -19,7 +19,7 @@
 static int clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize,
 						struct mempool *pool);
 
-extern struct bfc_classhdr bfc_wchar_traits_class;
+extern const struct bfc_classhdr bfc_wchar_traits_class;
 
 struct bfc_basic_wstring {
 	BFC_STRINGHDR(bfc_string_classptr_t, wchar_t)
@@ -30,9 +30,9 @@ struct bfc_string_class {
 			bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
-extern struct bfc_string_class bfc_wstring_class;
+extern const struct bfc_string_class bfc_wstring_class;
 
-struct bfc_string_class bfc_basic_wstring_class = {
+const struct bfc_string_class bfc_basic_wstring_class = {
 	.super 		= &bfc_wstring_class,
 	.name 		= STRING_CLASS_NAME,
 	.init 		= bfc_init_basic_wstring,

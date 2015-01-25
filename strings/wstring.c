@@ -44,7 +44,7 @@ struct bfc_string_class {
 				bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
-struct bfc_string_class bfc_wstring_class = {
+const struct bfc_string_class bfc_wstring_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ NULL,

@@ -27,7 +27,7 @@ struct char_traits_class {
 	BFC_CHAR_TRAITS_METHODS(char, int)
 };
 
-struct char_traits_class bfc_iso8859_2_traits_class = {
+const struct char_traits_class bfc_iso8859_2_traits_class = {
 	.super	= NULL,
 	.name	= "char_traits",
 	.eq	= bfc_char_eq,

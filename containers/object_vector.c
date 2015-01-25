@@ -50,9 +50,9 @@ struct bfc_vector_class {
 				bfc_contptr_t, bfc_ccontptr_t, void)
 };
 
-extern struct bfc_vector_class bfc_vector_class;
+extern const struct bfc_vector_class bfc_vector_class;
 
-struct bfc_vector_class bfc_object_vector_class = {
+const struct bfc_vector_class bfc_object_vector_class = {
 	.super 		= (void *) &bfc_vector_class,
 	.name 		= "object vector",
 	.init 		= bfc_init_object_vector_class,

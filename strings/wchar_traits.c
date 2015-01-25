@@ -27,7 +27,7 @@ struct wchar_traits_class {
 	BFC_CHAR_TRAITS_METHODS(wchar_t, int)
 };
 
-struct wchar_traits_class bfc_wchar_traits_class = {
+const struct wchar_traits_class bfc_wchar_traits_class = {
 	.super	= NULL,
 	.name	= "wchar_traits",
 	.eq	= bfc_wchar_eq,

@@ -16,12 +16,12 @@
 static int init_iterator(void *buf,size_t bufsize,struct mempool *pool);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
 
-extern struct bfc_iterator_class bfc_forward_iterator_class;
-extern struct bfc_iterator_class bfc_reverse_iterator_class;
+extern const struct bfc_iterator_class bfc_forward_iterator_class;
+extern const struct bfc_iterator_class bfc_reverse_iterator_class;
 
 #define FORWARD_CLASS_NAME	"hole-skipping vector forward iterator"
 
-struct bfc_iterator_class bfc_vector_forward_iterator_class = {
+const struct bfc_iterator_class bfc_vector_forward_iterator_class = {
 	.super	= &bfc_forward_iterator_class,
 	.name	= FORWARD_CLASS_NAME,
 	.init 	= init_iterator,

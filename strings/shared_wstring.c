@@ -17,7 +17,7 @@
 #endif
 
 
-extern struct bfc_classhdr bfc_wchar_traits_class;
+extern const struct bfc_classhdr bfc_wchar_traits_class;
 
 struct bfc_shared_wstring {
 	BFC_STRINGHDR(bfc_string_classptr_t, wchar_t)
@@ -28,7 +28,7 @@ struct bfc_string_class {
 			bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
-extern struct bfc_string_class bfc_wstring_class;
+extern const struct bfc_string_class bfc_wstring_class;
 
 static int bfc_shared_string_illegal_method(bfc_cstrptr_t s, const char *meth);
 
@@ -52,7 +52,7 @@ static int bfc_shared_wstring_replace_ranges(bfc_strptr_t s,
 				bfc_iterptr_t i1, bfc_iterptr_t i2,
 				bfc_iterptr_t j1, bfc_iterptr_t j2);
 
-struct bfc_string_class bfc_shared_wstring_class = {
+const struct bfc_string_class bfc_shared_wstring_class = {
 	.super 		= &bfc_wstring_class,
 	.name 		= STRING_CLASS_NAME,
 	.init 		= bfc_init_shared_wstring,

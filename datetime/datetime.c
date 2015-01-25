@@ -67,7 +67,7 @@ static int to_world_isodate(bfc_cdateptr_t date, int offs,
 
 static void last_method(void) { }
 
-struct bfc_datetime_class bfc_datetime_class = {
+const struct bfc_datetime_class bfc_datetime_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ NULL,

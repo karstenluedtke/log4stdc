@@ -20,13 +20,13 @@ static long reverse_getchar(bfc_citerptr_t it, size_t pos);
 static int  reverse_putchar(bfc_iterptr_t it, size_t pos, long unicode);
 static int  advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
 
-extern struct bfc_iterator_class bfc_forward_iterator_class;
-extern struct bfc_iterator_class bfc_reverse_iterator_class;
+extern const struct bfc_iterator_class bfc_forward_iterator_class;
+extern const struct bfc_iterator_class bfc_reverse_iterator_class;
 
 #define FORWARD_CLASS_NAME	"utf-8 string forward iterator"
 #define REVERSE_CLASS_NAME	"utf-8 string reverse iterator"
 
-struct bfc_iterator_class bfc_forward_utf8_iterator_class = {
+const struct bfc_iterator_class bfc_forward_utf8_iterator_class = {
 	.super	= &bfc_forward_iterator_class,
 	.name	= FORWARD_CLASS_NAME,
 	.init 	= init_iterator,
@@ -37,7 +37,7 @@ struct bfc_iterator_class bfc_forward_utf8_iterator_class = {
 	.advance    = advance_forward,
 };
 
-struct bfc_iterator_class bfc_reverse_utf8_iterator_class = {
+const struct bfc_iterator_class bfc_reverse_utf8_iterator_class = {
 	.super	= &bfc_reverse_iterator_class,
 	.name	= REVERSE_CLASS_NAME,
 	.init 	= init_iterator,

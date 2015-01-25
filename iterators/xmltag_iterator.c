@@ -25,11 +25,11 @@ static int  get_xmltag_attrs(bfc_ctagptr_t tag,bfc_strptr_t buf,size_t bufsize);
 static int  get_namespace_prefix(bfc_ctagptr_t tag,
 					bfc_strptr_t buf, size_t bufsize);
 
-extern struct bfc_iterator_class bfc_forward_iterator_class;
+extern const struct bfc_iterator_class bfc_forward_iterator_class;
 
 #define FORWARD_CLASS_NAME	"XML tag forward iterator"
 
-struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class = {
+const struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class = {
 	.super	= (const void *) &bfc_forward_iterator_class,
 	.name	= FORWARD_CLASS_NAME,
 	.init 	= init_iterator,

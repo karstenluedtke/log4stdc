@@ -13,7 +13,7 @@
 #include "barefootc/mempool.h"
 #include "log4stdc.h"
 
-extern struct bfc_classhdr bfc_iso8859_1_traits_class;
+extern const struct bfc_classhdr bfc_iso8859_1_traits_class;
 
 static long get_codept(bfc_cstrptr_t s, size_t pos);
 static int set_codept(bfc_strptr_t s, size_t pos, long c);
@@ -25,7 +25,7 @@ static int init_rlimit_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs);
 static int mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
 
-struct bfc_string_class bfc_shared_iso8859_1_string_class = {
+const struct bfc_string_class bfc_shared_iso8859_1_string_class = {
 	.super 		= &bfc_shared_string_class,
 	.name 		= "shared_iso8859_1_string",
 	.init 		= bfc_init_empty_iso8859_1_string,
@@ -45,7 +45,7 @@ struct bfc_string_class bfc_shared_iso8859_1_string_class = {
 	.buffered_substr= bfc_buffered_iso8859_1_substr,
 };
 
-struct bfc_string_class bfc_buffered_iso8859_1_string_class = {
+const struct bfc_string_class bfc_buffered_iso8859_1_string_class = {
 	.super 		= &bfc_string_class,
 	.name 		= "buffered_iso8859_1_string",
 	.init 		= bfc_init_empty_iso8859_1_string,

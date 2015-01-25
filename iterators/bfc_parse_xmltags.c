@@ -15,7 +15,7 @@
 
 #include "log4stdc.h"
 
-extern struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class;
+extern const struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class;
 
 static int indicate_start_tag(struct bfc_tag_parse_state *st, int tagtype);
 static int indicate_end_tag(struct bfc_tag_parse_state *st, int tagtype);

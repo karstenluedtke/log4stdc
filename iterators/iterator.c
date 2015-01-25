@@ -42,7 +42,7 @@ static int advance_reverse(bfc_iterptr_t it, ptrdiff_t n);
 static ptrdiff_t reverse_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 static void last_method(void) { }
 
-struct bfc_iterator_class bfc_forward_iterator_class = {
+const struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ NULL,
@@ -86,7 +86,7 @@ struct bfc_iterator_class bfc_forward_iterator_class = {
 	/* .last_method	*/ last_method
 };
 
-struct bfc_iterator_class bfc_reverse_iterator_class = {
+const struct bfc_iterator_class bfc_reverse_iterator_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ &bfc_forward_iterator_class,

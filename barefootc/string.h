@@ -29,13 +29,13 @@ struct l4sc_logger;
 struct bfc_string_class;
 typedef const struct bfc_string_class *bfc_string_classptr_t;
 
-extern struct bfc_string_class bfc_string_class;
-extern struct bfc_string_class bfc_basic_string_class;
-extern struct bfc_string_class bfc_shared_string_class;
+extern const struct bfc_string_class bfc_string_class;
+extern const struct bfc_string_class bfc_basic_string_class;
+extern const struct bfc_string_class bfc_shared_string_class;
 
-extern struct bfc_string_class bfc_wstring_class;
-extern struct bfc_string_class bfc_basic_wstring_class;
-extern struct bfc_string_class bfc_shared_wstring_class;
+extern const struct bfc_string_class bfc_wstring_class;
+extern const struct bfc_string_class bfc_basic_wstring_class;
+extern const struct bfc_string_class bfc_shared_wstring_class;
 
 #define BFC_STRINGHDR(classptrT,charT) \
 	classptrT	vptr;	  /**< virtual methods */	\

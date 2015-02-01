@@ -28,6 +28,15 @@ struct chainedpool {
 	BFC_CHAINEDPOOLHDR(bfc_mempool_classptr_t, struct mempool *)
 };
 
+struct chainedpool_mark {
+	uint32_t 	magic;
+#define MARK_MAGIC	0x4B52414D	/* "MARK" in little endian */
+	unsigned	line;
+	const char *	file;
+	const char *	func;
+	struct mempool *pool;
+};
+
 static int  init_chainedpool(void *buf,size_t bufsize,struct mempool *pool);
 static void destroy_pool(struct mempool *pool);
 static int  clone_pool(const struct mempool *pool, void *buf, size_t bufsize,
@@ -58,6 +67,8 @@ const struct bfc_mempool_class bfc_chainedpool_class = {
 	.calloc = bfc_chainedpool_calloc,
 	.realloc = bfc_chainedpool_realloc,
 	.free = bfc_chainedpool_free,
+	.mark = bfc_chainedpool_mark,
+	.reset = bfc_chainedpool_reset,
 	.info = bfc_chainedpool_info,
 };
 
@@ -361,6 +372,77 @@ bfc_chainedpool_free(struct mempool *pool, void *ptr,
 	L4SC_ERROR(logger, " %p: %08X %08X %08X %08X %08X %08X", ptr,
 		((unsigned*)ptr)[0], ((unsigned*)ptr)[1], ((unsigned*)ptr)[2],
 		((unsigned*)ptr)[3], ((unsigned*)ptr)[4], ((unsigned*)ptr)[5]);
+}
+
+const struct mempool_mark *
+bfc_chainedpool_mark(struct mempool *pool,
+		     const char *file, int line, const char *func)
+{
+	struct chainedpool_mark *m;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(MEMPOOL_LOGGER);
+
+	if (bfc_mempool_validate_pool(pool, file, line, __FUNCTION__) != 0) {
+		L4SC_ERROR(logger, "%s: BAD POOL @%p!!!", __FUNCTION__, pool);	
+		return (NULL);
+	}
+	if ((m = bfc_chainedpool_malloc(pool, sizeof(*m),
+					file, line, __FUNCTION__)) != NULL) {
+		m->magic = MARK_MAGIC;
+		m->line  = line;
+		m->file  = file;
+		m->func  = func;
+		m->pool  = pool;
+	}
+	L4SC_DEBUG(logger, "%s: pool @%p marked at %p", __FUNCTION__, pool, m);
+	return ((const struct mempool_mark *) m);
+}
+
+int
+bfc_chainedpool_reset(struct mempool *pool, const struct mempool_mark *mark,
+		      const char *file, int line, const char *func)
+{
+	struct chainedpool *impl = (struct chainedpool *) pool;
+	struct chainedpool_mark *m = (struct chainedpool_mark *) mark;
+	struct largeitem *lblk, *tofree = NULL;
+	int n = 0;
+	bfc_mutex_ptr_t locked;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(MEMPOOL_LOGGER);
+
+	L4SC_DEBUG(logger, "%s(pool %p, mark %p)", __FUNCTION__, pool, mark);
+
+	if (bfc_mempool_validate_pool(pool, file, line, __FUNCTION__) != 0) {
+		L4SC_ERROR(logger, "%s: BAD POOL @%p!!!", __FUNCTION__, pool);	
+		return (-EINVAL);
+	}
+	if (m && (m->pool != pool)) {
+		L4SC_ERROR(logger, "%s: marker pool %p != %p",
+					__FUNCTION__, m->pool, pool);	
+		return (-EINVAL);
+	}
+	locked = bfc_mutex_lock(impl->lock);
+	if (m == NULL) {
+		tofree = impl->largeblks.first;
+		impl->largeblks.last = impl->largeblks.first = NULL;
+	} else {
+		BFC_LIST_FOREACH(lblk, &impl->largeblks, next) {
+			if (m == (struct chainedpool_mark *) &lblk->item) {
+				impl->largeblks.last = lblk;
+				tofree = lblk->next;
+				break;
+			}
+		}
+	}
+	bfc_mutex_unlock(locked);
+
+	while (tofree != NULL) {
+		lblk = tofree;
+		tofree = lblk->next;
+		mempool_free(pool->parent_pool, lblk);
+		n++;
+	}
+	L4SC_DEBUG(logger, "%s(%p, %p) released %d items",
+				__FUNCTION__, pool, mark, n);
+	return (n);
 }
 
 unsigned

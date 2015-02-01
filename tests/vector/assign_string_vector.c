@@ -56,6 +56,7 @@ test(int n1, const size_t s1[])
 
 	L4SC_DEBUG(logger, "%s: current pool size %ld",
 			__FUNCTION__, (long) bfc_object_length(pool));
+	bfc_object_dump(pool, 1, logger);
 	assert(bfc_object_length(pool) >= initial_poolsize + stringbytes);
 
 	bfc_container_assign_copy((bfc_contptr_t) &v2, (bfc_ccontptr_t) &v1);
@@ -67,6 +68,7 @@ test(int n1, const size_t s1[])
 
 	L4SC_DEBUG(logger, "%s: current pool size %ld",
 			__FUNCTION__, (long) bfc_object_length(pool));
+	bfc_mempool_dump_all(2, logger);
 	assert(bfc_object_length(pool) >= initial_poolsize + 2*stringbytes);
 
 	bfc_destroy(&v1);

@@ -64,6 +64,9 @@ const struct bfc_mempool_class bfc_sortingpool_class = {
 	.super = NULL,
 	.name = "sorting mempool",
 	.init = init_sortingpool,
+	.initrefc = (void *) bfc_default_init_refcount,
+	.incrrefc = (void *) bfc_default_incr_refcount,
+	.decrrefc = (void *) bfc_default_decr_refcount,
 	.destroy = destroy_pool,
 	.clone = clone_pool,
 	.clonesize = get_pool_object_size,
@@ -76,6 +79,7 @@ const struct bfc_mempool_class bfc_sortingpool_class = {
 	.calloc = bfc_sortingpool_calloc,
 	.realloc = bfc_sortingpool_realloc,
 	.free = bfc_sortingpool_free,
+	.info = bfc_sortingpool_info,
 };
 
 struct mempool *
@@ -92,7 +96,11 @@ bfc_new_sorting_mempool(struct mempool *parent,
 	if ((pool = bfc_mempool_alloc(parent, sizeof(*pool))) != NULL) {
 		rc = init_sortingpool(pool, sizeof(*pool), parent);
 	}
-	if (rc < 0) {
+	if (rc >= 0) {
+		pool->file = file;
+		pool->line = line;
+		pool->func = func;
+	} else {
 		L4SC_ERROR(logger, "%s(parent %p): from %s in %s:%d: error %d",
 				__FUNCTION__, parent, func, file, line, rc);
 	}
@@ -110,7 +118,11 @@ init_sortingpool(void *buf, size_t bufsize, struct mempool *pool)
 	bfc_incr_refcount(parent);
 	p->pool = p->parent_pool = parent;
 	bfc_new_mutex(&p->lock, parent);
+	p->file = __FILE__;
+	p->line = __LINE__;
+	p->func = __FUNCTION__;
 	bfc_mempool_add_pool((struct mempool *)p, parent);
+	bfc_init_refcount(p, 1);
 	bfc_object_dump(p, 1, logger);
 	return (BFC_SUCCESS);
 }
@@ -171,6 +183,7 @@ get_pool_size(const struct mempool *pool)
 	bfc_mutex_ptr_t locked;
 	struct smallitems *blk;
 	unsigned i, j, k, shift, usage;
+	unsigned long m;
 	size_t netto = 0;
 
 	if (impl->lock && (locked = bfc_mutex_lock(impl->lock))) {
@@ -180,14 +193,15 @@ get_pool_size(const struct mempool *pool)
 				for (i=0; i < MAP_LIMIT(shift); i++) {
 					k = i / 32;
 					j = i & 31;
-					if (blk->map[k] == 0x00000000u) {
+					m = blk->map[k];
+					if (m == 0x00000000u) {
 						i += 31;
 						continue;
-					} else if (blk->map[k] == 0xFFFFFFFFu) {
+					} else if (m == 0xFFFFFFFFu) {
 						usage += 32;
 						i += 31;
 						continue;
-					} else if (blk->map[k] & (1u << j)) {
+					} else if (m & (1u << j)) {
 						usage++;
 					}
 				}
@@ -214,13 +228,6 @@ pool_tostring(const struct mempool *pool, char *buf, size_t bufsize)
 		}
 	}
 	return (0);
-}
-
-void
-bfc_sortingpool_dump(const struct mempool *pool,
-			int depth, struct l4sc_logger *log)
-{
-	L4SC_INFO(log, "%s: dump to be implemented", __FUNCTION__);
 }
 
 
@@ -456,3 +463,112 @@ bfc_sortingpool_free(struct mempool *pool, void *ptr,
 	bfc_chainedpool_free(pool, ptr, file, line, func);
 }
 
+int
+bfc_sortingpool_info(const struct mempool *pool,
+		     struct mempool_info *buf, int maxentries)
+{
+	struct sortingpool *impl = (struct sortingpool *) pool;
+	unsigned shift, i, j, k, usage;
+	unsigned long m;
+	struct smallitems *blk;
+	bfc_mutex_ptr_t locked;
+	int n = 0;
+
+	locked = bfc_mutex_lock(impl->lock);
+	if (buf && (maxentries > 0)) {
+		for (shift = 0; shift < MAX_SHIFT; shift++) {
+			BFC_LIST_FOREACH(blk, &impl->smallblks[shift], next) {
+				if (n < maxentries) {
+					buf[n].ptr = blk;
+					buf[n].item_cap = MAP_LIMIT(shift);
+					buf[n].item_size = 8u << shift;
+					buf[n].total_size = sizeof(blk->items);
+					usage = 0;
+					for (i=0; i < MAP_LIMIT(shift); i++) {
+						k = i / 32;
+						j = i & 31;
+						m = blk->map[k];
+						if (m == 0x00000000u) {
+							i += 31;
+							continue;
+						} else if (m == 0xFFFFFFFFu) {
+							usage += 32;
+							i += 31;
+							continue;
+						} else if (m & (1u << j)) {
+							usage++;
+						}
+					}
+					buf[n].item_usage = usage;
+					n++;
+				} else {
+					break;
+				}
+			}
+		}
+		if (n < maxentries) {
+			n += bfc_chainedpool_info(pool, buf+n, maxentries-n);
+		}
+	} else {
+		for (shift = 0; shift < MAX_SHIFT; shift++) {
+			BFC_LIST_FOREACH(blk, &impl->smallblks[shift], next) {
+				n++;
+			}
+		}
+		n += bfc_chainedpool_info(pool, NULL, 0);
+	}
+	bfc_mutex_unlock(locked);
+	return (n);
+}
+
+void
+bfc_sortingpool_dump(const struct mempool *pool, int depth,
+		     struct l4sc_logger *log)
+{
+	int i, count;
+	struct mempool_info *info;
+	long netto = 0, capacity = 0, brutto = sizeof(struct sortingpool);
+	unsigned chained_overhead = bfc_chainedpool_overhead_per_block(pool);
+
+
+	if (bfc_mempool_validate_pool(pool,__FILE__,__LINE__,__FUNCTION__)!=0) {
+		L4SC_ERROR(log, "%s: BAD POOL @%p!!!", __FUNCTION__, pool);	
+		return;
+	}
+
+	count = bfc_sortingpool_info(pool, NULL, 0);
+
+	L4SC_DEBUG(log, "%s: %d blocks in pool @%p created in %s",
+				__FUNCTION__, count, pool, pool->func);
+
+	info = alloca((count+10)*sizeof(info[0]));
+	if (count > 0) {
+		count = bfc_sortingpool_info(pool, info, count+10);
+	}
+
+	for (i=0; i < count; i++) {
+		L4SC_DEBUG(log, "%s: blk @%p: %u/%u of %u bytes, total %lu",
+			__FUNCTION__, info[i].ptr,
+			info[i].item_usage, info[i].item_cap,
+			info[i].item_size,  info[i].total_size);
+
+		if (info[i].item_cap > 1) {
+			netto += info[i].item_usage *info[i].item_size;
+			capacity+= info[i].item_cap *info[i].item_size;
+			brutto  += sizeof(struct smallitems);
+		} else {
+			netto	+= info[i].item_size;
+			capacity+= info[i].total_size;
+			brutto	+= info[i].total_size + chained_overhead;
+		}
+	}
+
+	L4SC_INFO(log,
+		"pool %p: %ld/%ldkB in %d blks, brt %ldkB, refc %d, %s:%d %s",
+		pool, netto/1000, capacity/1000, count, brutto/1000,
+		pool->refc-1, pool->file, pool->line, pool->func);
+
+	if (depth > 1) {
+		bfc_mempool_dump_subpools(pool, depth-1, log);
+	}
+}

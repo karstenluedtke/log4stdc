@@ -43,6 +43,9 @@ const struct bfc_mempool_class bfc_chainedpool_class = {
 	.super = NULL,
 	.name = "chained mempool",
 	.init = init_chainedpool,
+	.initrefc = (void *) bfc_default_init_refcount,
+	.incrrefc = (void *) bfc_default_incr_refcount,
+	.decrrefc = (void *) bfc_default_decr_refcount,
 	.destroy = destroy_pool,
 	.clone = clone_pool,
 	.clonesize = get_pool_object_size,
@@ -55,7 +58,33 @@ const struct bfc_mempool_class bfc_chainedpool_class = {
 	.calloc = bfc_chainedpool_calloc,
 	.realloc = bfc_chainedpool_realloc,
 	.free = bfc_chainedpool_free,
+	.info = bfc_chainedpool_info,
 };
+
+struct mempool *
+bfc_new_chained_mempool(struct mempool *parent,
+		     const char *file, int line, const char *func)
+{
+	int rc = -ENOMEM;
+	struct chainedpool *pool;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(MEMPOOL_LOGGER);
+	
+	L4SC_INFO(logger, "%s(parent %p): from %s in %s:%d",
+				__FUNCTION__, parent, func, file, line);
+
+	if ((pool = bfc_mempool_alloc(parent, sizeof(*pool))) != NULL) {
+		rc = init_chainedpool(pool, sizeof(*pool), parent);
+	}
+	if (rc >= 0) {
+		pool->file = file;
+		pool->line = line;
+		pool->func = func;
+	} else {
+		L4SC_ERROR(logger, "%s(parent %p): from %s in %s:%d: error %d",
+				__FUNCTION__, parent, func, file, line, rc);
+	}
+	return ((struct mempool *) pool);
+}
 
 static int
 init_chainedpool(void *buf, size_t bufsize, struct mempool *pool)
@@ -67,7 +96,11 @@ init_chainedpool(void *buf, size_t bufsize, struct mempool *pool)
 	bfc_incr_refcount(parent);
 	p->pool = p->parent_pool = parent;
 	bfc_new_mutex(&p->lock, parent);
+	p->file = __FILE__;
+	p->line = __LINE__;
+	p->func = __FUNCTION__;
 	bfc_mempool_add_pool((struct mempool *)p, parent);
+	bfc_init_refcount(p, 1);
 	return (BFC_SUCCESS);
 }
 
@@ -150,13 +183,6 @@ pool_tostring(const struct mempool *pool, char *buf, size_t bufsize)
 		}
 	}
 	return (0);
-}
-
-void
-bfc_chainedpool_dump(const struct mempool *pool,
-			int depth, struct l4sc_logger *log)
-{
-	L4SC_INFO(log, "dump to be implemented");
 }
 
 void *
@@ -337,3 +363,103 @@ bfc_chainedpool_free(struct mempool *pool, void *ptr,
 		((unsigned*)ptr)[3], ((unsigned*)ptr)[4], ((unsigned*)ptr)[5]);
 }
 
+unsigned
+bfc_chainedpool_overhead_per_block(const struct mempool *pool)
+{
+	return (offsetof(struct largeitem,item));
+}
+
+/*
+ * To be called with incremented pool refcount, but not necessarily locked.
+ */
+int
+bfc_chainedpool_info(const struct mempool *pool,
+		struct mempool_info *buf, int maxentries)
+{
+	struct chainedpool *impl = (struct chainedpool *) pool;
+	bfc_mutex_ptr_t locked;
+	struct largeitem *lblk;
+	int n = 0;
+
+	locked = bfc_mutex_lock(impl->lock);
+	if (buf && (maxentries > 0)) {
+		BFC_LIST_FOREACH(lblk, &impl->largeblks, next) {
+			if (n < maxentries) {
+				buf[n].ptr = lblk;
+				buf[n].file = lblk->file;
+				buf[n].func = lblk->func;
+				buf[n].line = lblk->line;
+				buf[n].item_cap = 1;
+				buf[n].item_size = lblk->item_size;
+				buf[n].total_size = lblk->total_size;
+				buf[n].item_usage = 1;
+				n++;
+			} else {
+				break;
+			}
+		}
+	} else {
+		BFC_LIST_FOREACH(lblk, &impl->largeblks, next) {
+			n++;
+		}
+	}
+	bfc_mutex_unlock(locked);
+
+	return (n);
+}
+
+/*
+ * To be called with incremented pool refcount, but preferably unlocked.
+ */
+void
+bfc_chainedpool_dump(const struct mempool *pool, int depth,
+		     struct l4sc_logger *log)
+{
+	int i, count;
+	struct mempool_info *info;
+	long netto = 0, capacity = 0, brutto = sizeof(struct chainedpool);
+	unsigned overhead = bfc_chainedpool_overhead_per_block(pool);
+
+	if (bfc_mempool_validate_pool(pool,__FILE__,__LINE__,__FUNCTION__)!=0) {
+		L4SC_ERROR(log, "%s: BAD POOL @%p!!!", __FUNCTION__, pool);	
+		return;
+	}
+
+	count = bfc_chainedpool_info(pool, NULL, 0);
+	L4SC_DEBUG(log, "%s(%p): count %d, anchor bfc_chainedpool_dump @%p",
+			__FUNCTION__, pool, count, bfc_chainedpool_dump);
+
+	info = alloca((count+10)*sizeof(info[0]));
+	if (count > 0) {
+		count = bfc_chainedpool_info(pool, info, count+10);
+	}
+
+	for (i=0; i < count; i++) {
+		if (info[i].line == I386RETADDR) {
+			L4SC_DEBUG(log, "%s: blk @%p: "
+				"%u/%u of %u bytes, total %lu from %p via %s",
+				__FUNCTION__, info[i].ptr,
+				info[i].item_usage, info[i].item_cap,
+				info[i].item_size,  info[i].total_size,
+				info[i].file, info[i].func);
+		} else {
+			L4SC_DEBUG(log, "%s: blk @%p: "
+				"%u/%u of %u bytes, total %lu from %s:%u in %s",
+				__FUNCTION__, info[i].ptr,
+				info[i].item_usage, info[i].item_cap,
+				info[i].item_size,  info[i].total_size,
+				info[i].file, info[i].line, info[i].func);
+		}
+		netto	+= info[i].item_size;
+		capacity+= info[i].total_size;
+		brutto	+= info[i].total_size + overhead;
+	}
+	L4SC_INFO(log,
+		"pool %p: %ld/%ldkB in %d blks, brt %ldkB, refc %d, %s:%d %s",
+		pool, netto/1000, capacity/1000, count, brutto/1000,
+		pool->refc-1, pool->file, pool->line, pool->func);
+
+	if (depth > 1) {
+		bfc_mempool_dump_subpools(pool, depth-1, log);
+	}
+}

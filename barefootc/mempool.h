@@ -44,7 +44,7 @@ struct bfc_mempool_class {
 	struct mempool *(*newpool)(struct mempool *, struct mempool *,
 				   const char *, int, const char *);
 
-	int 		(*info)   (struct mempool *pool, int depth,
+	int 		(*info)   (const struct mempool *pool,
 		  		   struct mempool_info *buf, int maxentries);
 
 	void *		spare[10];
@@ -114,16 +114,14 @@ int bfc_mempool_decr_refcount_x(struct mempool*, const char*,int, const char*);
 #define bfc_mempool_incr_refcount(pool)		\
 	bfc_mempool_incr_refcount_x(pool,__FILE__,__LINE__,__FUNCTION__)
 
-int mempool_validate_pool_x(struct mempool *, const char *, int, const char *);
-
 #define mempool_validate_pool(pool)		\
-	mempool_validate_pool_x(pool,__FILE__,__LINE__,__FUNCTION__)
+	bfc_mempool_validate_pool(pool,__FILE__,__LINE__,__FUNCTION__)
 
 #define mempool_newpool(pool,parent)	\
 	(*BFC_CLASS(pool)->newpool)(pool,parent,__FILE__,__LINE__,__FUNCTION__)
 
-#define mempool_info(pool,depth,buf,maxentries)	\
-	(*BFC_CLASS(pool)->info)(pool,depth,buf,maxentries)
+#define mempool_info(pool,buf,maxentries)	\
+	(*BFC_CLASS(pool)->info)(pool,buf,maxentries)
 
 #define mempool_dump(pool,depth)	\
 	(*BFC_CLASS(pool)->dump)(pool,depth)
@@ -138,21 +136,19 @@ struct mempool *bfc_get_stdc_mempool(const char *, int, const char *);
 #define get_stdc_mempool() bfc_get_stdc_mempool(__FILE__,__LINE__,__FUNCTION__)
 #endif
 
-struct mempool *bfc_get_win32_mempool(struct mempool *, struct mempool *,
-		const char *, int, const char *);
-struct mempool *bfc_new_chunked_mempool(struct mempool *, struct mempool *,
-		const char *, int, const char *);
-struct mempool *bfc_new_chained_mempool(struct mempool *, struct mempool *,
-		const char *, int, const char *);
+struct mempool *bfc_new_chained_mempool(struct mempool *parent,
+		const char *file, int line, const char *func);
 struct mempool *bfc_new_sorting_mempool(struct mempool *parent,
 		const char *file, int line, const char *func);
 
 int  bfc_mempool_add_pool(struct mempool *pool, struct mempool *parent);
 int  bfc_mempool_remove_pool(struct mempool *pool, struct mempool *parent);
-int  bfc_mempool_validate_pool(struct mempool *, const char*, int, const char*);
+int  bfc_mempool_validate_pool(const struct mempool *,
+				const char*, int, const char*);
 
-void bfc_mempool_dump_all(int depth);
-void bfc_mempool_dump_subpools(struct mempool *pool, int depth);
+void bfc_mempool_dump_all(int depth, struct l4sc_logger *log);
+void bfc_mempool_dump_subpools(const struct mempool *pool, int depth,
+			       struct l4sc_logger *log);
 
 
 struct mempool_info {
@@ -176,6 +172,9 @@ void bfc_chainedpool_free(struct mempool *pool, void *ptr,
 			     const char *file, int line, const char *func);
 void bfc_chainedpool_dump(const struct mempool *pool, int depth,
 			     struct l4sc_logger *log);
+int  bfc_chainedpool_info (const struct mempool *pool,
+			     struct mempool_info *buf, int maxentries);
+unsigned bfc_chainedpool_overhead_per_block(const struct mempool *pool);
 
 void *bfc_sortingpool_malloc(struct mempool *pool, size_t size,
 			     const char *file, int line, const char *func);
@@ -187,6 +186,8 @@ void bfc_sortingpool_free(struct mempool *pool, void *ptr,
 			     const char *file, int line, const char *func);
 void bfc_sortingpool_dump(const struct mempool *pool, int depth,
 			     struct l4sc_logger *log);
+int  bfc_sortingpool_info (const struct mempool *pool,
+			     struct mempool_info *buf, int maxentries);
 
 #ifdef __cplusplus
 }	/* C++ */

@@ -65,14 +65,21 @@ struct stdc_mempool bfc_stdc_mempool = {
 	.vptr = &bfc_stdc_mempool_class,
 	.name = "stdc_mempool",
 	.refc = 20000, 
+	.file = "libc",
+	.func = "malloc",
 };
 
 static int
 init_pool(void *buf, size_t bufsize, struct mempool *pool)
 {
+	struct stdc_mempool *p = (struct stdc_mempool *) buf;
 	BFC_INIT_PROLOGUE(bfc_mempool_class_ptr_t,
 			  struct stdc_mempool *, stdcpool, buf, bufsize, pool,
 			  &bfc_stdc_mempool_class);
+	p->refc = 20000;
+	p->file = __FILE__;
+	p->line = __LINE__;
+	p->func = __FUNCTION__;
 	return (BFC_SUCCESS);
 }
 

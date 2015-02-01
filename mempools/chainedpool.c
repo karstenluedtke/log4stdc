@@ -428,6 +428,7 @@ bfc_chainedpool_reset(struct mempool *pool, const struct mempool_mark *mark,
 			if (m == (struct chainedpool_mark *) &lblk->item) {
 				impl->largeblks.last = lblk;
 				tofree = lblk->next;
+				lblk->next = NULL;
 				break;
 			}
 		}

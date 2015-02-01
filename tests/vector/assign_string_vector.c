@@ -26,6 +26,7 @@ test(int n1, const size_t s1[])
 	BFC_VECTOR(v1s, bfc_string_t, 0) v1;
 	BFC_VECTOR(v2s, bfc_string_t, 1) v2;
 	const size_t expected_size = (n1 > 0)? s1[n1-1]+1: 0;
+	const struct mempool_mark *poolmark = bfc_mempool_mark(pool);
 	const size_t initial_poolsize = bfc_object_length(pool);
 	size_t stringbytes = 0;
 	char buf[200];
@@ -88,6 +89,9 @@ test(int n1, const size_t s1[])
 			__FUNCTION__, (long) bfc_object_length(pool));
 	assert(bfc_object_length(pool) == initial_poolsize);
 
+	bfc_mempool_reset(pool, poolmark);
+	bfc_object_dump(pool, 99, logger);
+
 	L4SC_DEBUG(logger, "%s(n1 %d, s1 %ld %ld %ld ...)",
 		"PASS", n1, (long)s1[0], (long)s1[1], (long)s1[2]);
 
@@ -122,6 +126,9 @@ main(int argc, char *argv[])
 		size_t s1[] = { 10, 11, 1000, 1001, 1000000, 1000001 };
 		test(6, s1);
 	} while (0 /*just once*/);
+
+	bfc_mempool_reset(pool, 0);
+	bfc_object_dump(pool, 99, logger);
 
 	return (0);
 }

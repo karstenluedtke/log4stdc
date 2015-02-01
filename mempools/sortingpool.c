@@ -48,6 +48,22 @@ struct sortingpool {
 	}		smallblks[MAX_SHIFT];
 };
 
+struct sortingpool_mark {
+	uint32_t 	magic;
+#define MARK_MAGIC	0x4B52414D	/* "MARK" in little endian */
+	unsigned	line;
+	const char *	file;
+	const char *	func;
+	struct mempool *pool;
+	/* above must be identical to struct chainedpool_mark */
+	unsigned	num_smallblks;
+#define MARK_SPARE_ENTRIES 2
+	struct sortingpool_mark_entry {
+		const struct smallitems *blk;
+		uint32_t 	map[MAP_WORDS];
+	}		smallblks[MARK_SPARE_ENTRIES /*or more*/];
+};
+
 static int  init_sortingpool(void *buf,size_t bufsize,struct mempool *pool);
 static void destroy_pool(struct mempool *pool);
 static int  clone_pool(const struct mempool *pool, void *buf, size_t bufsize,
@@ -79,6 +95,8 @@ const struct bfc_mempool_class bfc_sortingpool_class = {
 	.calloc = bfc_sortingpool_calloc,
 	.realloc = bfc_sortingpool_realloc,
 	.free = bfc_sortingpool_free,
+	.mark = bfc_sortingpool_mark,
+	.reset = bfc_sortingpool_reset,
 	.info = bfc_sortingpool_info,
 };
 
@@ -461,6 +479,158 @@ bfc_sortingpool_free(struct mempool *pool, void *ptr,
 	bfc_mutex_unlock(locked);
 
 	bfc_chainedpool_free(pool, ptr, file, line, func);
+}
+
+const struct mempool_mark *
+bfc_sortingpool_mark(struct mempool *pool,
+		     const char *file, int line, const char *func)
+{
+	struct sortingpool *impl = (struct sortingpool *) pool;
+	unsigned shift, words, i, k, n;
+	unsigned long usage;
+	struct smallitems *blk;
+	struct sortingpool_mark *m;
+	struct sortingpool_mark_entry *entry;
+	bfc_mutex_ptr_t locked;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(MEMPOOL_LOGGER);
+
+	if (bfc_mempool_validate_pool(pool, file, line, __FUNCTION__) != 0) {
+		L4SC_ERROR(logger, "%s: BAD POOL @%p!!!", __FUNCTION__, pool);	
+		return (NULL);
+	}
+	locked = bfc_mutex_lock(impl->lock);
+	for (n=0, shift = 0; shift < MAX_SHIFT; shift++) {
+		BFC_LIST_FOREACH(blk, &impl->smallblks[shift], next) {
+			n++;
+		}
+	}
+	bfc_mutex_unlock(locked);
+	if ((m = bfc_chainedpool_calloc(pool, 1, sizeof(*m) + n*sizeof(*entry),
+					file, line, __FUNCTION__)) != NULL) {
+		m->magic = MARK_MAGIC;
+		m->line  = line;
+		m->file  = file;
+		m->func  = func;
+		m->pool  = pool;
+		m->num_smallblks = 0;
+	} else {
+		return (NULL);
+	}
+
+	if (n > 0) {
+		locked = bfc_mutex_lock(impl->lock);
+		for (i=0, shift = 0; shift < MAX_SHIFT; shift++) {
+			BFC_LIST_FOREACH(blk, &impl->smallblks[shift], next) {
+				if (i < n + MARK_SPARE_ENTRIES) {
+					entry = &m->smallblks[i];
+					words = (MAP_LIMIT(shift)+31) / 32;
+					usage = 0;
+					for (k=0; k < words; k++) {
+						entry->map[k] = blk->map[k];
+						usage |= blk->map[k];
+					}
+					if (usage != 0) {
+						entry->blk = blk;
+						m->num_smallblks = ++i;
+					}
+				}
+			}
+		}
+		bfc_mutex_unlock(locked);
+	}
+
+	L4SC_DEBUG(logger, "%s: pool @%p marked at %p, %u small item blocks",
+				__FUNCTION__, pool, m, m->num_smallblks);
+
+	return ((const struct mempool_mark *) m);
+}
+
+int
+bfc_sortingpool_reset(struct mempool *pool, const struct mempool_mark *mark,
+		      const char *file, int line, const char *func)
+{
+	struct sortingpool *impl = (struct sortingpool *) pool;
+	struct sortingpool_mark *m = (struct sortingpool_mark *) mark;
+	struct smallitems *blk, *nextblk, *tofree = NULL;
+	struct sortingpool_mark_entry *entry;
+	unsigned shift, words, i, k;
+	unsigned long usage;
+	int n = 0;
+	bfc_mutex_ptr_t locked;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(MEMPOOL_LOGGER);
+
+	L4SC_DEBUG(logger, "%s(pool %p, mark %p)", __FUNCTION__, pool, mark);
+
+	if (bfc_mempool_validate_pool(pool, file, line, __FUNCTION__) != 0) {
+		L4SC_ERROR(logger, "%s: BAD POOL @%p!!!", __FUNCTION__, pool);	
+		return (-EINVAL);
+	}
+	if (m && (m->pool != pool)) {
+		L4SC_ERROR(logger, "%s: marker pool %p != %p",
+					__FUNCTION__, m->pool, pool);	
+		return (-EINVAL);
+	}
+	if ((n = bfc_chainedpool_reset(pool, (const struct mempool_mark *) m,
+					     file, line, __FUNCTION__)) < 0) {
+		L4SC_ERROR(logger, "%s: chainedpool_reset(%p, %p) error %d",
+					__FUNCTION__, pool, m, n);	
+		return (n);
+	}
+	locked = bfc_mutex_lock(impl->lock);
+	for (shift = 0; shift < MAX_SHIFT; shift++) {
+		if (m == NULL) {
+			if (impl->smallblks[shift].first
+			 && (blk = impl->smallblks[shift].last)) {
+				blk->next = tofree;
+				tofree = impl->smallblks[shift].first;
+			}
+			impl->smallblks[shift].first = NULL;
+			impl->smallblks[shift].last  = NULL;
+			continue;
+		}
+		for (blk = impl->smallblks[shift].first; blk; blk = nextblk) {
+			nextblk = blk->next;
+			blk->full = 0;
+			usage = 0;
+			for (i=0; i < m->num_smallblks; i++) {
+				entry = &m->smallblks[i];
+				words = (MAP_LIMIT(shift)+31) / 32;
+				L4SC_DEBUG(logger,
+				  "%s: testing %d words in blk %p against %p",
+				  __FUNCTION__, words, blk, entry);
+				if (entry->blk == blk) {
+					for (k=0; k < words; k++) {
+						blk->map[k] &= entry->map[k];
+						usage |= blk->map[k];
+					}
+					break;
+				}
+			}
+			if (usage == 0) {
+				L4SC_DEBUG(logger,"%s: removing blk %p from %p",
+				    __FUNCTION__, blk, &impl->smallblks[shift]);
+				BFC_DLIST_REMOVE(&impl->smallblks[shift],
+						 blk, next, prev);
+				L4SC_DEBUG(logger,"%s: removing blk %p done %p",
+				    __FUNCTION__, blk, &impl->smallblks[shift]);
+				blk->next = tofree;
+				blk->prev = NULL;
+				tofree = blk;
+			}
+		}
+	}
+	bfc_mutex_unlock(locked);
+
+	while (tofree != NULL) {
+		blk = tofree;
+		tofree = blk->next;
+		L4SC_DEBUG(logger, "%s: freeing blk %p", __FUNCTION__, blk);
+		mempool_free(pool->parent_pool, blk);
+		n++;
+	}
+	L4SC_DEBUG(logger, "%s(%p, %p) released %d items",
+				__FUNCTION__, pool, mark, n);
+	return (n);
 }
 
 int

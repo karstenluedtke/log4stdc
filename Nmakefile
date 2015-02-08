@@ -48,6 +48,7 @@ OFILES= \
 	barefootc/bfc_new_object.obj \
 	barefootc/bfc_init_object.obj \
 	barefootc/bfc_clone_object.obj \
+	barefootc/bfc_clone_new.obj \
 	barefootc/bfc_swap_objects.obj \
 	barefootc/bfc_destroy_object.obj \
 	barefootc/bfc_delete_object.obj \
@@ -269,6 +270,9 @@ OFILES= \
 	containers/object_vector.obj \
 	mempools/stdcpool.obj \
 	mempools/defaultpool.obj \
+	mempools/chainedpool.obj \
+	mempools/sortingpool.obj \
+	mempools/pool_hierarchy.obj \
 	log4stdc/l4sc_logprintf.obj \
 	log4stdc/l4sc_vlog.obj \
 	log4stdc/l4sc_log.obj \
@@ -1022,6 +1026,9 @@ barefootc/bfc_init_object.obj: barefootc/bfc_init_object.c $(HEADERS)
 barefootc/bfc_clone_object.obj: barefootc/bfc_clone_object.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_clone_object.c
 
+barefootc/bfc_clone_new.obj: barefootc/bfc_clone_new.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_clone_new.c
+
 barefootc/bfc_swap_objects.obj: barefootc/bfc_swap_objects.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_swap_objects.c
 
@@ -1684,6 +1691,15 @@ mempools/stdcpool.obj: mempools/stdcpool.c $(HEADERS)
 
 mempools/defaultpool.obj: mempools/defaultpool.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/defaultpool.c
+
+mempools/chainedpool.obj: mempools/chainedpool.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/chainedpool.c
+
+mempools/sortingpool.obj: mempools/sortingpool.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/sortingpool.c
+
+mempools/pool_hierarchy.obj: mempools/pool_hierarchy.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/pool_hierarchy.c
 
 log4stdc/l4sc_logprintf.obj: log4stdc/l4sc_logprintf.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_logprintf.c

@@ -212,8 +212,24 @@ wstring_hashcode(bfc_cstrptr_t s)
 	const wchar_t *p = bfc_wstrdata(s);
 	unsigned x = 0;
 	size_t i;
-	for (i=0; i < n; i++) {
-		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[i];
+
+	if (n > 8) {
+		const size_t n2 = n >> 1; /* n/2 */
+		const size_t n4 = n >> 2; /* n/4 */
+		const size_t n8 = n >> 3; /* n/8 */
+		x = p[0];
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[n8];
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[n4];
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[n4+n8];
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[n2];
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[n2+n8];
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[n2+n4];
+		x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[n2+n4+n8];
+	} else if (n > 0) {
+		x = p[0];
+		for (i=1; i < n; i++) {
+			x = (x << 7) ^ (x >> (8*sizeof(x)-7)) ^ p[i];
+		}
 	}
 	return (x);
 }

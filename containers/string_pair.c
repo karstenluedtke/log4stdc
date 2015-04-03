@@ -118,27 +118,20 @@ static int
 pair_equals(const struct bfc_string_pair *pair,
 	    const struct bfc_string_pair *other)
 {
-	bfc_cobjptr_t obj1, obj2;
+	bfc_cobjptr_t obj1, obj2, obj3, obj4;
 
 	obj1 = bfc_container_cindex(pair, 0);
-	obj2 = bfc_container_cindex(pair, 0);
-	if (obj1 != obj2) {
-		if ((obj1 == NULL) || (obj2 == NULL)) {
-			return (0);
-		} else if (!bfc_equal_object(obj1, obj2)) {
-			return (0);
-		}
+	obj2 = bfc_container_cindex(other,0);
+	if (((obj1 == NULL) || (obj2 == NULL)) && (obj1 != obj2)) {
+		return (0);
 	}
-	obj1 = bfc_container_cindex(pair, 1);
-	obj2 = bfc_container_cindex(pair, 1);
-	if (obj1 != obj2) {
-		if ((obj1 == NULL) || (obj2 == NULL)) {
-			return (0);
-		} else if (!bfc_equal_object(obj1, obj2)) {
-			return (0);
-		}
+	obj3 = bfc_container_cindex(pair, 1);
+	obj4 = bfc_container_cindex(other,1);
+	if (((obj3 == NULL) || (obj4 == NULL)) && (obj3 != obj4)) {
+		return (0);
 	}
-	return (1);
+	return (((obj1 == obj2) || bfc_equal_object(obj1, obj2)) &&
+		((obj3 == obj4) || bfc_equal_object(obj3, obj4)));
 }
 
 static void

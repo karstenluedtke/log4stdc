@@ -25,11 +25,13 @@ static int pair_equals(const struct bfc_string_pair *pair,
 			const struct bfc_string_pair *other);
 static void dump_pair(const struct bfc_string_pair *pair,
 			int depth, struct l4sc_logger *log);
+static bfc_cstrptr_t pair_first(const struct bfc_string_pair *pair);
+static bfc_strptr_t  pair_index(struct bfc_string_pair *pair, size_t pos);
 
 struct bfc_string_pair_class {
-	BFC_CLASSHDR(const struct bfc_string_pair_class *,
-		     struct bfc_string_pair *,
-		     const struct bfc_string_pair *)
+	BFC_CONTAINER_CLASSHDR(const struct bfc_string_pair_class *,
+		struct bfc_string_pair *, const struct bfc_string_pair *,
+		bfc_string_t)
 };
 
 const struct bfc_string_pair_class bfc_string_pair_class = {
@@ -41,6 +43,8 @@ const struct bfc_string_pair_class bfc_string_pair_class = {
 	.hashcode 	= pair_hashcode,
 	.equals 	= pair_equals,
 	.dump	 	= dump_pair,
+	.first		= pair_first,
+	.index		= pair_index,
 };
 
 int
@@ -91,29 +95,66 @@ destroy_pair(struct bfc_string_pair *pair)
 	}
 }
 
+static bfc_cstrptr_t
+pair_first(const struct bfc_string_pair *pair)
+{
+	return (&pair->first);
+}
+
+static bfc_strptr_t
+pair_index(struct bfc_string_pair *pair, size_t pos)
+{
+	return ((pos > 0)? &pair->second: &pair->first);
+}
+
 static unsigned  
 pair_hashcode(const struct bfc_string_pair *pair)
 {
-	return (bfc_object_hashcode(&pair->first));
+	bfc_cobjptr_t obj = bfc_container_cindex(pair, 0);
+	return (obj? bfc_object_hashcode(obj): 0);
 }
 
 static int
 pair_equals(const struct bfc_string_pair *pair,
 	    const struct bfc_string_pair *other)
 {
-	return (bfc_equal_object(&pair->first, &other->first) &&
-		bfc_equal_object(&pair->second, &other->second));
+	bfc_cobjptr_t obj1, obj2;
+
+	obj1 = bfc_container_cindex(pair, 0);
+	obj2 = bfc_container_cindex(pair, 0);
+	if (obj1 != obj2) {
+		if ((obj1 == NULL) || (obj2 == NULL)) {
+			return (0);
+		} else if (!bfc_equal_object(obj1, obj2)) {
+			return (0);
+		}
+	}
+	obj1 = bfc_container_cindex(pair, 1);
+	obj2 = bfc_container_cindex(pair, 1);
+	if (obj1 != obj2) {
+		if ((obj1 == NULL) || (obj2 == NULL)) {
+			return (0);
+		} else if (!bfc_equal_object(obj1, obj2)) {
+			return (0);
+		}
+	}
+	return (1);
 }
 
 static void
 dump_pair(const struct bfc_string_pair *pair,int depth,struct l4sc_logger *log)
 {
 	if (pair && BFC_CLASS(pair)) {
-		L4SC_DEBUG(log, "bfc_string_pair @%p:", pair);
+		L4SC_DEBUG(log, "%s @%p:",
+			((bfc_classptr_t) BFC_CLASS(pair))->name, pair);
 		if (depth > 1) {
-			bfc_object_dump(&pair->first, depth-1, log);
-			bfc_object_dump(&pair->second, depth-1, log);
+			bfc_cobjptr_t obj;
+			if ((obj = bfc_container_cindex(pair, 0)) != NULL) {
+				bfc_object_dump(obj, depth-1, log);
+			}
+			if ((obj = bfc_container_cindex(pair, 1)) != NULL) {
+				bfc_object_dump(obj, depth-1, log);
+			}
 		}
 	}
 }
-

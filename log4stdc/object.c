@@ -76,13 +76,24 @@ l4sc_default_get_object_size(l4sc_objcptr_t obj)
 }
 
 unsigned  
-l4sc_default_get_object_hashcode(l4sc_objcptr_t obj)
+l4sc_reduce_hashcode(size_t origval, int origbits, int hashlen)
 {
-	size_t x = (size_t) obj;
-	if (sizeof(x) > sizeof(unsigned)) {
-		x ^= x >> (8*sizeof(unsigned));
+	size_t x = origval;
+	unsigned mask = (1u << hashlen) - 1;
+	unsigned code = (unsigned) x & mask;
+	int bits = origbits;
+	while (bits > hashlen) {
+		x >>= hashlen;
+		bits -= hashlen;
+		code ^= (unsigned) x & mask;
 	}
-	return ((unsigned) x);
+	return (code);
+}
+
+unsigned  
+l4sc_default_get_object_hashcode(l4sc_objcptr_t obj, int hashlen)
+{
+	return (l4sc_reduce_hashcode((size_t) obj, 8*sizeof(obj), hashlen));
 }
 
 int

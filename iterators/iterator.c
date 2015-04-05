@@ -23,7 +23,7 @@ static int decr_refcount(bfc_iterptr_t it);
 static int clone_iterator(bfc_citerptr_t it,
 		void *buf, size_t bufsize, struct mempool *pool);
 static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
-static unsigned bfc_iterator_hashcode(bfc_citerptr_t it);
+static unsigned bfc_iterator_hashcode(bfc_citerptr_t it, int hashlen);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
 static int iterator_tostring(bfc_citerptr_t it, char *buf, size_t bufsize);
 
@@ -239,14 +239,11 @@ element_size(bfc_citerptr_t it)
 }
 
 static unsigned  
-bfc_iterator_hashcode(bfc_citerptr_t it)
+bfc_iterator_hashcode(bfc_citerptr_t it, int hashlen)
 {
 	const char *p = (const char *) it->obj;
 	size_t x = (size_t) (p + it->pos);
-	if (sizeof(x) > sizeof(unsigned)) {
-		x ^= x >> (8*sizeof(unsigned));
-	}
-	return ((unsigned) x);
+	return (bfc_reduce_hashcode(x, 8*sizeof(x), hashlen));
 }
 
 static int

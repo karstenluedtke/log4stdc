@@ -35,7 +35,7 @@ struct tm *_localtime64(const __time64_t *);
 
 static int init_patternlayout(void *, size_t, struct mempool *);
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
-static unsigned get_layout_hashcode(l4sc_layout_cptr_t obj);
+static unsigned get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen);
 static int  is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other);
 static size_t get_layout_length(l4sc_layout_cptr_t obj);
 static int  layout_tostring(l4sc_layout_cptr_t obj, char *buf, size_t bufsize);
@@ -92,14 +92,14 @@ get_layout_size(l4sc_layout_cptr_t obj)
 }
 
 static unsigned  
-get_layout_hashcode(l4sc_layout_cptr_t obj)
+get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen)
 {
 	unsigned x = 0;
 	const unsigned char *cp;
 	for (cp = (unsigned char *) obj->pattern; *cp; cp++) {
 		x = (x << 7) ^ ((x >> (8*sizeof(x)-7)) & 0x7f) ^ *cp;
 	}
-	return (x);
+	return (l4sc_reduce_hashcode(x, 8*sizeof(x), hashlen));
 }
 
 static int

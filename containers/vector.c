@@ -37,7 +37,7 @@ static size_t vector_objsize(bfc_ccontptr_t vec);
 static size_t vector_size(bfc_ccontptr_t vec);
 static size_t vector_element_size(bfc_ccontptr_t vec);
 static int vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other);
-static unsigned vector_hashcode(bfc_ccontptr_t vec);
+static unsigned vector_hashcode(bfc_ccontptr_t vec, int hashlen);
 static void dump_vector(bfc_ccontptr_t vec,int depth,struct l4sc_logger*log);
 static int vector_tostring(bfc_ccontptr_t vec, char *buf, size_t bufsize);
 
@@ -266,7 +266,7 @@ vector_objsize(bfc_ccontptr_t vec)
 }
 
 static unsigned  
-vector_hashcode(bfc_ccontptr_t vec)
+vector_hashcode(bfc_ccontptr_t vec, int hashlen)
 {
 	return (0);
 }

@@ -26,7 +26,7 @@ struct test_kv {
 static int
 test(int n1, const struct test_kv kv[])
 {
-	int i;
+	int i, rc;
 	bfc_string_map_t map;
 	const size_t initial_poolsize = bfc_object_length(pool);
 
@@ -39,7 +39,8 @@ test(int n1, const struct test_kv kv[])
 		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__,kv[i].k,kv[i].v);
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
 		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), kv[i].v);
-		bfc_map_insert_objects((bfc_contptr_t)&map, &kstr, &vstr);
+		rc = bfc_map_insert_objects((bfc_contptr_t)&map, &kstr, &vstr);
+		assert(rc >= 0);
 	}
 
 	bfc_object_dump(&map, 99, logger);
@@ -81,8 +82,8 @@ main(int argc, char *argv[])
 			{ "Kbbb", "Vbbb" },
 			{ "Kccc", "Vccc" },
 			{ "Kddd", "Vddd" },
-			{ "Keaa", "Veaa" },
-			{ "Kfaa", "Vfaa" },
+			{ "Keee", "Veee" },
+			{ "Kfff", "Vfff" },
 		};
 		test(sizeof(kv)/sizeof(kv[0]), kv);
 	} while (0 /*just once*/);

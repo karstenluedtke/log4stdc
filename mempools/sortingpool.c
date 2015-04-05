@@ -69,7 +69,7 @@ static void destroy_pool(struct mempool *pool);
 static int  clone_pool(const struct mempool *pool, void *buf, size_t bufsize,
 							struct mempool *other);
 static size_t get_pool_object_size(const struct mempool *pool);
-static unsigned get_pool_hashcode(const struct mempool *pool);
+static unsigned get_pool_hashcode(const struct mempool *pool, int hashlen);
 static int is_equal_pool(const struct mempool *obj,const struct mempool *other);
 static size_t get_pool_size(const struct mempool *pool);
 static int pool_tostring(const struct mempool *pool, char *buf, size_t bufsize);
@@ -182,10 +182,9 @@ get_pool_object_size(const struct mempool *pool)
 }
 
 static unsigned
-get_pool_hashcode(const struct mempool *pool)
+get_pool_hashcode(const struct mempool *pool, int hashlen)
 {
-	size_t x = (size_t) pool;
-	return ((unsigned) x);
+	return (bfc_reduce_hashcode((size_t) pool, 8*sizeof(pool), hashlen));
 }
 
 static int

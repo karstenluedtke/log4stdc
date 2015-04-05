@@ -53,7 +53,7 @@ static int decr_refcount(bfc_dateptr_t date);
 static int clone_datetime(bfc_cdateptr_t date,
 		   void *buf, size_t bufsize, struct mempool *pool);
 static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
-static unsigned bfc_datetime_hashcode(bfc_cdateptr_t date);
+static unsigned bfc_datetime_hashcode(bfc_cdateptr_t date, int hashlen);
 static void dump_datetime(bfc_cdateptr_t date,int depth,struct l4sc_logger*log);
 static int datetime_tostring(bfc_cdateptr_t date, char *buf, size_t bufsize);
 
@@ -291,13 +291,13 @@ bfc_datetime_objsize(bfc_cdateptr_t date)
 }
 
 static unsigned  
-bfc_datetime_hashcode(bfc_cdateptr_t date)
+bfc_datetime_hashcode(bfc_cdateptr_t date, int hashlen)
 {
 	uint32_t x;
 	x  = date->day;
 	x ^= date->secs;
 	x ^= (date->frac << 10) ^ (date->frac >> 22);
-	return ((unsigned) x);
+	return (bfc_reduce_hashcode(x, 8*sizeof(x), hashlen));
 }
 
 static int

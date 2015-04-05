@@ -18,11 +18,11 @@ CPPFLAGS=-I. -Ilog4stdc \
 	-DPACKAGE="barefootc" \
 	-DPACKAGE_BUGREPORT="bug-barefootc@example.org" \
 	-DPACKAGE_NAME="barefootc" \
-	-DPACKAGE_STRING="barefootc 0.7.0" \
+	-DPACKAGE_STRING="barefootc 0.7.1" \
 	-DPACKAGE_TARNAME="barefootc" \
 	-DPACKAGE_URL="" \
-	-DPACKAGE_VERSION="0.7.0" \
-	-DVERSION="0.7.0"
+	-DPACKAGE_VERSION="0.7.1" \
+	-DVERSION="0.7.1"
 CFLAGS=
 CXXFLAGS=-EHsc
 
@@ -33,6 +33,8 @@ HEADERS= \
 	barefootc/string.h \
 	barefootc/container.h \
 	barefootc/vector.h \
+	barefootc/pair.h \
+	barefootc/map.h \
 	barefootc/iterator.h \
 	barefootc/xmltag.h \
 	barefootc/linkedlist.h \
@@ -241,8 +243,10 @@ OFILES= \
 	iterators/bfc_iterator_element_size.obj \
 	containers/bfc_container_first.obj \
 	containers/bfc_container_index.obj \
+	containers/bfc_container_cindex.obj \
 	containers/bfc_container_getlong.obj \
 	containers/bfc_container_setlong.obj \
+	containers/bfc_container_create_element.obj \
 	containers/bfc_container_begin_iterator.obj \
 	containers/bfc_container_end_iterator.obj \
 	containers/bfc_container_max_size.obj \
@@ -268,6 +272,8 @@ OFILES= \
 	containers/vector_ref.obj \
 	containers/vector_set.obj \
 	containers/object_vector.obj \
+	containers/string_pair.obj \
+	containers/generic_map.obj \
 	mempools/stdcpool.obj \
 	mempools/defaultpool.obj \
 	mempools/chainedpool.obj \
@@ -692,6 +698,7 @@ TESTS= \
 	tests/vector.data/data_const.pass.exe \
 	tests/vector/assign_string_vector.exe \
 	tests/vector/large_element.exe \
+	tests/map/add_to_string_map.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -1012,6 +1019,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\vector.data\data_const.pass.exe
 	tests\vector\assign_string_vector.exe
 	tests\vector\large_element.exe
+	tests\map\add_to_string_map.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
@@ -1605,11 +1613,17 @@ containers/bfc_container_first.obj: containers/bfc_container_first.c $(HEADERS)
 containers/bfc_container_index.obj: containers/bfc_container_index.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_index.c
 
+containers/bfc_container_cindex.obj: containers/bfc_container_cindex.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_cindex.c
+
 containers/bfc_container_getlong.obj: containers/bfc_container_getlong.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_getlong.c
 
 containers/bfc_container_setlong.obj: containers/bfc_container_setlong.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_setlong.c
+
+containers/bfc_container_create_element.obj: containers/bfc_container_create_element.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_create_element.c
 
 containers/bfc_container_begin_iterator.obj: containers/bfc_container_begin_iterator.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/bfc_container_begin_iterator.c
@@ -1685,6 +1699,12 @@ containers/vector_set.obj: containers/vector_set.c $(HEADERS)
 
 containers/object_vector.obj: containers/object_vector.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/object_vector.c
+
+containers/string_pair.obj: containers/string_pair.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/string_pair.c
+
+containers/generic_map.obj: containers/generic_map.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/generic_map.c
 
 mempools/stdcpool.obj: mempools/stdcpool.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/stdcpool.c
@@ -4479,4 +4499,12 @@ tests/vector/large_element.exe: \
 
 tests/vector/large_element.obj: tests/vector/large_element.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/vector/large_element.c
+
+tests/map/add_to_string_map.exe: \
+		tests/map/add_to_string_map.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/add_to_string_map.obj barefootc.lib log4stdc.lib
+
+tests/map/add_to_string_map.obj: tests/map/add_to_string_map.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/add_to_string_map.c
 

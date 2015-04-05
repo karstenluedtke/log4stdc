@@ -20,7 +20,7 @@ static int init_string_pair(void *buf, size_t bufsize, struct mempool *pool);
 static void destroy_pair(struct bfc_string_pair *pair);
 
 static size_t pair_clonesize(const struct bfc_string_pair *pair);
-static unsigned pair_hashcode(const struct bfc_string_pair *pair);
+static unsigned pair_hashcode(const struct bfc_string_pair *pair, int hashlen);
 static int pair_equals(const struct bfc_string_pair *pair,
 			const struct bfc_string_pair *other);
 static void dump_pair(const struct bfc_string_pair *pair,
@@ -139,10 +139,10 @@ pair_index(struct bfc_string_pair *pair, size_t pos)
 }
 
 static unsigned  
-pair_hashcode(const struct bfc_string_pair *pair)
+pair_hashcode(const struct bfc_string_pair *pair, int hashlen)
 {
 	bfc_cobjptr_t obj = bfc_container_cindex(pair, 0);
-	return (obj? bfc_object_hashcode(obj): 0);
+	return (obj? bfc_object_hashcode(obj, hashlen): 0);
 }
 
 static int

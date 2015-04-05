@@ -36,7 +36,7 @@
 
 static int init_logmessage(void *, size_t, struct mempool *);
 static size_t get_logmessage_size(l4sc_logmessage_cptr_t obj);
-static unsigned get_logmessage_hashcode(l4sc_logmessage_cptr_t obj);
+static unsigned get_logmessage_hashcode(l4sc_logmessage_cptr_t obj,int hashlen);
 static int  is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other);
 static size_t get_logmessage_length(l4sc_logmessage_cptr_t obj);
 static int  logmessage_tostring(l4sc_logmessage_cptr_t obj, char *buf, size_t bufsize);
@@ -69,7 +69,7 @@ get_logmessage_size(l4sc_logmessage_cptr_t obj)
 }
 
 static unsigned  
-get_logmessage_hashcode(l4sc_logmessage_cptr_t obj)
+get_logmessage_hashcode(l4sc_logmessage_cptr_t obj, int hashlen)
 {
 	size_t k;
 	unsigned x = 0;
@@ -80,7 +80,7 @@ get_logmessage_hashcode(l4sc_logmessage_cptr_t obj)
 			x = (x << 7) ^ ((x >> (8*sizeof(x)-7)) & 0x7f) ^ *cp;
 		}
 	}
-	return (x);
+	return (l4sc_reduce_hashcode(x, 8*sizeof(x), hashlen));
 }
 
 static int

@@ -28,7 +28,7 @@ BFC_VECTOR(bfc_container, char, 0);
 static void destroy_vector(bfc_contptr_t vec);
 
 static int vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other);
-static unsigned vector_hashcode(bfc_ccontptr_t vec);
+static unsigned vector_hashcode(bfc_ccontptr_t vec, int hashlen);
 static void dump_vector(bfc_ccontptr_t vec, int depth, struct l4sc_logger *log);
 
 static long vector_getlong(bfc_ccontptr_t vec, size_t pos);
@@ -116,7 +116,7 @@ destroy_vector(bfc_contptr_t vec)
 }
 
 static unsigned  
-vector_hashcode(bfc_ccontptr_t vec)
+vector_hashcode(bfc_ccontptr_t vec, int hashlen)
 {
 	return (0);
 }

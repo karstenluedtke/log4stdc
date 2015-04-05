@@ -65,7 +65,7 @@ bfc_map_keyhashcode(bfc_ccontptr_t map, bfc_cobjptr_t key)
 	if (map && key && BFC_CLASS(key)) {
 		char kbuf[200];
 		bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
-		code = bfc_object_hashcode(key);
+		code = bfc_object_hashcode(key, BFC_MAP_HASHLEN(vec));
 		mask = BFC_MAP_HASHMASK(vec);
 		bfc_object_tostring(key, kbuf, sizeof(kbuf));
 		L4SC_TRACE(logger, "%s: key %s hashcode 0x%x & 0x%x -> 0x%x",

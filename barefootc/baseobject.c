@@ -124,11 +124,16 @@ bfc_reduce_hashcode(size_t origval, int origbits, int hashlen)
 	size_t x = origval;
 	unsigned mask = (1u << hashlen) - 1;
 	unsigned code = (unsigned) x & mask;
+	unsigned over;
 	int bits = origbits;
 	while (bits > hashlen) {
 		x >>= hashlen;
 		bits -= hashlen;
-		code ^= (unsigned) x & mask;
+		code += (unsigned) x & mask;
+	}
+	/* add overflow bits as least significant bits (like TCP/IP) */
+	while ((over = (code >> hashlen)) > 0) {
+		code = (code & mask) + over;
 	}
 	return (code);
 }

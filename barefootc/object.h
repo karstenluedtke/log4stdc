@@ -71,7 +71,7 @@ struct bfc_objhdr {
 	elemT *	      (*index)    (objptrT, size_t);			     \
 	long	      (*getl)     (cobjptrT, size_t);			     \
 	int	      (*setl)     (objptrT, size_t, long);		     \
-	elemT *	      (*create)   (objptrT, size_t, struct mempool *);	     \
+	elemT *	      (*create)   (objptrT, size_t, elemT*, struct mempool*);\
 	int	      (*ibegin)   (cobjptrT, struct bfc_iterator *, size_t); \
 	int	      (*ilimit)   (cobjptrT, struct bfc_iterator *, size_t); \
 	int	      (*rbegin)   (cobjptrT, struct bfc_iterator *, size_t); \
@@ -233,6 +233,7 @@ const void *bfc_container_cindex(const void *, size_t);
 void *bfc_container_index(void *, size_t);
 long bfc_container_getlong(const void *, size_t);
 int  bfc_container_setlong(void *, size_t, long);
+void *bfc_container_create_element(void *, size_t, void *, struct mempool *);
 int  bfc_container_begin_iterator(const void *obj,
 				struct bfc_iterator *it, size_t bufsize);
 int  bfc_container_end_iterator(const void *obj, 

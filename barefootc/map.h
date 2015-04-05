@@ -94,6 +94,7 @@ do {									\
 
 int bfc_init_map_class(void *, size_t,
 		       int estimate, bfc_classptr_t, struct mempool *);
+int bfc_map_insert_objects(bfc_contptr_t, void *, void *);
 
 #ifdef __cplusplus
 };

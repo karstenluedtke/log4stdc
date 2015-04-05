@@ -228,6 +228,7 @@ libbarefootc_a_SOURCES+= containers/bfc_container_index.c
 libbarefootc_a_SOURCES+= containers/bfc_container_cindex.c
 libbarefootc_a_SOURCES+= containers/bfc_container_getlong.c
 libbarefootc_a_SOURCES+= containers/bfc_container_setlong.c
+libbarefootc_a_SOURCES+= containers/bfc_container_create_element.c
 libbarefootc_a_SOURCES+= containers/bfc_container_begin_iterator.c
 libbarefootc_a_SOURCES+= containers/bfc_container_end_iterator.c
 libbarefootc_a_SOURCES+= containers/bfc_container_max_size.c

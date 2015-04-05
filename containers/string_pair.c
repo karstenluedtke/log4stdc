@@ -27,6 +27,8 @@ static void dump_pair(const struct bfc_string_pair *pair,
 			int depth, struct l4sc_logger *log);
 static bfc_cstrptr_t pair_first(const struct bfc_string_pair *pair);
 static bfc_strptr_t  pair_index(struct bfc_string_pair *pair, size_t pos);
+static bfc_strptr_t  create_string_pair_element(struct bfc_string_pair *pair,
+			size_t pos, bfc_strptr_t str, struct mempool *pool);
 
 struct bfc_string_pair_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_string_pair_class *,
@@ -45,6 +47,7 @@ const struct bfc_string_pair_class bfc_string_pair_class = {
 	.dump	 	= dump_pair,
 	.first		= pair_first,
 	.index		= pair_index,
+	.create		= create_string_pair_element,
 };
 
 int
@@ -77,6 +80,34 @@ static int
 init_string_pair(void *buf, size_t bufsize, struct mempool *pool)
 {
 	return (bfc_init_shared_string_pair(buf, bufsize));
+}
+
+static bfc_strptr_t
+create_string_pair_element(struct bfc_string_pair *pair, size_t pos,
+			   bfc_strptr_t str, struct mempool *pool)
+{
+	bfc_strptr_t s;
+	size_t bufsize;
+	
+	if (pos > 0) {
+		s = &pair->second;
+		bufsize = sizeof(pair->second);
+	} else {
+		s = &pair->first;
+		bufsize = sizeof(pair->first);
+	}
+
+	bfc_destroy(s);
+
+	if (str && BFC_CLASS(str) && pool) {
+		bfc_init_basic_string_copy(s, bufsize, pool, str);
+	} else if (str && BFC_CLASS(str)) {
+		bfc_init_shared_string_substr(s, bufsize, str, 0, BFC_NPOS);
+	} else {
+		bfc_init_shared_string_buffer(s, bufsize, "", 0);
+	}
+
+	return (s);
 }
 
 size_t

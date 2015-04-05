@@ -31,13 +31,18 @@ test(int n1, const struct test_kv kv[])
 	const size_t initial_poolsize = bfc_object_length(pool);
 
 	L4SC_DEBUG(logger, "%s(n1 %d, kv %p)", __FUNCTION__, n1, kv);
-	for (i=0; i < n1; i++) {
-		L4SC_DEBUG(logger, "  %s: %s", kv[i].k, kv[i].v);
-	}
 
 	BFC_STRING_MAP_INIT(&map, n1, pool);
 
-	bfc_object_dump(&map, 2, logger);
+	for (i=0; i < n1; i++) {
+		bfc_string_t kstr, vstr;
+		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__,kv[i].k,kv[i].v);
+		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
+		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), kv[i].v);
+		bfc_map_insert_objects((bfc_contptr_t)&map, &kstr, &vstr);
+	}
+
+	bfc_object_dump(&map, 99, logger);
 
 	bfc_destroy(&map);
 
@@ -68,6 +73,18 @@ main(int argc, char *argv[])
 			{ "Kaaa", "Vaaa" },
 		};
 		test(1, kv);
+	} while (0 /*just once*/);
+
+	do {
+		static struct test_kv kv[] = {
+			{ "Kaaa", "Vaaa" },
+			{ "Kbbb", "Vbbb" },
+			{ "Kccc", "Vccc" },
+			{ "Kddd", "Vddd" },
+			{ "Keaa", "Veaa" },
+			{ "Kfaa", "Vfaa" },
+		};
+		test(sizeof(kv)/sizeof(kv[0]), kv);
 	} while (0 /*just once*/);
 
 	return (0);

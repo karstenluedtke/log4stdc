@@ -92,9 +92,14 @@ do {									\
 } while (0 /*just once*/)
 /** @} */
 
-int bfc_init_map_class(void *, size_t,
-		       int estimate, bfc_classptr_t, struct mempool *);
-int bfc_map_insert_objects(bfc_contptr_t, void *, void *);
+int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);
+int bfc_map_insert_objects(void *, void *, void *);
+int bfc_map_find_index(void *, const void *, void **);
+void *bfc_map_find_pair(void *, const void *);
+void *bfc_map_find_value(void *, const void *);
+void *bfc_map_index_value(void *, size_t);
+int bfc_map_remove_index(void *, size_t);
+int bfc_map_remove_key(void *, const void *);
 
 #ifdef __cplusplus
 };

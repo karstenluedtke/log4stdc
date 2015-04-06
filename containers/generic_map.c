@@ -7,6 +7,7 @@
 #include "barefootc/map.h"
 #include "barefootc/pair.h"
 #include "barefootc/vector.h"
+#include "barefootc/synchronization.h"
 #include "log4stdc.h"
 
 #define BFC_MAP_HASHLEN(map)	(CV2_LOG2ELEM(map))
@@ -57,32 +58,34 @@ bfc_init_map_class(void *buf, size_t bufsize, int estimate,
 }
 
 unsigned
-bfc_map_keyhashcode(bfc_ccontptr_t map, bfc_cobjptr_t key)
+bfc_map_keyhashcode(const void *map, const void *key)
 {
 	unsigned mask, code = 0;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
-	if (map && key && BFC_CLASS(key)) {
+	if (map && key && BFC_CLASS((bfc_cobjptr_t)key)) {
 		char kbuf[200];
 		bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 		code = bfc_object_hashcode(key, BFC_MAP_HASHLEN(vec));
 		mask = BFC_MAP_HASHMASK(vec);
 		bfc_object_tostring(key, kbuf, sizeof(kbuf));
-		L4SC_TRACE(logger, "%s: key %s hashcode 0x%x & 0x%x -> 0x%x",
-			__FUNCTION__, kbuf, code, mask, code & mask);
+		L4SC_TRACE(logger, "%s: key %s hashcode 0x%x & 0x%x",
+					__FUNCTION__, kbuf, code, mask);
 		code &= mask;
 	}
 	return (code);
 }
 
 int
-bfc_map_insert_objects(bfc_contptr_t map, void *key, void *value)
+bfc_map_insert_objects(void *map, void *key, void *value)
 {
-	int rc;
+	int rc = -ENOENT;
 	unsigned idx, lim;
+	bfc_cobjptr_t pkey;
 	bfc_contptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_mutex_ptr_t locked;
 
 	if ((map == NULL) || (key == NULL)) {
 		L4SC_ERROR(logger, "%s(%p, key %p, value %p): null arg",
@@ -93,60 +96,213 @@ bfc_map_insert_objects(bfc_contptr_t map, void *key, void *value)
 				__FUNCTION__, map, key, value);
 		return (-EINVAL);
 	}
-	idx = bfc_map_keyhashcode(map, (bfc_cobjptr_t)key);
-	lim = 2u << BFC_MAP_HASHLEN(vec);
-	do {
-		pair = (bfc_contptr_t) bfc_vector_have(vec, idx);
-		if (pair == NULL) {
-			/* No memory */
-			break;
-		} else if (BFC_CLASS((bfc_cobjptr_t)pair) == NULL) {
-			/* OK, empty entry */
-			break;
-		} else {
-			bfc_cobjptr_t k = bfc_container_first(pair);
-			if (k == NULL) {
-				break;	
-			} else if (BFC_CLASS(k) == NULL) {
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		idx = bfc_map_keyhashcode(map, key);
+		lim = 2u << BFC_MAP_HASHLEN(vec);
+		do {
+			pair = (bfc_contptr_t) bfc_vector_have(vec, idx);
+			if (pair == NULL) {
+				rc = -ENOMEM;
 				break;
-			} else if (bfc_equal_object(k, key)) {
-				char kbuf[200];
-				bfc_object_tostring(key, kbuf, sizeof(kbuf));
-				L4SC_WARN(logger, "%s(%p, key %p: %s) exists",
-						__FUNCTION__, map, key, kbuf);
-				bfc_object_dump(key, 1, logger);
-				return (-EEXIST);
+			} else if (BFC_CLASS((bfc_cobjptr_t)pair) == NULL) {
+				/* OK, empty entry */
+				rc = BFC_SUCCESS;
+				break;
+			} else if ((pkey = bfc_container_first(pair))== NULL) {
+				rc = BFC_SUCCESS;
+				break;	
+			} else if (BFC_CLASS(pkey) == NULL) {
+				rc = BFC_SUCCESS;
+				break;
+			} else if (bfc_equal_object(pkey, key)) {
+				rc = -EEXIST;
+				break;
 			}
 			/* else try next index */
+		} while (++idx < lim);
+
+		L4SC_DEBUG(logger, "%s: pair %p at #%u",__FUNCTION__,pair,idx);
+
+		if ((rc == BFC_SUCCESS) && (pair != NULL)
+		 && ((rc = bfc_init_object(vec->elem_class, pair,
+					   vec->elem_size, vec->pool)) >= 0)) {
+			if ((bfc_container_create_element(pair, 0,
+						key, vec->pool) == NULL)
+			 || (bfc_container_create_element(pair, 1,
+						value, vec->pool) == NULL)) {
+				rc = -ENOMEM;
+			}
 		}
-	} while (++idx < lim);
-
-	L4SC_DEBUG(logger, "%s: pair %p at index %u", __FUNCTION__, pair, idx);
-
-	if (pair == NULL) {
-		char kbuf[200];
-		bfc_object_tostring(key, kbuf, sizeof(kbuf));
-		L4SC_ERROR(logger, "%s(%p, key %p: %s): no memory for pair",
-				__FUNCTION__, map, key, kbuf);
-		return (-ENOMEM);
+		bfc_mutex_unlock(locked);
+	} else {
+		rc = -EBUSY;
 	}
 
-	rc = bfc_init_object(vec->elem_class, pair, vec->elem_size, vec->pool);
-	if (rc < 0) {
+	if (rc == -EEXIST) {
 		char kbuf[200];
 		bfc_object_tostring(key, kbuf, sizeof(kbuf));
-		L4SC_ERROR(logger, "%s(%p, key %p: %s): pair init error %d",
-				__FUNCTION__, map, key, kbuf, rc);
-		return (rc);
-	}
-	if ((bfc_container_create_element(pair, 0, key, vec->pool) == NULL)
-	 || (bfc_container_create_element(pair, 1, value, vec->pool) == NULL)) {
+		L4SC_WARN(logger, "%s(%p, key %p: %s): entry exists",
+					__FUNCTION__, map, key, kbuf);
+	} else if ((rc < 0) || (pair == NULL)) {
 		char kbuf[200];
 		bfc_object_tostring(key, kbuf, sizeof(kbuf));
-		L4SC_ERROR(logger, "%s(%p, key %p: %s): set error %d",
-				__FUNCTION__, map, key, kbuf, rc);
+		L4SC_ERROR(logger, "%s(%p, key %p: %s): error %d %s",
+					__FUNCTION__, map, key, kbuf, rc,
+					(rc == -ENOMEM)? "no memory":
+					(rc == -EBUSY)?  "cannot lock": "");
 	}
-
 	return(rc);
 }
-	
+
+int
+bfc_map_find_index(void *map, const void *key, void **pairpp)
+{
+	int rc = -ENOENT;
+	unsigned idx, lim;
+	bfc_cobjptr_t pkey;
+	bfc_contptr_t pair = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_mutex_ptr_t locked;
+	char kbuf[200];
+
+	if ((map == NULL) || (key == NULL)) {
+		L4SC_ERROR(logger, "%s(%p, key %p): null arg",
+						__FUNCTION__, map, key);
+		return (-EFAULT);
+	} else if (BFC_CLASS((bfc_cobjptr_t)key) == NULL) {
+		L4SC_ERROR(logger, "%s(%p, key %p): no key class",
+						__FUNCTION__, map, key);
+		return (-EINVAL);
+	}
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		idx = bfc_map_keyhashcode(map, key);
+		lim = BFC_VECTOR_GET_SIZE(vec);
+		do {
+			pair = (bfc_contptr_t) bfc_vector_ref(vec, idx);
+			if (pair == NULL) {
+				/* entry never allocated */
+				break;
+			} else if ((BFC_CLASS((bfc_cobjptr_t)pair) != NULL)
+			    && ((pkey = bfc_container_first(pair)) != NULL)
+			    && BFC_CLASS(pkey) && bfc_equal_object(pkey,key)) {
+				rc = idx;
+				if (pairpp) {
+					*pairpp = (void *) pair;
+				}
+				break;
+			}
+			/* else try next index */
+		} while (++idx < lim);
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger, "%s(%p, key %p) cannot lock",
+						__FUNCTION__, map, key);
+		rc = -EBUSY;
+	}
+
+	bfc_object_tostring(key, kbuf, sizeof(kbuf));
+	L4SC_DEBUG(logger, "%s(%p, key %p: %s) %s%d",
+		__FUNCTION__, map, key, kbuf, (rc < 0)? "error ": "at #", rc);
+
+	return (rc);
+}
+
+void *
+bfc_map_find_pair(void *map, const void *key)
+{
+	void *pair = NULL;
+	if (bfc_map_find_index(map, key, &pair) < 0) {
+		return (NULL);
+	}
+	return (pair);
+}
+
+void *
+bfc_map_find_value(void *map, const void *key)
+{
+	void *pair = NULL, *pval = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		if ((bfc_map_find_index(map, key, &pair) >= 0) && pair) {
+			pval = bfc_container_index(pair, 1);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, key %p) cannot lock",
+						__FUNCTION__, map, key);
+	}
+	return (pval);
+}
+
+void *
+bfc_map_index_value(void *map, size_t idx)
+{
+	void *pair = NULL, *pval = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		if ((pair = bfc_vector_ref(vec, (unsigned)idx)) != NULL) {
+			pval = bfc_container_index(pair, 1);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld) cannot lock",
+						__FUNCTION__, map, (long)idx);
+	}
+	return (pval);
+}
+
+int
+bfc_map_remove_index(void *map, size_t idx)
+{
+	void *pair = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+	int rc = BFC_SUCCESS;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		if ((pair = bfc_vector_ref(vec, (unsigned)idx)) != NULL) {
+			bfc_destroy(pair);
+			((bfc_objptr_t)pair)->vptr = NULL;
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %ld) cannot lock",
+						__FUNCTION__, map, (long)idx);
+		rc = -EBUSY;
+	}
+	return (rc);
+}
+
+int
+bfc_map_remove_key(void *map, const void *key)
+{
+	void *pair = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+	int rc = BFC_SUCCESS;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		if (((rc = bfc_map_find_index(map, key, &pair)) >= 0) && pair) {
+			bfc_destroy(pair);
+			((bfc_objptr_t)pair)->vptr = NULL;
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, key %p) cannot lock",
+						__FUNCTION__, map, key);
+		rc = -EBUSY;
+	}
+	return (rc);
+}
+

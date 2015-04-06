@@ -39,11 +39,22 @@ test(int n1, const struct test_kv kv[])
 		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__,kv[i].k,kv[i].v);
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
 		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), kv[i].v);
-		rc = bfc_map_insert_objects((bfc_contptr_t)&map, &kstr, &vstr);
+		rc = bfc_map_insert_objects(&map, &kstr, &vstr);
 		assert(rc >= 0);
 	}
 
 	bfc_object_dump(&map, 99, logger);
+
+	for (i=0; i < n1; i++) {
+		bfc_string_t kstr, *vp;
+		char vbuf[80];
+		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
+		vp = bfc_map_find_value(&map, &kstr);
+		assert(vp != NULL);
+		bfc_object_tostring(vp, vbuf, sizeof(vbuf));
+		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__, kv[i].k, vbuf);
+		assert(bfc_string_compare_c_str(vp, kv[i].v) == 0);
+	}
 
 	bfc_destroy(&map);
 

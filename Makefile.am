@@ -254,6 +254,7 @@ libbarefootc_a_SOURCES+= containers/vector.c
 libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= containers/object_vector.c
+libbarefootc_a_SOURCES+= containers/int_pair.c
 libbarefootc_a_SOURCES+= containers/string_pair.c
 libbarefootc_a_SOURCES+= containers/generic_map.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
@@ -3817,6 +3818,12 @@ tests_map_add_to_string_map_SOURCES = tests/map/add_to_string_map.c
 tests_map_add_to_string_map_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_add_to_string_map_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/add_to_string_map
+
+check_PROGRAMS += tests/map/at.pass
+tests_map_at_pass_SOURCES = tests/map/at.pass.cpp
+tests_map_at_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_at_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/at.pass
 
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp

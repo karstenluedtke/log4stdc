@@ -20,6 +20,10 @@
 #include "barefootc/string.h"
 #include "barefootc/mempool.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @addtogroup class_definitions */
 struct bfc_map_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_map_class *,

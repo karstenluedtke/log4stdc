@@ -16,9 +16,15 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @addtogroup class_definitions */
 struct bfc_pair_class;
 typedef const struct bfc_pair_class *bfc_pair_class_ptr_t;
+extern const struct bfc_pair_class bfc_int_pair_class;
+extern const struct bfc_pair_class bfc_int_string_pair_class;
 /** @} */
 
 /** @addtogroup pair_definition */
@@ -40,6 +46,7 @@ struct pairname {							\
 	second_elemtype	second;						\
 }
 
+typedef BFC_PAIR(bfc_int_pair, int, int) bfc_int_pair_t;
 typedef BFC_PAIR(bfc_ptr_pair, void *, void *) bfc_ptr_pair_t;
 typedef BFC_PAIR(bfc_object_pair, bfc_object_t, bfc_object_t) bfc_object_pair_t;
 typedef BFC_PAIR(bfc_objref_pair, bfc_objptr_t, bfc_objptr_t) bfc_objref_pair_t;

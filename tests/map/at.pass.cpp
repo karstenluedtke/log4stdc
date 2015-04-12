@@ -36,11 +36,13 @@ int main()
     l4sc_configure_from_xml_file("log4j.xml");
     logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     {
-	typedef barefootc::map<int, int> C;
+	typedef barefootc::map<bfc_integer_object_t, bfc_integer_object_t> C;
 	typedef C::value_type P;
 	static const P a[] = {
-		{ &bfc_int_string_pair_class, 1, 11 },
-		{ &bfc_int_string_pair_class, 2, 22 },
+		{ &bfc_int_pair_class,
+		  BFC_INTEGER_OBJECT(1), BFC_INTEGER_OBJECT(11) },
+		{ &bfc_int_pair_class,
+		  BFC_INTEGER_OBJECT(2), BFC_INTEGER_OBJECT(22) },
 	};
         C c(a, a + sizeof(a)/sizeof(a[0]));
         //C c(C::init_iterator(a), C::init_iterator(a + sizeof(a)/sizeof(a[0])));

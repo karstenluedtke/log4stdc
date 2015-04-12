@@ -25,15 +25,15 @@ static int pair_equals(const struct bfc_int_pair *pair,
 			const struct bfc_int_pair *other);
 static void dump_pair(const struct bfc_int_pair *pair,
 			int depth, struct l4sc_logger *log);
-static const int *pair_first(const struct bfc_int_pair *pair);
-static int *pair_index(struct bfc_int_pair *pair, size_t pos);
-static int *create_int_pair_element(struct bfc_int_pair *pair,
-			size_t pos, int *valp, struct mempool *pool);
+static bfc_cobjptr_t pair_first(const struct bfc_int_pair *pair);
+static bfc_objptr_t pair_index(struct bfc_int_pair *pair, size_t pos);
+static bfc_objptr_t create_int_pair_element(struct bfc_int_pair *pair,
+			size_t pos, bfc_objptr_t val, struct mempool *pool);
 
 struct bfc_pair_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_int_pair_class *,
 		struct bfc_int_pair *, const struct bfc_int_pair *,
-		int)
+		bfc_object_t)
 };
 
 const struct bfc_pair_class bfc_int_pair_class = {
@@ -58,23 +58,25 @@ init_int_pair(void *buf, size_t bufsize, struct mempool *pool)
 		return (-ENOSPC);
 	}
 	pair->vptr = (bfc_pair_class_ptr_t) &bfc_int_pair_class;
-	pair->first = pair->second = 0;
+	bfc_init_integer_object(&pair->first, sizeof(pair->first), pool);
+	bfc_init_integer_object(&pair->second, sizeof(pair->second), pool);
 	return (BFC_SUCCESS);
 }
 
-static int *
+static bfc_objptr_t
 create_int_pair_element(struct bfc_int_pair *pair, size_t pos,
-			   int *valp, struct mempool *pool)
+			   bfc_objptr_t val, struct mempool *pool)
 {
-	int *p;
+	bfc_objptr_t p;
 	
 	if (pos > 0) {
-		p = &pair->second;
+		p = (bfc_objptr_t ) &pair->second;
+		bfc_clone_object(val, p, sizeof(pair->second), pool);
 	} else {
-		p = &pair->first;
+		p = (bfc_objptr_t ) &pair->first;
+		bfc_clone_object(val, p, sizeof(pair->first), pool);
 	}
 
-	*p = valp? *valp: 0;
 	return (p);
 }
 
@@ -92,39 +94,38 @@ destroy_pair(struct bfc_int_pair *pair)
 	}
 }
 
-static const int *
+static bfc_cobjptr_t
 pair_first(const struct bfc_int_pair *pair)
 {
-	return (&pair->first);
+	return ((bfc_cobjptr_t) &pair->first);
 }
 
-static int *
+static bfc_objptr_t
 pair_index(struct bfc_int_pair *pair, size_t pos)
 {
-	return ((pos > 0)? &pair->second: &pair->first);
+	return ((bfc_objptr_t)((pos > 0)? &pair->second: &pair->first));
 }
 
 static unsigned  
 pair_hashcode(const struct bfc_int_pair *pair, int hashlen)
 {
-	return (bfc_reduce_hashcode(pair->first,
-				    8*sizeof(pair->first), hashlen));
+	return (bfc_object_hashcode(&pair->first, hashlen));
 }
 
 static int
 pair_equals(const struct bfc_int_pair *pair,
 	    const struct bfc_int_pair *other)
 {
-	return ((pair->first == other->first) &&
-		(pair->second == other->second));
+	return (bfc_equal_object(&pair->first, &other->first) &&
+		bfc_equal_object(&pair->second, &other->second));
 }
 
 static void
 dump_pair(const struct bfc_int_pair *pair,int depth,struct l4sc_logger *log)
 {
 	if (pair && BFC_CLASS(pair)) {
-		L4SC_DEBUG(log, "%s @%p: %d, %d",
+		L4SC_DEBUG(log, "%s @%p: %ld, %ld",
 			((bfc_classptr_t) BFC_CLASS(pair))->name, pair,
-			pair->first, pair->second);
+			(long) pair->first.u.n, (long) pair->second.u.n);
 	}
 }

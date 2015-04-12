@@ -5,6 +5,7 @@ AM_CPPFLAGS = -Ilog4stdc
 lib_LIBRARIES = libbarefootc.a liblog4stdc.a
 include_HEADERS = log4stdc/log4stdc.h
 nobase_include_HEADERS = barefootc/object.h
+nobase_include_HEADERS+= barefootc/number.h
 nobase_include_HEADERS+= barefootc/mempool.h
 nobase_include_HEADERS+= barefootc/string.h
 nobase_include_HEADERS+= barefootc/container.h
@@ -28,6 +29,7 @@ noinst_PROGRAMS+= cxxwrapper_test
 check_PROGRAMS =
 
 libbarefootc_a_SOURCES = barefootc/baseobject.c
+libbarefootc_a_SOURCES+= barefootc/integer_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_new_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_init_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_clone_object.c

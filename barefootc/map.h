@@ -94,6 +94,18 @@ do {									\
 	extern const bfc_class_t bfc_string_objref_pair_class;		\
 	BFC_MAP_INIT(map,estimate,&bfc_string_objref_pair_class,mpool);	\
 } while (0 /*just once*/)
+
+#define BFC_INT_MAP_INIT(map,estimate,mpool) \
+do {									\
+	extern const bfc_class_t bfc_int_pair_class;			\
+	BFC_MAP_INIT(map, estimate, &bfc_int_pair_class, mpool);	\
+} while (0 /*just once*/)
+
+#define BFC_INT_STRING_MAP_INIT(map,estimate,mpool) \
+do {									\
+	extern const bfc_class_t bfc_int_string_pair_class;		\
+	BFC_MAP_INIT(map, estimate, &bfc_int_string_pair_class, mpool);	\
+} while (0 /*just once*/)
 /** @} */
 
 int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);

@@ -96,7 +96,8 @@ namespace barefootc {
 
 		const Allocator saved_allocator;
 
-		void init_map(struct mempool *pool, int& k, int& v)
+		void init_map(struct mempool *pool,
+			bfc_integer_object_t& k, bfc_integer_object_t& v)
 		{
 			BFC_MAP_INIT(&bfcmap, 100,
 				(bfc_classptr_t) &bfc_int_pair_class, pool);
@@ -138,15 +139,16 @@ namespace barefootc {
 		}
 
 
-		map(init_iterator first,
-		    init_iterator lim): saved_allocator()
+		map(init_iterator first, init_iterator lim): saved_allocator()
 		{
 			key_type k;
 			mapped_type v;
 
 			init_map(get_stdc_mempool(), k, v);
 			for (init_iterator it(first); it != lim; it++) {
-				;
+				value_type pair = *it;
+				bfc_map_insert_objects(&bfcmap,
+						&pair.first, &pair.second);
 			}
 		}
 		

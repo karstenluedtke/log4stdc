@@ -14,6 +14,7 @@
 #define _BFC_PAIR_H_
 
 #include "barefootc/object.h"
+#include "barefootc/number.h"
 #include "barefootc/string.h"
 
 #ifdef __cplusplus
@@ -46,7 +47,7 @@ struct pairname {							\
 	second_elemtype	second;						\
 }
 
-typedef BFC_PAIR(bfc_int_pair, int, int) bfc_int_pair_t;
+typedef BFC_PAIR(bfc_int_pair, bfc_number_t, bfc_number_t) bfc_int_pair_t;
 typedef BFC_PAIR(bfc_ptr_pair, void *, void *) bfc_ptr_pair_t;
 typedef BFC_PAIR(bfc_object_pair, bfc_object_t, bfc_object_t) bfc_object_pair_t;
 typedef BFC_PAIR(bfc_objref_pair, bfc_objptr_t, bfc_objptr_t) bfc_objref_pair_t;

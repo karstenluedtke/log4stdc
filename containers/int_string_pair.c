@@ -109,6 +109,8 @@ create_int_string_pair_element(struct bfc_int_string_pair *pair, size_t pos,
 		} else if (str && BFC_CLASS(str)) {
 			bfc_init_shared_string_substr(p, bufsize,
 						      str, 0, BFC_NPOS);
+		} else if (pool) {
+			bfc_init_basic_string(p, bufsize, pool);
 		} else {
 			bfc_init_shared_string_buffer(p, bufsize, "", 0);
 		}

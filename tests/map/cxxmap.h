@@ -354,7 +354,20 @@ map<Key,T,Compare,Allocator>& y);
 			p = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap,
 						    (bfc_cobjptr_t)&x);
 			if (p == NULL) {
-				throw(std::out_of_range("no such entry"));
+				int idx = bfc_map_insert_objects(
+						    (bfc_contptr_t)&bfcmap,
+						    (bfc_objptr_t)&x,
+						    (bfc_objptr_t)0);
+				if (idx < 0) {
+					char msg[80];
+					snprintf(msg, sizeof(msg),
+						"map entry create error %d",
+						-idx);
+					throw(std::runtime_error(msg));
+				}
+				p = (T*) bfc_map_index_value(
+						    (bfc_contptr_t)&bfcmap,
+						    (size_t) idx);
 			}
 			return (*p);
 		}

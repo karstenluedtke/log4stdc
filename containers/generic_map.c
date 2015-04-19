@@ -159,9 +159,11 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value)
 		 && ((rc = bfc_init_object(vec->elem_class, pair,
 					   vec->elem_size, vec->pool)) >= 0)) {
 			if ((bfc_container_create_element(pair, 0,
-						key, vec->pool) == NULL)
-			 || (bfc_container_create_element(pair, 1,
-						value, vec->pool) == NULL)) {
+						key, vec->pool) != NULL)
+			 && (bfc_container_create_element(pair, 1,
+						value, vec->pool) != NULL)) {
+				rc = (int) idx;
+			} else {
 				rc = -ENOMEM;
 			}
 		}
@@ -281,10 +283,13 @@ bfc_map_index_value(bfc_contptr_t map, size_t idx)
 	bfc_mutex_ptr_t locked;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 		if ((pair = bfc_vector_ref(vec, (unsigned)idx)) != NULL) {
 			pval = bfc_container_index(pair, 1);
 		}
 		bfc_mutex_unlock(locked);
+		L4SC_DEBUG(log, "%s(%p, %ld): @%p",
+					__FUNCTION__, map, (long)idx, pval);
 	} else {
 		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 		L4SC_ERROR(log, "%s(%p, %ld) cannot lock",

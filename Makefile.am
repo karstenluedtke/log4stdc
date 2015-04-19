@@ -3828,6 +3828,12 @@ tests_map_at_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_at_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/at.pass
 
+check_PROGRAMS += tests/map/index.pass
+tests_map_index_pass_SOURCES = tests/map/index.pass.cpp
+tests_map_index_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_index_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/index.pass
+
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp
 #tests_strings_version_pass_LDADD = libbarefootc.a liblog4stdc.a

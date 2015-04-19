@@ -103,6 +103,8 @@ create_string_pair_element(struct bfc_string_pair *pair, size_t pos,
 		bfc_init_basic_string_copy(s, bufsize, pool, str);
 	} else if (str && BFC_CLASS(str)) {
 		bfc_init_shared_string_substr(s, bufsize, str, 0, BFC_NPOS);
+	} else if (pool) {
+		bfc_init_basic_string(s, bufsize, pool);
 	} else {
 		bfc_init_shared_string_buffer(s, bufsize, "", 0);
 	}

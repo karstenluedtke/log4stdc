@@ -29,6 +29,7 @@ CXXFLAGS=-EHsc
 HEADERS= \
 	log4stdc/log4stdc.h \
 	barefootc/object.h \
+	barefootc/number.h \
 	barefootc/mempool.h \
 	barefootc/string.h \
 	barefootc/container.h \
@@ -47,6 +48,7 @@ HEADERS= \
 
 OFILES= \
 	barefootc/baseobject.obj \
+	barefootc/integer_object.obj \
 	barefootc/bfc_new_object.obj \
 	barefootc/bfc_init_object.obj \
 	barefootc/bfc_clone_object.obj \
@@ -272,7 +274,9 @@ OFILES= \
 	containers/vector_ref.obj \
 	containers/vector_set.obj \
 	containers/object_vector.obj \
+	containers/int_pair.obj \
 	containers/string_pair.obj \
+	containers/int_string_pair.obj \
 	containers/generic_map.obj \
 	mempools/stdcpool.obj \
 	mempools/defaultpool.obj \
@@ -699,6 +703,8 @@ TESTS= \
 	tests/vector/assign_string_vector.exe \
 	tests/vector/large_element.exe \
 	tests/map/add_to_string_map.exe \
+	tests/map/at.pass.exe \
+	tests/map/index.pass.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -1020,10 +1026,15 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\vector\assign_string_vector.exe
 	tests\vector\large_element.exe
 	tests\map\add_to_string_map.exe
+	tests\map\at.pass.exe
+	tests\map\index.pass.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/baseobject.c
+
+barefootc/integer_object.obj: barefootc/integer_object.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/integer_object.c
 
 barefootc/bfc_new_object.obj: barefootc/bfc_new_object.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_new_object.c
@@ -1700,8 +1711,14 @@ containers/vector_set.obj: containers/vector_set.c $(HEADERS)
 containers/object_vector.obj: containers/object_vector.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/object_vector.c
 
+containers/int_pair.obj: containers/int_pair.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/int_pair.c
+
 containers/string_pair.obj: containers/string_pair.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/string_pair.c
+
+containers/int_string_pair.obj: containers/int_string_pair.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/int_string_pair.c
 
 containers/generic_map.obj: containers/generic_map.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/generic_map.c
@@ -4507,4 +4524,20 @@ tests/map/add_to_string_map.exe: \
 
 tests/map/add_to_string_map.obj: tests/map/add_to_string_map.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/add_to_string_map.c
+
+tests/map/at.pass.exe: \
+		tests/map/at.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/at.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/at.pass.obj: tests/map/at.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/at.pass.cpp
+
+tests/map/index.pass.exe: \
+		tests/map/index.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/index.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/index.pass.obj: tests/map/index.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/index.pass.cpp
 

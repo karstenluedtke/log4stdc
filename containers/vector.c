@@ -282,7 +282,7 @@ vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other)
 	if (vec == other) {
 		return (1);
 	}
-	if (bfc_object_length(vec) != bfc_object_length(other)) {
+	if (BFC_VECTOR_GET_SIZE(vec) != bfc_object_length(other)) {
 		return (0);
 	}
 	if (vec->lock) {
@@ -291,7 +291,7 @@ vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other)
 	if (other->lock) {
 		lock2 = bfc_mutex_lock(other->lock);
 	}
-	size = bfc_object_length(vec);
+	size = BFC_VECTOR_GET_SIZE(vec);
 	for (idx=0, eq=1; idx < size; idx++) {
 		p = bfc_container_index(BFC_UNCONST(bfc_contptr_t,vec), idx);
 		q = bfc_container_index(BFC_UNCONST(bfc_contptr_t,other), idx);
@@ -479,7 +479,7 @@ vector_setlong(bfc_contptr_t vec, size_t pos, long val)
 	int rc = BFC_SUCCESS;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		if ((pos == BFC_NPOS) || (pos > bfc_object_length(vec))) {
+		if ((pos == BFC_NPOS) || (pos > BFC_VECTOR_GET_SIZE(vec))) {
 			rc = -ERANGE;
 		} else if ((p = bfc_vector_have(vec, pos)) == NULL) {
 			rc = -ENOMEM;
@@ -529,7 +529,7 @@ begin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 static int
 limit_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 {
-	int n = bfc_object_length(vec);
+	int n = BFC_VECTOR_GET_SIZE(vec);
 	size_t pos = (n > 0)? n: 0;
 	return (bfc_init_iterator(it, bufsize, (bfc_cobjptr_t)vec, pos));
 }
@@ -537,7 +537,7 @@ limit_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 static int
 rbegin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 {
-	int n = bfc_object_length(vec);
+	int n = BFC_VECTOR_GET_SIZE(vec);
 	size_t pos = (n > 0)? (n-1): BFC_NPOS;
 	return (bfc_init_reverse_iterator(it, bufsize,
 					  (bfc_cobjptr_t)vec, pos));
@@ -656,7 +656,7 @@ vector_assign_range(bfc_contptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 		bfc_container_end_iterator(vec, &it, sizeof(it));
 		rc = bfc_container_insert_range(vec, &it, first, last);
 		if (rc >= 0) {
-			rc = bfc_object_length(vec);
+			rc = BFC_VECTOR_GET_SIZE(vec);
 			if (rc < 0) {
 				rc = BFC_SUCCESS;
 			}

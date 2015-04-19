@@ -134,7 +134,7 @@ vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other)
 	if (vec == other) {
 		return (1);
 	}
-	if (bfc_object_length(vec) != bfc_object_length(other)) {
+	if (BFC_VECTOR_GET_SIZE(vec) != bfc_object_length(other)) {
 		return (0);
 	}
 	if (vec->lock) {
@@ -143,7 +143,7 @@ vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other)
 	if (other->lock) {
 		lock2 = bfc_mutex_lock(other->lock);
 	}
-	size = bfc_object_length(vec);
+	size = BFC_VECTOR_GET_SIZE(vec);
 	for (idx=0, eq=1; idx < size; idx++) {
 		p = bfc_container_index(BFC_UNCONST(bfc_contptr_t,vec), idx);
 		q = bfc_container_index(BFC_UNCONST(bfc_contptr_t,other), idx);
@@ -234,7 +234,7 @@ vector_getlong(bfc_ccontptr_t vec, size_t pos)
 	bfc_mutex_ptr_t locked;
 	long v = 0;
 
-	if ((pos == BFC_NPOS) || (pos > bfc_object_length(vec))) {
+	if ((pos == BFC_NPOS) || (pos > BFC_VECTOR_GET_SIZE(vec))) {
 		return (-ERANGE);
 	}
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
@@ -259,7 +259,7 @@ vector_setlong(bfc_contptr_t vec, size_t pos, long val)
 	bfc_mutex_ptr_t locked;
 	int rc = -ENOENT;
 
-	if ((pos == BFC_NPOS) || (pos > bfc_object_length(vec))) {
+	if ((pos == BFC_NPOS) || (pos > BFC_VECTOR_GET_SIZE(vec))) {
 		return (-ERANGE);
 	}
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {

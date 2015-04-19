@@ -97,17 +97,24 @@ namespace barefootc {
 		const Allocator saved_allocator;
 
 		void init_map(struct mempool *pool,
-			bfc_integer_object_t& k, bfc_integer_object_t& v)
+			      bfc_number_t& k, bfc_number_t& v)
 		{
 			BFC_MAP_INIT(&bfcmap, 100,
 				(bfc_classptr_t) &bfc_int_pair_class, pool);
+			l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+			L4SC_DEBUG(log, "%s: sizes: k %d, v %d, value_type %d, elem_size %d",
+				__FUNCTION__, (int) sizeof(k), (int) sizeof(v), (int) sizeof(value_type), (int) bfcmap.elem_size);
 		}
 
-		void init_map(struct mempool *pool, int& k, bfc_string_t& v)
+		void init_map(struct mempool *pool,
+			      bfc_number_t& k, bfc_string_t& v)
 		{
 			BFC_MAP_INIT(&bfcmap, 100,
 				(bfc_classptr_t) &bfc_int_string_pair_class,
 				pool);
+			l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+			L4SC_DEBUG(log, "%s: sizes: k %d, v %d, value_type %d, elem_size %d",
+				__FUNCTION__, (int) sizeof(k), (int) sizeof(v), (int) sizeof(value_type), (int) bfcmap.elem_size);
 		}
 
 		static void throw_replace_error(int rc)
@@ -321,7 +328,7 @@ map<Key,T,Compare,Allocator>& y);
 		// 23.3.6.3, capacity:
 		size_type size() const
 		{
-			return (bfc_object_length(&bfcmap));
+			return (bfc_map_size((bfc_ccontptr_t) &bfcmap));
 		}
 
 		size_type max_size() const

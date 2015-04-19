@@ -696,6 +696,18 @@ int bfc_buffered_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 					void *databuf, size_t dbufsize);
 
 #ifdef __cplusplus
-}	/* C++ */
+}	/* extern "C" */
+
+#undef BFCSTR
+#define BFCSTR(s) \
+ {&bfc_shared_string_class, const_cast<char *>(s), \
+  sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
+
+#undef BFCWSTR
+#define BFCWSTR(s) \
+ {&bfc_shared_wstring_class, const_cast<wchar_t *>(s), \
+  (sizeof(s)-1)/sizeof(wchar_t), 0, \
+  (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
+
 #endif
 #endif /* _BFC_STRING_H_ */

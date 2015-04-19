@@ -27,7 +27,7 @@
 
 #include <barefootc/pair.h>
 #include <barefootc/string.h>
-#define P1(k,v)	{ &bfc_int_string_pair_class, k, BFCSTR(v) }
+#define P1(k,v)	{ &bfc_int_string_pair_class, BFC_SIGNED_NUMBER(k), BFCSTR(v) }
 
 l4sc_logger_ptr_t logger;
 
@@ -36,29 +36,19 @@ int main()
     l4sc_configure_from_xml_file("log4j.xml");
     logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     {
-	typedef barefootc::map<bfc_integer_object_t, bfc_integer_object_t> C;
+	typedef barefootc::map<bfc_number_t, bfc_number_t> C;
 	typedef C::value_type P;
 	static const P a[] = {
 		{ &bfc_int_pair_class,
-		  BFC_INTEGER_OBJECT(1), BFC_INTEGER_OBJECT(11) },
+		  BFC_SIGNED_NUMBER(1), BFC_SIGNED_NUMBER(11) },
 		{ &bfc_int_pair_class,
-		  BFC_INTEGER_OBJECT(2), BFC_INTEGER_OBJECT(22) },
+		  BFC_SIGNED_NUMBER(2), BFC_SIGNED_NUMBER(22) },
 	};
         C c(a, a + sizeof(a)/sizeof(a[0]));
-        //C c(C::init_iterator(a), C::init_iterator(a + sizeof(a)/sizeof(a[0])));
     }
-#if 0
     {
-	typedef barefootc::map<int, bfc_string_t> C;
+	typedef barefootc::map<bfc_number_t, bfc_string_t> C;
 	typedef C::value_type P;
-	//typedef BFC_PAIR(pair_s, int, bfc_string_t) P;
-	static const P aa = { &bfc_int_string_pair_class, 1,
-			{&bfc_shared_string_class,
-			"one", sizeof("one")-1,
-			0,
-			(unsigned)(sizeof("one")-1),
-			NULL, }
-		     };
         const P a[] =
         {
             P1(1, "one"),
@@ -68,8 +58,9 @@ int main()
             P1(1, "four"),
             P1(2, "four"),
         };
-        C c(C::init_iterator(&a[0]), C::init_iterator(a + sizeof(a)/sizeof(a[0])));
+        C c(a, a + sizeof(a)/sizeof(a[0]));
         assert(c.size() == 4);
+#if 0
         c.at(1) = "ONE";
         assert(c.at(1) == "ONE");
         try
@@ -80,8 +71,10 @@ int main()
         catch (std::out_of_range&)
         {
         }
+#endif
         assert(c.size() == 4);
     }
+#if 0
     {
         typedef std::unordered_map<int, std::string> C;
         typedef std::pair<int, std::string> P;

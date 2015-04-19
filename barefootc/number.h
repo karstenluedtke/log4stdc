@@ -25,6 +25,7 @@ struct bfc_number_class;
 typedef const struct bfc_number_class *bfc_number_classptr_t;
 
 extern const struct bfc_classhdr bfc_integer_class;
+extern const struct bfc_classhdr bfc_natural_class;
 
 #define BFC_NUMBERHDR(classptrT) \
 	classptrT	vptr;	  /**< virtual methods */
@@ -32,32 +33,16 @@ extern const struct bfc_classhdr bfc_integer_class;
 struct bfc_number {
 	BFC_NUMBERHDR(bfc_classptr_t)
 	union bfc_number_un {
-		double	f;
-		size_t	n;
-		struct { long num, denom; } q;
-	} 		u;
-};
-
-struct bfc_natural {
-	BFC_NUMBERHDR(bfc_classptr_t)
-	size_t		n;
-};
-
-struct bfc_integer {
-	BFC_NUMBERHDR(bfc_classptr_t)
-	ptrdiff_t	n;
+		double		f;
+		ptrdiff_t	n;
+	} 			u;
 };
 
 typedef struct bfc_number bfc_number_t;
 typedef struct bfc_number *bfc_numptr_t;
 typedef const struct bfc_number *bfc_cnumptr_t;
 
-typedef struct bfc_integer bfc_integer_object_t;
-typedef struct bfc_integer *bfc_intobjptr_t;
-typedef const struct bfc_integer *bfc_cintobjptr_t;
-
-
-#define BFC_INTEGER_OBJECT(n)	{ &bfc_integer_class, (n) }
+#define BFC_SIGNED_NUMBER(x)	{ &bfc_integer_class, { .n = (ptrdiff_t)(x) } }
 
 #define BFC_NUMBER_LOGGER	"barefootc.number",16
 

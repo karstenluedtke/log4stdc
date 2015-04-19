@@ -40,7 +40,7 @@ const struct bfc_classhdr bfc_integer_class = {
 int
 bfc_init_integer_object(void *buf, size_t bufsize, struct mempool *pool)
 {
-	struct bfc_integer *obj = (struct bfc_integer *) buf;
+	bfc_numptr_t obj = (bfc_numptr_t) buf;
 	if (bufsize < sizeof(*obj)) {
 		return (-ENOSPC);
 	} else {
@@ -88,22 +88,22 @@ bfc_number_clone_object(bfc_cobjptr_t obj,
 size_t
 bfc_get_integer_object_size(bfc_cobjptr_t obj)
 {
-	return (sizeof(struct bfc_integer));
+	return (sizeof(bfc_number_t));
 }
 
 unsigned  
 bfc_integer_get_hashcode(bfc_cobjptr_t obj, int hashlen)
 {
-	const struct bfc_integer *p = (const struct bfc_integer *) obj;
-	return (bfc_reduce_hashcode(p->n, 8*sizeof(p->n), hashlen));
+	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
+	return (bfc_reduce_hashcode(p->u.n, 8*sizeof(p->u.n), hashlen));
 }
 
 int
 bfc_integer_is_equal(bfc_cobjptr_t obj, bfc_cobjptr_t other)
 {
-	const struct bfc_integer *p = (const struct bfc_integer *) obj;
-	const struct bfc_integer *q = (const struct bfc_integer *) other;
-	return (p->n == q->n);
+	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
+	bfc_cnumptr_t q = (bfc_cnumptr_t) other;
+	return (p->u.n == q->u.n);
 }
 
 size_t
@@ -115,10 +115,10 @@ bfc_number_get_object_length(bfc_cobjptr_t obj)
 int
 bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
 {
-	const struct bfc_integer *p = (const struct bfc_integer *) obj;
+	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
 
 	if (p && buf) {
-		snprintf(buf, bufsize, "%ld", (long) p->n);
+		snprintf(buf, bufsize, "%ld", (long) p->u.n);
 	}
 	return (0);
 }
@@ -126,11 +126,11 @@ bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
 void
 bfc_integer_dump_object(bfc_cobjptr_t obj, int depth, struct l4sc_logger *log)
 {
-	const struct bfc_integer *p = (const struct bfc_integer *) obj;
+	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
 
 	if (obj && BFC_CLASS(obj) && p) {
 		L4SC_DEBUG(log, "%s object @%p: %ld",
-			BFC_CLASS(obj)->name, obj, (long) p->n);
+			BFC_CLASS(obj)->name, obj, (long) p->u.n);
 	}
 }
 

@@ -48,6 +48,9 @@ struct pairname {							\
 }
 
 typedef BFC_PAIR(bfc_int_pair, bfc_number_t, bfc_number_t) bfc_int_pair_t;
+typedef BFC_PAIR(bfc_int_string_pair, bfc_number_t, bfc_string_t)
+							bfc_int_string_pair_t;
+
 typedef BFC_PAIR(bfc_ptr_pair, void *, void *) bfc_ptr_pair_t;
 typedef BFC_PAIR(bfc_object_pair, bfc_object_t, bfc_object_t) bfc_object_pair_t;
 typedef BFC_PAIR(bfc_objref_pair, bfc_objptr_t, bfc_objptr_t) bfc_objref_pair_t;

@@ -109,6 +109,8 @@ do {									\
 /** @} */
 
 int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);
+size_t bfc_map_size(bfc_ccontptr_t);
+
 int bfc_map_insert_objects(void *, void *, void *);
 int bfc_map_find_index(void *, const void *, void **);
 void *bfc_map_find_pair(void *, const void *);

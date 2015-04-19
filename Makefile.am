@@ -258,6 +258,7 @@ libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= containers/object_vector.c
 libbarefootc_a_SOURCES+= containers/int_pair.c
 libbarefootc_a_SOURCES+= containers/string_pair.c
+libbarefootc_a_SOURCES+= containers/int_string_pair.c
 libbarefootc_a_SOURCES+= containers/generic_map.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c

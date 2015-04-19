@@ -44,6 +44,7 @@ test(int n1, const struct test_kv kv[])
 	}
 
 	bfc_object_dump(&map, 99, logger);
+	assert(bfc_map_size((bfc_ccontptr_t)&map) == n1);
 
 	for (i=0; i < n1; i++) {
 		bfc_string_t kstr, *vp;

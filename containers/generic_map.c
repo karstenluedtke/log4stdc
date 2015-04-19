@@ -57,6 +57,37 @@ bfc_init_map_class(void *buf, size_t bufsize, int estimate,
 	return (rc);
 }
 
+size_t
+bfc_map_size(bfc_ccontptr_t map)
+{
+	size_t n = 0;
+	ptrdiff_t dist;
+	bfc_cobjptr_t obj;
+	bfc_mutex_ptr_t locked;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_iterator_t it, limit;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		bfc_container_begin_iterator(vec, &it, sizeof(it));
+		bfc_container_end_iterator(vec, &limit, sizeof(limit));
+		while ((dist = bfc_iterator_distance(&it, &limit)) > 0) {
+			obj = bfc_iterator_index(&it);
+			if (obj && BFC_CLASS(obj)) {
+				L4SC_DEBUG(logger, "%s: pair @%p, dist %ld",
+						__FUNCTION__, obj, (long)dist);
+				n++;
+			}
+			bfc_iterator_advance(&it, 1);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger, "%s(%p) cannot lock", __FUNCTION__, map);
+	}
+
+	return (n);
+}
+
 unsigned
 bfc_map_keyhashcode(const void *map, const void *key)
 {

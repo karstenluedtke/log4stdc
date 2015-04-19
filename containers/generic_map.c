@@ -108,7 +108,7 @@ bfc_map_keyhashcode(const void *map, const void *key)
 }
 
 int
-bfc_map_insert_objects(void *map, void *key, void *value)
+bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value)
 {
 	int rc = -ENOENT;
 	unsigned idx, lim;
@@ -187,7 +187,7 @@ bfc_map_insert_objects(void *map, void *key, void *value)
 }
 
 int
-bfc_map_find_index(void *map, const void *key, void **pairpp)
+bfc_map_find_index(bfc_contptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
 {
 	int rc = -ENOENT;
 	unsigned idx, lim;
@@ -241,20 +241,21 @@ bfc_map_find_index(void *map, const void *key, void **pairpp)
 	return (rc);
 }
 
-void *
-bfc_map_find_pair(void *map, const void *key)
+bfc_contptr_t
+bfc_map_find_pair(bfc_contptr_t map, bfc_cobjptr_t key)
 {
-	void *pair = NULL;
+	bfc_contptr_t pair = NULL;
 	if (bfc_map_find_index(map, key, &pair) < 0) {
 		return (NULL);
 	}
 	return (pair);
 }
 
-void *
-bfc_map_find_value(void *map, const void *key)
+bfc_objptr_t
+bfc_map_find_value(bfc_contptr_t map, bfc_cobjptr_t key)
 {
-	void *pair = NULL, *pval = NULL;
+	bfc_contptr_t pair = NULL;
+	bfc_objptr_t  pval = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
 
@@ -271,10 +272,11 @@ bfc_map_find_value(void *map, const void *key)
 	return (pval);
 }
 
-void *
-bfc_map_index_value(void *map, size_t idx)
+bfc_objptr_t
+bfc_map_index_value(bfc_contptr_t map, size_t idx)
 {
-	void *pair = NULL, *pval = NULL;
+	bfc_contptr_t pair = NULL;
+	bfc_objptr_t  pval = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
 
@@ -292,9 +294,9 @@ bfc_map_index_value(void *map, size_t idx)
 }
 
 int
-bfc_map_remove_index(void *map, size_t idx)
+bfc_map_remove_index(bfc_contptr_t map, size_t idx)
 {
-	void *pair = NULL;
+	bfc_contptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
 	int rc = BFC_SUCCESS;
@@ -315,9 +317,9 @@ bfc_map_remove_index(void *map, size_t idx)
 }
 
 int
-bfc_map_remove_key(void *map, const void *key)
+bfc_map_remove_key(bfc_contptr_t map, bfc_cobjptr_t key)
 {
-	void *pair = NULL;
+	bfc_contptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
 	int rc = BFC_SUCCESS;

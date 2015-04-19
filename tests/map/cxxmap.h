@@ -154,8 +154,9 @@ namespace barefootc {
 			init_map(get_stdc_mempool(), k, v);
 			for (init_iterator it(first); it != lim; it++) {
 				value_type pair = *it;
-				bfc_map_insert_objects(&bfcmap,
-						&pair.first, &pair.second);
+				bfc_map_insert_objects((bfc_contptr_t)&bfcmap,
+						(bfc_objptr_t)&pair.first,
+						(bfc_objptr_t)&pair.second);
 			}
 		}
 		
@@ -349,12 +350,13 @@ map<Key,T,Compare,Allocator>& y);
 		// 23.4.4.3, element access:
 		T& operator[](const key_type& x)
 		{
-			T *pval;
-			pval = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap, &x);
-			if (pval == NULL) {
+			T *p;
+			p = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap,
+						    (bfc_cobjptr_t)&x);
+			if (p == NULL) {
 				throw(std::out_of_range("no such entry"));
 			}
-			return (*pval);
+			return (*p);
 		}
 
 #if 0
@@ -372,7 +374,8 @@ map<Key,T,Compare,Allocator>& y);
 		T& at(const key_type& x)
 		{
 			T *p;
-			p = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap, &x);
+			p = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap,
+						    (bfc_cobjptr_t)&x);
 			if (p == NULL) {
 				throw(std::out_of_range("no such entry"));
 			}
@@ -383,7 +386,8 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			T *p;
 			void *map = const_cast<void *>((const void *) &bfcmap);
-			p = (T*) bfc_map_find_value((bfc_contptr_t)map, &x);
+			p = (T*) bfc_map_find_value((bfc_contptr_t)map,
+						    (bfc_cobjptr_t)&x);
 			if (p == NULL) {
 				throw(std::out_of_range("no such entry"));
 			}

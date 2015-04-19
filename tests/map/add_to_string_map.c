@@ -39,7 +39,9 @@ test(int n1, const struct test_kv kv[])
 		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__,kv[i].k,kv[i].v);
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
 		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), kv[i].v);
-		rc = bfc_map_insert_objects(&map, &kstr, &vstr);
+		rc = bfc_map_insert_objects((bfc_contptr_t) &map,
+					    (bfc_objptr_t) &kstr,
+					    (bfc_objptr_t) &vstr);
 		assert(rc >= 0);
 	}
 
@@ -47,14 +49,16 @@ test(int n1, const struct test_kv kv[])
 	assert(bfc_map_size((bfc_ccontptr_t)&map) == n1);
 
 	for (i=0; i < n1; i++) {
-		bfc_string_t kstr, *vp;
+		bfc_string_t kstr;
+		bfc_objptr_t vp;
 		char vbuf[80];
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
-		vp = bfc_map_find_value(&map, &kstr);
+		vp = bfc_map_find_value((bfc_contptr_t) &map,
+					(bfc_objptr_t) &kstr);
 		assert(vp != NULL);
 		bfc_object_tostring(vp, vbuf, sizeof(vbuf));
 		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__, kv[i].k, vbuf);
-		assert(bfc_string_compare_c_str(vp, kv[i].v) == 0);
+		assert(bfc_string_compare_c_str((bfc_cstrptr_t)vp,kv[i].v)==0);
 	}
 
 	bfc_destroy(&map);

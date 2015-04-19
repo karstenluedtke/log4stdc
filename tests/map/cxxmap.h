@@ -325,10 +325,15 @@ map<Key,T,Compare,Allocator>& y);
 		const_reverse_iterator crbegin() const;
 		const_reverse_iterator crend() const;
 
-		// 23.3.6.3, capacity:
+		//  capacity:
 		size_type size() const
 		{
 			return (bfc_map_size((bfc_ccontptr_t) &bfcmap));
+		}
+
+		bool empty() const
+		{
+			return (size() == 0);
 		}
 
 		size_type max_size() const
@@ -339,6 +344,50 @@ map<Key,T,Compare,Allocator>& y);
 		int __invariants()  // required by test bench
 		{
 			return (1); // whatever this is ???
+		}
+
+		// 23.4.4.3, element access:
+		T& operator[](const key_type& x)
+		{
+			T *pval;
+			pval = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap, &x);
+			if (pval == NULL) {
+				throw(std::out_of_range("no such entry"));
+			}
+			return (*pval);
+		}
+
+#if 0
+		T& operator[](key_type&& x)
+		{
+			T *pval;
+			pval = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap, &x);
+			if (pval == NULL) {
+				throw(std::out_of_range("no such entry"));
+			}
+			return (*pval);
+		}
+#endif
+
+		T& at(const key_type& x)
+		{
+			T *p;
+			p = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap, &x);
+			if (p == NULL) {
+				throw(std::out_of_range("no such entry"));
+			}
+			return (*p);
+		}
+
+		const T& at(const key_type& x) const
+		{
+			T *p;
+			void *map = const_cast<void *>((const void *) &bfcmap);
+			p = (T*) bfc_map_find_value((bfc_contptr_t)map, &x);
+			if (p == NULL) {
+				throw(std::out_of_range("no such entry"));
+			}
+			return (*p);
 		}
 	};
 }

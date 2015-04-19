@@ -60,39 +60,40 @@ int main()
         };
         C c(a, a + sizeof(a)/sizeof(a[0]));
         assert(c.size() == 4);
-#if 0
-        c.at(1) = "ONE";
-        assert(c.at(1) == "ONE");
+	bfc_number_t key1 = BFC_SIGNED_NUMBER(1);
+	bfc_string_assign_c_str(&c.at(key1), "ONE");
+        assert(bfc_string_compare_c_str(&c.at(key1), "ONE") == 0);
         try
         {
-            c.at(11) = "eleven";
+	    bfc_number_t key11 = BFC_SIGNED_NUMBER(11);
+	    bfc_string_assign_c_str(&c.at(key11), "eleven");
             assert(false);
         }
         catch (std::out_of_range&)
         {
         }
-#endif
         assert(c.size() == 4);
     }
-#if 0
     {
-        typedef std::unordered_map<int, std::string> C;
-        typedef std::pair<int, std::string> P;
+	typedef barefootc::map<bfc_number_t, bfc_string_t> C;
+	typedef C::value_type P;
         P a[] =
         {
-            P(1, "one"),
-            P(2, "two"),
-            P(3, "three"),
-            P(4, "four"),
-            P(1, "four"),
-            P(2, "four"),
+            P1(1, "one"),
+            P1(2, "two"),
+            P1(3, "three"),
+            P1(4, "four"),
+            P1(1, "four"),
+            P1(2, "four"),
         };
         const C c(a, a + sizeof(a)/sizeof(a[0]));
         assert(c.size() == 4);
-        assert(c.at(1) == "one");
+	bfc_number_t key1 = BFC_SIGNED_NUMBER(1);
+        assert(bfc_string_compare_c_str(&c.at(key1), "one") == 0);
         try
         {
-            c.at(11);
+	    bfc_number_t key11 = BFC_SIGNED_NUMBER(11);
+            c.at(key11);
             assert(false);
         }
         catch (std::out_of_range&)
@@ -100,6 +101,7 @@ int main()
         }
         assert(c.size() == 4);
     }
+#if 0
 #if __cplusplus >= 201103L
     {
         typedef std::unordered_map<int, std::string, std::hash<int>, std::equal_to<int>,

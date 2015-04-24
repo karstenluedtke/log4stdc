@@ -45,8 +45,13 @@ typedef const struct bfc_map_class *bfc_map_class_ptr_t;
  * @param[in]   elemtype Type of the pairs to be stored within the map.
  */
 
+#ifdef _MSC_VER /* msc does not allow zero-sized arrays */
+#define BFC_MAP(mapname,elemtype) \
+	BFC_VECTOR(mapname##_pair,elemtype,1)
+#else
 #define BFC_MAP(mapname,elemtype) \
 	BFC_VECTOR(mapname##_pair,elemtype,0)
+#endif
 
 typedef BFC_MAP(bfc_string_map, bfc_string_pair_t) bfc_string_map_t;
 typedef BFC_MAP(bfc_strref_map, bfc_strref_pair_t) bfc_strref_map_t;

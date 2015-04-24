@@ -81,7 +81,9 @@ main(int argc, char *argv[])
 	pool = bfc_new_sorting_mempool(pool, __FILE__, __LINE__, __FUNCTION__);
 
 	do {
-		static struct test_kv kv[] = { };
+		static struct test_kv kv[] = {
+			{ NULL, NULL },
+		};
 		test(0, kv);
 	} while (0 /*just once*/);
 

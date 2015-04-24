@@ -33,8 +33,8 @@ extern const struct bfc_classhdr bfc_natural_class;
 struct bfc_number {
 	BFC_NUMBERHDR(bfc_classptr_t)
 	union bfc_number_un {
-		double		f;
 		ptrdiff_t	n;
+		double		f;
 	} 			u;
 };
 
@@ -42,7 +42,7 @@ typedef struct bfc_number bfc_number_t;
 typedef struct bfc_number *bfc_numptr_t;
 typedef const struct bfc_number *bfc_cnumptr_t;
 
-#define BFC_SIGNED_NUMBER(x)	{ &bfc_integer_class, { .n = (ptrdiff_t)(x) } }
+#define BFC_SIGNED_NUMBER(x)	{ &bfc_integer_class, { (ptrdiff_t)(x) } }
 
 #define BFC_NUMBER_LOGGER	"barefootc.number",16
 

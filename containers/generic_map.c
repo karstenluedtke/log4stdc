@@ -243,6 +243,31 @@ bfc_map_find_index(bfc_contptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
 	return (rc);
 }
 
+int
+bfc_map_find_iter(bfc_contptr_t map, bfc_cobjptr_t key,
+		  bfc_iterptr_t it, size_t bufsize)
+{
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+	int rc = 0;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		if (((rc = bfc_map_find_index(map, key, NULL)) >= 0)
+		 && (bfc_container_begin_iterator(vec, it, bufsize) >= 0)) {
+			bfc_iterator_set_position(it, rc);
+		} else {
+			bfc_container_end_iterator(vec, it, bufsize);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, key %p) cannot lock",
+						__FUNCTION__, map, key);
+		rc = -EBUSY;
+	}
+	return (rc);
+}
+
 bfc_contptr_t
 bfc_map_find_pair(bfc_contptr_t map, bfc_cobjptr_t key)
 {

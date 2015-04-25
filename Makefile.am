@@ -270,6 +270,7 @@ libbarefootc_a_SOURCES+= log4stdc/l4sc_vlog.c
 libbarefootc_a_SOURCES+= log4stdc/l4sc_log.c
 libbarefootc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c
 libbarefootc_a_SOURCES+= log4stdc/l4sc_formatmsg.c
+libbarefootc_a_SOURCES+= Nmakefile
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjects.h
 liblog4stdc_a_SOURCES+= barefootc/object.h
@@ -3833,6 +3834,391 @@ tests_map_index_pass_SOURCES = tests/map/index.pass.cpp
 tests_map_index_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_index_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/index.pass
+
+check_PROGRAMS += tests/map/max_load_factor.pass
+tests_map_max_load_factor_pass_SOURCES = tests/map/max_load_factor.pass.cpp
+tests_map_max_load_factor_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_max_load_factor_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/max_load_factor.pass
+
+check_PROGRAMS += tests/map/equal_range_non_const.pass
+tests_map_equal_range_non_const_pass_SOURCES = tests/map/equal_range_non_const.pass.cpp
+tests_map_equal_range_non_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_equal_range_non_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/equal_range_non_const.pass
+
+check_PROGRAMS += tests/map/count.pass
+tests_map_count_pass_SOURCES = tests/map/count.pass.cpp
+tests_map_count_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_count_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/count.pass
+
+check_PROGRAMS += tests/map/bucket_count.pass
+tests_map_bucket_count_pass_SOURCES = tests/map/bucket_count.pass.cpp
+tests_map_bucket_count_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_bucket_count_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/bucket_count.pass
+
+check_PROGRAMS += tests/map/max_size.pass
+tests_map_max_size_pass_SOURCES = tests/map/max_size.pass.cpp
+tests_map_max_size_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_max_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/max_size.pass
+
+check_PROGRAMS += tests/map/bucket_size.pass
+tests_map_bucket_size_pass_SOURCES = tests/map/bucket_size.pass.cpp
+tests_map_bucket_size_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_bucket_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/bucket_size.pass
+
+check_PROGRAMS += tests/map/eq.pass
+tests_map_eq_pass_SOURCES = tests/map/eq.pass.cpp
+tests_map_eq_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_eq_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/eq.pass
+
+check_PROGRAMS += tests/map/index_tuple.pass
+tests_map_index_tuple_pass_SOURCES = tests/map/index_tuple.pass.cpp
+tests_map_index_tuple_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_index_tuple_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/index_tuple.pass
+
+check_PROGRAMS += tests/map/bucket.pass
+tests_map_bucket_pass_SOURCES = tests/map/bucket.pass.cpp
+tests_map_bucket_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_bucket_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/bucket.pass
+
+check_PROGRAMS += tests/map/find_const.pass
+tests_map_find_const_pass_SOURCES = tests/map/find_const.pass.cpp
+tests_map_find_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_find_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/find_const.pass
+
+check_PROGRAMS += tests/map/find_non_const.pass
+tests_map_find_non_const_pass_SOURCES = tests/map/find_non_const.pass.cpp
+tests_map_find_non_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_find_non_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/find_non_const.pass
+
+check_PROGRAMS += tests/map/local_iterators.pass
+tests_map_local_iterators_pass_SOURCES = tests/map/local_iterators.pass.cpp
+tests_map_local_iterators_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_local_iterators_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/local_iterators.pass
+
+check_PROGRAMS += tests/map/types.pass
+tests_map_types_pass_SOURCES = tests/map/types.pass.cpp
+tests_map_types_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_types_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/types.pass
+
+check_PROGRAMS += tests/map/rehash.pass
+tests_map_rehash_pass_SOURCES = tests/map/rehash.pass.cpp
+tests_map_rehash_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_rehash_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/rehash.pass
+
+check_PROGRAMS += tests/map/version.pass
+tests_map_version_pass_SOURCES = tests/map/version.pass.cpp
+tests_map_version_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_version_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/version.pass
+
+check_PROGRAMS += tests/map/equal_range_const.pass
+tests_map_equal_range_const_pass_SOURCES = tests/map/equal_range_const.pass.cpp
+tests_map_equal_range_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_equal_range_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/equal_range_const.pass
+
+check_PROGRAMS += tests/map/max_bucket_count.pass
+tests_map_max_bucket_count_pass_SOURCES = tests/map/max_bucket_count.pass.cpp
+tests_map_max_bucket_count_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_max_bucket_count_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/max_bucket_count.pass
+
+check_PROGRAMS += tests/map/insert_init.pass
+tests_map_insert_init_pass_SOURCES = tests/map/insert_init.pass.cpp
+tests_map_insert_init_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_init_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_init.pass
+
+check_PROGRAMS += tests/map/insert_const_lvalue.pass
+tests_map_insert_const_lvalue_pass_SOURCES = tests/map/insert_const_lvalue.pass.cpp
+tests_map_insert_const_lvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_const_lvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_const_lvalue.pass
+
+check_PROGRAMS += tests/map/insert_hint_rvalue.pass
+tests_map_insert_hint_rvalue_pass_SOURCES = tests/map/insert_hint_rvalue.pass.cpp
+tests_map_insert_hint_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_hint_rvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_hint_rvalue.pass
+
+check_PROGRAMS += tests/map/insert_rvalue.pass
+tests_map_insert_rvalue_pass_SOURCES = tests/map/insert_rvalue.pass.cpp
+tests_map_insert_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_rvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_rvalue.pass
+
+check_PROGRAMS += tests/map/clear.pass
+tests_map_clear_pass_SOURCES = tests/map/clear.pass.cpp
+tests_map_clear_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_clear_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/clear.pass
+
+check_PROGRAMS += tests/map/emplace.pass
+tests_map_emplace_pass_SOURCES = tests/map/emplace.pass.cpp
+tests_map_emplace_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_emplace_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/emplace.pass
+
+check_PROGRAMS += tests/map/erase_const_iter.pass
+tests_map_erase_const_iter_pass_SOURCES = tests/map/erase_const_iter.pass.cpp
+tests_map_erase_const_iter_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_erase_const_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/erase_const_iter.pass
+
+check_PROGRAMS += tests/map/insert_range.pass
+tests_map_insert_range_pass_SOURCES = tests/map/insert_range.pass.cpp
+tests_map_insert_range_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_range_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_range.pass
+
+check_PROGRAMS += tests/map/erase_range.pass
+tests_map_erase_range_pass_SOURCES = tests/map/erase_range.pass.cpp
+tests_map_erase_range_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_erase_range_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/erase_range.pass
+
+check_PROGRAMS += tests/map/insert_hint_const_lvalue.pass
+tests_map_insert_hint_const_lvalue_pass_SOURCES = tests/map/insert_hint_const_lvalue.pass.cpp
+tests_map_insert_hint_const_lvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_hint_const_lvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_hint_const_lvalue.pass
+
+check_PROGRAMS += tests/map/erase_key.pass
+tests_map_erase_key_pass_SOURCES = tests/map/erase_key.pass.cpp
+tests_map_erase_key_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_erase_key_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/erase_key.pass
+
+check_PROGRAMS += tests/map/emplace_hint.pass
+tests_map_emplace_hint_pass_SOURCES = tests/map/emplace_hint.pass.cpp
+tests_map_emplace_hint_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_emplace_hint_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/emplace_hint.pass
+
+check_PROGRAMS += tests/map/load_factor.pass
+tests_map_load_factor_pass_SOURCES = tests/map/load_factor.pass.cpp
+tests_map_load_factor_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_load_factor_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/load_factor.pass
+
+check_PROGRAMS += tests/map/reserve.pass
+tests_map_reserve_pass_SOURCES = tests/map/reserve.pass.cpp
+tests_map_reserve_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_reserve_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/reserve.pass
+
+check_PROGRAMS += tests/map/swap_member.pass
+tests_map_swap_member_pass_SOURCES = tests/map/swap_member.pass.cpp
+tests_map_swap_member_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_swap_member_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/swap_member.pass
+
+check_PROGRAMS += tests/map/iterators.pass
+tests_map_iterators_pass_SOURCES = tests/map/iterators.pass.cpp
+tests_map_iterators_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_iterators_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/iterators.pass
+
+check_PROGRAMS += tests/map/swap_noexcept.pass
+tests_map_swap_noexcept_pass_SOURCES = tests/map/swap_noexcept.pass.cpp
+tests_map_swap_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_swap_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/swap_noexcept.pass
+
+check_PROGRAMS += tests/map/swap_non_member.pass
+tests_map_swap_non_member_pass_SOURCES = tests/map/swap_non_member.pass.cpp
+tests_map_swap_non_member_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_swap_non_member_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/swap_non_member.pass
+
+check_PROGRAMS += tests/map/size_hash_equal_allocator.pass
+tests_map_size_hash_equal_allocator_pass_SOURCES = tests/map/size_hash_equal_allocator.pass.cpp
+tests_map_size_hash_equal_allocator_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_size_hash_equal_allocator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/size_hash_equal_allocator.pass
+
+check_PROGRAMS += tests/map/range_size_hash.pass
+tests_map_range_size_hash_pass_SOURCES = tests/map/range_size_hash.pass.cpp
+tests_map_range_size_hash_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_range_size_hash_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/range_size_hash.pass
+
+check_PROGRAMS += tests/map/allocator.pass
+tests_map_allocator_pass_SOURCES = tests/map/allocator.pass.cpp
+tests_map_allocator_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_allocator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/allocator.pass
+
+check_PROGRAMS += tests/map/move.pass
+tests_map_move_pass_SOURCES = tests/map/move.pass.cpp
+tests_map_move_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_move_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/move.pass
+
+check_PROGRAMS += tests/map/copy.pass
+tests_map_copy_pass_SOURCES = tests/map/copy.pass.cpp
+tests_map_copy_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_copy_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/copy.pass
+
+check_PROGRAMS += tests/map/default.pass
+tests_map_default_pass_SOURCES = tests/map/default.pass.cpp
+tests_map_default_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_default_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/default.pass
+
+check_PROGRAMS += tests/map/size.pass
+tests_map_size_pass_SOURCES = tests/map/size.pass.cpp
+tests_map_size_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/size.pass
+
+check_PROGRAMS += tests/map/range.pass
+tests_map_range_pass_SOURCES = tests/map/range.pass.cpp
+tests_map_range_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_range_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/range.pass
+
+check_PROGRAMS += tests/map/move_assign_noexcept.pass
+tests_map_move_assign_noexcept_pass_SOURCES = tests/map/move_assign_noexcept.pass.cpp
+tests_map_move_assign_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_move_assign_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/move_assign_noexcept.pass
+
+check_PROGRAMS += tests/map/assign_init.pass
+tests_map_assign_init_pass_SOURCES = tests/map/assign_init.pass.cpp
+tests_map_assign_init_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_assign_init_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/assign_init.pass
+
+check_PROGRAMS += tests/map/init_size_hash_equal_allocator.pass
+tests_map_init_size_hash_equal_allocator_pass_SOURCES = tests/map/init_size_hash_equal_allocator.pass.cpp
+tests_map_init_size_hash_equal_allocator_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_init_size_hash_equal_allocator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/init_size_hash_equal_allocator.pass
+
+check_PROGRAMS += tests/map/assign_move.pass
+tests_map_assign_move_pass_SOURCES = tests/map/assign_move.pass.cpp
+tests_map_assign_move_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_assign_move_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/assign_move.pass
+
+check_PROGRAMS += tests/map/size.fail
+tests_map_size_fail_SOURCES = tests/map/size.fail.cpp
+tests_map_size_fail_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_size_fail_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/size.fail
+
+check_PROGRAMS += tests/map/init_size.pass
+tests_map_init_size_pass_SOURCES = tests/map/init_size.pass.cpp
+tests_map_init_size_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_init_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/init_size.pass
+
+check_PROGRAMS += tests/map/assign_copy.pass
+tests_map_assign_copy_pass_SOURCES = tests/map/assign_copy.pass.cpp
+tests_map_assign_copy_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_assign_copy_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/assign_copy.pass
+
+check_PROGRAMS += tests/map/size_hash_equal.pass
+tests_map_size_hash_equal_pass_SOURCES = tests/map/size_hash_equal.pass.cpp
+tests_map_size_hash_equal_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_size_hash_equal_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/size_hash_equal.pass
+
+check_PROGRAMS += tests/map/move_noexcept.pass
+tests_map_move_noexcept_pass_SOURCES = tests/map/move_noexcept.pass.cpp
+tests_map_move_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_move_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/move_noexcept.pass
+
+check_PROGRAMS += tests/map/init_size_hash_equal.pass
+tests_map_init_size_hash_equal_pass_SOURCES = tests/map/init_size_hash_equal.pass.cpp
+tests_map_init_size_hash_equal_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_init_size_hash_equal_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/init_size_hash_equal.pass
+
+check_PROGRAMS += tests/map/range_size.pass
+tests_map_range_size_pass_SOURCES = tests/map/range_size.pass.cpp
+tests_map_range_size_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_range_size_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/range_size.pass
+
+check_PROGRAMS += tests/map/dtor_noexcept.pass
+tests_map_dtor_noexcept_pass_SOURCES = tests/map/dtor_noexcept.pass.cpp
+tests_map_dtor_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_dtor_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/dtor_noexcept.pass
+
+check_PROGRAMS += tests/map/init.pass
+tests_map_init_pass_SOURCES = tests/map/init.pass.cpp
+tests_map_init_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_init_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/init.pass
+
+check_PROGRAMS += tests/map/move_alloc.pass
+tests_map_move_alloc_pass_SOURCES = tests/map/move_alloc.pass.cpp
+tests_map_move_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_move_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/move_alloc.pass
+
+check_PROGRAMS += tests/map/range_size_hash_equal_allocator.pass
+tests_map_range_size_hash_equal_allocator_pass_SOURCES = tests/map/range_size_hash_equal_allocator.pass.cpp
+tests_map_range_size_hash_equal_allocator_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_range_size_hash_equal_allocator_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/range_size_hash_equal_allocator.pass
+
+check_PROGRAMS += tests/map/range_size_hash_equal.pass
+tests_map_range_size_hash_equal_pass_SOURCES = tests/map/range_size_hash_equal.pass.cpp
+tests_map_range_size_hash_equal_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_range_size_hash_equal_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/range_size_hash_equal.pass
+
+check_PROGRAMS += tests/map/init_size_hash.pass
+tests_map_init_size_hash_pass_SOURCES = tests/map/init_size_hash.pass.cpp
+tests_map_init_size_hash_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_init_size_hash_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/init_size_hash.pass
+
+check_PROGRAMS += tests/map/default_noexcept.pass
+tests_map_default_noexcept_pass_SOURCES = tests/map/default_noexcept.pass.cpp
+tests_map_default_noexcept_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_default_noexcept_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/default_noexcept.pass
+
+check_PROGRAMS += tests/map/size_hash.pass
+tests_map_size_hash_pass_SOURCES = tests/map/size_hash.pass.cpp
+tests_map_size_hash_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_size_hash_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/size_hash.pass
+
+check_PROGRAMS += tests/map/copy_alloc.pass
+tests_map_copy_alloc_pass_SOURCES = tests/map/copy_alloc.pass.cpp
+tests_map_copy_alloc_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_copy_alloc_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/copy_alloc.pass
+
+check_PROGRAMS += tests/map/compare.pass
+tests_map_compare_pass_SOURCES = tests/map/compare.pass.cpp
+tests_map_compare_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_compare_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/compare.pass
+
 
 #check_PROGRAMS += tests/strings/version.pass
 #tests_strings_version_pass_SOURCES = tests/strings/version.pass.cpp

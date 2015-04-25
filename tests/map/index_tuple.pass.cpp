@@ -1,3 +1,5 @@
+#include "tests/map/cxxmap.h"
+#include "log4stdc.h"
 //===----------------------------------------------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -17,7 +19,7 @@
 
 // http://llvm.org/bugs/show_bug.cgi?id=16542
 
-#include <unordered_map>
+// #include <unordered_map>
 
 #ifndef _LIBCPP_HAS_NO_VARIADICS
 
@@ -27,6 +29,8 @@ using namespace std;
 
 struct my_hash
 {
+    l4sc_configure_from_xml_file("log4j.xml");
+    logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     size_t operator()(const tuple<int,int>&) const {return 0;}
 };
 

@@ -95,6 +95,7 @@ namespace barefootc {
 		BFC_MAP(bfcmap_s, value_type) bfcmap;
 
 		const Allocator saved_allocator;
+		float saved_max_load_factor;
 
 		void init_map(struct mempool *pool,
 			      bfc_number_t& k, bfc_number_t& v)
@@ -131,14 +132,15 @@ namespace barefootc {
 		}
 
 	public:
-		map(): saved_allocator()
+		map(): saved_allocator(), saved_max_load_factor(1.0)
 		{
 			key_type k;
 			mapped_type v;
 			init_map(get_stdc_mempool(), k, v);
 		}
 
-		explicit map(const Allocator& a): saved_allocator(a)
+		explicit map(const Allocator& a):
+			saved_allocator(a), saved_max_load_factor(1.0)
 		{
 			key_type k;
 			mapped_type v;
@@ -146,7 +148,8 @@ namespace barefootc {
 		}
 
 
-		map(init_iterator first, init_iterator lim): saved_allocator()
+		map(init_iterator first, init_iterator lim):
+			saved_allocator(), saved_max_load_factor(1.0)
 		{
 			key_type k;
 			mapped_type v;
@@ -160,6 +163,16 @@ namespace barefootc {
 			}
 		}
 		
+		float max_load_factor() const noexcept
+		{
+			return (saved_max_load_factor);
+		}
+
+		void max_load_factor ( float z )
+		{
+			saved_max_load_factor = z;
+		}
+
 #if 0
 // 23.4.4.2, construct/copy/destroy:
 explicit map(const Compare& comp = Compare(),
@@ -221,25 +234,10 @@ size_type operations:
 find(const key_type& x);
 find(const key_type& x) const;
 count(const key_type& x) const;
-iterator
-const_iterator
-iterator
-const_iterator lower_bound(const
-lower_bound(const
-upper_bound(const
-upper_bound(const
-key_type&
-key_type&
-key_type&
-key_type&
-x);
-x) const;
-x);
-x) const;
-pair<iterator,iterator>
-equal_range(const key_type& x);
-pair<const_iterator,const_iterator>
-equal_range(const key_type& x) const;
+iterator lower_bound(const key_type& x);
+const_iterator lower_bound(const key_type& x) const;
+iterator upper_bound(const key_type& x);
+const_iterator upper_bound(const key_type& x) const;
 };
 template <class Key, class T, class Compare, class Allocator>
 bool operator==(const map<Key,T,Compare,Allocator>& x,
@@ -406,6 +404,44 @@ map<Key,T,Compare,Allocator>& y);
 			}
 			return (*p);
 		}
+
+		std::pair<iterator,iterator> equal_range(const key_type& x)
+		{
+			iterator it = begin();
+			std::pair<iterator,iterator> iters;
+			bfc_iterptr_t bfcit = it.bfciter();
+			int rc = bfc_map_find_iter((bfc_contptr_t)&bfcmap,
+						   (bfc_cobjptr_t)&x,
+						   bfcit, sizeof(*bfcit));
+			if ((rc >= 0) && (it.distance(end()) > 0)) {
+				iters.first = it;
+				iters.second = it + 1;
+			} else {
+				iters.first = end();
+				iters.second = end();
+			}
+			return (iters);
+		}
+
+		std::pair<const_iterator,const_iterator>
+				equal_range(const key_type& x) const
+		{
+			iterator it = begin();
+			std::pair<const_iterator,const_iterator> iters;
+			bfc_iterptr_t bfcit = it.bfciter();
+			void *map = const_cast<void *>((const void *) &bfcmap);
+			int rc = bfc_map_find_iter((bfc_contptr_t)&map,
+						   (bfc_cobjptr_t)&x,
+						   bfcit, sizeof(*bfcit));
+			if ((rc >= 0) && (it.distance(end()) > 0)) {
+				iters.first = it;
+				iters.second = it + 1;
+			} else {
+				iters.first = cend();
+				iters.second = cend();
+			}
+		}
+
 	};
 }
 

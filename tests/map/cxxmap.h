@@ -60,6 +60,8 @@ namespace barefootc {
 		typedef iterator const_iterator;
 		typedef iterator reverse_iterator;
 		typedef iterator const_reverse_iterator;
+		typedef iterator local_iterator;
+		typedef iterator const_local_iterator;
 		class init_iterator :
 		    public std::iterator<std::input_iterator_tag, value_type>
 		{
@@ -346,6 +348,62 @@ map<Key,T,Compare,Allocator>& y);
 		const_reverse_iterator crbegin() const;
 		const_reverse_iterator crend() const;
 
+		local_iterator begin(size_type n)
+		{
+			iterator it = end();
+
+			if ((n < bucket_count())
+			 && (bfc_map_index_value(contptr(), n) != NULL)) {
+				it = begin();
+				bfc_iterator_set_position(it.bfciter(), n);
+			}
+			return ((local_iterator) it);
+		}
+
+		local_iterator end(size_type n)
+		{
+			iterator it = end();
+
+			if ((n+1 < bucket_count())
+			 && (bfc_map_index_value(contptr(), n) != NULL)) {
+				bfc_iterator_set_position(it.bfciter(), n+1);
+			}
+			return ((local_iterator) it);
+		}
+
+		const_local_iterator begin(size_type n) const
+		{
+			return cbegin(n);
+		}
+
+		const_local_iterator end(size_type n) const
+		{
+			return cend(n);
+		}
+
+		const_local_iterator cbegin(size_type n) const
+		{
+			const_iterator it = cend();
+
+			if ((n < bucket_count())
+			 && (bfc_map_index_value(contptr(), n) != NULL)) {
+				it = cbegin();
+				bfc_iterator_set_position(it.bfciter(), n);
+			}
+			return ((const_local_iterator) it);
+		}
+
+		const_local_iterator cend(size_type n) const
+		{
+			const_iterator it = cend();
+
+			if ((n+1 < bucket_count())
+			 && (bfc_map_index_value(contptr(), n) != NULL)) {
+				bfc_iterator_set_position(it.bfciter(), n+1);
+			}
+			return ((const_local_iterator) it);
+		}
+
 		//  capacity:
 		size_type size() const
 		{
@@ -461,18 +519,19 @@ map<Key,T,Compare,Allocator>& y);
 		std::pair<const_iterator,const_iterator>
 				equal_range(const key_type& x) const
 		{
-			iterator it = begin();
+			const_iterator it = cbegin();
 			std::pair<const_iterator,const_iterator> iters;
 			bfc_iterptr_t bfcit = it.bfciter();
 			int rc = bfc_map_find_iter(contptr(), (bfc_cobjptr_t)&x,
 						   bfcit, sizeof(*bfcit));
-			if ((rc >= 0) && (it.distance(end()) > 0)) {
+			if ((rc >= 0) && (it.distance(cend()) > 0)) {
 				iters.first = it;
 				iters.second = it + 1;
 			} else {
 				iters.first = cend();
 				iters.second = cend();
 			}
+			return (iters);
 		}
 
 		size_type count(const key_type& x) const

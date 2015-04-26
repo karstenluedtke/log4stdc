@@ -3841,12 +3841,6 @@ tests_map_max_load_factor_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_max_load_factor_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/max_load_factor.pass
 
-check_PROGRAMS += tests/map/equal_range_non_const.pass
-tests_map_equal_range_non_const_pass_SOURCES = tests/map/equal_range_non_const.pass.cpp
-tests_map_equal_range_non_const_pass_LDADD = libbarefootc.a liblog4stdc.a
-tests_map_equal_range_non_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-TESTS += tests/map/equal_range_non_const.pass
-
 check_PROGRAMS += tests/map/count.pass
 tests_map_count_pass_SOURCES = tests/map/count.pass.cpp
 tests_map_count_pass_LDADD = libbarefootc.a liblog4stdc.a
@@ -3895,36 +3889,30 @@ tests_map_find_non_const_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_find_non_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/find_non_const.pass
 
-#check_PROGRAMS += tests/map/local_iterators.pass
-#tests_map_local_iterators_pass_SOURCES = tests/map/local_iterators.pass.cpp
-#tests_map_local_iterators_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_local_iterators_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/local_iterators.pass
-#
-#check_PROGRAMS += tests/map/types.pass
-#tests_map_types_pass_SOURCES = tests/map/types.pass.cpp
-#tests_map_types_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_types_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/types.pass
-#
-#check_PROGRAMS += tests/map/rehash.pass
-#tests_map_rehash_pass_SOURCES = tests/map/rehash.pass.cpp
-#tests_map_rehash_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_rehash_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/rehash.pass
-#
-#check_PROGRAMS += tests/map/version.pass
-#tests_map_version_pass_SOURCES = tests/map/version.pass.cpp
-#tests_map_version_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_version_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/version.pass
-#
-#check_PROGRAMS += tests/map/equal_range_const.pass
-#tests_map_equal_range_const_pass_SOURCES = tests/map/equal_range_const.pass.cpp
-#tests_map_equal_range_const_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_equal_range_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/equal_range_const.pass
-#
+check_PROGRAMS += tests/map/equal_range_const.pass
+tests_map_equal_range_const_pass_SOURCES = tests/map/equal_range_const.pass.cpp
+tests_map_equal_range_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_equal_range_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/equal_range_const.pass
+
+check_PROGRAMS += tests/map/equal_range_non_const.pass
+tests_map_equal_range_non_const_pass_SOURCES = tests/map/equal_range_non_const.pass.cpp
+tests_map_equal_range_non_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_equal_range_non_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/equal_range_non_const.pass
+
+check_PROGRAMS += tests/map/local_iterators.pass
+tests_map_local_iterators_pass_SOURCES = tests/map/local_iterators.pass.cpp
+tests_map_local_iterators_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_local_iterators_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/local_iterators.pass
+
+check_PROGRAMS += tests/map/rehash.pass
+tests_map_rehash_pass_SOURCES = tests/map/rehash.pass.cpp
+tests_map_rehash_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_rehash_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/rehash.pass
+
 #check_PROGRAMS += tests/map/max_bucket_count.pass
 #tests_map_max_bucket_count_pass_SOURCES = tests/map/max_bucket_count.pass.cpp
 #tests_map_max_bucket_count_pass_LDADD = libbarefootc.a liblog4stdc.a

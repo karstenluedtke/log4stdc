@@ -239,13 +239,7 @@ void clear();
 key_compare
 key_comp() const;
 value_compare value_comp() const;
-// 23.4.4.5, map
-iterator
-const_iterator
-size_type operations:
-find(const key_type& x);
-find(const key_type& x) const;
-count(const key_type& x) const;
+// 23.4.4.5, map size_type operations:
 iterator lower_bound(const key_type& x);
 const_iterator lower_bound(const key_type& x) const;
 iterator upper_bound(const key_type& x);
@@ -429,6 +423,24 @@ map<Key,T,Compare,Allocator>& y);
 			return (*p);
 		}
 
+		iterator find(const key_type& x)
+		{
+			iterator it = begin();
+			bfc_iterptr_t bfcit = it.bfciter();
+			int rc = bfc_map_find_iter(contptr(),(bfc_cobjptr_t)&x,
+						   bfcit, sizeof(*bfcit));
+			return ((rc >= 0)? it: end());
+		}
+
+		const_iterator find(const key_type& x) const
+		{
+			const_iterator it = cbegin();
+			bfc_iterptr_t bfcit = it.bfciter();
+			int rc = bfc_map_find_iter(contptr(),(bfc_cobjptr_t)&x,
+						   bfcit, sizeof(*bfcit));
+			return ((rc >= 0)? it: cend());
+		}
+
 		std::pair<iterator,iterator> equal_range(const key_type& x)
 		{
 			iterator it = begin();
@@ -467,6 +479,14 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			int rc = bfc_map_count(contptr(), (bfc_cobjptr_t)&x);
 			return ((rc > 0)? rc: 0);
+		}
+
+		size_type bucket(const key_type& x) const
+		{
+			unsigned bc = bucket_count();
+			unsigned rc = bfc_map_keyhashcode(contptr(),
+						     (bfc_cobjptr_t)&x);
+			return ((rc < bc)? rc: rc % bc);
 		}
 
 		size_type bucket_size(const key_type& x) const

@@ -3877,30 +3877,24 @@ tests_map_eq_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_eq_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/eq.pass
 
-#check_PROGRAMS += tests/map/index_tuple.pass
-#tests_map_index_tuple_pass_SOURCES = tests/map/index_tuple.pass.cpp
-#tests_map_index_tuple_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_index_tuple_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/index_tuple.pass
-#
-#check_PROGRAMS += tests/map/bucket.pass
-#tests_map_bucket_pass_SOURCES = tests/map/bucket.pass.cpp
-#tests_map_bucket_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_bucket_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/bucket.pass
-#
-#check_PROGRAMS += tests/map/find_const.pass
-#tests_map_find_const_pass_SOURCES = tests/map/find_const.pass.cpp
-#tests_map_find_const_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_find_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/find_const.pass
-#
-#check_PROGRAMS += tests/map/find_non_const.pass
-#tests_map_find_non_const_pass_SOURCES = tests/map/find_non_const.pass.cpp
-#tests_map_find_non_const_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_find_non_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/find_non_const.pass
-#
+check_PROGRAMS += tests/map/bucket.pass
+tests_map_bucket_pass_SOURCES = tests/map/bucket.pass.cpp
+tests_map_bucket_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_bucket_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/bucket.pass
+
+check_PROGRAMS += tests/map/find_const.pass
+tests_map_find_const_pass_SOURCES = tests/map/find_const.pass.cpp
+tests_map_find_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_find_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/find_const.pass
+
+check_PROGRAMS += tests/map/find_non_const.pass
+tests_map_find_non_const_pass_SOURCES = tests/map/find_non_const.pass.cpp
+tests_map_find_non_const_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_find_non_const_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/find_non_const.pass
+
 #check_PROGRAMS += tests/map/local_iterators.pass
 #tests_map_local_iterators_pass_SOURCES = tests/map/local_iterators.pass.cpp
 #tests_map_local_iterators_pass_LDADD = libbarefootc.a liblog4stdc.a

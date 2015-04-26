@@ -449,6 +449,13 @@ map<Key,T,Compare,Allocator>& y);
 			int rc = bfc_map_count(contptr(), (bfc_cobjptr_t)&x);
 			return ((rc > 0)? rc: 0);
 		}
+
+		size_type bucket_size(const key_type& x) const
+		{
+			int rc = bfc_map_bucket_size(contptr(),
+						     (bfc_cobjptr_t)&x);
+			return ((rc > 0)? rc: 0);
+		}
 	};
 }
 

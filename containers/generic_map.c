@@ -10,14 +10,16 @@
 #include "barefootc/synchronization.h"
 #include "log4stdc.h"
 
+static void destroy_map(bfc_contptr_t map);
+
 #define BFC_MAP_HASHLEN(map)	(CV2_LOG2ELEM(map))
 #define BFC_MAP_HASHMASK(map)	(CV2_ELEMENTS(map)-1)
 
 extern const bfc_class_t bfc_object_vector_class;
-
 const struct bfc_map_class generic_map_class = {
 	.super 		= (void *) &bfc_object_vector_class,
 	.name 		= "map",
+	.destroy	= destroy_map,
 };
 
 int
@@ -55,6 +57,41 @@ bfc_init_map_class(void *buf, size_t bufsize, int estimate,
 		vec, (long) bufsize, estimate, pairclass, pool,
 		BFC_MAP_HASHLEN(vec), BFC_MAP_HASHMASK(vec), vec->elem_class);
 	return (rc);
+}
+
+int
+bfc_init_map_copy(void *buf, size_t bufsize, struct mempool *pool,
+		  bfc_ccontptr_t src)
+{
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) buf;
+	const bfc_char_vector_t *svec = (const bfc_char_vector_t *) src;
+	size_t elem_size = bfc_container_element_size(src);
+	int rc;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	L4SC_DEBUG(logger, "%s(%p, %ld, pool %p, src %p)",
+		__FUNCTION__, buf, (long)bufsize, pool, src);
+
+	rc = bfc_init_vector_by_element_size(buf, bufsize, pool, elem_size);
+	if (rc >= 0) {
+		vec->vptr = (bfc_vector_class_ptr_t) &generic_map_class;
+		vec->elem_class = svec->elem_class;
+		vec->log2_indirect = svec->log2_indirect;
+		vec->log2_double_indirect = svec->log2_double_indirect;
+		rc = bfc_container_assign_copy((bfc_contptr_t) vec, src);
+	}
+	return (rc);
+}
+
+static void
+destroy_map(bfc_contptr_t map)
+{
+	bfc_classptr_t cls;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+
+	if (vec && (cls = (bfc_classptr_t) BFC_CLASS(vec))) {
+		BFC_DESTROY_EPILOGUE(vec, cls);
+	}
 }
 
 size_t

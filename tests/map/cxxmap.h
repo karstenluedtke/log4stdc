@@ -162,6 +162,16 @@ namespace barefootc {
 						(bfc_objptr_t)&pair.second);
 			}
 		}
+
+		map(const map<Key,T,Compare,Allocator>& x)
+		{
+			bfc_init_map_copy(&bfcmap, sizeof(bfcmap),
+					  get_stdc_mempool(), x.contptr());
+		}
+
+#if __cplusplus >= 201103L
+		map(map<Key,T,Compare,Allocator>&& x);
+#endif
 		
 		size_type bucket_count() const noexcept
 		{
@@ -179,8 +189,10 @@ namespace barefootc {
 			saved_max_load_factor = z;
 		}
 
+		void rehash(size_type n)
+		{
+		}
 		
-
 #if 0
 // 23.4.4.2, construct/copy/destroy:
 explicit map(const Compare& comp = Compare(),
@@ -196,13 +208,6 @@ map(map&&, const Allocator&);
 map(initializer_list<value_type>,
 const Compare& = Compare(),
 const Allocator& = Allocator());
-~map();
-map<Key,T,Compare,Allocator>&
-operator=(const map<Key,T,Compare,Allocator>& x);
-map<Key,T,Compare,Allocator>&
-operator=(map<Key,T,Compare,Allocator>&& x);
-map& operator=(initializer_list<value_type>);
-allocator_type get_allocator() const;
 
 // capacity:
 bool
@@ -218,7 +223,6 @@ const T& at(const key_type& x) const;
 // 23.4.4.4, modifiers:
 template <class... Args> pair<iterator, bool> emplace(Args&&... args);
 template <class... Args> iterator emplace_hint(const_iterator position, Args&&... args);
-pair<iterator, bool> insert(const value_type& x);
 template <class P> pair<iterator, bool> insert(P&& x);
 iterator insert(const_iterator position, const value_type& x);
 template <class P>
@@ -282,6 +286,21 @@ map<Key,T,Compare,Allocator>& y);
 			void *map = const_cast<void *>((const void *) &bfcmap);
 			return ((bfc_contptr_t) map);
 		}
+
+		map<Key,T,Compare,Allocator>&
+			operator=(const map<Key,T,Compare,Allocator>& x)
+		{
+			bfc_destroy(&bfcmap);
+			bfc_init_map_copy(&bfcmap, sizeof(bfcmap),
+					  get_stdc_mempool(), x.contptr());
+			return (*this);
+		}
+
+#if __cplusplus >= 201103L
+		map<Key,T,Compare,Allocator>&
+			operator=(map<Key,T,Compare,Allocator>&& x);
+		map& operator=(initializer_list<value_type>);
+#endif
 
 		allocator_type get_allocator() const
 		{
@@ -456,7 +475,33 @@ map<Key,T,Compare,Allocator>& y);
 						     (bfc_cobjptr_t)&x);
 			return ((rc > 0)? rc: 0);
 		}
+
+		// pair<iterator, bool> insert(const value_type& x)
+		iterator insert(const value_type& x)
+		{
+			iterator it = begin();
+			int rc = bfc_map_insert_objects(contptr(),
+						(bfc_objptr_t)&x.first,
+						(bfc_objptr_t)&x.second);
+			if (rc >= 0) {
+				bfc_iterator_set_position(it.bfciter(), rc);
+			}
+		}
 	};
+
+	template <class Key, class T, class Compare, class Allocator>
+	bool operator==(const map<Key,T,Compare,Allocator>& x,
+			const map<Key,T,Compare,Allocator>& y)
+	{
+		return bfc_equal_object(x.contptr(), y.contptr());
+	}
+
+	template <class Key, class T, class Compare, class Allocator>
+	bool operator!=(const map<Key,T,Compare,Allocator>& x,
+			const map<Key,T,Compare,Allocator>& y)
+	{
+		return !bfc_equal_object(x.contptr(), y.contptr());
+	}
 }
 
 #endif /* __cplusplus */

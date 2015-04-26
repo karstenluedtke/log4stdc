@@ -14,9 +14,12 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/pair.h"
+#include "barefootc/unconst.h"
 #include "log4stdc.h"
 
 static int init_string_pair(void *buf, size_t bufsize, struct mempool *pool);
+static int clone_pair(const struct bfc_string_pair *obj,
+				void *buf,size_t bufsize,struct mempool *pool);
 static void destroy_pair(struct bfc_string_pair *pair);
 
 static size_t pair_clonesize(const struct bfc_string_pair *pair);
@@ -41,6 +44,7 @@ const struct bfc_string_pair_class bfc_string_pair_class = {
 	.name 		= "string pair",
 	.init 		= init_string_pair,
 	.destroy 	= destroy_pair,
+	.clone		= clone_pair,
 	.clonesize	= pair_clonesize,
 	.hashcode 	= pair_hashcode,
 	.equals 	= pair_equals,
@@ -110,6 +114,24 @@ create_string_pair_element(struct bfc_string_pair *pair, size_t pos,
 	}
 
 	return (s);
+}
+
+static int
+clone_pair(const struct bfc_string_pair *obj,
+	   void *buf, size_t bufsize, struct mempool *pool)
+{
+	struct bfc_string_pair *pair = (struct bfc_string_pair *) buf;
+	struct bfc_string_pair *src = BFC_UNCONST(struct bfc_string_pair*, obj);
+	size_t size = bfc_object_size(obj);
+	if (bufsize < size) {
+		return (-ENOSPC);
+	}
+	memcpy(pair, src, size);
+	memset(&pair->first, 0, sizeof(pair->first));
+	memset(&pair->second, 0, sizeof(pair->second));
+	create_string_pair_element(pair, 0, &src->first, pool);
+	create_string_pair_element(pair, 1, &src->second, pool);
+	return (BFC_SUCCESS);
 }
 
 size_t

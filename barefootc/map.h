@@ -27,7 +27,8 @@ extern "C" {
 /** @addtogroup class_definitions */
 struct bfc_map_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_map_class *,
-		bfc_contptr_t, bfc_ccontptr_t, bfc_contptr_t)
+			      bfc_contptr_t, bfc_ccontptr_t, bfc_contptr_t)
+	BFC_CONTAINER_METHODS(bfc_contptr_t, bfc_ccontptr_t, bfc_contptr_t)
 };
 typedef const struct bfc_map_class *bfc_map_class_ptr_t;
 /** @} */
@@ -114,6 +115,7 @@ do {									\
 /** @} */
 
 int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);
+int bfc_init_map_copy(void *, size_t, struct mempool *, bfc_ccontptr_t);
 size_t bfc_map_size(bfc_ccontptr_t);
 
 int bfc_map_insert_objects(bfc_contptr_t, bfc_objptr_t, bfc_objptr_t);

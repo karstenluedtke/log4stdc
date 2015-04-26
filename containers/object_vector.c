@@ -64,6 +64,7 @@ const struct bfc_vector_class bfc_object_vector_class = {
 	.getl		= vector_getlong,
 	.setl		= vector_setlong,
 	/* Modifiers */
+	.resize		= vector_resize,
 	.push_back	= vector_push_back,
 	.pop_back	= vector_pop_back,
 	.insert_fill	= vector_insert_fill,
@@ -108,11 +109,13 @@ bfc_init_object_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 static void
 destroy_vector(bfc_contptr_t vec)
 {
-	const struct bfc_vector_class *cls = BFC_CLASS(vec);
+	const struct bfc_vector_class *cls;
 
-	vector_resize(vec, 0, NULL);
-	BFC_VECTOR_DESTROY(vec);
-	BFC_DESTROY_EPILOGUE(vec, cls);
+	if (vec && (cls = BFC_CLASS(vec))) {
+		vector_resize(vec, 0, NULL);
+		BFC_VECTOR_DESTROY(vec);
+		BFC_DESTROY_EPILOGUE(vec, cls);
+	}
 }
 
 static unsigned  
@@ -152,9 +155,11 @@ vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other)
 			obj2 = (bfc_cobjptr_t) q;
 			if (BFC_CLASS(obj1) || BFC_CLASS(obj2)) {
 				if (BFC_CLASS(obj1) != BFC_CLASS(obj2)) {
-					L4SC_TRACE(logger,
-						"%s: #%ld: class %p != %p",
-						__FUNCTION__, (long)idx, p, q);
+					L4SC_TRACE(logger, "%s: #%ld: class"
+						"(%p): %p != class(%p): %p",
+						__FUNCTION__, (long)idx,
+						obj1, BFC_CLASS(obj1),
+						obj2, BFC_CLASS(obj2));
 					eq = 0;
 					break;
 				} else if (!bfc_equal_object(obj1, obj2)) {
@@ -284,6 +289,8 @@ vector_resize(bfc_contptr_t vec, size_t n, const void *p)
 	bfc_mutex_ptr_t locked;
 	int rc = BFC_SUCCESS;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	L4SC_TRACE(logger, "%s(%p, %ld, %p)", __FUNCTION__, vec, (long) n, p);
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		size = BFC_VECTOR_GET_SIZE(vec);

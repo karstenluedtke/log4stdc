@@ -125,6 +125,7 @@ int bfc_map_find_iter(bfc_contptr_t, bfc_cobjptr_t, bfc_iterptr_t, size_t);
 bfc_contptr_t bfc_map_find_pair(bfc_contptr_t, bfc_cobjptr_t);
 bfc_objptr_t  bfc_map_find_value(bfc_contptr_t, bfc_cobjptr_t);
 bfc_objptr_t  bfc_map_index_value(bfc_contptr_t, size_t);
+int bfc_map_count(bfc_contptr_t, bfc_cobjptr_t);
 
 #ifdef __cplusplus
 };

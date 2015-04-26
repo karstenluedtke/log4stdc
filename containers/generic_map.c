@@ -324,6 +324,58 @@ bfc_map_index_value(bfc_contptr_t map, size_t idx)
 }
 
 int
+bfc_map_count(bfc_contptr_t map, bfc_cobjptr_t key)
+{
+	int count = 0;
+	bfc_cobjptr_t pkey;
+	bfc_contptr_t pair = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_mutex_ptr_t locked;
+	bfc_iterator_t it, limit;
+
+	if ((map == NULL) || (key == NULL)) {
+		L4SC_ERROR(logger, "%s(%p, key %p): null arg",
+						__FUNCTION__, map, key);
+		return (-EFAULT);
+	} else if (BFC_CLASS((bfc_cobjptr_t)key) == NULL) {
+		L4SC_ERROR(logger, "%s(%p, key %p): no key class",
+						__FUNCTION__, map, key);
+		return (-EINVAL);
+	}
+
+	L4SC_TRACE(logger, "%s(%p, key %p) vec %p, lock %p",
+			__FUNCTION__, map, key, vec, vec->lock);
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		L4SC_TRACE(logger, "%s: locked", __FUNCTION__);
+		bfc_container_begin_iterator(vec, &it, sizeof(it));
+		L4SC_TRACE(logger, "%s: begin iter", __FUNCTION__);
+		bfc_object_dump(&it, 1, logger);
+		bfc_container_end_iterator(vec, &limit, sizeof(limit));
+		L4SC_TRACE(logger, "%s: end iter", __FUNCTION__);
+		bfc_object_dump(&limit, 1, logger);
+		while (bfc_iterator_distance(&it, &limit) > 0) {
+			bfc_object_dump(&it, 1, logger);
+			pair = (bfc_contptr_t) bfc_iterator_index(&it);
+			if (pair && (BFC_CLASS((bfc_cobjptr_t)pair) != NULL)
+			    && (bfc_object_dump(pair, 2, logger), 1)
+			    && ((pkey = bfc_container_first(pair)) != NULL)
+			    && BFC_CLASS(pkey) && bfc_equal_object(pkey,key)) {
+				count++;
+			}
+			bfc_iterator_advance(&it, 1);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger, "%s(%p, key %p) cannot lock",
+						__FUNCTION__, map, key);
+	}
+
+	return (count);
+}
+
+int
 bfc_map_remove_index(bfc_contptr_t map, size_t idx)
 {
 	bfc_contptr_t pair = NULL;

@@ -163,6 +163,12 @@ namespace barefootc {
 			}
 		}
 		
+		size_type bucket_count() const noexcept
+		{
+			int rc = bfc_object_length(&bfcmap);
+			return ((rc > 0)? rc: 0);
+		}
+
 		float max_load_factor() const noexcept
 		{
 			return (saved_max_load_factor);
@@ -172,6 +178,8 @@ namespace barefootc {
 		{
 			saved_max_load_factor = z;
 		}
+
+		
 
 #if 0
 // 23.4.4.2, construct/copy/destroy:
@@ -271,7 +279,8 @@ map<Key,T,Compare,Allocator>& y);
 
 		bfc_contptr_t contptr() const
 		{
-			return ((bfc_contptr_t) &bfcmap);
+			void *map = const_cast<void *>((const void *) &bfcmap);
+			return ((bfc_contptr_t) map);
 		}
 
 		allocator_type get_allocator() const
@@ -284,7 +293,7 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) &bfcmap, 0);
+					  (bfc_objptr_t) contptr(), 0);
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -293,7 +302,7 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) &bfcmap, BFC_NPOS);
+					  (bfc_objptr_t) contptr(), BFC_NPOS);
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -307,7 +316,7 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) &bfcmap, 0);
+					  (bfc_objptr_t) contptr(), 0);
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -316,7 +325,7 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			bfc_iterator_t tmp;
 			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) &bfcmap, BFC_NPOS);
+					  (bfc_objptr_t) contptr(), BFC_NPOS);
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -327,7 +336,7 @@ map<Key,T,Compare,Allocator>& y);
 		//  capacity:
 		size_type size() const
 		{
-			return (bfc_map_size((bfc_ccontptr_t) &bfcmap));
+			return (bfc_map_size(contptr()));
 		}
 
 		bool empty() const
@@ -337,7 +346,7 @@ map<Key,T,Compare,Allocator>& y);
 
 		size_type max_size() const
 		{
-			return (bfc_container_max_size((bfc_contptr_t)&bfcmap));
+			return (bfc_container_max_size(contptr()));
 		}
 
 		int __invariants()  // required by test bench
@@ -349,13 +358,12 @@ map<Key,T,Compare,Allocator>& y);
 		T& operator[](const key_type& x)
 		{
 			T *p;
-			p = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap,
+			p = (T*) bfc_map_find_value(contptr(),
 						    (bfc_cobjptr_t)&x);
 			if (p == NULL) {
-				int idx = bfc_map_insert_objects(
-						    (bfc_contptr_t)&bfcmap,
-						    (bfc_objptr_t)&x,
-						    (bfc_objptr_t)0);
+				int idx = bfc_map_insert_objects(contptr(),
+							(bfc_objptr_t)&x,
+							(bfc_objptr_t)0);
 				if (idx < 0) {
 					char msg[80];
 					snprintf(msg, sizeof(msg),
@@ -363,9 +371,8 @@ map<Key,T,Compare,Allocator>& y);
 						-idx);
 					throw(std::runtime_error(msg));
 				}
-				p = (T*) bfc_map_index_value(
-						    (bfc_contptr_t)&bfcmap,
-						    (size_t) idx);
+				p = (T*) bfc_map_index_value(contptr(),
+								(size_t) idx);
 			}
 			return (*p);
 		}
@@ -374,7 +381,7 @@ map<Key,T,Compare,Allocator>& y);
 		T& operator[](key_type&& x)
 		{
 			T *pval;
-			pval = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap, &x);
+			pval = (T*) bfc_map_find_value(contptr, &x);
 			if (pval == NULL) {
 				throw(std::out_of_range("no such entry"));
 			}
@@ -385,7 +392,7 @@ map<Key,T,Compare,Allocator>& y);
 		T& at(const key_type& x)
 		{
 			T *p;
-			p = (T*) bfc_map_find_value((bfc_contptr_t)&bfcmap,
+			p = (T*) bfc_map_find_value(contptr(),
 						    (bfc_cobjptr_t)&x);
 			if (p == NULL) {
 				throw(std::out_of_range("no such entry"));
@@ -396,9 +403,7 @@ map<Key,T,Compare,Allocator>& y);
 		const T& at(const key_type& x) const
 		{
 			T *p;
-			void *map = const_cast<void *>((const void *) &bfcmap);
-			p = (T*) bfc_map_find_value((bfc_contptr_t)map,
-						    (bfc_cobjptr_t)&x);
+			p = (T*)bfc_map_find_value(contptr(),(bfc_cobjptr_t)&x);
 			if (p == NULL) {
 				throw(std::out_of_range("no such entry"));
 			}
@@ -410,8 +415,7 @@ map<Key,T,Compare,Allocator>& y);
 			iterator it = begin();
 			std::pair<iterator,iterator> iters;
 			bfc_iterptr_t bfcit = it.bfciter();
-			int rc = bfc_map_find_iter((bfc_contptr_t)&bfcmap,
-						   (bfc_cobjptr_t)&x,
+			int rc = bfc_map_find_iter(contptr(),(bfc_cobjptr_t)&x,
 						   bfcit, sizeof(*bfcit));
 			if ((rc >= 0) && (it.distance(end()) > 0)) {
 				iters.first = it;
@@ -429,9 +433,7 @@ map<Key,T,Compare,Allocator>& y);
 			iterator it = begin();
 			std::pair<const_iterator,const_iterator> iters;
 			bfc_iterptr_t bfcit = it.bfciter();
-			void *map = const_cast<void *>((const void *) &bfcmap);
-			int rc = bfc_map_find_iter((bfc_contptr_t)&map,
-						   (bfc_cobjptr_t)&x,
+			int rc = bfc_map_find_iter(contptr(), (bfc_cobjptr_t)&x,
 						   bfcit, sizeof(*bfcit));
 			if ((rc >= 0) && (it.distance(end()) > 0)) {
 				iters.first = it;
@@ -442,6 +444,11 @@ map<Key,T,Compare,Allocator>& y);
 			}
 		}
 
+		size_type count(const key_type& x) const
+		{
+			int rc = bfc_map_count(contptr(), (bfc_cobjptr_t)&x);
+			return ((rc > 0)? rc: 0);
+		}
 	};
 }
 

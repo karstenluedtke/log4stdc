@@ -420,6 +420,11 @@ map<Key,T,Compare,Allocator>& y);
 			return (bfc_container_max_size(contptr()));
 		}
 
+		size_type max_bucket_count() const
+		{
+			return (bfc_container_max_size(contptr()));
+		}
+
 		int __invariants()  // required by test bench
 		{
 			return (1); // whatever this is ???
@@ -555,16 +560,24 @@ map<Key,T,Compare,Allocator>& y);
 			return ((rc > 0)? rc: 0);
 		}
 
-		// pair<iterator, bool> insert(const value_type& x)
-		iterator insert(const value_type& x)
+		std::pair<iterator, bool> insert(const value_type& x)
 		{
-			iterator it = begin();
+			std::pair<iterator, bool> r;
+			r.first = begin();
+			r.second = false;
 			int rc = bfc_map_insert_objects(contptr(),
 						(bfc_objptr_t)&x.first,
 						(bfc_objptr_t)&x.second);
 			if (rc >= 0) {
-				bfc_iterator_set_position(it.bfciter(), rc);
+				bfc_iterator_set_position(r.first.bfciter(),rc);
+				r.second = true;
+			} else if (rc == -EEXIST) {
+				bfc_iterptr_t bfcit = r.first.bfciter();
+				bfc_map_find_iter(contptr(),
+						(bfc_objptr_t)&x.first,
+						bfcit, sizeof(*bfcit));
 			}
+			return (r);
 		}
 	};
 

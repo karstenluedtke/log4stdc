@@ -30,6 +30,7 @@ check_PROGRAMS =
 
 libbarefootc_a_SOURCES = barefootc/baseobject.c
 libbarefootc_a_SOURCES+= barefootc/integer_object.c
+libbarefootc_a_SOURCES+= barefootc/real_number_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_new_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_init_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_clone_object.c
@@ -259,6 +260,7 @@ libbarefootc_a_SOURCES+= containers/object_vector.c
 libbarefootc_a_SOURCES+= containers/int_pair.c
 libbarefootc_a_SOURCES+= containers/string_pair.c
 libbarefootc_a_SOURCES+= containers/int_string_pair.c
+libbarefootc_a_SOURCES+= containers/real_int_pair.c
 libbarefootc_a_SOURCES+= containers/generic_map.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
@@ -3913,24 +3915,18 @@ tests_map_rehash_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_rehash_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/rehash.pass
 
-#check_PROGRAMS += tests/map/max_bucket_count.pass
-#tests_map_max_bucket_count_pass_SOURCES = tests/map/max_bucket_count.pass.cpp
-#tests_map_max_bucket_count_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_max_bucket_count_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/max_bucket_count.pass
-#
-#check_PROGRAMS += tests/map/insert_init.pass
-#tests_map_insert_init_pass_SOURCES = tests/map/insert_init.pass.cpp
-#tests_map_insert_init_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_insert_init_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/insert_init.pass
-#
-#check_PROGRAMS += tests/map/insert_const_lvalue.pass
-#tests_map_insert_const_lvalue_pass_SOURCES = tests/map/insert_const_lvalue.pass.cpp
-#tests_map_insert_const_lvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_insert_const_lvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/insert_const_lvalue.pass
-#
+check_PROGRAMS += tests/map/max_bucket_count.pass
+tests_map_max_bucket_count_pass_SOURCES = tests/map/max_bucket_count.pass.cpp
+tests_map_max_bucket_count_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_max_bucket_count_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/max_bucket_count.pass
+
+check_PROGRAMS += tests/map/insert_const_lvalue.pass
+tests_map_insert_const_lvalue_pass_SOURCES = tests/map/insert_const_lvalue.pass.cpp
+tests_map_insert_const_lvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_const_lvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_const_lvalue.pass
+
 #check_PROGRAMS += tests/map/insert_hint_rvalue.pass
 #tests_map_insert_hint_rvalue_pass_SOURCES = tests/map/insert_hint_rvalue.pass.cpp
 #tests_map_insert_hint_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a

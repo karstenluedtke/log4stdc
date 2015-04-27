@@ -34,9 +34,9 @@ int main()
     l4sc_configure_from_xml_file("log4j.xml");
     logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     {
-        typedef std::unordered_map<int, std::string> C;
+	typedef barefootc::map<bfc_number_t, bfc_string_t> C;
+	typedef C::value_type P;
         typedef C::const_iterator I;
-        typedef std::pair<int, std::string> P;
         const C c;
         assert(c.max_bucket_count() > 0);
     }

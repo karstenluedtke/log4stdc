@@ -117,6 +117,8 @@ do {									\
 int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);
 int bfc_init_map_copy(void *, size_t, struct mempool *, bfc_ccontptr_t);
 size_t bfc_map_size(bfc_ccontptr_t);
+size_t bfc_map_load_limit(const void *map);
+size_t bfc_map_load_percent(const void *map);
 
 int bfc_map_insert_objects(bfc_contptr_t, bfc_objptr_t, bfc_objptr_t,
 			   bfc_iterptr_t position, size_t possize);

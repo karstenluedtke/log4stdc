@@ -24,6 +24,7 @@ bfc_container_assign_copy(bfc_contptr_t c, bfc_ccontptr_t src)
 
 	bfc_container_begin_iterator(src, &first, sizeof(first));
 	bfc_container_end_iterator(src, &last, sizeof(last));
+	bfc_iterator_set_position(&first, 0);
 
 	bfc_container_resize(c, 0, NULL);
 	RETURN_METHCALL(bfc_container_classptr_t, c,

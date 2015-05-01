@@ -16,10 +16,14 @@
 static int init_iterator(void *buf,size_t bufsize,struct mempool *pool);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
 
+static int init_object_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static int advance_object_forward(bfc_iterptr_t it, ptrdiff_t n);
+
 extern const struct bfc_iterator_class bfc_forward_iterator_class;
 extern const struct bfc_iterator_class bfc_reverse_iterator_class;
 
 #define FORWARD_CLASS_NAME	"hole-skipping vector forward iterator"
+#define FORWARD_CLASS2_NAME	"hole-skipping object vector forward iterator"
 
 const struct bfc_iterator_class bfc_vector_forward_iterator_class = {
 	.super	= &bfc_forward_iterator_class,
@@ -27,6 +31,14 @@ const struct bfc_iterator_class bfc_vector_forward_iterator_class = {
 	.init 	= init_iterator,
 	/* Iterator functions */
 	.advance    = advance_forward,
+};
+
+const struct bfc_iterator_class bfc_object_vector_forward_iterator_class = {
+	.super	= &bfc_forward_iterator_class,
+	.name	= FORWARD_CLASS2_NAME,
+	.init 	= init_object_iterator,
+	/* Iterator functions */
+	.advance    = advance_object_forward,
 };
 
 static int
@@ -53,6 +65,35 @@ bfc_init_vector_iterator(void *buf, size_t bufsize,
 	if ((rc = bfc_init_iterator(buf, bufsize, obj, pos)) == BFC_SUCCESS) {
 		bfc_iterptr_t it = (bfc_iterptr_t) buf;
 		it->vptr = &bfc_vector_forward_iterator_class;
+	}
+	bfc_object_dump(buf, 1, logger);
+	return (rc);
+}
+
+static int
+init_object_iterator(void *buf, size_t bufsize, struct mempool *pool)
+{
+	bfc_iterptr_t it = (bfc_iterptr_t) buf;
+	if (bufsize < sizeof(*it)) {
+		return (-ENOSPC);
+	}
+	memset(it, 0, sizeof(*it));
+	it->vptr = &bfc_object_vector_forward_iterator_class;
+	return (BFC_SUCCESS);
+}
+
+int
+bfc_init_object_vector_iterator(void *buf, size_t bufsize,
+				bfc_cobjptr_t obj, size_t pos)
+{
+	int rc;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	L4SC_TRACE(logger, "%s(%p, %ld, %ld)",
+		__FUNCTION__, buf, (long) bufsize, (long) pos);
+
+	if ((rc = bfc_init_iterator(buf, bufsize, obj, pos)) == BFC_SUCCESS) {
+		bfc_iterptr_t it = (bfc_iterptr_t) buf;
+		it->vptr = &bfc_object_vector_forward_iterator_class;
 	}
 	bfc_object_dump(buf, 1, logger);
 	return (rc);
@@ -146,6 +187,48 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 		size_t idx = (pos == BFC_NPOS)? 0: pos;
 		while ((idx < objlen) && (n > (ptrdiff_t)(idx - pos))) {
 			idx = next_allocated_index(it->obj, idx);
+		}
+		it->pos = (idx < objlen)? idx: objlen;
+	} else if (n < 0) {
+		if ((it->pos != BFC_NPOS) && (it->pos >= (-n))) {
+			it->pos += n;
+		} else {
+			it->pos = BFC_NPOS;
+		}
+	}
+	bfc_object_dump(it, 1, logger);
+	return (BFC_SUCCESS);
+}
+
+static size_t
+next_allocated_object_index(void *vec, size_t start, size_t objlen)
+{
+	size_t idx = start;
+	bfc_cobjptr_t obj;
+
+	while (idx < objlen) {
+		idx = next_allocated_index(vec, idx);
+		if ((idx < objlen)
+		 && ((obj = bfc_container_cindex(vec, idx)) != NULL)
+		 && (BFC_CLASS(obj) != NULL)) {
+			break;
+		}
+	}
+	return (idx);
+}
+
+static int
+advance_object_forward(bfc_iterptr_t it, ptrdiff_t n)
+{
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	L4SC_TRACE(logger, "%s(%p, %ld)", __FUNCTION__, it, (long) n);
+
+	if (n > 0) {
+		size_t objlen = bfc_object_length(it->obj);
+		size_t pos = it->pos;
+		size_t idx = (pos == BFC_NPOS)? 0: pos;
+		while ((idx < objlen) && (n > (ptrdiff_t)(idx - pos))) {
+			idx = next_allocated_object_index(it->obj, idx, objlen);
 		}
 		it->pos = (idx < objlen)? idx: objlen;
 	} else if (n < 0) {

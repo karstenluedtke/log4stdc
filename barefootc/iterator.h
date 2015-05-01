@@ -104,6 +104,8 @@ int	bfc_init_null_iterator(void *buf, size_t bufsize, size_t pos);
 
 int	bfc_init_vector_iterator(void *buf, size_t bufsize,
 					bfc_cobjptr_t obj, size_t pos);
+int	bfc_init_object_vector_iterator(void *buf, size_t bufsize,
+					bfc_cobjptr_t obj, size_t pos);
 #ifdef __cplusplus
 }	/* C++ */
 #endif

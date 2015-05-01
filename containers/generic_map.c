@@ -11,6 +11,7 @@
 #include "log4stdc.h"
 
 static void destroy_map(bfc_contptr_t map);
+static int begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize);
 
 #define BFC_MAP_HASHLEN(map)	(CV2_LOG2ELEM(map))
 #define BFC_MAP_HASHMASK(map)	(CV2_ELEMENTS(map)-1)
@@ -20,6 +21,7 @@ const struct bfc_map_class generic_map_class = {
 	.super 		= (void *) &bfc_object_vector_class,
 	.name 		= "map",
 	.destroy	= destroy_map,
+	.ibegin		= begin_iterator,
 };
 
 int
@@ -94,6 +96,27 @@ destroy_map(bfc_contptr_t map)
 	}
 }
 
+static int
+begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize)
+{
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	int rc = bfc_init_object_vector_iterator(it, bufsize,
+						(bfc_cobjptr_t)map, 0);
+
+	L4SC_DEBUG(logger, "%s(map %p, it %p, bufsize %ld)",
+		__FUNCTION__, map, it, (long) bufsize);
+	if (rc >= 0) {
+		bfc_cobjptr_t pair = bfc_iterator_index(it);
+		if (pair && (BFC_CLASS(pair) == NULL)) {
+			bfc_iterator_advance(it, 1);
+		}
+	}
+	L4SC_DEBUG(logger, "%s(map %p, it %p, bufsize %ld): %d",
+		__FUNCTION__, map, it, (long) bufsize, rc);
+	bfc_object_dump(it, 2, logger);
+	return (rc);
+}
+
 size_t
 bfc_map_size(bfc_ccontptr_t map)
 {
@@ -121,8 +144,24 @@ bfc_map_size(bfc_ccontptr_t map)
 	} else {
 		L4SC_ERROR(logger, "%s(%p) cannot lock", __FUNCTION__, map);
 	}
+	L4SC_DEBUG(logger, "%s(%p): %ld", __FUNCTION__, map, (long) n);
 
 	return (n);
+}
+
+size_t
+bfc_map_load_limit(const void *map)
+{
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	return ((size_t) 1 << BFC_MAP_HASHLEN(vec));
+}
+
+size_t
+bfc_map_load_percent(const void *map)
+{
+	// (100 * bfc_map_size(map) / bfc_map_load_limit(map));
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	return ((bfc_map_size(map) * 100) >> BFC_MAP_HASHLEN(vec));
 }
 
 unsigned

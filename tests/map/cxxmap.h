@@ -182,6 +182,22 @@ namespace barefootc {
 			return ((rc > 0)? rc: 0);
 		}
 
+		float load_factor() const noexcept
+		{
+			float f = size();
+			if (f > 0) {
+				size_t count = bucket_count();
+				size_t limit = bfc_map_load_limit(&bfcmap);
+				if (count > limit) {
+					count = limit;
+				}
+				if (count > 0) {
+					f /= count;
+				}
+			}
+			return (f);
+		}
+
 		float max_load_factor() const noexcept
 		{
 			return (saved_max_load_factor);
@@ -304,8 +320,8 @@ map<Key,T,Compare,Allocator>& y);
 		iterator begin()
 		{
 			bfc_iterator_t tmp;
-			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) contptr(), 0);
+			bfc_container_begin_iterator(contptr(),
+						     &tmp, sizeof(tmp));
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -313,8 +329,24 @@ map<Key,T,Compare,Allocator>& y);
 		iterator end()
 		{
 			bfc_iterator_t tmp;
-			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) contptr(), BFC_NPOS);
+			bfc_container_end_iterator(contptr(),&tmp,sizeof(tmp));
+			barefootc::iterator<T> it(tmp);
+			return (it);
+		}
+
+		const_iterator begin() const
+		{
+			bfc_iterator_t tmp;
+			bfc_container_begin_iterator(contptr(),
+						     &tmp, sizeof(tmp));
+			barefootc::iterator<T> it(tmp);
+			return (it);
+		}
+
+		const_iterator end() const
+		{
+			bfc_iterator_t tmp;
+			bfc_container_end_iterator(contptr(),&tmp,sizeof(tmp));
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -327,8 +359,8 @@ map<Key,T,Compare,Allocator>& y);
 		const_iterator cbegin() const
 		{
 			bfc_iterator_t tmp;
-			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) contptr(), 0);
+			bfc_container_begin_iterator(contptr(),
+						     &tmp, sizeof(tmp));
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -336,8 +368,7 @@ map<Key,T,Compare,Allocator>& y);
 		const_iterator cend() const
 		{
 			bfc_iterator_t tmp;
-			bfc_init_iterator(&tmp, sizeof(tmp),
-					  (bfc_objptr_t) contptr(), BFC_NPOS);
+			bfc_container_end_iterator(contptr(),&tmp,sizeof(tmp));
 			barefootc::iterator<T> it(tmp);
 			return (it);
 		}
@@ -511,7 +542,10 @@ map<Key,T,Compare,Allocator>& y);
 						   bfcit, sizeof(*bfcit));
 			if ((rc >= 0) && (it.distance(end()) > 0)) {
 				iters.first = it;
-				iters.second = it + 1;
+				iters.second = it;
+				bfc_iterator_set_position(
+					iters.second.bfciter(),
+					bfc_iterator_position(bfcit) + 1);
 			} else {
 				iters.first = end();
 				iters.second = end();
@@ -529,7 +563,10 @@ map<Key,T,Compare,Allocator>& y);
 						   bfcit, sizeof(*bfcit));
 			if ((rc >= 0) && (it.distance(cend()) > 0)) {
 				iters.first = it;
-				iters.second = it + 1;
+				iters.second = it;
+				bfc_iterator_set_position(
+					iters.second.bfciter(),
+					bfc_iterator_position(bfcit) + 1);
 			} else {
 				iters.first = cend();
 				iters.second = cend();

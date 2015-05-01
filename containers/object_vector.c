@@ -33,6 +33,7 @@ static void dump_vector(bfc_ccontptr_t vec, int depth, struct l4sc_logger *log);
 
 static long vector_getlong(bfc_ccontptr_t vec, size_t pos);
 static int vector_setlong(bfc_contptr_t vec, size_t pos, long val);
+static int begin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize);
 
 static int vector_resize(bfc_contptr_t vec, size_t n, const void *p);
 static int vector_push_back(bfc_contptr_t vec, const void *p);
@@ -63,6 +64,7 @@ const struct bfc_vector_class bfc_object_vector_class = {
 	/* Element access */
 	.getl		= vector_getlong,
 	.setl		= vector_setlong,
+	.ibegin		= begin_iterator,
 	/* Modifiers */
 	.resize		= vector_resize,
 	.push_back	= vector_push_back,
@@ -279,6 +281,13 @@ vector_setlong(bfc_contptr_t vec, size_t pos, long val)
 				__FUNCTION__, vec, (long) pos, val);
 	}
 	return (rc);
+}
+
+static int
+begin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
+{
+	return (bfc_init_object_vector_iterator(it, bufsize,
+						(bfc_cobjptr_t)vec, 0));
 }
 
 /* Modifiers */

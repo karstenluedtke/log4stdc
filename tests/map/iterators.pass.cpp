@@ -43,37 +43,37 @@ int main()
 	typedef C::value_type P;
         P a[] =
         {
-            P(1, "one"),
-            P(2, "two"),
-            P(3, "three"),
-            P(4, "four"),
-            P(1, "four"),
-            P(2, "four"),
+            P1(1, "one"),
+            P1(2, "two"),
+            P1(3, "three"),
+            P1(4, "four"),
+            P1(1, "four"),
+            P1(2, "four"),
         };
         C c(a, a + sizeof(a)/sizeof(a[0]));
         assert(c.bucket_count() >= 5);
         assert(c.size() == 4);
-        assert(std::distance(c.begin(), c.end()) == c.size());
-        assert(std::distance(c.cbegin(), c.cend()) == c.size());
+        assert(c.begin().distance(c.end()) == c.size());
+        assert(c.cbegin().distance(c.cend()) == c.size());
         C::iterator i;
     }
     {
-        typedef std::unordered_map<int, std::string> C;
-        typedef std::pair<int, std::string> P;
+	typedef barefootc::map<bfc_number_t, bfc_string_t> C;
+	typedef C::value_type P;
         P a[] =
         {
-            P(1, "one"),
-            P(2, "two"),
-            P(3, "three"),
-            P(4, "four"),
-            P(1, "four"),
-            P(2, "four"),
+            P1(1, "one"),
+            P1(2, "two"),
+            P1(3, "three"),
+            P1(4, "four"),
+            P1(1, "four"),
+            P1(2, "four"),
         };
         const C c(a, a + sizeof(a)/sizeof(a[0]));
         assert(c.bucket_count() >= 5);
         assert(c.size() == 4);
-        assert(std::distance(c.begin(), c.end()) == c.size());
-        assert(std::distance(c.cbegin(), c.cend()) == c.size());
+        assert(c.begin().distance(c.end()) == c.size());
+        assert(c.cbegin().distance(c.cend()) == c.size());
         C::const_iterator i;
     }
 #if 0

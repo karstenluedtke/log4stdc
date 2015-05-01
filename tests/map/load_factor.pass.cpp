@@ -39,22 +39,27 @@ int main()
 	typedef C::value_type P;
         P a[] =
         {
-            P(10, "ten"),
-            P(20, "twenty"),
-            P(30, "thirty"),
-            P(40, "fourty"),
-            P(50, "fifty"),
-            P(60, "sixty"),
-            P(70, "seventy"),
-            P(80, "eighty"),
+            P1(10, "ten"),
+            P1(20, "twenty"),
+            P1(30, "thirty"),
+            P1(40, "fourty"),
+            P1(50, "fifty"),
+            P1(60, "sixty"),
+            P1(70, "seventy"),
+            P1(80, "eighty"),
         };
         const C c(a, a + sizeof(a)/sizeof(a[0]));
-	bfc_number_t key0 = BFC_SIGNED_NUMBER(0);
-        assert(fabs(c.load_factor() - (float)c.size()/c.bucket_count()) < FLT_EPSILON);
+	float load = c.load_factor();
+	float expect= (float)c.size() / c.bucket_count();
+	float delta = load - expect;
+	if (delta < 0) {
+		delta = -delta;
+	}
+        assert(delta < FLT_EPSILON);
     }
     {
-        typedef std::unordered_map<int, std::string> C;
-        typedef std::pair<int, std::string> P;
+	typedef barefootc::map<bfc_number_t, bfc_string_t> C;
+	typedef C::value_type P;
         const C c;
         assert(c.load_factor() == 0);
     }

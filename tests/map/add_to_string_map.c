@@ -41,7 +41,8 @@ test(int n1, const struct test_kv kv[])
 		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), kv[i].v);
 		rc = bfc_map_insert_objects((bfc_contptr_t) &map,
 					    (bfc_objptr_t) &kstr,
-					    (bfc_objptr_t) &vstr);
+					    (bfc_objptr_t) &vstr,
+					    NULL, 0);
 		assert(rc >= 0);
 	}
 

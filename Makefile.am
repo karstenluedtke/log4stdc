@@ -3927,18 +3927,18 @@ tests_map_insert_const_lvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_insert_const_lvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/insert_const_lvalue.pass
 
-#check_PROGRAMS += tests/map/insert_hint_rvalue.pass
-#tests_map_insert_hint_rvalue_pass_SOURCES = tests/map/insert_hint_rvalue.pass.cpp
-#tests_map_insert_hint_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_insert_hint_rvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/insert_hint_rvalue.pass
-#
-#check_PROGRAMS += tests/map/insert_rvalue.pass
-#tests_map_insert_rvalue_pass_SOURCES = tests/map/insert_rvalue.pass.cpp
-#tests_map_insert_rvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_insert_rvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/insert_rvalue.pass
-#
+check_PROGRAMS += tests/map/insert_hint_const_lvalue.pass
+tests_map_insert_hint_const_lvalue_pass_SOURCES = tests/map/insert_hint_const_lvalue.pass.cpp
+tests_map_insert_hint_const_lvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_hint_const_lvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_hint_const_lvalue.pass
+
+check_PROGRAMS += tests/map/insert_range.pass
+tests_map_insert_range_pass_SOURCES = tests/map/insert_range.pass.cpp
+tests_map_insert_range_pass_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_insert_range_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/insert_range.pass
+
 #check_PROGRAMS += tests/map/clear.pass
 #tests_map_clear_pass_SOURCES = tests/map/clear.pass.cpp
 #tests_map_clear_pass_LDADD = libbarefootc.a liblog4stdc.a
@@ -3957,23 +3957,11 @@ TESTS += tests/map/insert_const_lvalue.pass
 #tests_map_erase_const_iter_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/map/erase_const_iter.pass
 #
-#check_PROGRAMS += tests/map/insert_range.pass
-#tests_map_insert_range_pass_SOURCES = tests/map/insert_range.pass.cpp
-#tests_map_insert_range_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_insert_range_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/insert_range.pass
-#
 #check_PROGRAMS += tests/map/erase_range.pass
 #tests_map_erase_range_pass_SOURCES = tests/map/erase_range.pass.cpp
 #tests_map_erase_range_pass_LDADD = libbarefootc.a liblog4stdc.a
 #tests_map_erase_range_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 #TESTS += tests/map/erase_range.pass
-#
-#check_PROGRAMS += tests/map/insert_hint_const_lvalue.pass
-#tests_map_insert_hint_const_lvalue_pass_SOURCES = tests/map/insert_hint_const_lvalue.pass.cpp
-#tests_map_insert_hint_const_lvalue_pass_LDADD = libbarefootc.a liblog4stdc.a
-#tests_map_insert_hint_const_lvalue_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
-#TESTS += tests/map/insert_hint_const_lvalue.pass
 #
 #check_PROGRAMS += tests/map/erase_key.pass
 #tests_map_erase_key_pass_SOURCES = tests/map/erase_key.pass.cpp

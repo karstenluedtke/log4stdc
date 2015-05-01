@@ -62,17 +62,17 @@ namespace barefootc {
 		typedef iterator const_reverse_iterator;
 		typedef iterator local_iterator;
 		typedef iterator const_local_iterator;
-		class init_iterator :
+		class pair_iterator :
 		    public std::iterator<std::input_iterator_tag, value_type>
 		{
 		    const value_type* p;
 		public:
-		    init_iterator(const value_type* x) : p(x) {}
-		    init_iterator(const init_iterator& mit) : p(mit.p) {}
-		    init_iterator& operator++() {++p;return *this;}
-		    init_iterator operator++(int) {init_iterator tmp(*this); operator++(); return tmp;}
-		    bool operator==(const init_iterator& rhs) {return p==rhs.p;}
-		    bool operator!=(const init_iterator& rhs) {return p!=rhs.p;}
+		    pair_iterator(const value_type* x) : p(x) {}
+		    pair_iterator(const pair_iterator& mit) : p(mit.p) {}
+		    pair_iterator& operator++() {++p;return *this;}
+		    pair_iterator operator++(int) {pair_iterator tmp(*this); operator++(); return tmp;}
+		    bool operator==(const pair_iterator& rhs) {return p==rhs.p;}
+		    bool operator!=(const pair_iterator& rhs) {return p!=rhs.p;}
 		    const value_type& operator*() {return *p;}
 		};
 
@@ -150,18 +150,19 @@ namespace barefootc {
 		}
 
 
-		map(init_iterator first, init_iterator lim):
+		map(pair_iterator first, pair_iterator lim):
 			saved_allocator(), saved_max_load_factor(1.0)
 		{
 			key_type k;
 			mapped_type v;
 
 			init_map(get_stdc_mempool(), k, v);
-			for (init_iterator it(first); it != lim; it++) {
+			for (pair_iterator it(first); it != lim; it++) {
 				value_type pair = *it;
 				bfc_map_insert_objects((bfc_contptr_t)&bfcmap,
 						(bfc_objptr_t)&pair.first,
-						(bfc_objptr_t)&pair.second);
+						(bfc_objptr_t)&pair.second,
+						NULL, 0);
 			}
 		}
 
@@ -225,8 +226,8 @@ const T& at(const key_type& x) const;
 // 23.4.4.4, modifiers:
 template <class... Args> pair<iterator, bool> emplace(Args&&... args);
 template <class... Args> iterator emplace_hint(const_iterator position, Args&&... args);
-template <class P> pair<iterator, bool> insert(P&& x);
-iterator insert(const_iterator position, const value_type& x);
+template <class P>
+pair<iterator, bool> insert(P&& x);
 template <class P>
 iterator insert(const_iterator position, P&&);
 template <class InputIterator>
@@ -439,7 +440,8 @@ map<Key,T,Compare,Allocator>& y);
 			if (p == NULL) {
 				int idx = bfc_map_insert_objects(contptr(),
 							(bfc_objptr_t)&x,
-							(bfc_objptr_t)0);
+							(bfc_objptr_t)0,
+							NULL, 0);
 				if (idx < 0) {
 					char msg[80];
 					snprintf(msg, sizeof(msg),
@@ -563,21 +565,35 @@ map<Key,T,Compare,Allocator>& y);
 		std::pair<iterator, bool> insert(const value_type& x)
 		{
 			std::pair<iterator, bool> r;
-			r.first = begin();
-			r.second = false;
+			bfc_iterptr_t it = r.first.bfciter();
 			int rc = bfc_map_insert_objects(contptr(),
 						(bfc_objptr_t)&x.first,
-						(bfc_objptr_t)&x.second);
-			if (rc >= 0) {
-				bfc_iterator_set_position(r.first.bfciter(),rc);
-				r.second = true;
-			} else if (rc == -EEXIST) {
-				bfc_iterptr_t bfcit = r.first.bfciter();
-				bfc_map_find_iter(contptr(),
-						(bfc_objptr_t)&x.first,
-						bfcit, sizeof(*bfcit));
-			}
+						(bfc_objptr_t)&x.second,
+						it, sizeof(*it));
+			r.second = (rc >= 0);
 			return (r);
+		}
+
+		iterator insert(const_iterator position, const value_type& x)
+		{
+			iterator r(position);
+			bfc_iterptr_t it = r.bfciter();
+			int rc = bfc_map_insert_objects(contptr(),
+						(bfc_objptr_t)&x.first,
+						(bfc_objptr_t)&x.second,
+						it, sizeof(*it));
+			return (r);
+		}
+
+		void insert(pair_iterator first, pair_iterator last)
+		{
+			for (pair_iterator it(first); it != last; it++) {
+				value_type pair = *it;
+				bfc_map_insert_objects((bfc_contptr_t)&bfcmap,
+						(bfc_objptr_t)&pair.first,
+						(bfc_objptr_t)&pair.second,
+						NULL, 0);
+			}
 		}
 	};
 

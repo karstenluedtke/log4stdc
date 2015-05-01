@@ -145,7 +145,8 @@ bfc_map_keyhashcode(const void *map, const void *key)
 }
 
 int
-bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value)
+bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
+		       bfc_iterptr_t position, size_t possize)
 {
 	int rc = -ENOENT;
 	unsigned idx, lim;
@@ -202,6 +203,16 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value)
 				rc = (int) idx;
 			} else {
 				rc = -ENOMEM;
+			}
+		}
+		if (position != NULL) {
+			if ((pair != NULL)
+			 && (bfc_container_begin_iterator(vec, position,
+							  possize) >= 0)) {
+				bfc_iterator_set_position(position, idx);
+			} else {
+				bfc_container_end_iterator(vec, position,
+								possize);
 			}
 		}
 		bfc_mutex_unlock(locked);

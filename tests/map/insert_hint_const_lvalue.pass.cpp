@@ -28,7 +28,18 @@
 
 #include <barefootc/pair.h>
 #include <barefootc/string.h>
-#define P1(k,v)	{ &bfc_int_string_pair_class, BFC_SIGNED_NUMBER(k), BFCSTR(v) }
+
+typedef barefootc::map<bfc_number_t, bfc_number_t> C;
+typedef C::value_type P;
+
+P P3(double k, int v)
+{
+	P p = { &bfc_real_int_pair_class,
+		{ &bfc_real_number_class, 0 },
+		BFC_SIGNED_NUMBER(v) };
+	p.first.u.f = k;
+	return (p);
+}
 
 l4sc_logger_ptr_t logger;
 
@@ -37,30 +48,32 @@ int main()
     l4sc_configure_from_xml_file("log4j.xml");
     logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     {
-        typedef std::unordered_map<double, int> C;
         typedef C::iterator R;
-        typedef C::value_type P;
         C c;
         C::const_iterator e = c.end();
-        R r = c.insert(e, P(3.5, 3));
+        R r = c.insert(e, P3(3.5, 3));
         assert(c.size() == 1);
-        assert(r->first == 3.5);
-        assert(r->second == 3);
+	const P *rp = (P *) bfc_iterator_index(r.bfciter());
+        assert(rp->first.u.f == 3.5);
+        assert(rp->second.u.n == 3);
 
-        r = c.insert(c.end(), P(3.5, 4));
+        r = c.insert(c.end(), P3(3.5, 4));
         assert(c.size() == 1);
-        assert(r->first == 3.5);
-        assert(r->second == 3);
+	rp = (P *) bfc_iterator_index(r.bfciter());
+        assert(rp->first.u.f == 3.5);
+        assert(rp->second.u.n == 3);
 
-        r = c.insert(c.end(), P(4.5, 4));
+        r = c.insert(c.end(), P3(4.5, 4));
         assert(c.size() == 2);
-        assert(r->first == 4.5);
-        assert(r->second == 4);
+	rp = (P *) bfc_iterator_index(r.bfciter());
+        assert(rp->first.u.f == 4.5);
+        assert(rp->second.u.n == 4);
 
-        r = c.insert(c.end(), P(5.5, 4));
+        r = c.insert(c.end(), P3(5.5, 4));
         assert(c.size() == 3);
-        assert(r->first == 5.5);
-        assert(r->second == 4);
+	rp = (P *) bfc_iterator_index(r.bfciter());
+        assert(rp->first.u.f == 5.5);
+        assert(rp->second.u.n == 4);
     }
 #if 0
 #if __cplusplus >= 201103L

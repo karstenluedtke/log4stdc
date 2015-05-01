@@ -233,11 +233,7 @@ iterator insert(const_iterator position, P&&);
 template <class InputIterator>
 void insert(InputIterator first, InputIterator last);
 void insert(initializer_list<value_type>);
-iterator erase(const_iterator position);
-size_type erase(const key_type& x);
-iterator erase(const_iterator first, const_iterator last);
 void swap(map<Key,T,Compare,Allocator>&);
-void clear();
 // observers:
 key_compare
 key_comp() const;
@@ -562,6 +558,8 @@ map<Key,T,Compare,Allocator>& y);
 			return ((rc > 0)? rc: 0);
 		}
 
+		// 23.4.4.4, modifiers:
+
 		std::pair<iterator, bool> insert(const value_type& x)
 		{
 			std::pair<iterator, bool> r;
@@ -589,11 +587,49 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			for (pair_iterator it(first); it != last; it++) {
 				value_type pair = *it;
-				bfc_map_insert_objects((bfc_contptr_t)&bfcmap,
+				bfc_map_insert_objects(contptr(),
 						(bfc_objptr_t)&pair.first,
 						(bfc_objptr_t)&pair.second,
 						NULL, 0);
 			}
+		}
+
+		size_type erase(const key_type& x)
+		{
+			int rc = bfc_map_erase_key(contptr(),(bfc_cobjptr_t)&x);
+			return ((rc >= 0)? 1: 0);
+		}
+
+		iterator erase(const_iterator position)
+		{
+			iterator it(cend());
+			bfc_map_erase_iter(contptr(), position.bfciter());
+			return (it);
+		}
+
+		iterator erase(const_iterator first, const_iterator last)
+		{
+			iterator it(cend());
+			if (first.distance(last) == 1) {
+				bfc_map_erase_iter(contptr(), first.bfciter());
+				iterator j(last);
+				it = j;
+			} else if (first.distance(last) == 0) {
+				iterator j(first);
+				it = j;
+			} else if ((first == cbegin()) && (last == cend())) {
+				bfc_container_resize(contptr(), 0, 0);
+				iterator j(cend());
+				it = j;
+			} else {
+				throw(std::out_of_range("distance != 1"));
+			}
+			return (it);
+		}
+
+		void clear()
+		{
+			bfc_container_resize(contptr(), 0, 0);
 		}
 	};
 

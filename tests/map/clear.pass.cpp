@@ -38,12 +38,12 @@ int main()
 	typedef C::value_type P;
         P a[] =
         {
-            P(1, "one"),
-            P(2, "two"),
-            P(3, "three"),
-            P(4, "four"),
-            P(1, "four"),
-            P(2, "four"),
+            P1(1, "one"),
+            P1(2, "two"),
+            P1(3, "three"),
+            P1(4, "four"),
+            P1(1, "four"),
+            P1(2, "four"),
         };
         C c(a, a + sizeof(a)/sizeof(a[0]));
         c.clear();

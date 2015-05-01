@@ -467,9 +467,9 @@ bfc_map_bucket_size(bfc_contptr_t map, bfc_cobjptr_t key)
 }
 
 int
-bfc_map_remove_index(bfc_contptr_t map, size_t idx)
+bfc_map_erase_index(bfc_contptr_t map, size_t idx)
 {
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
 	int rc = BFC_SUCCESS;
@@ -477,7 +477,7 @@ bfc_map_remove_index(bfc_contptr_t map, size_t idx)
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		if ((pair = bfc_vector_ref(vec, (unsigned)idx)) != NULL) {
 			bfc_destroy(pair);
-			((bfc_objptr_t)pair)->vptr = NULL;
+			pair->vptr = NULL;
 		}
 		bfc_mutex_unlock(locked);
 	} else {
@@ -490,23 +490,47 @@ bfc_map_remove_index(bfc_contptr_t map, size_t idx)
 }
 
 int
-bfc_map_remove_key(bfc_contptr_t map, bfc_cobjptr_t key)
+bfc_map_erase_key(bfc_contptr_t map, bfc_cobjptr_t key)
 {
 	bfc_contptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
-	int rc = BFC_SUCCESS;
+	int rc = -ENOENT;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		if (((rc = bfc_map_find_index(map, key, &pair)) >= 0) && pair) {
 			bfc_destroy(pair);
 			((bfc_objptr_t)pair)->vptr = NULL;
+			rc = BFC_SUCCESS;
 		}
 		bfc_mutex_unlock(locked);
 	} else {
 		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 		L4SC_ERROR(log, "%s(%p, key %p) cannot lock",
 						__FUNCTION__, map, key);
+		rc = -EBUSY;
+	}
+	return (rc);
+}
+
+int
+bfc_map_erase_iter(bfc_contptr_t map, bfc_iterptr_t iter)
+{
+	bfc_objptr_t pair = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+	int rc = BFC_SUCCESS;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		if ((pair = bfc_iterator_index(iter)) != NULL) {
+			bfc_destroy(pair);
+			pair->vptr = NULL;
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p) cannot lock",
+						__FUNCTION__, map, iter);
 		rc = -EBUSY;
 	}
 	return (rc);

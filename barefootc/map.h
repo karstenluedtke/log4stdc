@@ -120,8 +120,9 @@ size_t bfc_map_size(bfc_ccontptr_t);
 
 int bfc_map_insert_objects(bfc_contptr_t, bfc_objptr_t, bfc_objptr_t,
 			   bfc_iterptr_t position, size_t possize);
-int bfc_map_remove_index(bfc_contptr_t, size_t);
-int bfc_map_remove_key(bfc_contptr_t, bfc_cobjptr_t);
+int bfc_map_erase_key(bfc_contptr_t, bfc_cobjptr_t);
+int bfc_map_erase_iter(bfc_contptr_t, bfc_iterptr_t);
+int bfc_map_erase_index(bfc_contptr_t, size_t);
 
 int bfc_map_find_index(bfc_contptr_t, bfc_cobjptr_t, bfc_contptr_t *);
 int bfc_map_find_iter(bfc_contptr_t, bfc_cobjptr_t, bfc_iterptr_t, size_t);

@@ -27,6 +27,12 @@
 #include <barefootc/string.h>
 #define P1(k,v)	{ &bfc_int_string_pair_class, BFC_SIGNED_NUMBER(k), BFCSTR(v) }
 
+bfc_number_t Key(int n)
+{
+	bfc_number_t k = BFC_SIGNED_NUMBER(n);
+	return (k);
+}
+
 l4sc_logger_ptr_t logger;
 
 int main()
@@ -38,20 +44,20 @@ int main()
 	typedef C::value_type P;
         P a[] =
         {
-            P(1, "one"),
-            P(2, "two"),
-            P(3, "three"),
-            P(4, "four"),
-            P(1, "four"),
-            P(2, "four"),
+            P1(1, "one"),
+            P1(2, "two"),
+            P1(3, "three"),
+            P1(4, "four"),
+            P1(1, "four"),
+            P1(2, "four"),
         };
         C c(a, a + sizeof(a)/sizeof(a[0]));
-        C::const_iterator i = c.find(2);
+        C::const_iterator i = c.find(Key(2));
         C::iterator j = c.erase(i);
         assert(c.size() == 3);
-        assert(c.at(1) == "one");
-        assert(c.at(3) == "three");
-        assert(c.at(4) == "four");
+        assert(bfc_string_compare_c_str(&c.at(Key(1)), "one") == 0);
+        assert(bfc_string_compare_c_str(&c.at(Key(3)), "three") == 0);
+        assert(bfc_string_compare_c_str(&c.at(Key(4)), "four") == 0);
     }
 #if 0
 #if __cplusplus >= 201103L

@@ -208,6 +208,11 @@ namespace barefootc {
 			saved_max_load_factor = z;
 		}
 
+		void reserve(size_type n)
+		{
+			bfc_map_reserve((bfc_contptr_t)&bfcmap, n);
+		}
+		
 		void rehash(size_type n)
 		{
 		}

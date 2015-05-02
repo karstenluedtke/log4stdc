@@ -18,11 +18,11 @@ CPPFLAGS=-I. -Ilog4stdc \
 	-DPACKAGE="barefootc" \
 	-DPACKAGE_BUGREPORT="bug-barefootc@example.org" \
 	-DPACKAGE_NAME="barefootc" \
-	-DPACKAGE_STRING="barefootc 0.7.1" \
+	-DPACKAGE_STRING="barefootc 0.7.2" \
 	-DPACKAGE_TARNAME="barefootc" \
 	-DPACKAGE_URL="" \
-	-DPACKAGE_VERSION="0.7.1" \
-	-DVERSION="0.7.1"
+	-DPACKAGE_VERSION="0.7.2" \
+	-DVERSION="0.7.2"
 CFLAGS=
 CXXFLAGS=-EHsc
 
@@ -49,6 +49,7 @@ HEADERS= \
 OFILES= \
 	barefootc/baseobject.obj \
 	barefootc/integer_object.obj \
+	barefootc/real_number_object.obj \
 	barefootc/bfc_new_object.obj \
 	barefootc/bfc_init_object.obj \
 	barefootc/bfc_clone_object.obj \
@@ -277,6 +278,7 @@ OFILES= \
 	containers/int_pair.obj \
 	containers/string_pair.obj \
 	containers/int_string_pair.obj \
+	containers/real_int_pair.obj \
 	containers/generic_map.obj \
 	mempools/stdcpool.obj \
 	mempools/defaultpool.obj \
@@ -705,6 +707,30 @@ TESTS= \
 	tests/map/add_to_string_map.exe \
 	tests/map/at.pass.exe \
 	tests/map/index.pass.exe \
+	tests/map/max_load_factor.pass.exe \
+	tests/map/count.pass.exe \
+	tests/map/bucket_count.pass.exe \
+	tests/map/max_size.pass.exe \
+	tests/map/bucket_size.pass.exe \
+	tests/map/eq.pass.exe \
+	tests/map/bucket.pass.exe \
+	tests/map/find_const.pass.exe \
+	tests/map/find_non_const.pass.exe \
+	tests/map/equal_range_const.pass.exe \
+	tests/map/equal_range_non_const.pass.exe \
+	tests/map/local_iterators.pass.exe \
+	tests/map/max_bucket_count.pass.exe \
+	tests/map/insert_const_lvalue.pass.exe \
+	tests/map/insert_hint_const_lvalue.pass.exe \
+	tests/map/insert_range.pass.exe \
+	tests/map/clear.pass.exe \
+	tests/map/erase_key.pass.exe \
+	tests/map/erase_const_iter.pass.exe \
+	tests/map/erase_range.pass.exe \
+	tests/map/load_factor.pass.exe \
+	tests/map/iterators.pass.exe \
+	tests/map/rehash.pass.exe \
+	tests/map/reserve.pass.exe \
 
 
 all: barefootc.lib log4stdc.lib
@@ -1028,6 +1054,30 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\map\add_to_string_map.exe
 	tests\map\at.pass.exe
 	tests\map\index.pass.exe
+	tests\map\max_load_factor.pass.exe
+	tests\map\count.pass.exe
+	tests\map\bucket_count.pass.exe
+	tests\map\max_size.pass.exe
+	tests\map\bucket_size.pass.exe
+	tests\map\eq.pass.exe
+	tests\map\bucket.pass.exe
+	tests\map\find_const.pass.exe
+	tests\map\find_non_const.pass.exe
+	tests\map\equal_range_const.pass.exe
+	tests\map\equal_range_non_const.pass.exe
+	tests\map\local_iterators.pass.exe
+	tests\map\max_bucket_count.pass.exe
+	tests\map\insert_const_lvalue.pass.exe
+	tests\map\insert_hint_const_lvalue.pass.exe
+	tests\map\insert_range.pass.exe
+	tests\map\clear.pass.exe
+	tests\map\erase_key.pass.exe
+	tests\map\erase_const_iter.pass.exe
+	tests\map\erase_range.pass.exe
+	tests\map\load_factor.pass.exe
+	tests\map\iterators.pass.exe
+	tests\map\rehash.pass.exe
+	tests\map\reserve.pass.exe
 	echo "check done"
 
 barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
@@ -1035,6 +1085,9 @@ barefootc/baseobject.obj: barefootc/baseobject.c $(HEADERS)
 
 barefootc/integer_object.obj: barefootc/integer_object.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/integer_object.c
+
+barefootc/real_number_object.obj: barefootc/real_number_object.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/real_number_object.c
 
 barefootc/bfc_new_object.obj: barefootc/bfc_new_object.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ barefootc/bfc_new_object.c
@@ -1719,6 +1772,9 @@ containers/string_pair.obj: containers/string_pair.c $(HEADERS)
 
 containers/int_string_pair.obj: containers/int_string_pair.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/int_string_pair.c
+
+containers/real_int_pair.obj: containers/real_int_pair.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/real_int_pair.c
 
 containers/generic_map.obj: containers/generic_map.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/generic_map.c
@@ -4540,4 +4596,196 @@ tests/map/index.pass.exe: \
 
 tests/map/index.pass.obj: tests/map/index.pass.cpp $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/index.pass.cpp
+
+tests/map/max_load_factor.pass.exe: \
+		tests/map/max_load_factor.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/max_load_factor.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/max_load_factor.pass.obj: tests/map/max_load_factor.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/max_load_factor.pass.cpp
+
+tests/map/count.pass.exe: \
+		tests/map/count.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/count.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/count.pass.obj: tests/map/count.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/count.pass.cpp
+
+tests/map/bucket_count.pass.exe: \
+		tests/map/bucket_count.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/bucket_count.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/bucket_count.pass.obj: tests/map/bucket_count.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/bucket_count.pass.cpp
+
+tests/map/max_size.pass.exe: \
+		tests/map/max_size.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/max_size.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/max_size.pass.obj: tests/map/max_size.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/max_size.pass.cpp
+
+tests/map/bucket_size.pass.exe: \
+		tests/map/bucket_size.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/bucket_size.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/bucket_size.pass.obj: tests/map/bucket_size.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/bucket_size.pass.cpp
+
+tests/map/eq.pass.exe: \
+		tests/map/eq.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/eq.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/eq.pass.obj: tests/map/eq.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/eq.pass.cpp
+
+tests/map/bucket.pass.exe: \
+		tests/map/bucket.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/bucket.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/bucket.pass.obj: tests/map/bucket.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/bucket.pass.cpp
+
+tests/map/find_const.pass.exe: \
+		tests/map/find_const.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/find_const.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/find_const.pass.obj: tests/map/find_const.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/find_const.pass.cpp
+
+tests/map/find_non_const.pass.exe: \
+		tests/map/find_non_const.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/find_non_const.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/find_non_const.pass.obj: tests/map/find_non_const.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/find_non_const.pass.cpp
+
+tests/map/equal_range_const.pass.exe: \
+		tests/map/equal_range_const.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/equal_range_const.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/equal_range_const.pass.obj: tests/map/equal_range_const.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/equal_range_const.pass.cpp
+
+tests/map/equal_range_non_const.pass.exe: \
+		tests/map/equal_range_non_const.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/equal_range_non_const.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/equal_range_non_const.pass.obj: tests/map/equal_range_non_const.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/equal_range_non_const.pass.cpp
+
+tests/map/local_iterators.pass.exe: \
+		tests/map/local_iterators.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/local_iterators.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/local_iterators.pass.obj: tests/map/local_iterators.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/local_iterators.pass.cpp
+
+tests/map/max_bucket_count.pass.exe: \
+		tests/map/max_bucket_count.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/max_bucket_count.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/max_bucket_count.pass.obj: tests/map/max_bucket_count.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/max_bucket_count.pass.cpp
+
+tests/map/insert_const_lvalue.pass.exe: \
+		tests/map/insert_const_lvalue.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/insert_const_lvalue.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/insert_const_lvalue.pass.obj: tests/map/insert_const_lvalue.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/insert_const_lvalue.pass.cpp
+
+tests/map/insert_hint_const_lvalue.pass.exe: \
+		tests/map/insert_hint_const_lvalue.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/insert_hint_const_lvalue.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/insert_hint_const_lvalue.pass.obj: tests/map/insert_hint_const_lvalue.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/insert_hint_const_lvalue.pass.cpp
+
+tests/map/insert_range.pass.exe: \
+		tests/map/insert_range.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/insert_range.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/insert_range.pass.obj: tests/map/insert_range.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/insert_range.pass.cpp
+
+tests/map/clear.pass.exe: \
+		tests/map/clear.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/clear.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/clear.pass.obj: tests/map/clear.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/clear.pass.cpp
+
+tests/map/erase_key.pass.exe: \
+		tests/map/erase_key.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/erase_key.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/erase_key.pass.obj: tests/map/erase_key.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/erase_key.pass.cpp
+
+tests/map/erase_const_iter.pass.exe: \
+		tests/map/erase_const_iter.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/erase_const_iter.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/erase_const_iter.pass.obj: tests/map/erase_const_iter.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/erase_const_iter.pass.cpp
+
+tests/map/erase_range.pass.exe: \
+		tests/map/erase_range.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/erase_range.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/erase_range.pass.obj: tests/map/erase_range.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/erase_range.pass.cpp
+
+tests/map/load_factor.pass.exe: \
+		tests/map/load_factor.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/load_factor.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/load_factor.pass.obj: tests/map/load_factor.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/load_factor.pass.cpp
+
+tests/map/iterators.pass.exe: \
+		tests/map/iterators.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/iterators.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/iterators.pass.obj: tests/map/iterators.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/iterators.pass.cpp
+
+tests/map/rehash.pass.exe: \
+		tests/map/rehash.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/rehash.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/rehash.pass.obj: tests/map/rehash.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/rehash.pass.cpp
+
+tests/map/reserve.pass.exe: \
+		tests/map/reserve.pass.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/reserve.pass.obj barefootc.lib log4stdc.lib
+
+tests/map/reserve.pass.obj: tests/map/reserve.pass.cpp $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/reserve.pass.cpp
 

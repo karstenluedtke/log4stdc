@@ -164,6 +164,51 @@ bfc_map_load_percent(const void *map)
 	return ((bfc_map_size(map) * 100) >> BFC_MAP_HASHLEN(vec));
 }
 
+int
+bfc_map_reserve(bfc_contptr_t map, size_t n)
+{
+	size_t oldsize, limit;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+	int rc = BFC_SUCCESS;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		oldsize = BFC_VECTOR_GET_SIZE(vec);
+		if (n > oldsize) {
+			limit = bfc_map_load_limit(map);
+			L4SC_DEBUG(logger, "%s(%p): %lu -> %lu, limit %lu",
+				__FUNCTION__, map,
+				(long) oldsize, (long) n, (long) limit);
+			if (n < limit/2) {
+				/* ok */
+			} else if ((vec->double_indirect == NULL)
+				&& (vec->triple_indirect == NULL)
+				&& ((oldsize==0) || (bfc_map_size(map)==0))) {
+				while ((2*n > (size_t) CV2_ELEMENTS(vec))
+				    && (vec->log2_double_indirect < 20)) {
+					vec->log2_double_indirect++;
+				}
+				L4SC_DEBUG(logger,
+					"%s(%p): %lu -> %lu, new limit %lu",
+					__FUNCTION__, map, (long)oldsize,
+					(long)n, (long)bfc_map_load_limit(map));
+			} else {
+				L4SC_WARN(logger,
+					"%s(%p): %lu -> %lu, limit %lu:"
+					" should rehash!", __FUNCTION__, map,
+					(long)oldsize, (long)n, (long)limit);
+			}
+			BFC_VECTOR_SET_SIZE(vec, n);
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger, "%s(%p) cannot lock", __FUNCTION__, map);
+		rc = -EBUSY;
+	}
+	return (rc);
+}
+
 unsigned
 bfc_map_keyhashcode(const void *map, const void *key)
 {

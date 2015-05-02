@@ -28,8 +28,6 @@ struct Key {
 namespace std
 {
     template <>
-    l4sc_configure_from_xml_file("log4j.xml");
-    logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     struct hash<Key>
     {
         size_t operator()(Key const &) const {return 0;}
@@ -39,10 +37,10 @@ namespace std
 int
 main()
 {
+    l4sc_configure_from_xml_file("log4j.xml");
+    logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     std::unordered_map<Key, int>::iterator it =
         std::unordered_map<Key, int>().find(Key(0));
     std::pair<std::unordered_map<Key, int>::iterator, bool> result =
         std::unordered_map<Key, int>().insert(std::make_pair(Key(0), 0));
 }
-#if 0
-#endif

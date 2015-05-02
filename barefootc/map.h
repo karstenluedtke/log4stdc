@@ -116,6 +116,7 @@ do {									\
 
 int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);
 int bfc_init_map_copy(void *, size_t, struct mempool *, bfc_ccontptr_t);
+int bfc_map_reserve(bfc_contptr_t map, size_t n);
 size_t bfc_map_size(bfc_ccontptr_t);
 size_t bfc_map_load_limit(const void *map);
 size_t bfc_map_load_percent(const void *map);

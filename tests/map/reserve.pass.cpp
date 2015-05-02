@@ -27,16 +27,22 @@
 #include <barefootc/string.h>
 #define P1(k,v)	{ &bfc_int_string_pair_class, BFC_SIGNED_NUMBER(k), BFCSTR(v) }
 
+bfc_number_t Key(int n)
+{
+	bfc_number_t k = BFC_SIGNED_NUMBER(n);
+	return (k);
+}
+
 l4sc_logger_ptr_t logger;
 
 template <class C>
 void test(const C& c)
 {
     assert(c.size() == 4);
-    assert(c.at(1) == "one");
-    assert(c.at(2) == "two");
-    assert(c.at(3) == "three");
-    assert(c.at(4) == "four");
+    assert(bfc_string_compare_c_str(&c.at(Key(1)), "one") == 0);
+    assert(bfc_string_compare_c_str(&c.at(Key(2)), "two") == 0);
+    assert(bfc_string_compare_c_str(&c.at(Key(3)), "three") == 0);
+    assert(bfc_string_compare_c_str(&c.at(Key(4)), "four") == 0);
 }
 
 int main()
@@ -48,12 +54,12 @@ int main()
 	typedef C::value_type P;
         P a[] =
         {
-            P(1, "one"),
-            P(2, "two"),
-            P(3, "three"),
-            P(4, "four"),
-            P(1, "four"),
-            P(2, "four"),
+            P1(1, "one"),
+            P1(2, "two"),
+            P1(3, "three"),
+            P1(4, "four"),
+            P1(1, "four"),
+            P1(2, "four"),
         };
         C c(a, a + sizeof(a)/sizeof(a[0]));
         test(c);
@@ -67,6 +73,26 @@ int main()
         test(c);
         c.reserve(31);
         assert(c.bucket_count() >= 16);
+        test(c);
+    }
+    {
+	typedef barefootc::map<bfc_number_t, bfc_string_t> C;
+	typedef C::value_type P;
+        P a[] =
+        {
+            P1(1, "one"),
+            P1(2, "two"),
+            P1(3, "three"),
+            P1(4, "four"),
+            P1(1, "four"),
+            P1(2, "four"),
+        };
+        C c;
+	assert(c.size() == 0);
+        c.reserve(4000);
+	assert(c.size() == 0);
+        assert(c.bucket_count() >= 4000);
+        c.insert(a, a + sizeof(a)/sizeof(a[0]));
         test(c);
     }
 #if 0

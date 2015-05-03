@@ -261,7 +261,7 @@ libbarefootc_a_SOURCES+= containers/int_pair.c
 libbarefootc_a_SOURCES+= containers/string_pair.c
 libbarefootc_a_SOURCES+= containers/int_string_pair.c
 libbarefootc_a_SOURCES+= containers/real_int_pair.c
-libbarefootc_a_SOURCES+= containers/generic_map.c
+libbarefootc_a_SOURCES+= containers/unordered_map.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
 libbarefootc_a_SOURCES+= mempools/chainedpool.c
@@ -2268,6 +2268,12 @@ tests_map_add_to_string_map_SOURCES = tests/map/add_to_string_map.c
 tests_map_add_to_string_map_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_add_to_string_map_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/add_to_string_map
+
+check_PROGRAMS += tests/map/replace_in_string_map
+tests_map_replace_in_string_map_SOURCES = tests/map/replace_in_string_map.c
+tests_map_replace_in_string_map_LDADD = libbarefootc.a liblog4stdc.a
+tests_map_replace_in_string_map_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/map/replace_in_string_map
 
 check_PROGRAMS += tests/map/at.pass
 tests_map_at_pass_SOURCES = tests/map/at.pass.cpp

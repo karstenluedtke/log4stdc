@@ -279,7 +279,7 @@ OFILES= \
 	containers/string_pair.obj \
 	containers/int_string_pair.obj \
 	containers/real_int_pair.obj \
-	containers/generic_map.obj \
+	containers/unordered_map.obj \
 	mempools/stdcpool.obj \
 	mempools/defaultpool.obj \
 	mempools/chainedpool.obj \
@@ -705,6 +705,7 @@ TESTS= \
 	tests/vector/assign_string_vector.exe \
 	tests/vector/large_element.exe \
 	tests/map/add_to_string_map.exe \
+	tests/map/replace_in_string_map.exe \
 	tests/map/at.pass.exe \
 	tests/map/index.pass.exe \
 	tests/map/max_load_factor.pass.exe \
@@ -1052,6 +1053,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\vector\assign_string_vector.exe
 	tests\vector\large_element.exe
 	tests\map\add_to_string_map.exe
+	tests\map\replace_in_string_map.exe
 	tests\map\at.pass.exe
 	tests\map\index.pass.exe
 	tests\map\max_load_factor.pass.exe
@@ -1776,8 +1778,8 @@ containers/int_string_pair.obj: containers/int_string_pair.c $(HEADERS)
 containers/real_int_pair.obj: containers/real_int_pair.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/real_int_pair.c
 
-containers/generic_map.obj: containers/generic_map.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/generic_map.c
+containers/unordered_map.obj: containers/unordered_map.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/unordered_map.c
 
 mempools/stdcpool.obj: mempools/stdcpool.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/stdcpool.c
@@ -4580,6 +4582,14 @@ tests/map/add_to_string_map.exe: \
 
 tests/map/add_to_string_map.obj: tests/map/add_to_string_map.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/add_to_string_map.c
+
+tests/map/replace_in_string_map.exe: \
+		tests/map/replace_in_string_map.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/replace_in_string_map.obj barefootc.lib log4stdc.lib
+
+tests/map/replace_in_string_map.obj: tests/map/replace_in_string_map.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/replace_in_string_map.c
 
 tests/map/at.pass.exe: \
 		tests/map/at.pass.obj \

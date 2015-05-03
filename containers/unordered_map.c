@@ -17,7 +17,7 @@ static int begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize);
 #define BFC_MAP_HASHMASK(map)	(CV2_ELEMENTS(map)-1)
 
 extern const bfc_class_t bfc_object_vector_class;
-const struct bfc_map_class generic_map_class = {
+const struct bfc_map_class unordered_map_class = {
 	.super 		= (void *) &bfc_object_vector_class,
 	.name 		= "map",
 	.destroy	= destroy_map,
@@ -39,7 +39,7 @@ bfc_init_map_class(void *buf, size_t bufsize, int estimate,
 			   vec, (long) bufsize, estimate, pairclass, pool, rc);
 		return(rc);
 	}
-	vec->vptr = (bfc_vector_class_ptr_t) &generic_map_class;
+	vec->vptr = (bfc_vector_class_ptr_t) &unordered_map_class;
 	vec->elem_class = pairclass;
 	vec->log2_double_indirect = 1;
 	while (boundary > (long) CV2_ELEMENTS(vec)) {
@@ -76,7 +76,7 @@ bfc_init_map_copy(void *buf, size_t bufsize, struct mempool *pool,
 
 	rc = bfc_init_vector_by_element_size(buf, bufsize, pool, elem_size);
 	if (rc >= 0) {
-		vec->vptr = (bfc_vector_class_ptr_t) &generic_map_class;
+		vec->vptr = (bfc_vector_class_ptr_t) &unordered_map_class;
 		vec->elem_class = svec->elem_class;
 		vec->log2_indirect = svec->log2_indirect;
 		vec->log2_double_indirect = svec->log2_double_indirect;
@@ -318,6 +318,58 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 					(rc == -EBUSY)?  "cannot lock": "");
 	}
 	return(rc);
+}
+
+int
+bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
+		        bfc_iterptr_t position, size_t possize)
+{
+	int rc = -ENOENT;
+	bfc_contptr_t pair = NULL;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_mutex_ptr_t locked;
+	bfc_iterptr_t it;
+	size_t itsize;
+	bfc_iterator_t iterbuf;
+
+	if ((map == NULL) || (key == NULL)) {
+		L4SC_ERROR(logger, "%s(%p, key %p, value %p): null arg",
+				__FUNCTION__, map, key, value);
+		return (-EFAULT);
+	} else if (BFC_CLASS((bfc_cobjptr_t)key) == NULL) {
+		L4SC_ERROR(logger, "%s(%p, key %p, value %p): no key class",
+				__FUNCTION__, map, key, value);
+		return (-EINVAL);
+	}
+
+	if (position && (possize >= sizeof(iterbuf))) {
+		it = position;
+		itsize = possize;
+	} else {
+		it = &iterbuf;
+		itsize = sizeof(iterbuf);
+	}
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		rc = bfc_map_insert_objects(map, key, value, it, itsize);
+		if ((rc == -EEXIST)
+		 && ((pair = bfc_iterator_index(it)) != NULL)) {
+			if ((bfc_container_create_element(pair, 0,
+						key, vec->pool) != NULL)
+			 && (bfc_container_create_element(pair, 1,
+						value, vec->pool) != NULL)) {
+				rc = (int) bfc_iterator_position(it);
+			} else {
+				rc = -ENOMEM;
+			}
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger, "%s(%p) cannot lock", __FUNCTION__, map);
+		rc = -EBUSY;
+	}
+	return (rc);
 }
 
 int

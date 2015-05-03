@@ -27,6 +27,7 @@ typedef const struct bfc_pair_class *bfc_pair_class_ptr_t;
 extern const struct bfc_pair_class bfc_int_pair_class;
 extern const struct bfc_pair_class bfc_int_string_pair_class;
 extern const struct bfc_pair_class bfc_real_int_pair_class;
+extern const struct bfc_pair_class bfc_string_ref_pair_class;
 /** @} */
 
 /** @addtogroup pair_definition */
@@ -52,14 +53,15 @@ typedef BFC_PAIR(bfc_number_pair, bfc_number_t, bfc_number_t) bfc_number_pair_t;
 typedef BFC_PAIR(bfc_number_string_pair, bfc_number_t, bfc_string_t)
 						       bfc_number_string_pair_t;
 
+typedef BFC_PAIR(bfc_string_pair, bfc_string_t, bfc_string_t) bfc_string_pair_t;
+typedef BFC_PAIR(bfc_string_ref_pair, bfc_string_t, bfc_objptr_t)
+						       bfc_string_objref_pair_t;
+
 typedef BFC_PAIR(bfc_ptr_pair, void *, void *) bfc_ptr_pair_t;
 typedef BFC_PAIR(bfc_object_pair, bfc_object_t, bfc_object_t) bfc_object_pair_t;
 typedef BFC_PAIR(bfc_objref_pair, bfc_objptr_t, bfc_objptr_t) bfc_objref_pair_t;
-typedef BFC_PAIR(bfc_string_pair, bfc_string_t, bfc_string_t) bfc_string_pair_t;
 typedef BFC_PAIR(bfc_string_object_pair, bfc_string_t, bfc_object_t)
 						       bfc_string_object_pair_t;
-typedef BFC_PAIR(bfc_string_objref_pair, bfc_string_t, bfc_objptr_t)
-						       bfc_string_objref_pair_t;
 typedef BFC_PAIR(bfc_strref_pair, bfc_strptr_t, bfc_strptr_t) bfc_strref_pair_t;
 /** @} */
 

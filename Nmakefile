@@ -277,6 +277,7 @@ OFILES= \
 	containers/object_vector.obj \
 	containers/int_pair.obj \
 	containers/string_pair.obj \
+	containers/string_ref_pair.obj \
 	containers/int_string_pair.obj \
 	containers/real_int_pair.obj \
 	containers/unordered_map.obj \
@@ -706,6 +707,7 @@ TESTS= \
 	tests/vector/large_element.exe \
 	tests/map/add_to_string_map.exe \
 	tests/map/replace_in_string_map.exe \
+	tests/map/replace_in_string_objref_map.exe \
 	tests/map/at.pass.exe \
 	tests/map/index.pass.exe \
 	tests/map/max_load_factor.pass.exe \
@@ -1054,6 +1056,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\vector\large_element.exe
 	tests\map\add_to_string_map.exe
 	tests\map\replace_in_string_map.exe
+	tests\map\replace_in_string_objref_map.exe
 	tests\map\at.pass.exe
 	tests\map\index.pass.exe
 	tests\map\max_load_factor.pass.exe
@@ -1771,6 +1774,9 @@ containers/int_pair.obj: containers/int_pair.c $(HEADERS)
 
 containers/string_pair.obj: containers/string_pair.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/string_pair.c
+
+containers/string_ref_pair.obj: containers/string_ref_pair.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/string_ref_pair.c
 
 containers/int_string_pair.obj: containers/int_string_pair.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/int_string_pair.c
@@ -4590,6 +4596,14 @@ tests/map/replace_in_string_map.exe: \
 
 tests/map/replace_in_string_map.obj: tests/map/replace_in_string_map.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/replace_in_string_map.c
+
+tests/map/replace_in_string_objref_map.exe: \
+		tests/map/replace_in_string_objref_map.obj \
+		barefootc.lib log4stdc.lib
+	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/map/replace_in_string_objref_map.obj barefootc.lib log4stdc.lib
+
+tests/map/replace_in_string_objref_map.obj: tests/map/replace_in_string_objref_map.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/map/replace_in_string_objref_map.c
 
 tests/map/at.pass.exe: \
 		tests/map/at.pass.obj \

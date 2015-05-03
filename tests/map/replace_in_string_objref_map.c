@@ -11,6 +11,7 @@
 #include "barefootc/container.h"
 #include "barefootc/mempool.h"
 #include "barefootc/utf8.h"
+#include "barefootc/unconst.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -23,45 +24,122 @@ struct test_kv {
 	const char *k, *v;
 };
 
+static bfc_objptr_t create_test_object(const char *v);
+
+static int  init_test_object(void *buf, size_t bufsize, struct mempool *pool);
+static void destroy_test_object(bfc_objptr_t obj);
+static int  test_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize);
+
+bfc_class_t test_object_class = {
+	.super	  = &bfc_object_class,
+	.name	  = "test object",
+	.init	  = init_test_object,
+	.destroy  = destroy_test_object,
+	.tostring = test_object_tostring,
+};
+
+static bfc_objptr_t
+create_test_object(const char *v)
+{
+	bfc_objptr_t obj;
+	int vlen = strlen(v);
+	void *p;
+	char *nm;
+
+	bfc_new(&p, &test_object_class, pool);
+	obj = (bfc_objptr_t) p;
+	nm = bfc_mempool_alloc(pool, vlen+1);
+	memcpy(nm, v, vlen);
+	nm[vlen] = '\0';
+	obj->name = nm;
+	return (obj);
+}
+
+static int
+init_test_object(void *buf, size_t bufsize, struct mempool *pool)
+{
+	bfc_objptr_t obj = (bfc_objptr_t) buf;
+	if (bufsize < sizeof(*obj)) {
+		return (-ENOSPC);
+	}
+	memset(obj, 0, sizeof(*obj));
+	obj->vptr = &test_object_class;
+	return (BFC_SUCCESS);
+}
+
+static void
+destroy_test_object(bfc_objptr_t obj)
+{
+	bfc_classptr_t cls;
+
+	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
+		if (obj->pool && obj->name) {
+			char *nm = BFC_UNCONST(char *, obj->name);
+			obj->name = NULL;
+			bfc_mempool_free(obj->pool, nm);
+		}
+		BFC_DESTROY_EPILOGUE(obj, cls);
+	}
+}
+
+static int
+test_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
+{
+	int rc = 0;
+
+	if (obj && BFC_CLASS(obj) && obj->name) {
+		rc = snprintf(buf, bufsize, "%s", obj->name);
+	}
+	return (rc);
+}
+	
 static int
 test(int n1, const struct test_kv init[],
      int n2, const struct test_kv repl[],
      int n3, const struct test_kv expect[])
 {
 	int i, rc;
-	bfc_string_map_t map;
+	bfc_string_objref_map_t map;
 	const size_t initial_poolsize = bfc_object_length(pool);
 
 	L4SC_DEBUG(logger, "%s(init[%d] %p, repl[%d] %p, expect[%d] %p)",
 		__FUNCTION__, n1, init, n2, repl, n3, expect);
 
-	BFC_STRING_MAP_INIT(&map, n1, pool);
+	BFC_STRING_OBJREF_MAP_INIT(&map, n1, pool);
 
 	for (i=0; i < n1; i++) {
-		bfc_string_t kstr, vstr;
-		L4SC_DEBUG(logger, "%s: init %s = %s",
+		bfc_string_t kstr;
+		bfc_objptr_t vobj;
+		L4SC_DEBUG(logger, "%s: init %s = test_object(%s)",
 			__FUNCTION__, init[i].k, init[i].v);
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), init[i].k);
-		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), init[i].v);
+		vobj = create_test_object(init[i].v);
+		bfc_init_refcount(vobj, 1);
+		assert(BFC_CLASS(vobj) == &test_object_class);
+		assert(strcmp(vobj->name, init[i].v) == 0);
 		rc = bfc_map_insert_objects((bfc_contptr_t) &map,
-					    (bfc_objptr_t) &kstr,
-					    (bfc_objptr_t) &vstr,
+					    (bfc_objptr_t) &kstr, vobj,
 					    NULL, 0);
 		assert(rc >= 0);
+		bfc_decr_refcount(vobj); /* vobj now ref'd by map only */
+		vobj = NULL;
 	}
 	assert(bfc_map_size((bfc_ccontptr_t)&map) == n1);
 
 	for (i=0; i < n2; i++) {
-		bfc_string_t kstr, vstr;
-		L4SC_DEBUG(logger, "%s: replace %s = %s",
+		bfc_string_t kstr;
+		bfc_objptr_t vobj;
+		L4SC_DEBUG(logger, "%s: replace %s = test_object(%s)",
 			__FUNCTION__, repl[i].k, repl[i].v);
+		vobj = create_test_object(repl[i].v);
+		bfc_init_refcount(vobj, 1);
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), repl[i].k);
-		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), repl[i].v);
 		rc = bfc_map_replace_objects((bfc_contptr_t) &map,
-					     (bfc_objptr_t) &kstr,
-					     (bfc_objptr_t) &vstr,
+					     (bfc_objptr_t) &kstr, vobj,
 					     NULL, 0);
 		assert(rc >= 0);
+		bfc_decr_refcount(vobj); /* vobj now ref'd by map only */
+		vobj = NULL;
 	}
 
 	bfc_object_dump(&map, 99, logger);
@@ -69,17 +147,15 @@ test(int n1, const struct test_kv init[],
 	for (i=0; i < n3; i++) {
 		bfc_string_t kstr;
 		bfc_objptr_t vp;
-		bfc_cstrptr_t value;
 		char vbuf[80];
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), expect[i].k);
 		vp = bfc_map_find_value((bfc_contptr_t) &map,
 					(bfc_objptr_t) &kstr);
 		assert(vp != NULL);
-		value = (bfc_cstrptr_t) vp;
 		bfc_object_tostring(vp, vbuf, sizeof(vbuf));
-		L4SC_DEBUG(logger, "%s: retrieved %s = %s",
+		L4SC_DEBUG(logger, "%s: retrieved %s = test_object(%s)",
 				__FUNCTION__, expect[i].k, vbuf);
-		assert(bfc_string_compare_c_str(value, expect[i].v) == 0);
+		assert(strcmp(vbuf, expect[i].v) == 0);
 	}
 	assert(bfc_map_size((bfc_ccontptr_t)&map) == n3);
 

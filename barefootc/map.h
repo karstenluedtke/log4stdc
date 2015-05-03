@@ -58,6 +58,8 @@ typedef BFC_MAP(bfc_string_map, bfc_string_pair_t) bfc_string_map_t;
 typedef BFC_MAP(bfc_strref_map, bfc_strref_pair_t) bfc_strref_map_t;
 typedef BFC_MAP(bfc_object_map, bfc_string_object_pair_t) bfc_object_map_t;
 typedef BFC_MAP(bfc_objref_map, bfc_string_objref_pair_t) bfc_objref_map_t;
+typedef BFC_MAP(bfc_string_objref_map, bfc_string_objref_pair_t)
+							bfc_string_objref_map_t;
 
 /**
  * @brief    Initialize a map.
@@ -81,6 +83,12 @@ do {									\
 do {									\
 	extern const bfc_class_t bfc_string_pair_class;			\
 	BFC_MAP_INIT(map, estimate, &bfc_string_pair_class, mpool);	\
+} while (0 /*just once*/)
+
+#define BFC_STRING_OBJREF_MAP_INIT(map,estimate,mpool) \
+do {									\
+	BFC_MAP_INIT(map, estimate,					\
+		(bfc_classptr_t)&bfc_string_ref_pair_class, mpool);	\
 } while (0 /*just once*/)
 
 #define BFC_STRPTR_MAP_INIT(map,estimate,mpool) \

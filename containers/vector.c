@@ -131,6 +131,7 @@ int
 bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 {
 	bfc_contptr_t vec = (bfc_contptr_t) buf;
+	const int spare = (char *)vec + bufsize - (char *) vec->direct;
 	/* be careful not to overwrite elem_size and elem_direct */
 	BFC_INIT_PROLOGUE(const struct bfc_vector_class *,
 			  bfc_objptr_t, obj, buf, bufsize, pool,
@@ -140,6 +141,9 @@ bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 	}
 	vec->pool = pool;
 	bfc_new_mutex(&vec->lock, pool);
+	if (spare > 0) {
+		memset(vec->direct, 0, spare);
+	}
 	return (BFC_SUCCESS);
 }
 
@@ -148,6 +152,7 @@ bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 				struct mempool *pool, size_t elem_size)
 {
 	BFC_VECTOR(minvec_s, char, 0) *vec = (struct minvec_s *) buf;
+	const int spare = (char *)vec + bufsize - (char *) vec->direct;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	BFC_INIT_PROLOGUE(const struct bfc_vector_class *,
@@ -162,7 +167,6 @@ bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 	vec->elem_size = elem_size;
 	vec->elem_direct = 0;
 	if (bufsize >= bfc_object_size(vec)) {
-		int spare = (char *)vec + bufsize - (char *) vec->direct;
 		if (spare > 0) {
 			vec->elem_direct = spare / elem_size;
 			memset(vec->direct, 0, spare);

@@ -162,8 +162,13 @@ bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 	vec->elem_size = elem_size;
 	vec->elem_direct = 0;
 	if (bufsize >= bfc_object_size(vec)) {
-		int spare = bufsize - offsetof(struct bfc_char_vector, direct);
-		vec->elem_direct = (spare > 0)? spare / elem_size: 0;
+		int spare = (char *)vec + bufsize - (char *) vec->direct;
+		if (spare > 0) {
+			vec->elem_direct = spare / elem_size;
+			memset(vec->direct, 0, spare);
+		} else {
+			vec->elem_direct = 0;
+		}
 	} else {
 		return (-ENOSPC);
 	}

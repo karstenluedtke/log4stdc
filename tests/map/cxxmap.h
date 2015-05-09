@@ -215,6 +215,7 @@ namespace barefootc {
 		
 		void rehash(size_type n)
 		{
+			bfc_map_rehash((bfc_contptr_t)&bfcmap, n);
 		}
 		
 #if 0

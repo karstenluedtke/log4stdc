@@ -672,3 +672,75 @@ bfc_map_erase_iter(bfc_contptr_t map, bfc_iterptr_t iter)
 	return (rc);
 }
 
+int
+bfc_map_rehash(bfc_contptr_t map, size_t n)
+{
+	int rc = BFC_SUCCESS;
+	size_t clonesize;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_char_vector_t *tmp;
+	bfc_mutex_ptr_t locked;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_iterator_t it, limit;
+
+	clonesize = bfc_object_size(vec);
+	L4SC_INFO(logger, "%s(%p, %ld): clonesize %ld",
+		__FUNCTION__, map, (long) n, (long) clonesize);
+
+	tmp = alloca(clonesize);
+	tmp->vptr = NULL;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		/* bfc_init_vector_move clears the source vector */
+		rc = bfc_init_vector_move(tmp, clonesize, (bfc_contptr_t)vec);
+		if (rc >= 0) {
+			vec->log2_double_indirect = 1;
+			while (n > (size_t) CV2_ELEMENTS(vec)) {
+				vec->log2_double_indirect++;
+			}
+			bfc_container_begin_iterator(tmp, &it, sizeof(it));
+			L4SC_TRACE(logger, "%s: begin iter", __FUNCTION__);
+			bfc_object_dump(&it, 1, logger);
+			bfc_container_end_iterator(tmp, &limit, sizeof(limit));
+			L4SC_TRACE(logger, "%s: end iter", __FUNCTION__);
+			bfc_object_dump(&limit, 1, logger);
+			while (bfc_iterator_distance(&it, &limit) > 0) {
+				bfc_objptr_t sp;
+				bfc_cobjptr_t key;
+				bfc_object_dump(&it, 1, logger);
+				sp = (bfc_objptr_t) bfc_iterator_index(&it);
+				if (sp && (BFC_CLASS(sp) != NULL)
+				 && ((key = bfc_container_first(sp)) != NULL)) {
+					size_t idx;
+					bfc_objptr_t dp;
+					idx = bfc_map_keyhashcode(map, key);
+					dp = (bfc_objptr_t)
+					       bfc_vector_have(vec, idx);
+					while (dp && (BFC_CLASS(dp) != NULL)) {
+						dp = (bfc_objptr_t)
+						   bfc_vector_have(vec, ++idx);
+					}
+					if (dp) {
+						L4SC_DEBUG(logger,
+							"%s: pair %p at #%lu",
+							__FUNCTION__, dp,
+							(unsigned long) idx);
+						memcpy(dp, sp, vec->elem_size);
+						memset(sp,  0, vec->elem_size);
+					} else {
+						rc = -ENOMEM;
+						break;
+					}
+				}
+				bfc_iterator_advance(&it, 1);
+			}
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger, "%s(%p) cannot lock", __FUNCTION__, map);
+		rc = -EBUSY;
+	}
+	bfc_destroy(tmp);
+	return (rc);
+}
+

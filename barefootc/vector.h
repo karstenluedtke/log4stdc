@@ -861,6 +861,7 @@ int bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 				struct mempool *pool, size_t elem_size);
 int bfc_init_vector_copy(void *, size_t, struct mempool *,
 				const struct bfc_container *);
+int bfc_init_vector_move(void *, size_t, struct bfc_container *);
 
 int bfc_init_object_vector_class(void *, size_t, struct mempool *);
 int bfc_init_object_vector_copy(void *, size_t, struct mempool *,

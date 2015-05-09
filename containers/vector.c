@@ -218,6 +218,54 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 	return (rc);
 }
 
+int
+bfc_init_vector_move(void *buf, size_t bufsize, struct bfc_container *src)
+{
+	int rc = BFC_SUCCESS;
+	bfc_contptr_t vec = (bfc_contptr_t) buf;
+	size_t clonesize = bfc_object_size(src);
+	bfc_mutex_ptr_t locked;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+
+	L4SC_TRACE(logger,
+		"%s(vec @%p, size %ld, src @%p): clonesize %ld",
+		__FUNCTION__, buf, (long) bufsize, src, (long) clonesize);
+
+	if (bufsize >= clonesize) {
+		BFC_VECTOR_INIT_POOL(vec, src->pool);
+		vec->vptr = &bfc_vector_class;
+	} else {
+		L4SC_ERROR(logger,
+			"%s(vec @%p, size %ld, src @%p): need clonesize %ld",
+			__FUNCTION__, buf, (long)bufsize, src, (long)clonesize);
+		return (-ENOSPC);
+	}
+
+	if (src->lock && (locked = bfc_mutex_lock(src->lock))) {
+		memcpy(vec, src, clonesize);
+		bfc_incr_refcount(locked); /*another ref to lock in the copy*/
+		BFC_VECTOR_SET_SIZE(src, 0);
+		src->indirect = NULL;
+		src->double_indirect = NULL;
+		src->triple_indirect = NULL;
+		if (CV0_ELEMENTS(src) > 0) {
+			size_t offs = (char*)src->direct - (char*)src;
+			if (clonesize > offs) {
+				memset(src->direct, 0, clonesize - offs);
+			}
+		}
+		dump_vector(vec, 1, logger);
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger,
+			"%s(vec @%p, size %ld, src @%p): cannot lock",
+			__FUNCTION__, buf, (long)bufsize, src);
+		rc = -EBUSY;
+	}
+
+	return (rc);
+}
+
 static void
 destroy_vector(bfc_contptr_t vec)
 {

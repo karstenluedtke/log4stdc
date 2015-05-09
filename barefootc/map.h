@@ -145,6 +145,7 @@ bfc_objptr_t  bfc_map_index_value(bfc_contptr_t, size_t);
 int bfc_map_count(bfc_contptr_t, bfc_cobjptr_t);
 int bfc_map_bucket_size(bfc_contptr_t, bfc_cobjptr_t);
 unsigned bfc_map_keyhashcode(const void *, const void *); /* c++ bucket() */
+int bfc_map_rehash(bfc_contptr_t, size_t);
 
 #ifdef __cplusplus
 };

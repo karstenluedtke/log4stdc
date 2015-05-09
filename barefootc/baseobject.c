@@ -91,6 +91,20 @@ bfc_destroy_base_object(bfc_objptr_t obj)
 }
 
 int
+bfc_default_move_object(bfc_objptr_t obj, void *buf, size_t bufsize)
+{
+	bfc_classptr_t cls = BFC_CLASS(obj);
+	size_t size = bfc_object_size(obj);
+	if (bufsize < size) {
+		return (-ENOSPC);
+	}
+	memcpy(buf, obj, size);
+	memset(obj, 0, size);
+	obj->vptr = cls;
+	return (BFC_SUCCESS);
+}
+
+int
 bfc_default_clone_object(bfc_cobjptr_t obj,
 			 void *buf, size_t bufsize, struct mempool *pool)
 {

@@ -246,6 +246,7 @@ int  bfc_default_init_object(void *, size_t, struct mempool *);
 void bfc_default_init_refcount(bfc_objptr_t, int);
 void bfc_default_incr_refcount(bfc_objptr_t);
 int  bfc_default_decr_refcount(bfc_objptr_t);
+int  bfc_default_move_object(bfc_objptr_t, void *, size_t);
 int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t, struct mempool *);
 void bfc_default_destroy_object(bfc_objptr_t);
 

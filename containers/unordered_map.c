@@ -4,6 +4,10 @@
 #include <string.h>
 #include <errno.h>
 
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <malloc.h>  /* for alloca */
+#endif
+
 #include "barefootc/map.h"
 #include "barefootc/pair.h"
 #include "barefootc/vector.h"

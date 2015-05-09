@@ -97,12 +97,20 @@ bfc_default_move_object(bfc_objptr_t obj, void *buf, size_t bufsize)
 {
 	bfc_classptr_t cls = BFC_CLASS(obj);
 	size_t size = bfc_object_size(obj);
+	int refcount;
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
+	if ((refcount = bfc_incr_refcount(obj)) > 2) {
+		bfc_decr_refcount(obj);
+		return (-EBUSY);
+	}
 	memcpy(buf, obj, size);
+	bfc_init_refcount((bfc_objptr_t)buf, 1);
 	memset(obj, 0, size);
 	obj->vptr = cls;
+	bfc_init_refcount(obj, refcount);
+	bfc_decr_refcount(obj);
 	return (BFC_SUCCESS);
 }
 

@@ -184,8 +184,8 @@ int	bfc_init_string_range(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_iterptr_t begin, bfc_iterptr_t end);
 void	bfc_destroy_string(bfc_strptr_t obj);
 size_t	bfc_string_objsize(bfc_cstrptr_t obj);
-void	bfc_string_init_refcount(bfc_strptr_t s, int n);
-void	bfc_string_incr_refcount(bfc_strptr_t s);
+int	bfc_string_init_refcount(bfc_strptr_t s, int n);
+int	bfc_string_incr_refcount(bfc_strptr_t s);
 int	bfc_string_decr_refcount(bfc_strptr_t s);
 
 /* Capacity */

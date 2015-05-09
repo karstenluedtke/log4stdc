@@ -48,8 +48,8 @@ typedef const struct bfc_number *bfc_cnumptr_t;
 #define BFC_NUMBER_LOGGER	"barefootc.number",16
 
 int  bfc_init_integer_object(void *buf, size_t bufsize, struct mempool *pool);
-void bfc_number_init_refcount(bfc_objptr_t obj, int n);
-void bfc_number_incr_refcount(bfc_objptr_t obj);
+int  bfc_number_init_refcount(bfc_objptr_t obj, int n);
+int  bfc_number_incr_refcount(bfc_objptr_t obj);
 int  bfc_number_decr_refcount(bfc_objptr_t obj);
 void bfc_number_destroy_object(bfc_objptr_t obj);
 int  bfc_number_clone_object(bfc_cobjptr_t obj,

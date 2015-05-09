@@ -11,19 +11,25 @@
 #include "barefootc/mempool.h"
 #include "log4stdc.h"
 
-void
+int
 bfc_string_init_refcount(bfc_strptr_t s, int n)
 {
 #ifdef HAVE_STRING_REFCOUNT
-	 bfc_init_atomic_counter(s->refc, n);
+	bfc_init_atomic_counter(s->refc, n);
+	return (n);
+#else
+	return (-ENOSYS);
 #endif
 }
 
-void
+int
 bfc_string_incr_refcount(bfc_strptr_t s)
 {
 #ifdef HAVE_STRING_REFCOUNT
-	(void) bfc_incr_atomic_counter(s->refc);
+	int incremented_refcount = bfc_incr_atomic_counter(s->refc);
+	return (incremented_refcount);
+#else
+	return (-ENOSYS);
 #endif
 }
 
@@ -31,8 +37,8 @@ int
 bfc_string_decr_refcount(bfc_strptr_t s)
 {
 #ifdef HAVE_STRING_REFCOUNT
-	int unrefd = bfc_decr_and_test_atomic_counter(s->refc);
-	if (unrefd) {
+	int decremented_refcount = bfc_decr_atomic_counter(s->refc);
+	if (decremented_refcount == 0) {
 		struct mempool *pool = s->parent_pool;
 		bfc_destroy(s);
 		if (pool) {
@@ -41,7 +47,7 @@ bfc_string_decr_refcount(bfc_strptr_t s)
 			mempool_free(pool, s);
 		}
 	}
-	return (!unrefd);
+	return (decremented_refcount);
 #else
 	return (-ENOSYS);
 #endif

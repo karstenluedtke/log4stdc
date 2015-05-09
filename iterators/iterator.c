@@ -17,8 +17,8 @@
 #include "log4stdc.h"
 
 static int default_init_iterator(void *buf,size_t bufsize,struct mempool *pool);
-static void init_refcount(bfc_iterptr_t it, int n);
-static void incr_refcount(bfc_iterptr_t it);
+static int init_refcount(bfc_iterptr_t it, int n);
+static int incr_refcount(bfc_iterptr_t it);
 static int decr_refcount(bfc_iterptr_t it);
 static int clone_iterator(bfc_citerptr_t it,
 		void *buf, size_t bufsize, struct mempool *pool);
@@ -181,14 +181,16 @@ bfc_init_reverse_iterator(void *buf,size_t bufsize,bfc_cobjptr_t obj,size_t pos)
 	return (rc);
 }
 
-static void init_refcount(bfc_iterptr_t it, int n)
+static int init_refcount(bfc_iterptr_t it, int n)
 {
 	/* no refcount */
+	return (-ENOSYS);
 }
 
-static void incr_refcount(bfc_iterptr_t it)
+static int incr_refcount(bfc_iterptr_t it)
 {
 	/* no refcount */
+	return (-ENOSYS);
 }
 
 static int decr_refcount(bfc_iterptr_t it)

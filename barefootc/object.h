@@ -56,8 +56,8 @@ struct bfc_objhdr {
 	void *		spare2;						     \
 	void *		spare3;						     \
 	int	      (*init)     (void *, size_t, struct mempool *);	     \
-	void	      (*initrefc) (objptrT, int);			     \
-	void	      (*incrrefc) (objptrT);				     \
+	int	      (*initrefc) (objptrT, int);			     \
+	int	      (*incrrefc) (objptrT);				     \
 	int	      (*decrrefc) (objptrT);				     \
 	void	      (*destroy)  (objptrT);				     \
 	int	      (*clone)    (cobjptrT, void*, size_t, struct mempool*);\
@@ -215,8 +215,8 @@ int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
 int  bfc_clone_object(const void *, void *, size_t, struct mempool *);
 int  bfc_clone_new(const void *, void **, struct mempool *);
 int  bfc_swap_objects(void *, void *);
-void bfc_init_refcount(void *, int);
-void bfc_incr_refcount(void *);
+int  bfc_init_refcount(void *, int);
+int  bfc_incr_refcount(void *);
 int  bfc_decr_refcount(void *);
 void bfc_destroy(void *);
 void bfc_delete(void *);
@@ -243,8 +243,8 @@ int  bfc_container_end_iterator(const void *obj,
 size_t bfc_get_base_object_size(bfc_cobjptr_t);
 
 int  bfc_default_init_object(void *, size_t, struct mempool *);
-void bfc_default_init_refcount(bfc_objptr_t, int);
-void bfc_default_incr_refcount(bfc_objptr_t);
+int  bfc_default_init_refcount(bfc_objptr_t, int);
+int  bfc_default_incr_refcount(bfc_objptr_t);
 int  bfc_default_decr_refcount(bfc_objptr_t);
 int  bfc_default_move_object(bfc_objptr_t, void *, size_t);
 int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t, struct mempool *);

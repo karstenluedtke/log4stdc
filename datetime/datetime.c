@@ -47,8 +47,8 @@ struct tm *_localtime64(const __time64_t *);
 #include "umul32_hiword.h"
 
 static int init_datetime(void *buf, size_t bufsize, struct mempool *pool);
-static void init_refcount(bfc_dateptr_t date, int n);
-static void incr_refcount(bfc_dateptr_t date);
+static int init_refcount(bfc_dateptr_t date, int n);
+static int incr_refcount(bfc_dateptr_t date);
 static int decr_refcount(bfc_dateptr_t date);
 static int clone_datetime(bfc_cdateptr_t date,
 		   void *buf, size_t bufsize, struct mempool *pool);
@@ -244,14 +244,16 @@ bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 	return (rc);
 }
 
-static void init_refcount(bfc_dateptr_t date, int n)
+static int init_refcount(bfc_dateptr_t date, int n)
 {
 	/* no refcount */
+	return (-ENOSYS);
 }
 
-static void incr_refcount(bfc_dateptr_t date)
+static int incr_refcount(bfc_dateptr_t date)
 {
 	/* no refcount */
+	return (-ENOSYS);
 }
 
 static int decr_refcount(bfc_dateptr_t date)

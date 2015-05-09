@@ -50,14 +50,16 @@ bfc_init_integer_object(void *buf, size_t bufsize, struct mempool *pool)
 	return (BFC_SUCCESS);
 }
 
-void
+int
 bfc_number_init_refcount(bfc_objptr_t obj, int n)
 {
+	return (-ENOSYS);
 }
 
-void
+int
 bfc_number_incr_refcount(bfc_objptr_t obj)
 {
+	return (-ENOSYS);
 }
 
 int

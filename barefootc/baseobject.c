@@ -48,30 +48,32 @@ bfc_default_init_object(void *buf, size_t bufsize, struct mempool *pool)
 	return (BFC_SUCCESS);
 }
 
-void
+int
 bfc_default_init_refcount(bfc_objptr_t obj, int n)
 {
 	bfc_init_atomic_counter(obj->refc, n);
+	return (n);
 }
 
-void
+int
 bfc_default_incr_refcount(bfc_objptr_t obj)
 {
-	(void) bfc_incr_atomic_counter(obj->refc);
+	int incremented_refcount = bfc_incr_atomic_counter(obj->refc);
+	return (incremented_refcount);
 }
 
 int
 bfc_default_decr_refcount(bfc_objptr_t obj)
 {
-	int unrefd = bfc_decr_and_test_atomic_counter(obj->refc);
-	if (unrefd) {
+	int decremented_refcount = bfc_decr_atomic_counter(obj->refc);
+	if (decremented_refcount == 0) {
 		if (obj->parent_pool) {
 			bfc_delete(obj);
 		} else {
 			bfc_destroy(obj);
 		}
 	}
-	return (!unrefd);
+	return (decremented_refcount);
 }
 
 void

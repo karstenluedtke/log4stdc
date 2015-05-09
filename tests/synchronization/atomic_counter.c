@@ -20,19 +20,22 @@ t1(int n)
 	assert (ctr == 0);
 
 	for (i=0; i < n; i++) {
-		bfc_incr_atomic_counter(ctr);
+		rc = bfc_incr_atomic_counter(ctr);
+		assert (rc == i+1);
 	}
 
 	assert (ctr == n);
 
 	for (i=0; i < n-1; i++) {
-		rc = bfc_decr_and_test_atomic_counter(ctr);
-		assert (rc == 0);
+		rc = bfc_decr_atomic_counter(ctr);
+		assert (rc > 0);
+		assert (rc == ctr);
+		assert (rc == n-i-1);
 	}
 
 	if (n > 0) {
-		rc = bfc_decr_and_test_atomic_counter(ctr);
-		assert (rc == 1);
+		rc = bfc_decr_atomic_counter(ctr);
+		assert (rc == 0);
 	}
 
 	assert (ctr == 0);

@@ -257,6 +257,7 @@ libbarefootc_a_SOURCES+= containers/vector.c
 libbarefootc_a_SOURCES+= containers/vector_ref.c
 libbarefootc_a_SOURCES+= containers/vector_set.c
 libbarefootc_a_SOURCES+= containers/object_vector.c
+libbarefootc_a_SOURCES+= containers/objref_vector.c
 libbarefootc_a_SOURCES+= containers/int_pair.c
 libbarefootc_a_SOURCES+= containers/string_pair.c
 libbarefootc_a_SOURCES+= containers/string_ref_pair.c

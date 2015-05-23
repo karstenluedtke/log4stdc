@@ -275,6 +275,7 @@ OFILES= \
 	containers/vector_ref.obj \
 	containers/vector_set.obj \
 	containers/object_vector.obj \
+	containers/objref_vector.obj \
 	containers/int_pair.obj \
 	containers/string_pair.obj \
 	containers/string_ref_pair.obj \
@@ -1768,6 +1769,9 @@ containers/vector_set.obj: containers/vector_set.c $(HEADERS)
 
 containers/object_vector.obj: containers/object_vector.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/object_vector.c
+
+containers/objref_vector.obj: containers/objref_vector.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/objref_vector.c
 
 containers/int_pair.obj: containers/int_pair.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/int_pair.c

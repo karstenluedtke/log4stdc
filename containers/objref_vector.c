@@ -360,8 +360,8 @@ vector_create_ref(bfc_contptr_t vec, size_t pos,
 static int
 begin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize)
 {
-	return (bfc_init_vector_iterator(it, bufsize,
-					(bfc_cobjptr_t)vec, 0));
+	return (bfc_init_object_vector_iterator(it, bufsize,
+						(bfc_cobjptr_t)vec, 0));
 }
 
 /* Modifiers */

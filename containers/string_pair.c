@@ -30,7 +30,7 @@ static void dump_pair(const struct bfc_string_pair *pair,
 			int depth, struct l4sc_logger *log);
 static bfc_cstrptr_t pair_first(const struct bfc_string_pair *pair);
 static bfc_strptr_t  pair_index(struct bfc_string_pair *pair, size_t pos);
-static bfc_strptr_t  create_string_pair_element(struct bfc_string_pair *pair,
+static bfc_strptr_t  place_string_pair_element(struct bfc_string_pair *pair,
 			size_t pos, bfc_strptr_t str, struct mempool *pool);
 
 struct bfc_string_pair_class {
@@ -51,7 +51,7 @@ const struct bfc_string_pair_class bfc_string_pair_class = {
 	.dump	 	= dump_pair,
 	.first		= pair_first,
 	.index		= pair_index,
-	.create		= create_string_pair_element,
+	.place		= place_string_pair_element,
 };
 
 int
@@ -87,7 +87,7 @@ init_string_pair(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 static bfc_strptr_t
-create_string_pair_element(struct bfc_string_pair *pair, size_t pos,
+place_string_pair_element(struct bfc_string_pair *pair, size_t pos,
 			   bfc_strptr_t str, struct mempool *pool)
 {
 	bfc_strptr_t s;
@@ -129,8 +129,8 @@ clone_pair(const struct bfc_string_pair *obj,
 	memcpy(pair, src, size);
 	memset(&pair->first, 0, sizeof(pair->first));
 	memset(&pair->second, 0, sizeof(pair->second));
-	create_string_pair_element(pair, 0, &src->first, pool);
-	create_string_pair_element(pair, 1, &src->second, pool);
+	place_string_pair_element(pair, 0, &src->first, pool);
+	place_string_pair_element(pair, 1, &src->second, pool);
 	return (BFC_SUCCESS);
 }
 

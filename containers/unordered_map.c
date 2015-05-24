@@ -284,9 +284,9 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		if ((rc == BFC_SUCCESS) && (pair != NULL)
 		 && ((rc = bfc_init_object(vec->elem_class, pair,
 					   vec->elem_size, vec->pool)) >= 0)) {
-			if ((bfc_container_create_element(pair, 0,
+			if ((bfc_container_place(pair, 0,
 						key, vec->pool) != NULL)
-			 && (bfc_container_create_element(pair, 1,
+			 && (bfc_container_place(pair, 1,
 						value, vec->pool) != NULL)) {
 				rc = (int) idx;
 			} else {
@@ -359,9 +359,9 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		rc = bfc_map_insert_objects(map, key, value, it, itsize);
 		if ((rc == -EEXIST)
 		 && ((pair = bfc_iterator_index(it)) != NULL)) {
-			if ((bfc_container_create_element(pair, 0,
+			if ((bfc_container_place(pair, 0,
 						key, vec->pool) != NULL)
-			 && (bfc_container_create_element(pair, 1,
+			 && (bfc_container_place(pair, 1,
 						value, vec->pool) != NULL)) {
 				rc = (int) bfc_iterator_position(it);
 			} else {

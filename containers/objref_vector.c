@@ -34,8 +34,8 @@ static bfc_objptr_t vector_index(bfc_contptr_t vec, size_t pos);
 static bfc_cobjptr_t vector_first(bfc_ccontptr_t vec);
 static long vector_getlong(bfc_ccontptr_t vec, size_t pos);
 static int vector_setlong(bfc_contptr_t vec, size_t pos, long val);
-static bfc_objptr_t vector_create_ref(bfc_contptr_t vec, size_t pos,
-				      bfc_objptr_t elem, struct mempool *pool);
+static bfc_objptr_t vector_place_ref(bfc_contptr_t vec, size_t pos,
+				     bfc_objptr_t elem, struct mempool *pool);
 
 static int begin_iterator(bfc_ccontptr_t vec, bfc_iterptr_t it, size_t bufsize);
 
@@ -70,7 +70,7 @@ const struct bfc_vector_class bfc_objref_vector_class = {
 	.index		= vector_index,
 	.getl		= vector_getlong,
 	.setl		= vector_setlong,
-	.create		= vector_create_ref,
+	.place		= vector_place_ref,
 	.ibegin		= begin_iterator,
 	/* Modifiers */
 	.resize		= vector_resize,
@@ -323,8 +323,8 @@ vector_setlong(bfc_contptr_t vec, size_t pos, long val)
 }
 
 static bfc_objptr_t
-vector_create_ref(bfc_contptr_t vec, size_t pos,
-		  bfc_objptr_t elem, struct mempool *pool)
+vector_place_ref(bfc_contptr_t vec, size_t pos,
+		 bfc_objptr_t elem, struct mempool *pool)
 {
 	bfc_objptr_t *p = NULL;
 	bfc_objptr_t old = NULL;
@@ -428,7 +428,7 @@ vector_push_back(bfc_contptr_t vec, bfc_cobjptr_t p)
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		size = BFC_VECTOR_GET_SIZE(vec);
-		if (vector_create_ref(vec, size, obj, vec->pool) != NULL) {
+		if (vector_place_ref(vec, size, obj, vec->pool) != NULL) {
 			rc = (int) size;
 		} else {
 			rc = -ENOMEM;

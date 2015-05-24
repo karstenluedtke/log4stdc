@@ -117,7 +117,7 @@ test(int n1, struct test_kv kv[])
 		bfc_objptr_t obj = create_test_object(kv[i].val, pool);
 		bfc_objptr_t ret;
 		bfc_init_refcount(obj, 1);
-		ret = bfc_container_create_element(&v1, kv[i].pos, obj, NULL);
+		ret = bfc_container_place(&v1, kv[i].pos, obj, NULL);
 		assert(ret == obj);
 		assert(obj->refc == 2);
 		assert(bfc_container_index(&v1, kv[i].pos) == obj);

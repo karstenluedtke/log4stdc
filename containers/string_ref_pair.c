@@ -35,7 +35,7 @@ static void dump_pair(const struct bfc_string_ref_pair *pair,
 			int depth, struct l4sc_logger *log);
 static bfc_cobjptr_t pair_first(const struct bfc_string_ref_pair *pair);
 static bfc_objptr_t pair_index(struct bfc_string_ref_pair *pair, size_t pos);
-static bfc_objptr_t create_string_ref_pair_element(
+static bfc_objptr_t place_string_ref_pair_element(
 			struct bfc_string_ref_pair *pair,
 			size_t pos, bfc_objptr_t val, struct mempool *pool);
 
@@ -59,7 +59,7 @@ const struct bfc_pair_class bfc_string_ref_pair_class = {
 	.dump	 	= dump_pair,
 	.first		= pair_first,
 	.index		= pair_index,
-	.create		= create_string_ref_pair_element,
+	.place		= place_string_ref_pair_element,
 };
 
 int
@@ -101,7 +101,7 @@ init_string_ref_pair(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 static bfc_objptr_t
-create_string_ref_pair_element(struct bfc_string_ref_pair *pair,
+place_string_ref_pair_element(struct bfc_string_ref_pair *pair,
 				  size_t pos, bfc_objptr_t val,
 				  struct mempool *pool)
 {
@@ -126,7 +126,9 @@ create_string_ref_pair_element(struct bfc_string_ref_pair *pair,
 			bfc_init_shared_string_buffer(p, bufsize, "", 0);
 		}
 	} else {
-		bfc_incr_refcount(val);
+		if (val && BFC_CLASS(val)) {
+			bfc_incr_refcount(val);
+		}
 		p = pair->second;
 		pair->second = val;
 		if (p && BFC_CLASS(p)) {
@@ -152,8 +154,8 @@ clone_pair(const struct bfc_string_ref_pair *obj,
 	memcpy(pair, src, size);
 	memset(&pair->first, 0, sizeof(pair->first));
 	pair->second = NULL;
-	create_string_ref_pair_element(pair, 0,(bfc_objptr_t)&src->first,pool);
-	create_string_ref_pair_element(pair, 1, src->second, pool);
+	place_string_ref_pair_element(pair, 0,(bfc_objptr_t)&src->first,pool);
+	place_string_ref_pair_element(pair, 1, src->second, pool);
 	return (BFC_SUCCESS);
 }
 

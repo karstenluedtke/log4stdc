@@ -75,7 +75,7 @@ test(int n1, const size_t s1[])
 	bfc_destroy(&v1);
 
 	for (i=0; i < n1; i++) {
-		bfc_cstrptr_t s = (bfc_cstrptr_t) bfc_vector_ref(&v2, s1[i]);
+		bfc_cstrptr_t s = (bfc_cstrptr_t)bfc_container_index(&v2,s1[i]);
 		assert(s != NULL);
 		snprintf(buf, sizeof(buf), "element #%d @%ld", i, (long)s1[i]);
 		L4SC_DEBUG(logger, "%s: expecting \"%s\"", __FUNCTION__, buf);

@@ -228,8 +228,8 @@ dump_vector(bfc_ccontptr_t vec, int depth, struct l4sc_logger *log)
 			BFC_VECTOR_FOREACH(p, idx, v) {
 				obj = *p;
 				if (obj && BFC_CLASS(obj)) {
-					L4SC_DEBUG(log, "%s: #%u @%p",
-						__FUNCTION__, idx, obj);
+					L4SC_DEBUG(log, "%s: #%u @%p -> %p",
+						__FUNCTION__, idx, p, obj);
 					bfc_object_dump(obj, depth-1, log);
 				}
 			} END_BFC_VECTOR_FOREACH;

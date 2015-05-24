@@ -130,6 +130,7 @@ typedef BFC_VECTOR(bfc_ptr_vector,  void *,   16) bfc_ptr_vector_t;
 typedef BFC_VECTOR(bfc_int_vector,  int,      16) bfc_int_vector_t;
 typedef BFC_VECTOR(bfc_uint_vector, unsigned, 16) bfc_uint_vector_t;
 typedef BFC_VECTOR(bfc_char_vector, char    , 16) bfc_char_vector_t;
+typedef BFC_VECTOR(bfc_objref_vector, bfc_objptr_t, 4) bfc_objref_vector_t;
 /** @} */
 
 /** @addtogroup vector_internals */

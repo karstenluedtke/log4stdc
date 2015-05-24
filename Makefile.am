@@ -2265,6 +2265,12 @@ tests_vector_large_element_LDADD = libbarefootc.a liblog4stdc.a
 tests_vector_large_element_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/vector/large_element
 
+check_PROGRAMS += tests/vector/assign_objref_vector
+tests_vector_assign_objref_vector_SOURCES = tests/vector/assign_objref_vector.c
+tests_vector_assign_objref_vector_LDADD = libbarefootc.a liblog4stdc.a
+tests_vector_assign_objref_vector_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/vector/assign_objref_vector
+
 check_PROGRAMS += tests/map/add_to_string_map
 tests_map_add_to_string_map_SOURCES = tests/map/add_to_string_map.c
 tests_map_add_to_string_map_LDADD = libbarefootc.a liblog4stdc.a

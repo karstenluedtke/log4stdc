@@ -54,9 +54,9 @@ typedef const struct bfc_container *bfc_ccontptr_t;
 	void	(*swap)(contptrT c, contptrT other);			\
 	/* operations */						\
 	int	(*find_element)(ccontptrT c, const elemT *p, int depth,	\
-		                   /*inout*/ struct bfc_iterator *pos);	\
+		                          /*inout*/ bfc_iterptr_t pos);	\
 	int	(*find_by_name)(ccontptrT c, bfc_cobjptr_t p, int depth,\
-		                   /*inout*/ struct bfc_iterator *pos);	\
+		                          /*inout*/ bfc_iterptr_t pos);	\
 	/* Check nothing is missing */					\
 	void	(*last_method)(void);
 
@@ -97,6 +97,11 @@ int  bfc_container_erase_range(bfc_contptr_t c,
 				bfc_iterptr_t first,bfc_iterptr_t last);
 size_t bfc_container_copy_out(bfc_ccontptr_t c,void* buf,size_t n,size_t pos);
 void bfc_container_swap(bfc_contptr_t c, bfc_contptr_t other);
+
+int  bfc_container_find_element(bfc_ccontptr_t c, const void *p, int depth,
+				bfc_iterptr_t position);
+int  bfc_container_find_by_name(bfc_ccontptr_t c, const void *p, int depth,
+				bfc_iterptr_t position);
 
 #ifdef __cplusplus
 }	/* C++ */

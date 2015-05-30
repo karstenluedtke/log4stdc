@@ -525,8 +525,8 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			iterator it = begin();
 			bfc_iterptr_t bfcit = it.bfciter();
-			int rc = bfc_map_find_iter(contptr(),(bfc_cobjptr_t)&x,
-						   bfcit, sizeof(*bfcit));
+			int rc = bfc_container_find_by_name(contptr(), &x, 1,
+							    bfcit);
 			return ((rc >= 0)? it: end());
 		}
 
@@ -534,8 +534,8 @@ map<Key,T,Compare,Allocator>& y);
 		{
 			const_iterator it = cbegin();
 			bfc_iterptr_t bfcit = it.bfciter();
-			int rc = bfc_map_find_iter(contptr(),(bfc_cobjptr_t)&x,
-						   bfcit, sizeof(*bfcit));
+			int rc = bfc_container_find_by_name(contptr(), &x, 1,
+							    bfcit);
 			return ((rc >= 0)? it: cend());
 		}
 
@@ -544,8 +544,8 @@ map<Key,T,Compare,Allocator>& y);
 			iterator it = begin();
 			std::pair<iterator,iterator> iters;
 			bfc_iterptr_t bfcit = it.bfciter();
-			int rc = bfc_map_find_iter(contptr(),(bfc_cobjptr_t)&x,
-						   bfcit, sizeof(*bfcit));
+			int rc = bfc_container_find_by_name(contptr(), &x, 1,
+							    bfcit);
 			if ((rc >= 0) && (it.distance(end()) > 0)) {
 				iters.first = it;
 				iters.second = it;
@@ -565,8 +565,8 @@ map<Key,T,Compare,Allocator>& y);
 			const_iterator it = cbegin();
 			std::pair<const_iterator,const_iterator> iters;
 			bfc_iterptr_t bfcit = it.bfciter();
-			int rc = bfc_map_find_iter(contptr(), (bfc_cobjptr_t)&x,
-						   bfcit, sizeof(*bfcit));
+			int rc = bfc_container_find_by_name(contptr(), &x, 1,
+							    bfcit);
 			if ((rc >= 0) && (it.distance(cend()) > 0)) {
 				iters.first = it;
 				iters.second = it;

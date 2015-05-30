@@ -12,6 +12,7 @@
 #include "barefootc/pair.h"
 #include "barefootc/vector.h"
 #include "barefootc/synchronization.h"
+#include "barefootc/unconst.h"
 #include "log4stdc.h"
 
 static void destroy_map(bfc_contptr_t map);
@@ -26,6 +27,7 @@ const struct bfc_map_class unordered_map_class = {
 	.name 		= "map",
 	.destroy	= destroy_map,
 	.ibegin		= begin_iterator,
+	.find_by_name	= bfc_map_find_iter,
 };
 
 int
@@ -377,7 +379,7 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 }
 
 int
-bfc_map_find_index(bfc_contptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
+bfc_map_find_index(bfc_ccontptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
 {
 	int rc = -ENOENT;
 	unsigned idx, lim;
@@ -432,19 +434,19 @@ bfc_map_find_index(bfc_contptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
 }
 
 int
-bfc_map_find_iter(bfc_contptr_t map, bfc_cobjptr_t key,
-		  bfc_iterptr_t it, size_t bufsize)
+bfc_map_find_iter(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth,
+		  bfc_iterptr_t it)
 {
-	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_char_vector_t *vec = BFC_UNCONST(bfc_char_vector_t *, map);
 	bfc_mutex_ptr_t locked;
 	int rc = 0;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		if (((rc = bfc_map_find_index(map, key, NULL)) >= 0)
-		 && (bfc_container_begin_iterator(vec, it, bufsize) >= 0)) {
+		 && (bfc_container_begin_iterator(vec, it, sizeof(*it)) >= 0)) {
 			bfc_iterator_set_position(it, rc);
 		} else {
-			bfc_container_end_iterator(vec, it, bufsize);
+			bfc_container_end_iterator(vec, it, sizeof(*it));
 		}
 		bfc_mutex_unlock(locked);
 	} else {

@@ -52,6 +52,11 @@ typedef const struct bfc_container *bfc_ccontptr_t;
 				bfc_iterptr_t first,bfc_iterptr_t last);\
 	size_t	(*copy_out)(ccontptrT c,elemT* buf,size_t n,size_t pos);\
 	void	(*swap)(contptrT c, contptrT other);			\
+	/* operations */						\
+	int	(*find_element)(ccontptrT c, const elemT *p, int depth,	\
+		                   /*inout*/ struct bfc_iterator *pos);	\
+	int	(*find_by_name)(ccontptrT c, bfc_cobjptr_t p, int depth,\
+		                   /*inout*/ struct bfc_iterator *pos);	\
 	/* Check nothing is missing */					\
 	void	(*last_method)(void);
 

@@ -128,6 +128,27 @@ destroy_vector(bfc_contptr_t vec)
 	}
 }
 
+static bfc_objptr_t *
+vector_ref(bfc_contptr_t vec, size_t index)
+{
+	bfc_objptr_t *ref;
+
+	ref = BFC_VECTOR_REF(vec, index);
+
+	return (ref);
+}
+
+static bfc_objptr_t *
+vector_have(bfc_contptr_t vec, size_t index)
+{
+	bfc_objptr_t *ref;
+
+	BFC_VECTOR_HAVE(vec, index);
+	ref = BFC_VECTOR_REF(vec, index);
+
+	return (ref);
+}
+
 static unsigned  
 vector_hashcode(bfc_ccontptr_t vec, int hashlen)
 {
@@ -248,7 +269,7 @@ vector_index(bfc_contptr_t vec, size_t pos)
 	bfc_objptr_t *p = NULL;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		p = bfc_vector_ref(vec, pos);
+		p = vector_ref(vec, pos);
 		bfc_mutex_unlock(locked);
 	} else {
 		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
@@ -265,7 +286,7 @@ vector_first(bfc_ccontptr_t vec)
 	bfc_objptr_t *p = NULL;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		p = bfc_vector_ref(BFC_UNCONST(bfc_contptr_t, vec), 0);
+		p = vector_ref(BFC_UNCONST(bfc_contptr_t, vec), 0);
 		bfc_mutex_unlock(locked);
 	} else {
 		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
@@ -277,7 +298,8 @@ vector_first(bfc_ccontptr_t vec)
 static long
 vector_getlong(bfc_ccontptr_t vec, size_t pos)
 {
-	bfc_cobjptr_t obj, *p;
+	bfc_objptr_t *p;
+	bfc_cobjptr_t obj;
 	bfc_mutex_ptr_t locked;
 	long v = 0;
 
@@ -285,7 +307,7 @@ vector_getlong(bfc_ccontptr_t vec, size_t pos)
 		return (-ERANGE);
 	}
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		p = bfc_vector_ref(BFC_UNCONST(bfc_contptr_t,vec), pos);
+		p = vector_ref(BFC_UNCONST(bfc_contptr_t,vec), pos);
 		if (p && (obj = *p) && BFC_CLASS(obj)) {
 			v = bfc_container_getlong((bfc_ccontptr_t) obj, 0);
 		}
@@ -309,7 +331,7 @@ vector_setlong(bfc_contptr_t vec, size_t pos, long val)
 		return (-ERANGE);
 	}
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		p = bfc_vector_ref(vec, pos);
+		p = vector_ref(vec, pos);
 		if (p && (obj = *p) && BFC_CLASS(obj)) {
 			rc = bfc_container_setlong((bfc_contptr_t)obj, 0, val);
 		}
@@ -335,9 +357,9 @@ vector_place_ref(bfc_contptr_t vec, size_t pos,
 	}
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		if (pos == BFC_NPOS) {
-			p = bfc_vector_have(vec, BFC_VECTOR_GET_SIZE(vec));
+			p = vector_have(vec, BFC_VECTOR_GET_SIZE(vec));
 		} else {
-			p = bfc_vector_have(vec, pos);
+			p = vector_have(vec, pos);
 		}
 		if (p != NULL) {
 			old = *p;
@@ -454,7 +476,7 @@ vector_pop_back(bfc_contptr_t vec)
 		size = BFC_VECTOR_GET_SIZE(vec);
 		if (size > 0) {
 			size--;
-			if ((ref = bfc_vector_ref(vec, size)) != NULL) {
+			if ((ref = vector_ref(vec, size)) != NULL) {
 				obj = *ref;
 				*ref = NULL;
 			}
@@ -477,7 +499,7 @@ zero_vector_elements(bfc_contptr_t vec, size_t pos, size_t limit)
 	bfc_objptr_t *ref;
 
 	for (idx = pos; idx < limit; idx++) {
-		if ((ref = bfc_vector_ref(vec, idx)) != NULL) {
+		if ((ref = vector_ref(vec, idx)) != NULL) {
 			*ref = NULL;
 		}
 	}
@@ -493,7 +515,7 @@ init_vector_elements(bfc_contptr_t vec, size_t pos, size_t limit,
 	int rc = BFC_SUCCESS;
 
 	for (idx = pos; (idx < limit) && (rc >= 0); idx++) {
-		if ((ref = bfc_vector_have(vec, idx)) != NULL) {
+		if ((ref = vector_have(vec, idx)) != NULL) {
 			bfc_incr_refcount(obj);
 			*ref = obj;
 		} else {
@@ -514,8 +536,8 @@ move_vector_elements(bfc_contptr_t vec, size_t pos, size_t limit, size_t dest)
 	if (dest < pos) {
 		n = pos - dest;
 		for (idx = pos; idx < limit; idx++) {
-			if ((cp = bfc_vector_ref(vec, idx)) != NULL) {
-				if ((dp = bfc_vector_have(vec, idx-n))!= NULL) {
+			if ((cp = vector_ref(vec, idx)) != NULL) {
+				if ((dp = vector_have(vec, idx-n))!= NULL) {
 					*dp = *cp;
 					*cp = NULL;
 				} else {
@@ -527,8 +549,8 @@ move_vector_elements(bfc_contptr_t vec, size_t pos, size_t limit, size_t dest)
 	} else if (dest > pos) {
 		n = dest - pos;
 		for (idx = limit; (idx--) > pos; ) {
-			if ((cp = bfc_vector_ref(vec, idx)) != NULL) {
-				if ((dp = bfc_vector_have(vec, idx+n))!= NULL) {
+			if ((cp = vector_ref(vec, idx)) != NULL) {
+				if ((dp = vector_have(vec, idx+n))!= NULL) {
 					*dp = *cp;
 					*cp = NULL;
 				} else {
@@ -629,7 +651,7 @@ vector_insert_range(bfc_contptr_t vec, bfc_iterptr_t position,
 					idx = pos + offs;
 				}
 				if (obj && BFC_CLASS(obj)) {
-					ref = bfc_vector_have(vec, idx);
+					ref = vector_have(vec, idx);
 					if (ref) {
 						bfc_incr_refcount(obj);
 						*ref = obj;
@@ -678,7 +700,7 @@ vector_erase_range(bfc_contptr_t vec, bfc_iterptr_t first, bfc_iterptr_t last)
 			idx = bfc_iterator_position(&it);
 			obj = (bfc_objptr_t) bfc_iterator_index(&it);
 			bfc_iterator_advance(&it, 1);
-			if ((ref = bfc_vector_ref(vec, idx)) == NULL) {
+			if ((ref = vector_ref(vec, idx)) == NULL) {
 				*ref = NULL;
 			}
 			if (obj && BFC_CLASS(obj)) {

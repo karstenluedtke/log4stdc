@@ -28,17 +28,19 @@ extern "C" {
 /**
  * @brief    Tree node definition.
  */
-struct bfc_node;
-typedef struct bfc_node bfc_node_t;
-typedef struct bfc_node *bfc_nodeptr_t;
-typedef const struct bfc_node *bfc_cnodeptr_t;
+struct bfc_treenode;
+typedef struct bfc_treenode bfc_node_t;
+typedef struct bfc_treenode *bfc_nodeptr_t;
+typedef const struct bfc_treenode *bfc_cnodeptr_t;
 
-struct bfc_node {
+struct bfc_treenode {
 	BFC_VECTOR(bfc_node_vector, bfc_nodeptr_t, 4) vec;
 	bfc_string_t      tagname;  /**< tag name including namespace prefix */
 	bfc_string_map_t *attributes;
 };
 /** @} */
+
+int bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool);
 
 #ifdef __cplusplus
 };

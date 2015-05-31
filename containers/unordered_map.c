@@ -18,6 +18,9 @@
 static void destroy_map(bfc_contptr_t map);
 static int begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize);
 
+static int find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth,
+			bfc_iterptr_t it);
+
 #define BFC_MAP_HASHLEN(map)	(CV2_LOG2ELEM(map))
 #define BFC_MAP_HASHMASK(map)	(CV2_ELEMENTS(map)-1)
 
@@ -27,7 +30,7 @@ const struct bfc_map_class unordered_map_class = {
 	.name 		= "map",
 	.destroy	= destroy_map,
 	.ibegin		= begin_iterator,
-	.find_by_name	= bfc_map_find_iter,
+	.find_by_name	= find_by_name,
 };
 
 int
@@ -234,17 +237,29 @@ bfc_map_keyhashcode(const void *map, const void *key)
 	return (code);
 }
 
+static int
+place_pair_kv(bfc_contptr_t pair, bfc_objptr_t key, bfc_objptr_t value,
+	      struct mempool *pool)
+{
+	if ((bfc_container_place(pair, 0, key, pool) != NULL)
+	 && (bfc_container_place(pair, 1, value, pool) != NULL)) {
+		return (BFC_SUCCESS);
+	}
+	return (-ENOMEM);
+}
+
 int
 bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		       bfc_iterptr_t position, size_t possize)
 {
 	int rc = -ENOENT;
-	unsigned idx, lim;
-	bfc_cobjptr_t pkey;
+	unsigned idx;
 	bfc_contptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_mutex_ptr_t locked;
+	bfc_iterptr_t it;
+	bfc_iterator_t iterbuf;
 
 	if ((map == NULL) || (key == NULL)) {
 		L4SC_ERROR(logger, "%s(%p, key %p, value %p): null arg",
@@ -256,54 +271,31 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		return (-EINVAL);
 	}
 
+	if (position && (possize >= sizeof(iterbuf))
+	 && (bfc_container_begin_iterator(map, position, possize) >= 0)) {
+		it = position;
+	} else {
+		bfc_container_begin_iterator(map, &iterbuf, sizeof(iterbuf));
+		it = &iterbuf;
+	}
+
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		idx = bfc_map_keyhashcode(map, key);
-		lim = 2u << BFC_MAP_HASHLEN(vec);
-		do {
+		rc = bfc_container_find_by_name(map, key, 1, it);
+		if (rc == -ENOENT) {
+			idx = bfc_iterator_position(it);
 			pair = (bfc_contptr_t) bfc_vector_have(vec, idx);
+			L4SC_DEBUG(logger, "%s: pair %p at #%u",
+						__FUNCTION__, pair, idx);
 			if (pair == NULL) {
 				rc = -ENOMEM;
-				break;
-			} else if (BFC_CLASS((bfc_cobjptr_t)pair) == NULL) {
-				/* OK, empty entry */
-				rc = BFC_SUCCESS;
-				break;
-			} else if ((pkey = bfc_container_first(pair))== NULL) {
-				rc = BFC_SUCCESS;
-				break;	
-			} else if (BFC_CLASS(pkey) == NULL) {
-				rc = BFC_SUCCESS;
-				break;
-			} else if (bfc_equal_object(pkey, key)) {
-				rc = -EEXIST;
-				break;
-			}
-			/* else try next index */
-		} while (++idx < lim);
-
-		L4SC_DEBUG(logger, "%s: pair %p at #%u",__FUNCTION__,pair,idx);
-
-		if ((rc == BFC_SUCCESS) && (pair != NULL)
-		 && ((rc = bfc_init_object(vec->elem_class, pair,
-					   vec->elem_size, vec->pool)) >= 0)) {
-			if ((bfc_container_place(pair, 0,
-						key, vec->pool) != NULL)
-			 && (bfc_container_place(pair, 1,
-						value, vec->pool) != NULL)) {
+			} else if (((rc = bfc_init_object(vec->elem_class, pair,
+					    vec->elem_size, vec->pool)) >= 0)
+				&& ((rc = place_pair_kv(pair,
+					 	key, value, vec->pool)) >= 0)) {
 				rc = (int) idx;
-			} else {
-				rc = -ENOMEM;
 			}
-		}
-		if (position != NULL) {
-			if ((pair != NULL)
-			 && (bfc_container_begin_iterator(vec, position,
-							  possize) >= 0)) {
-				bfc_iterator_set_position(position, idx);
-			} else {
-				bfc_container_end_iterator(vec, position,
-								possize);
-			}
+		} else if (rc >= 0) {
+			rc = -EEXIST;
 		}
 		bfc_mutex_unlock(locked);
 	} else {
@@ -331,12 +323,12 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		        bfc_iterptr_t position, size_t possize)
 {
 	int rc = -ENOENT;
+	unsigned idx;
 	bfc_contptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_mutex_ptr_t locked;
 	bfc_iterptr_t it;
-	size_t itsize;
 	bfc_iterator_t iterbuf;
 
 	if ((map == NULL) || (key == NULL)) {
@@ -349,25 +341,39 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		return (-EINVAL);
 	}
 
-	if (position && (possize >= sizeof(iterbuf))) {
+	if (position && (possize >= sizeof(iterbuf))
+	 && (bfc_container_begin_iterator(map, position, possize) >= 0)) {
 		it = position;
-		itsize = possize;
 	} else {
+		bfc_container_begin_iterator(map, &iterbuf, sizeof(iterbuf));
 		it = &iterbuf;
-		itsize = sizeof(iterbuf);
 	}
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		rc = bfc_map_insert_objects(map, key, value, it, itsize);
-		if ((rc == -EEXIST)
-		 && ((pair = bfc_iterator_index(it)) != NULL)) {
-			if ((bfc_container_place(pair, 0,
-						key, vec->pool) != NULL)
-			 && (bfc_container_place(pair, 1,
-						value, vec->pool) != NULL)) {
-				rc = (int) bfc_iterator_position(it);
-			} else {
+		rc = bfc_container_find_by_name(map, key, 1, it);
+		if (rc == -ENOENT) {
+			idx = bfc_iterator_position(it);
+			pair = (bfc_contptr_t) bfc_vector_have(vec, idx);
+			L4SC_DEBUG(logger, "%s: new pair %p at #%u",
+						__FUNCTION__, pair, idx);
+			if (pair == NULL) {
 				rc = -ENOMEM;
+			} else if (((rc = bfc_init_object(vec->elem_class, pair,
+					    vec->elem_size, vec->pool)) >= 0)
+				&& ((rc = place_pair_kv(pair,
+					 	key, value, vec->pool)) >= 0)) {
+				rc = (int) idx;
+			}
+		} else if (rc >= 0) {
+			idx = bfc_iterator_position(it);
+			pair = (bfc_contptr_t) bfc_iterator_index(it);
+			L4SC_DEBUG(logger, "%s: exiting pair %p at #%u",
+						__FUNCTION__, pair, idx);
+			if (pair == NULL) {
+				rc = -EFAULT;
+			} else if ((rc = place_pair_kv(pair,
+					 	key, value, vec->pool)) >= 0) {
+				rc = (int) idx;
 			}
 		}
 		bfc_mutex_unlock(locked);
@@ -378,8 +384,20 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 	return (rc);
 }
 
-int
-bfc_map_find_index(bfc_ccontptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
+/**
+ * @brief  Find the position of a pair in the map by means on the key.
+ *
+ * @param[in]	map	The map.
+ * @param[in]	key	The key.
+ * @param[in]	depth	Ignored, there is only one level in the map.
+ * @param[out]	it	An iterator which is set to the position of the pair.
+ *			If no pair is found, -ENOENT is returend and the
+ *			iterator is set to the position where the pair shall be
+ *			placed.
+ * @return		Index of the pair in the map, or negative on error.
+ */
+static int
+find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth, bfc_iterptr_t it)
 {
 	int rc = -ENOENT;
 	unsigned idx, lim;
@@ -412,13 +430,37 @@ bfc_map_find_index(bfc_ccontptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
 			    && ((pkey = bfc_container_first(pair)) != NULL)
 			    && BFC_CLASS(pkey) && bfc_equal_object(pkey,key)) {
 				rc = idx;
-				if (pairpp) {
-					*pairpp = (void *) pair;
+				if (it != NULL) {
+					begin_iterator(map, it, sizeof(*it));
+					bfc_iterator_set_position(it, idx);
 				}
 				break;
 			}
 			/* else try next index */
 		} while (++idx < lim);
+		if ((rc == -ENOENT) && (it != NULL)) {
+			lim = idx+1;
+			idx = bfc_map_keyhashcode(map, key);
+			do {
+				pair = (bfc_contptr_t) bfc_vector_ref(vec, idx);
+				if ((pair != NULL)
+				 && ((BFC_CLASS((bfc_cobjptr_t)pair) != NULL)
+				 && ((pkey = bfc_container_first(pair)) != NULL)
+				 && (BFC_CLASS(pkey) != NULL))) {
+					if (bfc_equal_object(pkey,key)) {
+						rc = -EEXIST;
+						break;
+					}
+				} else {
+					/* found an empty entry */
+					begin_iterator(map, it, sizeof(*it));
+					bfc_iterator_set_position(it, idx);
+					/* rc remains -ENOENT */
+					break;
+				}
+				/* else try next index */
+			} while (++idx <= lim);
+		}
 		bfc_mutex_unlock(locked);
 	} else {
 		L4SC_ERROR(logger, "%s(%p, key %p) cannot lock",
@@ -433,39 +475,17 @@ bfc_map_find_index(bfc_ccontptr_t map, bfc_cobjptr_t key, bfc_contptr_t *pairpp)
 	return (rc);
 }
 
-int
-bfc_map_find_iter(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth,
-		  bfc_iterptr_t it)
-{
-	bfc_char_vector_t *vec = BFC_UNCONST(bfc_char_vector_t *, map);
-	bfc_mutex_ptr_t locked;
-	int rc = 0;
-
-	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		if (((rc = bfc_map_find_index(map, key, NULL)) >= 0)
-		 && (bfc_container_begin_iterator(vec, it, sizeof(*it)) >= 0)) {
-			bfc_iterator_set_position(it, rc);
-		} else {
-			bfc_container_end_iterator(vec, it, sizeof(*it));
-		}
-		bfc_mutex_unlock(locked);
-	} else {
-		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
-		L4SC_ERROR(log, "%s(%p, key %p) cannot lock",
-						__FUNCTION__, map, key);
-		rc = -EBUSY;
-	}
-	return (rc);
-}
-
 bfc_contptr_t
 bfc_map_find_pair(bfc_contptr_t map, bfc_cobjptr_t key)
 {
-	bfc_contptr_t pair = NULL;
-	if (bfc_map_find_index(map, key, &pair) < 0) {
+	bfc_iterator_t it;
+
+	bfc_container_begin_iterator(map, &it, sizeof(it));
+
+	if (bfc_container_find_by_name(map, key, 1, &it) < 0) {
 		return (NULL);
 	}
-	return (pair);
+	return (bfc_iterator_index(&it));
 }
 
 bfc_objptr_t
@@ -475,10 +495,16 @@ bfc_map_find_value(bfc_contptr_t map, bfc_cobjptr_t key)
 	bfc_objptr_t  pval = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
+	bfc_iterator_t it;
+
+	bfc_container_begin_iterator(map, &it, sizeof(it));
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		if ((bfc_map_find_index(map, key, &pair) >= 0) && pair) {
-			pval = bfc_container_index(pair, 1);
+		if (bfc_container_find_by_name(map, key, 1, &it) >= 0) {
+		 	pair = bfc_iterator_index(&it);
+			if (pair != NULL) {
+				pval = bfc_container_index(pair, 1);
+			}
 		}
 		bfc_mutex_unlock(locked);
 	} else {
@@ -638,9 +664,12 @@ bfc_map_erase_key(bfc_contptr_t map, bfc_cobjptr_t key)
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
 	int rc = -ENOENT;
+	bfc_iterator_t it;
 
+	bfc_container_begin_iterator(map, &it, sizeof(it));
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		if (((rc = bfc_map_find_index(map, key, &pair)) >= 0) && pair) {
+		if (((rc = bfc_container_find_by_name(map, key, 1, &it)) >= 0)
+		 && ((pair = bfc_iterator_index(&it)) != NULL)) {
 			bfc_destroy(pair);
 			((bfc_objptr_t)pair)->vptr = NULL;
 			rc = BFC_SUCCESS;

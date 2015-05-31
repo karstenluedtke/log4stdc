@@ -35,8 +35,8 @@ typedef const struct bfc_treenode *bfc_cnodeptr_t;
 
 struct bfc_treenode {
 	BFC_VECTOR(bfc_node_vector, bfc_nodeptr_t, 4) vec;
-	bfc_string_t      tagname;  /**< tag name including namespace prefix */
-	bfc_string_map_t *attributes;
+	bfc_string_t  tagname;  /**< tag name including namespace prefix */
+	bfc_contptr_t attributes;
 };
 /** @} */
 

@@ -30,7 +30,7 @@ on_start_tag(struct bfc_tag_parse_state *st, bfc_ctagptr_t tag,
 
 	assert(expectations->name); /* otherwise too many tags found */
 
-	rc = bfc_object_tostring(name, nm, sizeof(nm));
+	rc = bfc_object_tostring(name, nm, sizeof(nm), NULL);
 	assert(rc >= 0);
 	assert(strcmp(nm, expectations->name) == 0);
 	st->userdata = &expectations[1];
@@ -41,9 +41,9 @@ on_start_tag(struct bfc_tag_parse_state *st, bfc_ctagptr_t tag,
 	assert(nattrs == expectations->nattrs);
 
 	for (i=0; i < nattrs; i++) {
-		rc = bfc_object_tostring(&attrs[2*i], a, sizeof(a));
+		rc = bfc_object_tostring(&attrs[2*i], a, sizeof(a), NULL);
 		assert(rc >= 0);
-		rc = bfc_object_tostring(&attrs[2*i+1], v, sizeof(v));
+		rc = bfc_object_tostring(&attrs[2*i+1], v, sizeof(v), NULL);
 		assert(rc >= 0);
 		L4SC_DEBUG(logger, "%s: %s=\"%s\"", __FUNCTION__, a, v);
 		assert(strcmp(a, expectations->attrs[2*i]) == 0);
@@ -62,7 +62,7 @@ on_end_tag(struct bfc_tag_parse_state *st, bfc_ctagptr_t starttag,
 
 	assert(expectations->name); /* otherwise too many tags found */
 
-	bfc_object_tostring(name, nm, sizeof(nm));
+	bfc_object_tostring(name, nm, sizeof(nm), NULL);
 	assert(strcmp(nm, expectations->name) == 0);
 	st->userdata = &expectations[1];
 

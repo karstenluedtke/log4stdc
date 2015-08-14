@@ -55,7 +55,8 @@ static int clone_datetime(bfc_cdateptr_t date,
 static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
 static unsigned bfc_datetime_hashcode(bfc_cdateptr_t date, int hashlen);
 static void dump_datetime(bfc_cdateptr_t date,int depth,struct l4sc_logger*log);
-static int datetime_tostring(bfc_cdateptr_t date, char *buf, size_t bufsize);
+static int datetime_tostring(bfc_cdateptr_t date,
+			     char *buf, size_t bufsize, const char *fmt);
 
 static int to_gmtime(bfc_cdateptr_t date, struct tm *tm);
 static int to_localtime(bfc_cdateptr_t date, struct tm *tm);
@@ -320,7 +321,8 @@ bfc_datetime_length(bfc_cdateptr_t date)
 }
 
 static int
-datetime_tostring(bfc_cdateptr_t date, char *buf, size_t bufsize)
+datetime_tostring(bfc_cdateptr_t date,
+		  char *buf, size_t bufsize, const char *fmt)
 {
 	if (date && BFC_CLASS(date)) {
 		snprintf(buf, bufsize, "%s @%p: %ld %ld.%lx",

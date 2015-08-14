@@ -28,7 +28,8 @@ static bfc_objptr_t create_test_object(const char *v);
 
 static int  init_test_object(void *buf, size_t bufsize, struct mempool *pool);
 static void destroy_test_object(bfc_objptr_t obj);
-static int  test_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize);
+static int  test_object_tostring(bfc_cobjptr_t obj,
+				 char *buf, size_t bufsize, const char *fmt);
 
 bfc_class_t test_object_class = {
 	.super	  = &bfc_object_class,
@@ -83,7 +84,8 @@ destroy_test_object(bfc_objptr_t obj)
 }
 
 static int
-test_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
+test_object_tostring(bfc_cobjptr_t obj,
+		     char *buf, size_t bufsize, const char *fmt)
 {
 	int rc = 0;
 
@@ -152,7 +154,7 @@ test(int n1, const struct test_kv init[],
 		vp = bfc_map_find_value((bfc_contptr_t) &map,
 					(bfc_objptr_t) &kstr);
 		assert(vp != NULL);
-		bfc_object_tostring(vp, vbuf, sizeof(vbuf));
+		bfc_object_tostring(vp, vbuf, sizeof(vbuf), NULL);
 		L4SC_DEBUG(logger, "%s: retrieved %s = test_object(%s)",
 				__FUNCTION__, expect[i].k, vbuf);
 		assert(strcmp(vbuf, expect[i].v) == 0);

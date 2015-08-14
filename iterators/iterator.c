@@ -25,7 +25,8 @@ static int clone_iterator(bfc_citerptr_t it,
 static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 static unsigned bfc_iterator_hashcode(bfc_citerptr_t it, int hashlen);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
-static int iterator_tostring(bfc_citerptr_t it, char *buf, size_t bufsize);
+static int iterator_tostring(bfc_citerptr_t it,
+			     char *buf, size_t bufsize, const char *fmt);
 
 static size_t element_size(bfc_citerptr_t);
 static const void *iterator_first(bfc_citerptr_t);
@@ -273,7 +274,7 @@ bfc_iterator_length(bfc_citerptr_t it)
 }
 
 static int
-iterator_tostring(bfc_citerptr_t it, char *buf, size_t bufsize)
+iterator_tostring(bfc_citerptr_t it, char *buf, size_t bufsize, const char *fmt)
 {
 	if (it && BFC_CLASS(it)) {
 		snprintf(buf, bufsize, "%s @%p: %p[%ld]",

@@ -58,7 +58,8 @@ size_t bfc_get_integer_object_size(bfc_cobjptr_t obj);
 unsigned bfc_integer_get_hashcode(bfc_cobjptr_t obj, int hashlen);
 int bfc_integer_is_equal(bfc_cobjptr_t obj, bfc_cobjptr_t other);
 size_t bfc_number_get_object_length(bfc_cobjptr_t obj);
-int bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize);
+int bfc_integer_object_tostring(bfc_cobjptr_t obj,
+				char *buf, size_t bufsize, const char *fmt);
 void bfc_integer_dump_object(bfc_cobjptr_t obj, int depth,
 					struct l4sc_logger *log);
 
@@ -66,7 +67,8 @@ int bfc_init_real_number_object(void *buf,size_t bufsize,struct mempool *pool);
 size_t bfc_get_real_number_object_size(bfc_cobjptr_t obj);
 unsigned bfc_real_number_get_hashcode(bfc_cobjptr_t obj, int hashlen);
 int bfc_real_number_is_equal(bfc_cobjptr_t obj, bfc_cobjptr_t other);
-int bfc_real_number_object_tostring(bfc_cobjptr_t obj,char *buf,size_t bufsize);
+int bfc_real_number_object_tostring(bfc_cobjptr_t obj,
+				char *buf, size_t bufsize, const char *fmt);
 void bfc_real_number_dump_object(bfc_cobjptr_t obj, int depth,
 					struct l4sc_logger *log);
 

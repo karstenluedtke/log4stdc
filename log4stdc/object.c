@@ -114,7 +114,8 @@ l4sc_default_get_object_length(l4sc_objcptr_t obj)
 }
 
 int
-l4sc_default_object_tostring(l4sc_objcptr_t obj, char *buf, size_t bufsize)
+l4sc_default_object_tostring(l4sc_objcptr_t obj,
+			     char *buf, size_t bufsize, const char *fmt)
 {
 	if (obj && obj->name && buf) {
 		size_t namelen = strlen(obj->name);

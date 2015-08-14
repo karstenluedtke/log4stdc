@@ -131,7 +131,7 @@
 #include "wstring.c"
 
 static int
-cstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize)
+cstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize, const char *fmt)
 {
 	size_t len;
 

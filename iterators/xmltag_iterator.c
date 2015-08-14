@@ -17,7 +17,8 @@
 #include "log4stdc.h"
 
 static int  init_iterator(void *buf,size_t bufsize,struct mempool *pool);
-static int  iterator_tostring(bfc_ctagptr_t tag, char *buf, size_t bufsize);
+static int  iterator_tostring(bfc_ctagptr_t tag,
+			      char *buf, size_t bufsize, const char *fmt);
 static void dump_iterator(bfc_ctagptr_t tag,int depth,struct l4sc_logger *log);
 static int  advance_forward(bfc_tagptr_t tag, ptrdiff_t n);
 static int  get_xmltag_name(bfc_ctagptr_t tag,bfc_strptr_t buf,size_t bufsize);
@@ -329,14 +330,14 @@ get_namespace_prefix(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
 }
 
 static int
-iterator_tostring(bfc_ctagptr_t tag, char *buf, size_t bufsize)
+iterator_tostring(bfc_ctagptr_t tag, char *buf, size_t bufsize, const char *fmt)
 {
 	bfc_string_t tagstr;
 
 	if (tag && BFC_CLASS(tag) && tag->obj) {
 		bfc_string_shared_substr(tag->obj, tag->pos, tag->length,
 					 &tagstr, sizeof(tagstr));
-		return (bfc_object_tostring(&tagstr, buf, bufsize));
+		return (bfc_object_tostring(&tagstr, buf, bufsize, NULL));
 	}
 	return (0);
 }
@@ -351,7 +352,7 @@ dump_iterator(bfc_ctagptr_t tag, int depth, struct l4sc_logger *log)
 			BFC_CLASS(tag)->name, tag->tagtype, tag->length, tag,
 			tag->nameoffs, tag->namelen);
 
-		iterator_tostring(tag, buf, sizeof(buf));
+		iterator_tostring(tag, buf, sizeof(buf), NULL);
 
 		L4SC_DEBUG(log, "pos %ld in %p: %s",
 			(long) tag->pos, tag->obj, buf);

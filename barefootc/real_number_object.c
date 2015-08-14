@@ -65,12 +65,17 @@ bfc_real_number_is_equal(bfc_cobjptr_t obj, bfc_cobjptr_t other)
 }
 
 int
-bfc_real_number_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
+bfc_real_number_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
+				const char *fmt)
 {
 	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
 
 	if (p && buf) {
-		snprintf(buf, bufsize, "%.3f", p->u.f);
+		if (fmt == NULL) {
+			snprintf(buf, bufsize, "%.3f", p->u.f);
+		} else {
+			snprintf(buf, bufsize, fmt, p->u.f);
+		}
 	}
 	return (0);
 }

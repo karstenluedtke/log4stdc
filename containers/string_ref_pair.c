@@ -30,7 +30,7 @@ static unsigned pair_hashcode(const struct bfc_string_ref_pair *pair,
 static int pair_equals(const struct bfc_string_ref_pair *pair,
 			const struct bfc_string_ref_pair *other);
 static int pair_tostring(const struct bfc_string_ref_pair *pair,
-			 char *buf, size_t bufsize);
+			 char *buf, size_t bufsize, const char *fmt);
 static void dump_pair(const struct bfc_string_ref_pair *pair,
 			int depth, struct l4sc_logger *log);
 static bfc_cobjptr_t pair_first(const struct bfc_string_ref_pair *pair);
@@ -207,14 +207,15 @@ pair_equals(const struct bfc_string_ref_pair *pair,
 }
 
 static int
-pair_tostring(const struct bfc_string_ref_pair *pair, char *buf, size_t bufsize)
+pair_tostring(const struct bfc_string_ref_pair *pair,
+	      char *buf, size_t bufsize, const char *fmt)
 {
-	int rc = bfc_object_tostring(&pair->first, buf, bufsize);
+	int rc = bfc_object_tostring(&pair->first, buf, bufsize, NULL);
 	if ((rc >= 0) && (rc+3 < bufsize)) {
 		int rc2, spare;
 		memcpy(buf+rc, ": ", 3);
 		spare = bufsize - rc - 2;
-		rc2 = bfc_object_tostring(pair->second, buf+rc+2, spare);
+		rc2 = bfc_object_tostring(pair->second, buf+rc+2, spare, NULL);
 		if ((rc2 >= 0) && (rc < spare)) {
 			rc += rc2 + 2;
 		} else {
@@ -232,7 +233,7 @@ dump_pair(const struct bfc_string_ref_pair *pair, int depth,
 
 	if (pair && BFC_CLASS(pair)) {
 		if (BFC_CLASS(&pair->first)) {
-			bfc_object_tostring(&pair->first, buf, sizeof(buf));
+			bfc_object_tostring(&pair->first,buf,sizeof(buf),NULL);
 		} else {
 			memcpy(buf, "(missing key)", 14);
 		}

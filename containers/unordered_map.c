@@ -229,7 +229,7 @@ bfc_map_keyhashcode(const void *map, const void *key)
 		bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 		code = bfc_object_hashcode(key, BFC_MAP_HASHLEN(vec));
 		mask = BFC_MAP_HASHMASK(vec);
-		bfc_object_tostring(key, kbuf, sizeof(kbuf));
+		bfc_object_tostring(key, kbuf, sizeof(kbuf), NULL);
 		L4SC_TRACE(logger, "%s: key %s hashcode 0x%x & 0x%x",
 					__FUNCTION__, kbuf, code, mask);
 		code &= mask;
@@ -304,12 +304,12 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 
 	if (rc == -EEXIST) {
 		char kbuf[200];
-		bfc_object_tostring(key, kbuf, sizeof(kbuf));
+		bfc_object_tostring(key, kbuf, sizeof(kbuf), NULL);
 		L4SC_WARN(logger, "%s(%p, key %p: %s): entry exists",
 					__FUNCTION__, map, key, kbuf);
 	} else if ((rc < 0) || (pair == NULL)) {
 		char kbuf[200];
-		bfc_object_tostring(key, kbuf, sizeof(kbuf));
+		bfc_object_tostring(key, kbuf, sizeof(kbuf), NULL);
 		L4SC_ERROR(logger, "%s(%p, key %p: %s): error %d %s",
 					__FUNCTION__, map, key, kbuf, rc,
 					(rc == -ENOMEM)? "no memory":
@@ -468,7 +468,7 @@ find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth, bfc_iterptr_t it)
 		rc = -EBUSY;
 	}
 
-	bfc_object_tostring(key, kbuf, sizeof(kbuf));
+	bfc_object_tostring(key, kbuf, sizeof(kbuf), NULL);
 	L4SC_DEBUG(logger, "%s(%p, key %p: %s) %s%d",
 		__FUNCTION__, map, key, kbuf, (rc < 0)? "error ": "at #", rc);
 

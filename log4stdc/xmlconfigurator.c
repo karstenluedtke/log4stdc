@@ -91,8 +91,8 @@ on_start_tag(struct parsing_state *ps, bfc_ctagptr_t tag)
 
 	if (ps->depth == 0) {
 		for (i=0; i < nattrs; i++) {
-			bfc_object_tostring(&attrs[2*i], a, sizeof(a));
-			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
+			bfc_object_tostring(&attrs[2*i], a, sizeof(a), NULL);
+			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v), NULL);
 			if ((strncasecmp(a, "debug", 5) == 0)
 			 || (strncasecmp(a, "internalDebug", 13) == 0)
 			 || (strncasecmp(a, "configDebug",   11) == 0)) {
@@ -102,7 +102,7 @@ on_start_tag(struct parsing_state *ps, bfc_ctagptr_t tag)
 		}
 	}
 
-	bfc_object_tostring(&namestr, name, sizeof(name));
+	bfc_object_tostring(&namestr, name, sizeof(name), NULL);
 	LOGDEBUG(("%s: <%s>", __FUNCTION__, name));
 
 	for (i=0; i < 2*nattrs; i++) {
@@ -120,8 +120,8 @@ on_start_tag(struct parsing_state *ps, bfc_ctagptr_t tag)
 
 	memset(&values, 0, sizeof(values));
 	for (i=0; i < nattrs; i++) {
-		bfc_object_tostring(&attrs[2*i], a, sizeof(a));
-		bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
+		bfc_object_tostring(&attrs[2*i], a, sizeof(a), NULL);
+		bfc_object_tostring(&attrs[2*i+1],v,sizeof(v), NULL);
 		LOGDEBUG(("%s: attr #%d \"%s\" = \"%s\"",__FUNCTION__,i,a,v));
 		if (strncasecmp(a, "name", 4) == 0) {
 			values.name = &attrs[2*i+1];
@@ -135,30 +135,30 @@ on_start_tag(struct parsing_state *ps, bfc_ctagptr_t tag)
 	}
 	ps->depth = tag->level + (tag->tagtype == BFC_XML_START_TAG)? 1: 0;
 	if (strncasecmp(name, "logger", 6) == 0) {
-		bfc_object_tostring(values.name, v, sizeof(v));
+		bfc_object_tostring(values.name, v, sizeof(v), NULL);
 		ps->current_logger = l4sc_get_logger(v, strlen(v));
 		for (i=0; i < nattrs; i++) {
-			bfc_object_tostring(&attrs[2*i], a, sizeof(a));
-			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
+			bfc_object_tostring(&attrs[2*i], a, sizeof(a), NULL);
+			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v), NULL);
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_logger,
 				a, strlen(a), v, strlen(v));
 		}
 	} else if (strncasecmp(name, "appender-ref", 12) == 0) {
 		l4sc_appender_ptr_t appender;
-		bfc_object_tostring(values.ref, v, sizeof(v));
+		bfc_object_tostring(values.ref, v, sizeof(v), NULL);
 		appender = l4sc_get_appender(v, strlen(v), NULL, 0);
 		if (appender && ps->current_logger) {
 			l4sc_set_logger_appender(ps->current_logger, appender);
 		}
 	} else if (strncasecmp(name, "appender", 8) == 0) {
-		bfc_object_tostring(values.name, a, sizeof(a));
-		bfc_object_tostring(values.class, v, sizeof(v));
+		bfc_object_tostring(values.name, a, sizeof(a), NULL);
+		bfc_object_tostring(values.class, v, sizeof(v), NULL);
 		ps->current_appender = l4sc_get_appender(a, strlen(a),
 							 v, strlen(v));
 		for (i=0; i < nattrs; i++) {
-			bfc_object_tostring(&attrs[2*i], a, sizeof(a));
-			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
+			bfc_object_tostring(&attrs[2*i], a, sizeof(a), NULL);
+			bfc_object_tostring(&attrs[2*i+1],v,sizeof(v), NULL);
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_appender,
 				a, strlen(a), v, strlen(v));
@@ -168,16 +168,18 @@ on_start_tag(struct parsing_state *ps, bfc_ctagptr_t tag)
 			ps->current_layout = l4sc_get_appender_layout(
 						ps->current_appender);
 			for (i=0; i < nattrs; i++) {
-				bfc_object_tostring(&attrs[2*i], a, sizeof(a));
-				bfc_object_tostring(&attrs[2*i+1],v,sizeof(v));
+				bfc_object_tostring(&attrs[2*i],
+						    a, sizeof(a), NULL);
+				bfc_object_tostring(&attrs[2*i+1],
+						    v, sizeof(v), NULL);
 				l4sc_set_object_option(
 					(l4sc_objptr_t) ps->current_layout,
 					a, strlen(a), v, strlen(v));
 			}
 		}
 	} else if (strncasecmp(name, "param", 5) == 0) {
-		bfc_object_tostring(values.name, a, sizeof(a));
-		bfc_object_tostring(values.value, v, sizeof(v));
+		bfc_object_tostring(values.name, a, sizeof(a), NULL);
+		bfc_object_tostring(values.value, v, sizeof(v), NULL);
 		if (ps->current_layout) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_layout,
@@ -193,7 +195,7 @@ on_start_tag(struct parsing_state *ps, bfc_ctagptr_t tag)
 		}
 	} else if (values.value) {
 		int nmlen = strlen(name);
-		bfc_object_tostring(values.value, v, sizeof(v));
+		bfc_object_tostring(values.value, v, sizeof(v), NULL);
 		if (ps->current_layout) {
 			l4sc_set_object_option(
 				(l4sc_objptr_t) ps->current_layout,
@@ -218,7 +220,7 @@ on_end_tag(struct parsing_state *ps, bfc_ctagptr_t endtag)
 	char name[80];
 
 	bfc_tag_get_name(endtag, &namestr, sizeof(namestr));
-	bfc_object_tostring(&namestr, name, sizeof(name));
+	bfc_object_tostring(&namestr, name, sizeof(name), NULL);
 	LOGDEBUG(("%s: </%s>", __FUNCTION__, name));
 
 	ps->depth = endtag->level;

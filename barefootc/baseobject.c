@@ -181,7 +181,8 @@ bfc_default_get_object_length(bfc_cobjptr_t obj)
 }
 
 int
-bfc_default_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
+bfc_default_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
+			    const char *fmt)
 {
 	if (obj && obj->name && buf) {
 		snprintf(buf, bufsize, "%s@%p", obj->name, obj);

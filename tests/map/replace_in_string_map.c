@@ -76,7 +76,7 @@ test(int n1, const struct test_kv init[],
 					(bfc_objptr_t) &kstr);
 		assert(vp != NULL);
 		value = (bfc_cstrptr_t) vp;
-		bfc_object_tostring(vp, vbuf, sizeof(vbuf));
+		bfc_object_tostring(vp, vbuf, sizeof(vbuf), NULL);
 		L4SC_DEBUG(logger, "%s: retrieved %s = %s",
 				__FUNCTION__, expect[i].k, vbuf);
 		assert(bfc_string_compare_c_str(value, expect[i].v) == 0);

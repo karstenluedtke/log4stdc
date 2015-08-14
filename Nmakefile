@@ -18,11 +18,11 @@ CPPFLAGS=-I. -Ilog4stdc \
 	-DPACKAGE="barefootc" \
 	-DPACKAGE_BUGREPORT="bug-barefootc@example.org" \
 	-DPACKAGE_NAME="barefootc" \
-	-DPACKAGE_STRING="barefootc 0.7.2" \
+	-DPACKAGE_STRING="barefootc 0.7.3" \
 	-DPACKAGE_TARNAME="barefootc" \
 	-DPACKAGE_URL="" \
-	-DPACKAGE_VERSION="0.7.2" \
-	-DVERSION="0.7.2"
+	-DPACKAGE_VERSION="0.7.3" \
+	-DVERSION="0.7.3"
 CFLAGS=
 CXXFLAGS=-EHsc
 
@@ -36,6 +36,7 @@ HEADERS= \
 	barefootc/vector.h \
 	barefootc/pair.h \
 	barefootc/map.h \
+	barefootc/treenode.h \
 	barefootc/iterator.h \
 	barefootc/xmltag.h \
 	barefootc/linkedlist.h \
@@ -284,6 +285,7 @@ OFILES= \
 	containers/int_string_pair.obj \
 	containers/real_int_pair.obj \
 	containers/unordered_map.obj \
+	containers/treenode.obj \
 	mempools/stdcpool.obj \
 	mempools/defaultpool.obj \
 	mempools/chainedpool.obj \
@@ -1800,6 +1802,9 @@ containers/real_int_pair.obj: containers/real_int_pair.c $(HEADERS)
 
 containers/unordered_map.obj: containers/unordered_map.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/unordered_map.c
+
+containers/treenode.obj: containers/treenode.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ containers/treenode.c
 
 mempools/stdcpool.obj: mempools/stdcpool.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ mempools/stdcpool.c

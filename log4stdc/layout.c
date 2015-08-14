@@ -38,7 +38,8 @@ static size_t get_layout_size(l4sc_layout_cptr_t obj);
 static unsigned get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen);
 static int  is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other);
 static size_t get_layout_length(l4sc_layout_cptr_t obj);
-static int  layout_tostring(l4sc_layout_cptr_t obj, char *buf, size_t bufsize);
+static int  layout_tostring(l4sc_layout_cptr_t obj,
+			    char *buf, size_t bufsize, const char *fmt);
 
 static void set_layout_name(l4sc_layout_ptr_t obj, const char *name, int len);
 static int  set_layout_option(l4sc_layout_ptr_t obj,
@@ -120,7 +121,8 @@ get_layout_length(l4sc_layout_cptr_t obj)
 }
 
 static int
-layout_tostring(l4sc_layout_cptr_t obj, char *buf, size_t bufsize)
+layout_tostring(l4sc_layout_cptr_t obj,
+	        char *buf, size_t bufsize, const char *fmt)
 {
 	if (obj && obj->pattern && buf) {
 		size_t patlen = strlen(obj->pattern);

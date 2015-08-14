@@ -17,7 +17,8 @@ static size_t get_pool_object_size(const struct mempool *pool);
 static unsigned get_pool_hashcode(const struct mempool *pool, int hashlen);
 static int is_equal_pool(const struct mempool *obj,const struct mempool *other);
 static size_t get_pool_size(const struct mempool *pool);
-static int pool_tostring(const struct mempool *pool, char *buf, size_t bufsize);
+static int pool_tostring(const struct mempool *pool,
+			 char *buf, size_t bufsize, const char *fmt);
 
 /*
  *  Standard "C" mempool.
@@ -136,7 +137,8 @@ get_pool_size(const struct mempool *pool)
 }
 
 static int
-pool_tostring(const struct mempool *pool, char *buf, size_t bufsize)
+pool_tostring(const struct mempool *pool,
+	      char *buf, size_t bufsize, const char *fmt)
 {
 	struct stdc_mempool *obj = (struct stdc_mempool *) pool;
 	if (obj && obj->name && buf) {

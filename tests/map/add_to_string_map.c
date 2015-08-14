@@ -57,7 +57,7 @@ test(int n1, const struct test_kv kv[])
 		vp = bfc_map_find_value((bfc_contptr_t) &map,
 					(bfc_objptr_t) &kstr);
 		assert(vp != NULL);
-		bfc_object_tostring(vp, vbuf, sizeof(vbuf));
+		bfc_object_tostring(vp, vbuf, sizeof(vbuf), NULL);
 		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__, kv[i].k, vbuf);
 		assert(bfc_string_compare_c_str((bfc_cstrptr_t)vp,kv[i].v)==0);
 	}

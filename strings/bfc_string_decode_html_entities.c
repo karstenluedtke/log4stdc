@@ -293,7 +293,7 @@ bfc_string_decode_html_entities(bfc_strptr_t s)
 	    && ((amp = bfc_string_find_char(s, '&', pos)) != BFC_NPOS)
 	    && ((sem = bfc_string_find_char(s, ';', amp)) != BFC_NPOS)) {
 		bfc_string_shared_substr(s, amp, sem-amp, &sub, sizeof(sub));
-		bfc_object_tostring(&sub, buf, sizeof(buf));
+		bfc_object_tostring(&sub, buf, sizeof(buf), NULL);
 		pos = sem+1;
 		unicode = 0;
 		if ((c1 = buf[1]) == '#') {

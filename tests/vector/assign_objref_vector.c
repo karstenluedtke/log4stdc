@@ -28,7 +28,8 @@ static bfc_objptr_t create_test_object(const char *v, struct mempool *pool);
 
 static int  init_test_object(void *buf, size_t bufsize, struct mempool *pool);
 static void destroy_test_object(bfc_objptr_t obj);
-static int  test_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize);
+static int  test_object_tostring(bfc_cobjptr_t obj,
+				 char *buf, size_t bufsize, const char *fmt);
 
 bfc_class_t test_object_class = {
 	.super	  = &bfc_object_class,
@@ -83,7 +84,8 @@ destroy_test_object(bfc_objptr_t obj)
 }
 
 static int
-test_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
+test_object_tostring(bfc_cobjptr_t obj,
+		     char *buf, size_t bufsize, const char *fmt)
 {
 	int rc = 0;
 
@@ -144,7 +146,7 @@ test(int n1, struct test_kv kv[])
 		assert(o1 != NULL);
 		assert(o2 == o1);
 		assert(o1->refc == 2);
-		bfc_object_tostring(o1, buf, sizeof(buf));
+		bfc_object_tostring(o1, buf, sizeof(buf), NULL);
 		assert(strcmp(buf, kv[i].val) == 0);
 	}
 
@@ -158,7 +160,7 @@ test(int n1, struct test_kv kv[])
 		bfc_cobjptr_t obj = bfc_container_cindex(&v2, kv[i].pos);
 		assert(obj != NULL);
 		assert(obj->refc == 1);
-		bfc_object_tostring(obj, buf, sizeof(buf));
+		bfc_object_tostring(obj, buf, sizeof(buf), NULL);
 		assert(strcmp(buf, kv[i].val) == 0);
 	}
 

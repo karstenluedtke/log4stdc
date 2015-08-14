@@ -39,7 +39,8 @@ static size_t vector_element_size(bfc_ccontptr_t vec);
 static int vector_equals(bfc_ccontptr_t vec, bfc_ccontptr_t other);
 static unsigned vector_hashcode(bfc_ccontptr_t vec, int hashlen);
 static void dump_vector(bfc_ccontptr_t vec,int depth,struct l4sc_logger*log);
-static int vector_tostring(bfc_ccontptr_t vec, char *buf, size_t bufsize);
+static int vector_tostring(bfc_ccontptr_t vec,
+			   char *buf, size_t bufsize, const char *fmt);
 
 static void *vector_index(bfc_contptr_t vec, size_t pos);
 static const void *vector_first(bfc_ccontptr_t vec);
@@ -384,7 +385,7 @@ vector_element_size(bfc_ccontptr_t vec)
 }
 
 static int
-vector_tostring(bfc_ccontptr_t vec, char *buf, size_t bufsize)
+vector_tostring(bfc_ccontptr_t vec, char *buf, size_t bufsize, const char *fmt)
 {
 	if (vec && BFC_CLASS(vec)) {
 		snprintf(buf, bufsize, "%s @%p",

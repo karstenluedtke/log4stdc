@@ -65,7 +65,7 @@ struct bfc_objhdr {
 	unsigned      (*hashcode) (cobjptrT, int);			     \
 	int	      (*equals)   (cobjptrT, cobjptrT);			     \
 	size_t	      (*length)   (cobjptrT);				     \
-	int	      (*tostring) (cobjptrT, char *, size_t);		     \
+	int	      (*tostring) (cobjptrT, char *, size_t, const char *);  \
 	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);     \
 	const elemT * (*first)    (cobjptrT);				     \
 	elemT *	      (*index)    (objptrT, size_t);			     \
@@ -226,7 +226,7 @@ unsigned bfc_object_hashcode(const void *, int hashlen);
 unsigned bfc_reduce_hashcode(size_t origval, int origbits, int hashlen);
 int  bfc_equal_object(const void *, const void *);
 int  bfc_object_length(const void *);
-int  bfc_object_tostring(const void *, char *, size_t);
+int  bfc_object_tostring(const void *, char *, size_t, const char *);
 void bfc_object_dump(const void *, int, struct l4sc_logger *);
 
 const void *bfc_container_first(const void *);
@@ -253,7 +253,7 @@ void bfc_default_destroy_object(bfc_objptr_t);
 unsigned bfc_default_get_object_hashcode(bfc_cobjptr_t, int);
 int  bfc_default_is_equal_object(bfc_cobjptr_t, bfc_cobjptr_t);
 size_t bfc_default_get_object_length(bfc_cobjptr_t);
-int  bfc_default_object_tostring(bfc_cobjptr_t, char *, size_t);
+int  bfc_default_object_tostring(bfc_cobjptr_t, char *, size_t, const char *);
 void bfc_default_dump_object(bfc_cobjptr_t, int, struct l4sc_logger *);
 
 #ifdef __cplusplus

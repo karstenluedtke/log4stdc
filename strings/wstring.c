@@ -29,7 +29,8 @@ static int clone_wstring(bfc_cstrptr_t obj, void *buf, size_t bufsize,
 						struct mempool *pool);
 static unsigned wstring_hashcode(bfc_cstrptr_t s, int hashlen);
 static int wstring_equals(bfc_cstrptr_t s, bfc_cstrptr_t other);
-static int wstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize);
+static int wstring_tostring(bfc_cstrptr_t s,
+			    char *buf, size_t bufsize, const char *fmt);
 static void dump_wstring(bfc_cstrptr_t s, int depth, struct l4sc_logger *log);
 static long bfc_wstring_getlong(bfc_cstrptr_t s, size_t pos);
 static int bfc_wstring_setlong(bfc_strptr_t s, size_t pos, long c);
@@ -256,7 +257,7 @@ wstring_equals(bfc_cstrptr_t s, bfc_cstrptr_t other)
 
 #ifdef IMPLEMENT_TOSTRING
 static int
-wstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize)
+wstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize, const char *fmt)
 {
 	size_t n;
 
@@ -286,7 +287,7 @@ dump_wstring(bfc_cstrptr_t s, int depth, struct l4sc_logger *log)
 		if (len < 200) {
 			const size_t bufsize = 3*len + 20;
 			char *buf = alloca(bufsize);
-			wstring_tostring(s, buf, bufsize);
+			wstring_tostring(s, buf, bufsize, NULL);
 			L4SC_DEBUG(log, "%s @%p, len %ld: \"%s\"",
 				BFC_CLASS(s)->name, s, (long) len, buf);
 		} else {

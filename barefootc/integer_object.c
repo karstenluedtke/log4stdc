@@ -115,12 +115,21 @@ bfc_number_get_object_length(bfc_cobjptr_t obj)
 }
 
 int
-bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize)
+bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
+			    const char *fmt)
 {
 	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
 
 	if (p && buf) {
-		snprintf(buf, bufsize, "%ld", (long) p->u.n);
+		if (fmt == NULL) {
+			snprintf(buf, bufsize, "%ld", (long) p->u.n);
+		} else if (strchr(fmt, 'l')) {
+			snprintf(buf, bufsize, fmt, (long) p->u.n);
+		} else if (strchr(fmt, 'u')) {
+			snprintf(buf, bufsize, fmt, (unsigned) p->u.n);
+		} else {
+			snprintf(buf, bufsize, fmt, (int) p->u.n);
+		}
 	}
 	return (0);
 }

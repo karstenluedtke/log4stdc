@@ -39,7 +39,8 @@ static size_t get_logmessage_size(l4sc_logmessage_cptr_t obj);
 static unsigned get_logmessage_hashcode(l4sc_logmessage_cptr_t obj,int hashlen);
 static int  is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other);
 static size_t get_logmessage_length(l4sc_logmessage_cptr_t obj);
-static int  logmessage_tostring(l4sc_logmessage_cptr_t obj, char *buf, size_t bufsize);
+static int  logmessage_tostring(l4sc_logmessage_cptr_t obj,
+				char *buf, size_t bufsize, const char *fmt);
 
 const struct l4sc_logmessage_class l4sc_logmessage_class = {
 	.super = NULL,
@@ -102,7 +103,8 @@ get_logmessage_length(l4sc_logmessage_cptr_t obj)
 }
 
 static int
-logmessage_tostring(l4sc_logmessage_cptr_t obj, char *buf, size_t bufsize)
+logmessage_tostring(l4sc_logmessage_cptr_t obj,
+		    char *buf, size_t bufsize, const char *fmt)
 {
 	if (obj && buf) {
 		if (bufsize > obj->msglen) {

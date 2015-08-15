@@ -220,7 +220,7 @@ bfc_init_datetime_from_timespec(void *buf, size_t bufsize,
 		 *      =  (nsecs * (2**61 / 10**9)) >> 29
 		 *     ~= ((nsecs * 2305843010) >> 32) << 3
 		 */
-		date->frac = (umul32_hiword(ts->tv_nsec, 2305843010uL) << 3);
+		date->frac = umul32_shr29(ts->tv_nsec, 2305843010uL);
 	}
 	return (rc);
 }
@@ -240,7 +240,7 @@ bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 		 *      =  (usecs * (2**51 / 10**6)) >> 19
 		 *     ~= ((usecs * 2251799814) >> 32) << 13
 		 */
-		date->frac = (umul32_hiword(tv->tv_usec, 2251799814uL) << 13);
+		date->frac = umul32_shr19(tv->tv_usec, 2251799814uL);
 	}
 	return (rc);
 }

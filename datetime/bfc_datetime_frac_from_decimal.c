@@ -30,28 +30,28 @@ bfc_datetime_frac_from_decimal(unsigned long sub, int sublen)
 		 *      =  (usecs * (2**51 / 10**6)) >> 19
 		 *     ~= ((usecs * 2251799814) >> 32) << 13
 		 */
-		return (umul32_hiword((uint32_t) sub, 2251799814uL) << 13);
+		return (umul32_shr19((uint32_t) sub, 2251799814uL));
 
 	case 7: /* return (  2**32 * sub / 10**7
 		 *      =   sub * (2**32 / 10**7) 
 		 *      =  (sub * (2**55 / 10**7)) >> 23
 		 *     ~= ((sub * 3602879702) >> 32) << 9
 		 */
-		return (umul32_hiword((uint32_t) sub, 3602879702uL) << 9);
+		return (umul32_shr23((uint32_t) sub, 3602879702uL));
 
 	case 8: /* return (  2**32 * sub / 10**8
 		 *      =   sub * (2**32 / 10**8) 
 		 *      =  (sub * (2**58 / 10**8)) >> 26
 		 *     ~= ((sub * 2882303762) >> 32) << 6
 		 */
-		return (umul32_hiword((uint32_t) sub, 2882303762uL) << 6);
+		return (umul32_shr26((uint32_t) sub, 2882303762uL));
 
 	case 9: /* return (  2**32 * nsecs / 10**9
 		 *      =   nsecs * (2**32 / 10**9) 
 		 *      =  (nsecs * (2**61 / 10**9)) >> 29
 		 *     ~= ((nsecs * 2305843010) >> 32) << 3
 		 */
-		return (umul32_hiword((uint32_t) sub, 2305843010uL) << 3);
+		return (umul32_shr29((uint32_t) sub, 2305843010uL));
 
 	default: ;
 		while (sublen > 9) {

@@ -268,6 +268,7 @@ libbarefootc_a_SOURCES+= containers/int_string_pair.c
 libbarefootc_a_SOURCES+= containers/real_int_pair.c
 libbarefootc_a_SOURCES+= containers/unordered_map.c
 libbarefootc_a_SOURCES+= containers/treenode.c
+libbarefootc_a_SOURCES+= containers/bfc_node_new_element.c
 libbarefootc_a_SOURCES+= containers/bfc_node_set_xml_attribute.c
 libbarefootc_a_SOURCES+= containers/bfc_node_get_attribute_string.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c

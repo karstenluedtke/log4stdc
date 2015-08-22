@@ -41,6 +41,15 @@ struct bfc_treenode {
 /** @} */
 
 int bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool);
+int bfc_node_set_name(bfc_nodeptr_t node, bfc_cstrptr_t name);
+
+bfc_nodeptr_t bfc_node_new_element(bfc_cnodeptr_t ancestor,
+				   const char *chldtypes, ...);
+
+int bfc_node_set_xml_attribute(bfc_nodeptr_t node,
+			       bfc_cstrptr_t name, bfc_cstrptr_t val);
+bfc_cstrptr_t bfc_node_get_attribute_string(bfc_nodeptr_t node,
+					    bfc_cstrptr_t name);
 
 #ifdef __cplusplus
 };

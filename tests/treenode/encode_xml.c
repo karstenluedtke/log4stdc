@@ -57,8 +57,9 @@ main(int argc, char *argv[])
 			"  </parameters>" CRLF
 			"</transaction>" CRLF;
 		char buf[4000];
-		int len= bfc_object_tostring(xml, NULL, 0, "xml");
-		int rc = bfc_object_tostring(xml, buf, sizeof(buf), "xml");
+		int len, rc;
+		len= bfc_object_tostring(xml, NULL, 0, "xml");
+		rc = bfc_object_tostring(xml, buf, sizeof(buf), "xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc > 0);
 		assert(rc < sizeof(buf));
@@ -70,7 +71,7 @@ main(int argc, char *argv[])
 		bfc_cnodeptr_t tp = (bfc_cnodeptr_t) &tmpl;
 		static bfc_string_t mettag = BFCWSTR(L"method");
 		static bfc_string_t method = BFCSTR("setDeviceAudio");
-		bfc_cnodeptr_t xml =
+		bfc_nodeptr_t xml =
 		  bfc_node_new_element(tp, "nEE", "transaction",
 		    bfc_node_new_element(tp,"NS", &mettag, &method),
 		    bfc_node_new_element(tp,"nEEEEE", "parameters",
@@ -81,7 +82,7 @@ main(int argc, char *argv[])
 		      bfc_node_new_element(tp,"ns","outputAudioMeter", "false"),
 		      bfc_node_new_element(tp,"ns","stack", "VOIP")));
 		static const char expectation[] =
-			"<transaction>" CRLF
+			"<transaction transid=\"8000000010\" userid=\"2\">" CRLF
 			"  <method>setDeviceAudio</method>" CRLF
 			"  <parameters>" CRLF
 			"    <inputAudioDevice>B&amp;O</inputAudioDevice>" CRLF
@@ -91,9 +92,20 @@ main(int argc, char *argv[])
 			"    <stack>VOIP</stack>" CRLF
 			"  </parameters>" CRLF
 			"</transaction>" CRLF;
+		static const bfc_string_t tidname = BFCSTR("transid");
+		static const bfc_string_t tidvalue= BFCSTR("8000000010");
+		static const bfc_string_t uidname = BFCSTR("userid");
+		static const bfc_string_t uidvalue= BFCSTR("2");
 		char buf[4000];
-		int len= bfc_object_tostring(xml, NULL, 0, "xml");
-		int rc = bfc_object_tostring(xml, buf, sizeof(buf), "xml");
+		int len, rc;
+
+		rc = bfc_node_set_xml_attribute(xml, &tidname, &tidvalue);
+		assert (rc >= 0);
+		rc = bfc_node_set_xml_attribute(xml, &uidname, &uidvalue);
+		assert (rc >= 0);
+
+		len= bfc_object_tostring(xml, NULL, 0, "xml");
+		rc = bfc_object_tostring(xml, buf, sizeof(buf), "xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc > 0);
 		assert(rc < sizeof(buf));

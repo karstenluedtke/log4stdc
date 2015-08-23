@@ -27,6 +27,7 @@ typedef const struct bfc_number_class *bfc_number_classptr_t;
 extern const struct bfc_classhdr bfc_number_class;
 extern const struct bfc_classhdr bfc_natural_class;
 extern const struct bfc_classhdr bfc_real_number_class;
+extern const struct bfc_classhdr bfc_boolean_class;
 
 #define BFC_NUMBERHDR(classptrT) \
 	classptrT	vptr;	  /**< virtual methods */
@@ -71,6 +72,15 @@ int bfc_real_number_object_tostring(bfc_cobjptr_t obj,
 				char *buf, size_t bufsize, const char *fmt);
 void bfc_real_number_dump_object(bfc_cobjptr_t obj, int depth,
 					struct l4sc_logger *log);
+
+int bfc_init_boolean_object(void *buf, size_t bufsize, struct mempool *pool);
+size_t bfc_get_boolean_object_size(bfc_cobjptr_t obj);
+unsigned bfc_boolean_get_hashcode(bfc_cobjptr_t obj, int hashlen);
+int bfc_boolean_is_equal(bfc_cobjptr_t obj, bfc_cobjptr_t other);
+int bfc_boolean_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
+				const char *fmt);
+void bfc_boolean_dump_object(bfc_cobjptr_t obj, int depth,
+				struct l4sc_logger *log);
 
 #ifdef __cplusplus
 }	/* C++ */

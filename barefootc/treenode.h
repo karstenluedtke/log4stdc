@@ -45,6 +45,10 @@ int bfc_node_set_name(bfc_nodeptr_t node, bfc_cstrptr_t name);
 
 bfc_nodeptr_t bfc_node_new_element(bfc_cnodeptr_t ancestor,
 				   const char *chldtypes, ...);
+bfc_nodeptr_t bfc_node_new_integer_element(bfc_cnodeptr_t ancestor,
+				   const char *name, long val);
+bfc_nodeptr_t bfc_node_new_boolean_element(bfc_cnodeptr_t ancestor,
+				   const char *name, int val);
 
 int bfc_node_set_xml_attribute(bfc_nodeptr_t node,
 			       bfc_cstrptr_t name, bfc_cstrptr_t val);

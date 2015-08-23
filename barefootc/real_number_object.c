@@ -68,16 +68,27 @@ int
 bfc_real_number_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
 				const char *fmt)
 {
+	int rc = 0;
 	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
+	char *dp = buf;
+	char tmp[40];
+		
+	if (p == NULL) {
+		return (-EFAULT);
+	} else if ((buf == NULL) || (bufsize == 0)) {
+		dp = tmp;
+	}
 
-	if (p && buf) {
-		if (fmt == NULL) {
-			snprintf(buf, bufsize, "%.3f", p->u.f);
-		} else {
-			snprintf(buf, bufsize, fmt, p->u.f);
+	if (fmt == NULL) {
+		if ((rc = snprintf(dp, bufsize, "%.3f", p->u.f)) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), "%.3f", p->u.f);
+		}
+	} else {
+		if ((rc = snprintf(dp, bufsize, fmt, p->u.f)) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, p->u.f);
 		}
 	}
-	return (0);
+	return (rc);
 }
 
 void

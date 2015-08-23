@@ -109,8 +109,8 @@ main(int argc, char *argv[])
 		    bfc_node_new_element(tp,"nEEEEE", "parameters",
 		      bfc_node_new_element(tp,"ns","inputAudioDevice", "B&O"),
 		      bfc_node_new_element(tp,"ns","outputAudioDevice","Kopfhörer"),
-		      bfc_node_new_element(tp,"ns","inputAudioECTail", "0"),
-		      bfc_node_new_element(tp,"ns","outputAudioMeter", "false"),
+		      bfc_node_new_integer_element(tp, "inputAudioECTail", 250),
+		      bfc_node_new_boolean_element(tp, "outputAudioMeter", 0),
 		      bfc_node_new_element(tp,"ns","stack", "VOIP")));
 		static const char expectation[] =
 			"<transaction>" CRLF
@@ -118,7 +118,7 @@ main(int argc, char *argv[])
 			"  <parameters>" CRLF
 			"    <inputAudioDevice>B&amp;O</inputAudioDevice>" CRLF
 			"    <outputAudioDevice>Kopfhörer</outputAudioDevice>" CRLF
-			"    <inputAudioECTail>0</inputAudioECTail>" CRLF
+			"    <inputAudioECTail>250</inputAudioECTail>" CRLF
 			"    <outputAudioMeter>false</outputAudioMeter>" CRLF
 			"    <stack>VOIP</stack>" CRLF
 			"  </parameters>" CRLF

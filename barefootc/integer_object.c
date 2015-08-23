@@ -118,20 +118,35 @@ int
 bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
 			    const char *fmt)
 {
+	int rc = 0;
 	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
+	char *dp = buf;
+	char tmp[40];
+		
+	if (p == NULL) {
+		return (-EFAULT);
+	} else if ((buf == NULL) || (bufsize == 0)) {
+		dp = tmp;
+	}
 
-	if (p && buf) {
-		if (fmt == NULL) {
-			snprintf(buf, bufsize, "%ld", (long) p->u.n);
-		} else if (strchr(fmt, 'l')) {
-			snprintf(buf, bufsize, fmt, (long) p->u.n);
-		} else if (strchr(fmt, 'u')) {
-			snprintf(buf, bufsize, fmt, (unsigned) p->u.n);
-		} else {
-			snprintf(buf, bufsize, fmt, (int) p->u.n);
+	if (fmt == NULL) {
+		if ((rc = snprintf(dp, bufsize, "%ld", (long) p->u.n)) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), "%ld", (long) p->u.n);
+		}
+	} else if (strchr(fmt, 'l')) {
+		if ((rc = snprintf(dp, bufsize, fmt, (long) p->u.n)) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, (long) p->u.n);
+		}
+	} else if (strchr(fmt, 'u')) {
+		if ((rc = snprintf(dp, bufsize, fmt, (unsigned) p->u.n)) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, (unsigned) p->u.n);
+		}
+	} else {
+		if ((rc = snprintf(dp, bufsize, fmt, (int) p->u.n)) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, (int) p->u.n);
 		}
 	}
-	return (0);
+	return (rc);
 }
 
 void

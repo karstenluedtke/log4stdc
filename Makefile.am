@@ -31,6 +31,7 @@ check_PROGRAMS =
 
 libbarefootc_a_SOURCES = barefootc/baseobject.c
 libbarefootc_a_SOURCES+= barefootc/integer_object.c
+libbarefootc_a_SOURCES+= barefootc/boolean_object.c
 libbarefootc_a_SOURCES+= barefootc/real_number_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_new_object.c
 libbarefootc_a_SOURCES+= barefootc/bfc_init_object.c
@@ -270,6 +271,8 @@ libbarefootc_a_SOURCES+= containers/real_int_pair.c
 libbarefootc_a_SOURCES+= containers/unordered_map.c
 libbarefootc_a_SOURCES+= containers/treenode.c
 libbarefootc_a_SOURCES+= containers/bfc_node_new_element.c
+libbarefootc_a_SOURCES+= containers/bfc_node_new_integer_element.c
+libbarefootc_a_SOURCES+= containers/bfc_node_new_boolean_element.c
 libbarefootc_a_SOURCES+= containers/bfc_node_set_xml_attribute.c
 libbarefootc_a_SOURCES+= containers/bfc_node_get_attribute_string.c
 libbarefootc_a_SOURCES+= containers/bfc_node_encode_xml.c

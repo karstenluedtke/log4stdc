@@ -31,6 +31,8 @@ static void destroy_treenode(bfc_contptr_t cont);
 static size_t treenode_size(bfc_ccontptr_t cont);
 static int treenode_equals(bfc_ccontptr_t cont, bfc_ccontptr_t other);
 static unsigned treenode_hashcode(bfc_ccontptr_t cont, int hashlen);
+static int treenode_tostring(bfc_ccontptr_t cont,
+			     char *buf, size_t bufsize, const char *fmt);
 
 struct bfc_treenode_class {
 	BFC_CONTAINER_CLASS_DEF(const struct bfc_treenode_class *,
@@ -41,13 +43,14 @@ extern const struct bfc_vector_class bfc_objref_vector_class;
 
 const struct bfc_container_class bfc_treenode_class = {
 	.super 		= (void *) &bfc_objref_vector_class,
-	.name 		= "treenode",
+	.name 		= "node",
 	.init 		= bfc_init_treenode,
 	.clone 		= clone_treenode,
 	.destroy 	= destroy_treenode,
 	.clonesize	= treenode_size,
 	.hashcode 	= treenode_hashcode,
 	.equals 	= treenode_equals,
+	.tostring 	= treenode_tostring,
 	//.dump	 	= dump_node,
 };
 
@@ -171,5 +174,20 @@ treenode_hashcode(bfc_ccontptr_t cont, int hashlen)
 {
 	bfc_cnodeptr_t node = (bfc_cnodeptr_t) cont;
 	return (bfc_object_hashcode(&node->tagname, hashlen));
+}
+
+static int treenode_tostring(bfc_ccontptr_t cont,
+			     char *buf, size_t bufsize, const char *fmt)
+{
+	bfc_cnodeptr_t node = (bfc_cnodeptr_t) cont;
+	int level = 0;
+
+	if (fmt != NULL) {
+		const char *at = strchr(fmt, '@');
+		if (at != NULL) {
+			level = (int) strtoul(at+1, NULL, 10);
+		}
+	}
+	return (bfc_node_encode_xml(node, buf, bufsize, level));
 }
 

@@ -14,8 +14,8 @@
 #endif
 
 const struct bfc_classhdr bfc_real_number_class = {
-	.super	  = &bfc_real_number_class,
-	.name 	  = "real number",
+	.super	  = &bfc_number_class,
+	.name 	  = "real",
 	.init 	  = bfc_init_real_number_object,
 	.initrefc = bfc_number_init_refcount,
 	.incrrefc = bfc_number_incr_refcount,

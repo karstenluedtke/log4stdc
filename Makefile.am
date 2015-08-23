@@ -48,6 +48,7 @@ libbarefootc_a_SOURCES+= barefootc/bfc_object_dump.c
 libbarefootc_a_SOURCES+= barefootc/bfc_init_refcount.c
 libbarefootc_a_SOURCES+= barefootc/bfc_incr_refcount.c
 libbarefootc_a_SOURCES+= barefootc/bfc_decr_refcount.c
+libbarefootc_a_SOURCES+= barefootc/bfc_instanceof.c
 libbarefootc_a_SOURCES+= barefootc/posix_mutex.c
 libbarefootc_a_SOURCES+= barefootc/win32_mutex.c
 libbarefootc_a_SOURCES+= datetime/datetime.c
@@ -271,6 +272,7 @@ libbarefootc_a_SOURCES+= containers/treenode.c
 libbarefootc_a_SOURCES+= containers/bfc_node_new_element.c
 libbarefootc_a_SOURCES+= containers/bfc_node_set_xml_attribute.c
 libbarefootc_a_SOURCES+= containers/bfc_node_get_attribute_string.c
+libbarefootc_a_SOURCES+= containers/bfc_node_encode_xml.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
 libbarefootc_a_SOURCES+= mempools/chainedpool.c
@@ -2451,4 +2453,10 @@ tests_map_reserve_pass_SOURCES = tests/map/reserve.pass.cpp
 tests_map_reserve_pass_LDADD = libbarefootc.a liblog4stdc.a
 tests_map_reserve_pass_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/map/reserve.pass
+
+check_PROGRAMS += tests/treenode/encode_xml
+tests_treenode_encode_xml_SOURCES = tests/treenode/encode_xml.c
+tests_treenode_encode_xml_LDADD = libbarefootc.a liblog4stdc.a
+tests_treenode_encode_xml_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/treenode/encode_xml
 

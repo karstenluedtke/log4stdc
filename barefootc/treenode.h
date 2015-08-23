@@ -51,6 +51,9 @@ int bfc_node_set_xml_attribute(bfc_nodeptr_t node,
 bfc_cstrptr_t bfc_node_get_attribute_string(bfc_nodeptr_t node,
 					    bfc_cstrptr_t name);
 
+int bfc_node_encode_xml(bfc_cnodeptr_t node,
+			char *buf, size_t bufsize, int level);
+
 #ifdef __cplusplus
 };
 #endif

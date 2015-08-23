@@ -220,6 +220,9 @@ int  bfc_incr_refcount(void *);
 int  bfc_decr_refcount(void *);
 void bfc_destroy(void *);
 void bfc_delete(void *);
+int  bfc_instance_of_class(const void *, bfc_classptr_t);
+int  bfc_instance_of_classname(const void *, const char *);
+bfc_classptr_t bfc_baseclass_by_name(const void *, const char *);
 
 size_t bfc_object_size(const void *);
 unsigned bfc_object_hashcode(const void *, int hashlen);

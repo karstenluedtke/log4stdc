@@ -24,7 +24,7 @@ extern "C" {
 struct bfc_number_class;
 typedef const struct bfc_number_class *bfc_number_classptr_t;
 
-extern const struct bfc_classhdr bfc_integer_class;
+extern const struct bfc_classhdr bfc_number_class;
 extern const struct bfc_classhdr bfc_natural_class;
 extern const struct bfc_classhdr bfc_real_number_class;
 
@@ -43,7 +43,7 @@ typedef struct bfc_number bfc_number_t;
 typedef struct bfc_number *bfc_numptr_t;
 typedef const struct bfc_number *bfc_cnumptr_t;
 
-#define BFC_SIGNED_NUMBER(x)	{ &bfc_integer_class, { (ptrdiff_t)(x) } }
+#define BFC_SIGNED_NUMBER(x)	{ &bfc_number_class, { (ptrdiff_t)(x) } }
 
 #define BFC_NUMBER_LOGGER	"barefootc.number",16
 

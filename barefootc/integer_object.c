@@ -13,11 +13,11 @@
 #define snprintf _snprintf
 #endif
 
-const struct bfc_classhdr bfc_integer_class = {
+const struct bfc_classhdr bfc_number_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ NULL,
-	/* .name 	*/ "integer",
+	/* .name 	*/ "number",
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ bfc_init_integer_object,
@@ -45,7 +45,7 @@ bfc_init_integer_object(void *buf, size_t bufsize, struct mempool *pool)
 		return (-ENOSPC);
 	} else {
 		memset(obj, 0, sizeof(*obj));
-		obj->vptr = (bfc_classptr_t) &bfc_integer_class;
+		obj->vptr = (bfc_classptr_t) &bfc_number_class;
 	}
 	return (BFC_SUCCESS);
 }

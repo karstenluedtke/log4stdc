@@ -27,6 +27,7 @@ bfc_node_set_xml_attribute(bfc_nodeptr_t node,
 		map = bfc_mempool_calloc(pool, 1, sizeof(*map));
 		if (map != NULL) {
 			BFC_STRING_MAP_INIT(map, 16, pool);
+			bfc_init_refcount(map, 1);
 			node->attributes = (bfc_contptr_t) map;
 		} else {
 			L4SC_ERROR(logger, "%s: no memory", __FUNCTION__);

@@ -17,6 +17,10 @@
 
 static void destroy_map(bfc_contptr_t map);
 static int begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize);
+static int map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
+			    bfc_iterptr_t first, bfc_iterptr_t last);
+static int map_assign_range(bfc_contptr_t map,
+			    bfc_iterptr_t first, bfc_iterptr_t last);
 
 static int find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth,
 			bfc_iterptr_t it);
@@ -30,6 +34,8 @@ const struct bfc_map_class unordered_map_class = {
 	.name 		= "map",
 	.destroy	= destroy_map,
 	.ibegin		= begin_iterator,
+	.assign_range	= map_assign_range,
+	.insert_range	= map_insert_range,
 	.find_by_name	= find_by_name,
 };
 
@@ -776,6 +782,71 @@ bfc_map_rehash(bfc_contptr_t map, size_t n)
 		rc = -EBUSY;
 	}
 	bfc_destroy(tmp);
+	return (rc);
+}
+
+static int
+map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
+		 bfc_iterptr_t first, bfc_iterptr_t last)
+{
+	int rc = BFC_SUCCESS;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_objptr_t sp, key, val;
+	bfc_mutex_ptr_t locked;
+	bfc_iterator_t it = *first;
+
+	L4SC_TRACE(logger, "%s: begin iter", __FUNCTION__);
+	bfc_object_dump(&it, 1, logger);
+
+	L4SC_TRACE(logger, "%s: end iter", __FUNCTION__);
+	bfc_object_dump(last, 1, logger);
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		while (bfc_iterator_distance(&it, last) > 0) {
+			bfc_object_dump(&it, 1, logger);
+			sp = (bfc_objptr_t) bfc_iterator_index(&it);
+			bfc_iterator_advance(&it, 1);
+			if (sp && (BFC_CLASS(sp) != NULL)
+			 && ((key = bfc_container_index(sp,0)) != NULL)) {
+				val = bfc_container_index(sp,1);
+				bfc_map_insert_objects(map, key, val, NULL, 0);
+			}
+		}
+	} else {
+		L4SC_ERROR(logger, "%s(%p, %p, %p): cannot lock",
+				__FUNCTION__, vec, first, last);
+		rc = -EBUSY;
+	}
+	return (rc);
+}
+
+static int
+map_assign_range(bfc_contptr_t map, bfc_iterptr_t first, bfc_iterptr_t last)
+{
+	int rc;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+	bfc_iterator_t it;
+
+	bfc_init_iterator(&it, sizeof(it), (bfc_objptr_t)vec, 0);
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		bfc_container_resize((bfc_contptr_t)vec, 0, NULL);
+		rc = map_insert_range(map, &it, first, last);
+		if (rc >= 0) {
+			rc = BFC_VECTOR_GET_SIZE(vec);
+			if (rc < 0) {
+				rc = BFC_SUCCESS;
+			}
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p, %p): cannot lock",
+				__FUNCTION__, vec, first, last);
+		rc = -EBUSY;
+	}
 	return (rc);
 }
 

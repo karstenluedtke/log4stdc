@@ -134,7 +134,7 @@ static struct l4sc_logger predefined_loggers[] = {
     {
 	.vptr = &rootloggercls,
 	.name = "l4sclog",
-	.prev = &rootlogger,
+	//.prev = &rootlogger,
 	.refc = 10000,
 	.level = ERROR_LEVEL,
 	.parent = &rootlogger,
@@ -397,7 +397,6 @@ l4sc_get_logger(const char *name, int namelen)
 	rc = bfc_new((void **) &logger, (bfc_classptr_t)&loggercls, pool);
 	if ((rc >= 0) && logger) {
 		CMETHCALL(&loggercls, set_name, (logger, name, nlen), (void)0);
-		logger->pool = pool;
 		LOGINFO(("%s: created %s (class %s).",
 				__FUNCTION__, logger->name, loggercls.name));
 	}

@@ -128,8 +128,6 @@ bfc_default_clone_object(bfc_cobjptr_t obj,
 	/* An object allocating from pool shall have its own clone method */
 	if (size >= sizeof(struct bfc_objhdr)) {
 		object->lock = NULL;
-		object->next = NULL;
-		object->prev = NULL;
 		object->parent_pool = NULL;
 	}
 	bfc_init_refcount(object, 1);
@@ -199,10 +197,10 @@ bfc_default_dump_object(bfc_cobjptr_t obj, int depth, struct l4sc_logger *log)
 	if (obj && obj->name && BFC_CLASS(obj)) {
 		L4SC_DEBUG(log, "object \"%s\" @%p", obj->name, obj);
 		L4SC_DEBUG(log, " class \"%s\", pool %p, lock %p, refc %d",
-			BFC_CLASS(obj)->name, obj->pool, obj->lock, obj->refc);
+		  BFC_CLASS(obj)->name, obj->parent_pool, obj->lock, obj->refc);
 		size = bfc_object_size(obj);
 		lim  = ((const unsigned char *) obj) + size;
-		for (p = (const unsigned char *) &obj->next; p < lim; p += 8) {
+		for (p = (const unsigned char *) obj; p < lim; p += 8) {
 			L4SC_DEBUG(log,
 			  " %p: %02x %02x %02x %02x %02x %02x %02x %02x",
 			  p, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);

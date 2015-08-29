@@ -63,6 +63,8 @@ typedef const struct bfc_mempool_class *bfc_mempool_classptr_t;
 
 #define BFC_MEMPOOLHDR(classptrT,objptrT) \
 	BFC_OBJHDR(classptrT, objptrT)	\
+	objptrT		next;					\
+	objptrT		prev;					\
 	int		line;					\
 	const char *	file;					\
 	const char *	func;					\

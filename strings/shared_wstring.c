@@ -78,6 +78,9 @@ const struct bfc_string_class bfc_shared_wstring_class = {
 	.replace_ranges	= bfc_shared_wstring_replace_ranges,
 };
 
+#define GET_STRBUF(s)		BFC_UNCONST(wchar_t*,(s)->name)
+#define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
+
 int
 bfc_init_shared_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
@@ -91,7 +94,7 @@ bfc_init_shared_wstring(void *buf, size_t bufsize, struct mempool *pool)
 	L4SC_WARN(logger, "%s(%p, %ld, pool %p): default constructor called!",
 		__FUNCTION__, buf, (long) bufsize, pool);
 
-	s->buf = (void *) &zbuf;
+	SET_STRBUF(s, &zbuf);
 	return (BFC_SUCCESS);
 }
 
@@ -115,7 +118,7 @@ bfc_init_shared_wstring_buffer(void *buf, size_t bufsize,
 		return (-EINVAL);
 	}
 
-	obj->buf = (void *) (intptr_t) s;
+	SET_STRBUF(obj, s);
 	obj->bufsize = obj->len = n;
 	return (BFC_SUCCESS);
 }
@@ -194,7 +197,7 @@ bfc_shared_string_illegal_method(bfc_cstrptr_t s, const char *meth)
 int
 bfc_shared_wstring_assign_buffer(bfc_strptr_t s, const wchar_t *s2, size_t n)
 {
-	s->buf = (void *) (intptr_t) s;
+	SET_STRBUF(s, s2);
 	s->bufsize = s->len = n;
 	return (BFC_SUCCESS);
 }

@@ -115,6 +115,7 @@ struct l4sc_layout {
 
 struct l4sc_appender {
 	BFC_OBJHDR(l4sc_appender_class_ptr_t,l4sc_appender_ptr_t)
+	struct l4sc_appender *next;
 	struct l4sc_layout layout;
 	union {
 		void *fh;
@@ -130,6 +131,7 @@ struct l4sc_appender {
 
 struct l4sc_logger {
 	BFC_OBJHDR(l4sc_logger_class_ptr_t,l4sc_logger_ptr_t)
+	struct l4sc_logger *next;
 	int level;
 	int additivity;
 	l4sc_logger_ptr_t parent;

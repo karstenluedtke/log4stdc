@@ -21,7 +21,7 @@ bfc_new(void **objpp, bfc_classptr_t cls, struct mempool *pool)
 		mempool_free(pool, newobj);
 		return (rc);
 	}
-	newobj->pool = newobj->parent_pool = pool;
+	newobj->parent_pool = pool;
 	bfc_init_refcount(newobj, 1);
 	*objpp = newobj;
 	return (BFC_SUCCESS);

@@ -161,9 +161,10 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 		}
 #endif
 
+		struct mempool *pool = appender->parent_pool;
 		const size_t bufsize = msg->msglen + 100;
-		char *poolmem = ((bufsize > 2000) && appender->pool)?
-				bfc_mempool_alloc(appender->pool, bufsize):
+		char *poolmem = ((bufsize > 2000) && pool)?
+				bfc_mempool_alloc(pool, bufsize):
 				NULL;
 		char *buf = poolmem? poolmem: alloca(bufsize);
 
@@ -186,7 +187,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 		}
 #endif
 		if (poolmem) {
-			bfc_mempool_free(appender->pool, poolmem);
+			bfc_mempool_free(pool, poolmem);
 			poolmem = NULL;
 		}
 	}
@@ -283,7 +284,6 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 	if ((rc >= 0) && appender) {
 		VOID_METHCALL(l4sc_appender_class_ptr_t, appender,
 			      set_name, (appender, name, nlen));
-		appender->pool = pool;
 		LOGINFO(("%s: created %s (class %s).",
 			__FUNCTION__, appender->name, clazz->name));
 	} else {

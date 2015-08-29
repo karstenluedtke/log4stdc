@@ -65,6 +65,8 @@ const struct bfc_string_class bfc_buffered_cp1250_string_class = {
 	.buffered_substr= bfc_buffered_cp1250_substr
 };
 
+#define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
+
 int
 bfc_init_empty_cp1250_string(void *buf, size_t bufsize,
 				  struct mempool *pool)
@@ -79,7 +81,7 @@ bfc_init_empty_cp1250_string(void *buf, size_t bufsize,
 	L4SC_WARN(logger, "%s(%p, %ld, pool %p): default constructor called!",
 		__FUNCTION__, buf, (long) bufsize, pool);
 
-	s->buf = (void *) &zbuf;
+	SET_STRBUF(s, &zbuf);
 	return (BFC_SUCCESS);
 }
 
@@ -103,7 +105,7 @@ bfc_init_shared_cp1250_string(void *buf, size_t bufsize,
 		return (-EINVAL);
 	}
 
-	obj->buf = (void *) (intptr_t) s;
+	SET_STRBUF(obj, s);
 	obj->bufsize = obj->len = n;
 	return (BFC_SUCCESS);
 }
@@ -141,7 +143,7 @@ bfc_init_buffered_cp1250_string(void *buf, size_t bufsize,
 		return (-EINVAL);
 	}
 
-	obj->buf = (void *) (intptr_t) s;
+	SET_STRBUF(obj, s);
 	obj->bufsize = obj->len = n;
 	return (BFC_SUCCESS);
 }

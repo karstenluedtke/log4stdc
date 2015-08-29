@@ -14,6 +14,7 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
+#include "barefootc/unconst.h"
 #include "log4stdc.h"
 
 #ifndef STRING_CLASS_NAME
@@ -126,10 +127,13 @@ const struct bfc_string_class bfc_wstring_class = {
 	/* .last_method	*/ last_method
 };
 
+#define GET_STRBUF(s)		BFC_UNCONST(wchar_t*,(s)->name)
+#define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
+
 wchar_t *
 bfc_wstrbuf(bfc_cstrptr_t s)
 {
-	return (wchar_t *)(uintptr_t) bfc_wstrdata(s);
+	return (BFC_UNCONST(wchar_t *, bfc_wstrdata(s)));
 }
 
 int
@@ -145,7 +149,7 @@ bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool)
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p)",
 		__FUNCTION__, buf, (long) bufsize, pool);
 
-	s->buf = (void *) &zbuf;
+	SET_STRBUF(s,&zbuf);
 	return (BFC_SUCCESS);
 }
 
@@ -163,7 +167,7 @@ bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 	if ((rc = bfc_init_wstring(obj, bufsize, pool)) < 0) {
 		return(rc);
 	}
-	obj->buf = (void *) (intptr_t) s;
+	SET_STRBUF(obj,s);
 	obj->bufsize = obj->len = n;
 	return (rc);
 }
@@ -178,7 +182,7 @@ bfc_init_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
 	if ((rc = bfc_init_wstring(obj, bufsize, pool)) < 0) {
 		return(rc);
 	}
-	obj->buf = (void *) (intptr_t) s;
+	SET_STRBUF(obj,s);
 	obj->bufsize = obj->len = (*obj->vptr->traits->szlen)(s);
 	return (rc);
 }
@@ -365,7 +369,7 @@ bfc_wstring_reserve(bfc_strptr_t s, size_t n)
 	}
 	if (n < s->bufsize) {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
-		wchar_t *buf = (wchar_t *) s->buf;
+		wchar_t *buf = GET_STRBUF(s);
 		wchar_t *p = buf + s->bufsize - (n+1);
 		L4SC_DEBUG(logger, "%s: buf %p + %ld < limit %p",
 			__FUNCTION__, buf, (long) n, buf + s->bufsize);
@@ -383,14 +387,14 @@ bfc_wstring_reserve(bfc_strptr_t s, size_t n)
 wchar_t *
 bfc_wstring_index(bfc_strptr_t s, size_t pos)
 {
-	wchar_t *buf = (wchar_t *) s->buf;
+	wchar_t *buf = GET_STRBUF(s);
 	return (buf + s->offs + pos);
 }
 
 const wchar_t*
 bfc_wstring_data(bfc_cstrptr_t s)  /* not zero terminated */
 {
-	wchar_t *buf = (wchar_t *) s->buf;
+	wchar_t *buf = GET_STRBUF(s);
 	return (buf + s->offs);
 }
 

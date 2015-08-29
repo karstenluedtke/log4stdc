@@ -74,10 +74,10 @@ destroy_test_object(bfc_objptr_t obj)
 	bfc_classptr_t cls;
 
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
-		if (obj->pool && obj->name) {
+		if (obj->parent_pool && obj->name) {
 			char *nm = BFC_UNCONST(char *, obj->name);
 			obj->name = NULL;
-			bfc_mempool_free(obj->pool, nm);
+			bfc_mempool_free(obj->parent_pool, nm);
 		}
 		BFC_DESTROY_EPILOGUE(obj, cls);
 	}

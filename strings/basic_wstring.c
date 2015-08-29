@@ -10,6 +10,7 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/mempool.h"
+#include "barefootc/unconst.h"
 #include "log4stdc.h"
 
 #ifndef STRING_CLASS_NAME
@@ -51,6 +52,9 @@ const struct bfc_string_class bfc_basic_wstring_class = {
 	.replace_ranges	= bfc_basic_string_replace_ranges,
 };
 
+#define GET_STRBUF(s)		BFC_UNCONST(wchar_t*,(s)->name)
+#define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
+
 int
 bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
@@ -73,7 +77,7 @@ bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 		return (-ENOMEM);
 	}
 	s->pool = pool;
-	s->buf  = charbuf;
+	SET_STRBUF(s, charbuf);
 	s->bufsize = 56;
 	charbuf[0] = 0;
 	return (BFC_SUCCESS);
@@ -109,7 +113,7 @@ bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 		return (-ENOMEM);
 	}
 	obj->pool = pool;
-	obj->buf  = charbuf;
+	SET_STRBUF(obj, charbuf);
 	obj->bufsize = (n+1);
 	if (n > 0) {
 		(*obj->vptr->traits->copy)(charbuf, s, n);
@@ -163,7 +167,7 @@ bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 		return (-ENOMEM);
 	}
 	obj->pool = pool;
-	obj->buf  = charbuf;
+	SET_STRBUF(obj, charbuf);
 	obj->bufsize = (n+1);
 	if (n > 0) {
 		(*obj->vptr->traits->assign)(charbuf, n, c);
@@ -179,10 +183,10 @@ bfc_destroy_basic_wstring(bfc_strptr_t obj)
 	bfc_string_classptr_t cls;
 
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
-		wchar_t *charbuf = obj->buf;
+		wchar_t *charbuf = GET_STRBUF(obj);
 		struct mempool *pool;
 		obj->len = obj->bufsize = 0;
-		obj->buf = NULL;
+		SET_STRBUF(obj, NULL);
 		if (charbuf && (pool = obj->pool)) {
 			mempool_free(pool, charbuf);
 		}
@@ -224,19 +228,19 @@ bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c)
 	int rc = -ENOSPC;
 
 	if (n <= s->len) {
-		wchar_t *data = (wchar_t *)s->buf + s->offs;
+		wchar_t *data = GET_STRBUF(s) + s->offs;
 		s->len = n;
 		data[s->len] = '\0';
 		return (BFC_SUCCESS);
 	} else if ((rc = bfc_basic_wstring_reserve(s, n)) == BFC_SUCCESS) {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_DEBUG(logger, "%s: got %ld chars", __FUNCTION__, (long)n);
-		wchar_t *data = (wchar_t *)s->buf + s->offs;
+		wchar_t *data = GET_STRBUF(s) + s->offs;
 		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
 		s->len = n;
 		data[n] = '\0';
 		L4SC_DEBUG(logger, "%s(%p): %ld chars @%p",
-			__FUNCTION__, s, (long) s->len, s->buf);
+			__FUNCTION__, s, (long) s->len, GET_STRBUF(s));
 		return (BFC_SUCCESS);
 	} else {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -275,14 +279,14 @@ bfc_basic_wstring_reserve(bfc_strptr_t s, size_t n)
 		L4SC_ERROR(logger, "%s: no pool", __FUNCTION__);
 		return (-EFAULT);
 	}
-	p = bfc_mempool_realloc(s->pool, s->buf, need * sizeof(wchar_t));
+	p = bfc_mempool_realloc(s->pool, GET_STRBUF(s), need * sizeof(wchar_t));
 	if (p == NULL) {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_ERROR(logger, "%s: cannot allocate %ld chars of size %d",
 				__FUNCTION__,(long)need, (int)sizeof(wchar_t));
 		return (-ENOMEM);
 	}
-	s->buf = p;
+	SET_STRBUF(s, p);
 	s->bufsize = need;
 	return (BFC_SUCCESS);
 }

@@ -13,6 +13,9 @@ struct bfc_string_class {
 			     bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
+#define GET_STRBUF(s)		((s)->name)
+#define SET_STRBUF(s,buf)	(s)->name = (buf)
+
 /**
  * @brief    bfc_init_basic_wstring_move
  */
@@ -29,13 +32,13 @@ bfc_init_basic_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
 	if ((rc = bfc_init_basic_wstring(obj, bufsize, pool)) < 0) {
 		return(rc);
 	}
-	obj->buf = str->buf;
+	SET_STRBUF(obj, GET_STRBUF(str));
 	obj->len = str->len;
 	obj->pool = str->pool;
 	obj->bufsize = str->bufsize;
 	str->bufsize = 0;
 	str->len = 0;
-	str->buf = NULL;
+	SET_STRBUF(str, NULL);
 	return (rc);
 }
 

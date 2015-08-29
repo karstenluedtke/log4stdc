@@ -87,7 +87,7 @@ static int
 clone_mutex(bfc_mutex_ptr_t obj,
 	    void *buf, size_t bufsize, struct mempool *pool)
 {
-	return (init_mutex(buf, bufsize, pool? pool: obj->pool));
+	return (init_mutex(buf, bufsize, pool? pool: obj->parent_pool));
 }
 
 static size_t
@@ -118,7 +118,8 @@ dump_mutex(bfc_mutex_ptr_t obj, int depth, struct l4sc_logger *log)
 	if (obj && obj->name && BFC_CLASS(obj)) {
 		L4SC_DEBUG(log, "object \"%s\" @%p", obj->name, obj);
 		L4SC_DEBUG(log, " class \"%s\", pool %p, lock %p, refc %d",
-			BFC_CLASS(obj)->name, obj->pool, obj->lock, obj->refc);
+			BFC_CLASS(obj)->name, obj->parent_pool,
+			obj->lock, obj->refc);
 		L4SC_DEBUG(log, " last access from %s in %s:%d",
 			obj->func, obj->file, obj->line);
 	}

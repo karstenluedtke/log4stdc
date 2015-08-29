@@ -26,6 +26,8 @@ struct mempool;
 struct bfc_mutex;
 struct l4sc_logger;
 
+struct bfc_string;
+
 struct bfc_string_class;
 typedef const struct bfc_string_class *bfc_string_classptr_t;
 
@@ -38,8 +40,7 @@ extern const struct bfc_string_class bfc_basic_wstring_class;
 extern const struct bfc_string_class bfc_shared_wstring_class;
 
 #define BFC_STRINGHDR(classptrT,charT) \
-	classptrT	vptr;	  /**< virtual methods */	\
-	charT *		buf;					\
+	BFC_OBJHDR(classptrT, struct bfc_string *)		\
 	size_t 		len;					\
 	unsigned 	offs;					\
 	unsigned 	bufsize;				\
@@ -54,10 +55,12 @@ typedef struct bfc_string *bfc_strptr_t;
 typedef const struct bfc_string *bfc_cstrptr_t;
 
 #define BFCSTR(s) \
- {&bfc_shared_string_class, s, sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
+ {&bfc_shared_string_class, s, 30000, NULL, NULL, \
+                            sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
 
 #define BFCWSTR(s) \
- {&bfc_shared_wstring_class, s, (sizeof(s)-1)/sizeof(wchar_t), 0, \
+ {&bfc_shared_wstring_class, (const char *)s, 30000, NULL, NULL, \
+                     (sizeof(s)-1)/sizeof(wchar_t), 0, \
 		     (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
 
 #define BFC_STRING_LOGGER	"barefootc.string",16
@@ -161,7 +164,7 @@ struct bfc_string_class {
 	}
 
 #define	bfc_strlen(s)	((s)->len)
-#define bfc_strdata(s)	(((s)->offs == 0)? (char*)(s)->buf: bfc_string_data(s))
+#define bfc_strdata(s)	(((s)->offs == 0)? (s)->name: bfc_string_data(s))
 
 /*
  * bfc_string_t
@@ -700,12 +703,12 @@ int bfc_buffered_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 
 #undef BFCSTR
 #define BFCSTR(s) \
- {&bfc_shared_string_class, const_cast<char *>(s), \
+ {&bfc_shared_string_class, const_cast<char *>(s), 30000, NULL, NULL, \
   sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
 
 #undef BFCWSTR
 #define BFCWSTR(s) \
- {&bfc_shared_wstring_class, const_cast<wchar_t *>(s), \
+ {&bfc_shared_wstring_class, const_cast<wchar_t *>(s), 30000, NULL, NULL, \
   (sizeof(s)-1)/sizeof(wchar_t), 0, \
   (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
 

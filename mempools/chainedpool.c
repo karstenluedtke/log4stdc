@@ -110,7 +110,7 @@ init_chainedpool(void *buf, size_t bufsize, struct mempool *pool)
 			  struct chainedpool *, p, buf, bufsize, parent,
 			  &bfc_chainedpool_class);
 	bfc_incr_refcount(parent);
-	p->pool = p->parent_pool = parent;
+	p->parent_pool = parent;
 	bfc_new_mutex(&p->lock, parent);
 	p->file = __FILE__;
 	p->line = __LINE__;

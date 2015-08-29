@@ -68,7 +68,7 @@ bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool)
 	rc = bfc_init_objref_vector_class(&node->vec, sizeof(node->vec), pool);
 	bfc_init_shared_string_buffer(&node->tagname, sizeof(node->tagname),
 									"", 0);
-	node->vec.name = node->tagname.buf;
+	node->vec.name = bfc_strdata(&node->tagname);
 	node->vec.vptr = (void *) &bfc_treenode_class;
 	node->vec.elem_class = (bfc_classptr_t) &bfc_treenode_class;
 	return (rc);

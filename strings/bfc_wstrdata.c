@@ -18,6 +18,8 @@ struct bfc_string_class {
 const wchar_t *
 bfc_wstrdata(bfc_cstrptr_t s)
 {
-	RETURN_METHCALL(bfc_string_classptr_t, s, first, (s), s->buf);
+	RETURN_METHCALL(bfc_string_classptr_t, s,
+			first, (s),
+			(const wchar_t *) s->name);
 }
 

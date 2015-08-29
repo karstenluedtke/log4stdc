@@ -140,7 +140,8 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 			LOGINFO(("%s: File set to \"%s\"",
 				__FUNCTION__, obj->filename));
 		} else {
-			struct mempool *pool = obj->pool? obj->pool:
+			struct mempool *pool = obj->parent_pool?
+							obj->parent_pool:
 							get_default_mempool();
 			char *p = mempool_alloc(pool, n+20);
 			if (p != NULL) {
@@ -211,9 +212,10 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
 	if (msg && (msg->msglen > 0)) {
 		l4sc_layout_cptr_t layout = &appender->layout;
+		struct mempool *pool = appender->parent_pool;
 		const size_t bufsize = msg->msglen + 200;
-		char *poolmem = ((bufsize > 2000) && appender->pool)?
-				bfc_mempool_alloc(appender->pool, bufsize):
+		char *poolmem = ((bufsize > 2000) && pool)?
+				bfc_mempool_alloc(pool, bufsize):
 				NULL;
 		char *buf = poolmem? poolmem: alloca(bufsize);
 		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
@@ -257,7 +259,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 			}
 		}
 		if (poolmem) {
-			bfc_mempool_free(appender->pool, poolmem);
+			bfc_mempool_free(pool, poolmem);
 			poolmem = NULL;
 		}
 	}

@@ -63,7 +63,7 @@ typedef const struct bfc_vector_class *bfc_vector_class_ptr_t;
 
 #define BFC_VECTOR(vecname,elemtype,ndirect) \
 struct vecname {							\
-	BFC_OBJHDR(bfc_vector_class_ptr_t, struct vecname *)		\
+	BFC_CONTAINER_HDR(bfc_vector_class_ptr_t, struct vecname *)	\
 									\
 	/**								\
 	 * Number of elements currently stored.				\

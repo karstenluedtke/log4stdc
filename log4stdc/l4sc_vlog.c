@@ -20,8 +20,9 @@ l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,
 	size_t len = 0;
 
 	if (l4sc_logger_enabled(logger, level)) {
-		char *poolmem = ((maxbytes > 2000) && logger->pool)?
-				bfc_mempool_alloc(logger->pool, maxbytes+1):
+		struct mempool *pool = logger->parent_pool;
+		char *poolmem = ((maxbytes > 2000) && pool)?
+				bfc_mempool_alloc(pool, maxbytes+1):
 				NULL;
 		char *msg = poolmem? poolmem: alloca(maxbytes+1);
 		rc = vsnprintf(msg, maxbytes+1, fmt, ap);
@@ -34,7 +35,7 @@ l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,
 		}
 		l4sc_log(logger, level, msg, len, file, line, func);
 		if (poolmem) {
-			bfc_mempool_free(logger->pool, poolmem);
+			bfc_mempool_free(pool, poolmem);
 			poolmem = NULL;
 		}
 	}

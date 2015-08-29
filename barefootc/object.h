@@ -40,11 +40,12 @@ struct l4sc_logger;
 	classptrT	vptr;		/**< virtual methods	*/	\
 	const char *	name;		/**< object name	*/	\
 	volatile int	refc;		/**< reference count	*/	\
-	struct mempool *parent_pool;	/**< for freeing the object */	\
-	struct mempool *pool;		/**< for allocating children */	\
 	struct bfc_mutex *lock;		/**< for locking the object */	\
-	objptrT 	next;		/**< next in object list */	\
-	objptrT 	prev;		/**< previous in object list */
+	struct mempool *parent_pool;	/**< for freeing the object */
+
+#define BFC_CONTAINER_HDR(classptrT,objptrT) \
+	BFC_OBJHDR(classptrT,objptrT) \
+	struct mempool *pool;		/**< for allocating children */
 
 struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)

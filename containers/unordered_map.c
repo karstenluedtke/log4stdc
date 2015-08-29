@@ -16,6 +16,7 @@
 #include "log4stdc.h"
 
 static void destroy_map(bfc_contptr_t map);
+static int map_equals(bfc_ccontptr_t map, bfc_ccontptr_t other);
 static int begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize);
 static int map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
 			    bfc_iterptr_t first, bfc_iterptr_t last);
@@ -33,6 +34,7 @@ const struct bfc_map_class unordered_map_class = {
 	.super 		= (void *) &bfc_object_vector_class,
 	.name 		= "map",
 	.destroy	= destroy_map,
+	.equals		= map_equals,
 	.ibegin		= begin_iterator,
 	.assign_range	= map_assign_range,
 	.insert_range	= map_insert_range,
@@ -813,6 +815,7 @@ map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
 				bfc_map_insert_objects(map, key, val, NULL, 0);
 			}
 		}
+		bfc_mutex_unlock(locked);
 	} else {
 		L4SC_ERROR(logger, "%s(%p, %p, %p): cannot lock",
 				__FUNCTION__, vec, first, last);
@@ -850,3 +853,50 @@ map_assign_range(bfc_contptr_t map, bfc_iterptr_t first, bfc_iterptr_t last)
 	return (rc);
 }
 
+static int
+map_is_subset(bfc_ccontptr_t map, bfc_ccontptr_t other)
+{
+	int rc = 0;
+	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
+	bfc_mutex_ptr_t locked;
+	bfc_cobjptr_t sp, key, op;
+	bfc_iterator_t it, limit, it2;
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		bfc_container_begin_iterator(map, &it, sizeof(it));
+		bfc_container_end_iterator(map, &limit, sizeof(limit));
+		rc = 1;
+		while (bfc_iterator_distance(&it, &limit) > 0) {
+			sp = (bfc_cobjptr_t) bfc_iterator_index(&it);
+			bfc_iterator_advance(&it, 1);
+			if (sp && (BFC_CLASS(sp) != NULL)
+			 && ((key = bfc_container_first(sp)) != NULL)) {
+				if (bfc_container_find_by_name(other, key, 1,
+								   &it2) < 0) {
+					rc = 0;
+					break;
+				}
+				op = (bfc_cobjptr_t) bfc_iterator_index(&it2);
+				if ((rc = bfc_equal_object(sp, op)) == 0) {
+					break;
+				}
+			}
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+		L4SC_ERROR(log, "%s(%p, %p): cannot lock",
+					__FUNCTION__, map, other);
+		rc = 0;
+	}
+	return (rc);
+}
+
+static int
+map_equals(bfc_ccontptr_t map, bfc_ccontptr_t other)
+{
+	if (map == other) {
+		return (1);
+	}
+	return (map_is_subset(map, other) && map_is_subset(other, map));
+}

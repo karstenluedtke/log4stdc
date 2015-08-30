@@ -24,7 +24,8 @@ bfc_init_basic_string_substr(void *buf, size_t bufsize, struct mempool *pool,
 	if ((pos == BFC_NPOS) || (pos > bfc_strlen(str))) {
 		return (-ERANGE);
 	}
-	return bfc_init_basic_string_buffer(buf, bufsize, pool? pool: str->pool,
+	return bfc_init_basic_string_buffer(buf, bufsize,
+		pool? pool: bfc_basic_string_pool(str),
 		bfc_strdata(str) + pos, bfc_string_sublen(str, pos, n));
 }
 

@@ -43,8 +43,7 @@ extern const struct bfc_string_class bfc_shared_wstring_class;
 	BFC_OBJHDR(classptrT, struct bfc_string *)		\
 	size_t 		len;					\
 	unsigned 	offs;					\
-	unsigned 	bufsize;				\
-	struct mempool *pool;
+	unsigned 	bufsize;
 
 struct bfc_string {
 	BFC_STRINGHDR(bfc_string_classptr_t, void)
@@ -56,12 +55,11 @@ typedef const struct bfc_string *bfc_cstrptr_t;
 
 #define BFCSTR(s) \
  { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_shared_string_class, s), \
-   sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
+   sizeof(s)-1, 0, (unsigned)(sizeof(s)-1) }
 
 #define BFCWSTR(s) \
  { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_shared_wstring_class, (const char *)s), \
-   (sizeof(s)-1)/sizeof(wchar_t), 0, \
-   (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
+   (sizeof(s)-1)/sizeof(wchar_t), 0, (unsigned)((sizeof(s)-1)/sizeof(wchar_t))}
 
 #define BFC_STRING_LOGGER	"barefootc.string",16
 
@@ -521,6 +519,7 @@ int	bfc_init_basic_string_range(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_iterptr_t begin, bfc_iterptr_t end);
 void	bfc_destroy_basic_string(bfc_strptr_t obj);
 size_t	bfc_basic_string_objsize(bfc_cstrptr_t obj);
+struct mempool *bfc_basic_string_pool(bfc_cstrptr_t s);
 
 /* Capacity */
 size_t	bfc_basic_string_length(bfc_cstrptr_t s);

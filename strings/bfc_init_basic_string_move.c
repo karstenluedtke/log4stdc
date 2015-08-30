@@ -30,7 +30,6 @@ bfc_init_basic_string_move(void *buf, size_t bufsize, struct mempool *pool,
 	}
 	SET_STRBUF(obj, GET_STRBUF(str));
 	obj->len = str->len;
-	obj->pool = str->pool;
 	obj->bufsize = str->bufsize;
 	str->bufsize = 0;
 	str->len = 0;

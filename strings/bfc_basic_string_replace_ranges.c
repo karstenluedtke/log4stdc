@@ -42,8 +42,9 @@ bfc_basic_string_replace_ranges(bfc_strptr_t s,
 		e = bfc_strlen(s);
 	}
 	if (e > 0) {
+		struct mempool *pool = bfc_basic_string_pool(s);
 		RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
-				init, (&tail, sizeof(tail), s->pool), -ENOSYS);
+				init, (&tail, sizeof(tail), pool), -ENOSYS);
 		if (rc < 0) {
 			L4SC_ERROR(logger, "%s: init tail error %d",
 							__FUNCTION__, rc);

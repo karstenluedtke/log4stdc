@@ -49,14 +49,14 @@ typedef const struct bfc_datetime_class *bfc_datetime_classptr_t;
  */
 
 struct bfc_datetime {
-	bfc_datetime_classptr_t vptr; /**< virtual methods */
+	BFC_OBJHDR(bfc_datetime_classptr_t,struct bfc_datetime *)
 	int32_t		day;	/**< day after Jan 1st, 1970; or 0     */
 	uint32_t	secs;	/**< seconds of the day (UTC)          */
 	uint32_t	frac;	/**< fractional part of time, 1s/2**32 */
 };
 
 #define BFC_DATETIMEHDR(classptrT,objptrT) \
-	classptrT	vptr;	/**< virtual methods */			\
+	BFC_OBJHDR(classptrT,objptrT)
 	int32_t		day;	/**< day after Jan 1st, 1970; or 0   */	\
 	uint32_t	secs;	/**< seconds of the day (UTC)        */	\
 	uint32_t	frac;	/**< fractional part of time, 1s/2**32 */

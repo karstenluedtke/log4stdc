@@ -51,6 +51,9 @@ struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
 };
 
+#define BFC_STATIC_OBJHDR_INITIALIZERS(cls,name) \
+	&cls, name, 30000, (struct bfc_mutex *)0, (struct mempool *)0
+
 #define BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,elemT) \
 	classptrT	super;	  /**< possible super class */		     \
 	const char *	name;	  /**< class name */			     \

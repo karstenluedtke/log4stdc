@@ -1,7 +1,7 @@
 /**
  * @file      number.h
  *
- * @brief     A generic number implementation.
+ * @brief     An implementation of "boxed" numbers.
  *
  * @author    Karsten Luedtke
  *
@@ -29,11 +29,8 @@ extern const struct bfc_classhdr bfc_natural_class;
 extern const struct bfc_classhdr bfc_real_number_class;
 extern const struct bfc_classhdr bfc_boolean_class;
 
-#define BFC_NUMBERHDR(classptrT) \
-	classptrT	vptr;	  /**< virtual methods */
-
 struct bfc_number {
-	BFC_NUMBERHDR(bfc_classptr_t)
+	BFC_OBJHDR(bfc_classptr_t, struct bfc_number *)
 	union bfc_number_un {
 		ptrdiff_t	n;
 		double		f;
@@ -44,7 +41,8 @@ typedef struct bfc_number bfc_number_t;
 typedef struct bfc_number *bfc_numptr_t;
 typedef const struct bfc_number *bfc_cnumptr_t;
 
-#define BFC_SIGNED_NUMBER(x)	{ &bfc_number_class, { (ptrdiff_t)(x) } }
+#define BFC_SIGNED_NUMBER(x) \
+ { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_number_class,"int"), { (ptrdiff_t)(x) } }
 
 #define BFC_NUMBER_LOGGER	"barefootc.number",16
 

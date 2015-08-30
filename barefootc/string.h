@@ -55,13 +55,13 @@ typedef struct bfc_string *bfc_strptr_t;
 typedef const struct bfc_string *bfc_cstrptr_t;
 
 #define BFCSTR(s) \
- {&bfc_shared_string_class, s, 30000, NULL, NULL, \
-                            sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
+ { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_shared_string_class, s), \
+   sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
 
 #define BFCWSTR(s) \
- {&bfc_shared_wstring_class, (const char *)s, 30000, NULL, NULL, \
-                     (sizeof(s)-1)/sizeof(wchar_t), 0, \
-		     (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
+ { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_shared_wstring_class, (const char *)s), \
+   (sizeof(s)-1)/sizeof(wchar_t), 0, \
+   (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
 
 #define BFC_STRING_LOGGER	"barefootc.string",16
 
@@ -700,17 +700,5 @@ int bfc_buffered_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 
 #ifdef __cplusplus
 }	/* extern "C" */
-
-#undef BFCSTR
-#define BFCSTR(s) \
- {&bfc_shared_string_class, const_cast<char *>(s), 30000, NULL, NULL, \
-  sizeof(s)-1, 0, (unsigned)(sizeof(s)-1), NULL, }
-
-#undef BFCWSTR
-#define BFCWSTR(s) \
- {&bfc_shared_wstring_class, const_cast<wchar_t *>(s), 30000, NULL, NULL, \
-  (sizeof(s)-1)/sizeof(wchar_t), 0, \
-  (unsigned)((sizeof(s)-1)/sizeof(wchar_t)), NULL, }
-
 #endif
 #endif /* _BFC_STRING_H_ */

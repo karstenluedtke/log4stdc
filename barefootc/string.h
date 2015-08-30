@@ -171,8 +171,7 @@ struct bfc_string_class {
 int	bfc_init_string(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_string_copy(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str);
-int	bfc_init_string_move(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_strptr_t str);
+int	bfc_init_string_move(void *buf, size_t bufsize, bfc_strptr_t str);
 int	bfc_init_string_substr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str, size_t pos, size_t n);
 int	bfc_init_string_buffer(void *buf, size_t bufsize, struct mempool *pool,
@@ -420,8 +419,7 @@ int	bfc_cstring_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 int	bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str);
-int	bfc_init_wstring_move(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_strptr_t str);
+int	bfc_init_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str);
 int	bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_cstrptr_t str, size_t pos, size_t n);
 int	bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
@@ -505,8 +503,7 @@ int	bfc_wstring_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
 int	bfc_init_basic_string(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_basic_string_copy(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cstrptr_t str);
-int	bfc_init_basic_string_move(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_strptr_t str);
+int	bfc_init_basic_string_move(void *buf, size_t bufsize, bfc_strptr_t str);
 int	bfc_init_basic_string_substr(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_string_buffer(void *buf, size_t bufsize,
@@ -540,8 +537,7 @@ int     bfc_basic_string_replace_ranges(bfc_strptr_t s,
 int	bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool);
 int	bfc_init_basic_wstring_copy(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cstrptr_t str);
-int	bfc_init_basic_wstring_move(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_strptr_t str);
+int	bfc_init_basic_wstring_move(void *buf,size_t bufsize, bfc_strptr_t str);
 int	bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_wstring_buffer(void *buf, size_t bufsize,

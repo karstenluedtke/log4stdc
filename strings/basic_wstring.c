@@ -179,6 +179,27 @@ bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 	return (BFC_SUCCESS);
 }
 
+int
+bfc_init_basic_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str)
+{
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
+
+	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
+			  bfc_strptr_t, obj, buf, bufsize, NULL,
+			  &bfc_basic_wstring_class);
+
+	L4SC_TRACE(logger, "%s(%p, %ld, str %p)",
+		__FUNCTION__, buf, (long) bufsize, str);
+
+	SET_STRBUF(obj, GET_STRBUF(str));
+	obj->len = str->len;
+	obj->bufsize = str->bufsize;
+	str->bufsize = 0;
+	str->len = 0;
+	SET_STRBUF(str, NULL);
+	return (BFC_SUCCESS);
+}
+
 void
 bfc_destroy_basic_wstring(bfc_strptr_t obj)
 {
@@ -200,7 +221,7 @@ clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize, struct mempool *pool)
 {
 	size_t len = bfc_wstring_length(obj);
 	const wchar_t *p = bfc_wstring_data(obj);
-	struct mempool *newpool = pool? pool: obj->parent_pool;
+	struct mempool *newpool = pool? pool: bfc_basic_string_pool(obj);
 	return (bfc_init_basic_wstring_buffer(buf, bufsize, newpool, p, len));
 }
 

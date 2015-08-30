@@ -124,11 +124,13 @@ bfc_default_clone_object(bfc_cobjptr_t obj,
 		return (-ENOSPC);
 	}
 	memcpy(object, obj, size);
-	/* Not overwriting the pool. */
+	/* Not overwriting the pool for allocating children. */
 	/* An object allocating from pool shall have its own clone method */
 	if (size >= sizeof(struct bfc_objhdr)) {
-		object->lock = NULL;
-		object->parent_pool = NULL;
+		object->parent_pool = pool;
+		if (object->lock && BFC_CLASS((bfc_objptr_t)object->lock)) {
+			bfc_incr_refcount(object->lock);
+		}
 	}
 	bfc_init_refcount(object, 1);
 	return (BFC_SUCCESS);

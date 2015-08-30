@@ -160,7 +160,7 @@ struct bfc_string_class {
 			bfc_init_object(super, obj, size, pool);	\
 		}							\
 		obj->vptr = (cls);					\
-		bfc_string_init_refcount(obj, 1);			\
+		bfc_init_refcount(obj, 1);				\
 	}
 
 #define	bfc_strlen(s)	((s)->len)
@@ -187,9 +187,6 @@ int	bfc_init_string_range(void *buf, size_t bufsize, struct mempool *pool,
 				bfc_iterptr_t begin, bfc_iterptr_t end);
 void	bfc_destroy_string(bfc_strptr_t obj);
 size_t	bfc_string_objsize(bfc_cstrptr_t obj);
-int	bfc_string_init_refcount(bfc_strptr_t s, int n);
-int	bfc_string_incr_refcount(bfc_strptr_t s);
-int	bfc_string_decr_refcount(bfc_strptr_t s);
 
 /* Capacity */
 size_t	bfc_string_length(bfc_cstrptr_t s);

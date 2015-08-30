@@ -232,6 +232,7 @@ size_t bfc_object_size(const void *);
 unsigned bfc_object_hashcode(const void *, int hashlen);
 unsigned bfc_reduce_hashcode(size_t origval, int origbits, int hashlen);
 int  bfc_equal_object(const void *, const void *);
+int  bfc_object_equals(const void *, const void *);
 int  bfc_object_length(const void *);
 int  bfc_object_tostring(const void *, char *, size_t, const char *);
 void bfc_object_dump(const void *, int, struct l4sc_logger *);

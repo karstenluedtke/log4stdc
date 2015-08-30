@@ -47,9 +47,6 @@ struct tm *_localtime64(const __time64_t *);
 #include "umul32_hiword.h"
 
 static int init_datetime(void *buf, size_t bufsize, struct mempool *pool);
-static int init_refcount(bfc_dateptr_t date, int n);
-static int incr_refcount(bfc_dateptr_t date);
-static int decr_refcount(bfc_dateptr_t date);
 static int clone_datetime(bfc_cdateptr_t date,
 		   void *buf, size_t bufsize, struct mempool *pool);
 static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
@@ -76,9 +73,9 @@ const struct bfc_datetime_class bfc_datetime_class = {
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ init_datetime,
-	/* .initrefc 	*/ init_refcount,
-	/* .incrrefc 	*/ incr_refcount,
-	/* .decrrefc 	*/ decr_refcount,
+	/* .initrefc 	*/ (void *) bfc_default_init_refcount,
+	/* .incrrefc 	*/ (void *) bfc_default_incr_refcount,
+	/* .decrrefc 	*/ (void *) bfc_default_decr_refcount,
 	/* .destroy 	*/ bfc_destroy_datetime,
 	/* .clone 	*/ clone_datetime,
 	/* .clonesize 	*/ bfc_datetime_objsize,
@@ -243,24 +240,6 @@ bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 		date->frac = umul32_shr19(tv->tv_usec, 2251799814uL);
 	}
 	return (rc);
-}
-
-static int init_refcount(bfc_dateptr_t date, int n)
-{
-	/* no refcount */
-	return (-ENOSYS);
-}
-
-static int incr_refcount(bfc_dateptr_t date)
-{
-	/* no refcount */
-	return (-ENOSYS);
-}
-
-static int decr_refcount(bfc_dateptr_t date)
-{
-	/* no refcount */
-	return (-ENOSYS);
 }
 
 void

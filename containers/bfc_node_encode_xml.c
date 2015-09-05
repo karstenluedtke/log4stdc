@@ -37,12 +37,13 @@ extern bfc_class_t bfc_treenode_class;
 int
 bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
 {
-	static const char spaces[] = "                ";
-	const char *indent = &spaces[16 - (2*level & 14)];
+	static const char spaces[] = "                                ";
+	const char *indent = &spaces[32 - (2*level & 30)];
 	size_t len = 0, spare;
 	int rc, afterstring = 0;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_iterator_t iter, limit;
+	char subfmt[16];
 
 	L4SC_TRACE(logger, "%s(node @%p, buf %p, bufsize %ld, level %d)",
 			__FUNCTION__, node, buf, (long)bufsize, level);
@@ -102,8 +103,8 @@ bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
 		}
 		if (bfc_instance_of_class(child, &bfc_treenode_class)) {
 			spare = (bufsize > len)? bufsize - len: 0;
-			rc = bfc_node_encode_xml((bfc_cnodeptr_t) child,
-						 buf+len, spare, level+1);
+			snprintf(subfmt, sizeof(subfmt), "XML@%d", level+1);
+			rc = bfc_object_tostring(child, buf+len, spare, subfmt);
 			if ((rc > 0) && ((size_t)rc < spare)) {
 				unsigned char *cp = (unsigned char*) buf + len;
 				if (afterstring) {
@@ -127,6 +128,12 @@ bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
 		        || bfc_instance_of_classname(child, "boolean")
 		        || bfc_instance_of_classname(child, "datetime")) {
 			spare = (bufsize > len)? bufsize - len: 0;
+			if ((spare > 0) && !afterstring) {
+				while ((len > 0)
+				    && (*(unsigned char*)(buf+len-1) <= ' ')) {
+					len--; spare++;
+				}
+			}
 			rc = tostring_with_entities(node, child, buf+len,spare);
 			if (rc > 0) {
 				len += rc;

@@ -145,5 +145,39 @@ main(int argc, char *argv[])
 		assert(strcmp(buf, expectation) == 0);
 	} while (0 /*just once*/);
 
+	do {
+		bfc_cnodeptr_t tp = (bfc_cnodeptr_t) &tmpl;
+		bfc_nodeptr_t xml =
+		  bfc_node_new_element(tp, "nsEsE", "p",
+		    "A text with an ",
+		    bfc_node_new_element(tp,"ns", "img", "image"),
+		    " and a ",
+		    bfc_node_new_element(tp,"ns", "a", "link"));
+		bfc_nodeptr_t child;
+		static bfc_string_t img_attr  = BFCSTR("src");
+		static bfc_string_t img_value = BFCSTR("image.png");
+		static bfc_string_t href_attr = BFCSTR("href");
+		static bfc_string_t href_value= BFCSTR("file.html");
+		static const char expectation[] =
+			"<p>A text with an <img src=\"image.png\">image</img>"
+			" and a <a href=\"file.html\">link</a>" CRLF
+			"</p>" CRLF;
+		char buf[4000];
+
+		child = (bfc_nodeptr_t) bfc_container_index(xml, 1);
+		bfc_node_set_xml_attribute(child, &img_attr, &img_value);
+
+		child = (bfc_nodeptr_t) bfc_container_index(xml, 3);
+		bfc_node_set_xml_attribute(child, &href_attr, &href_value);
+
+		int len= bfc_object_tostring(xml, NULL, 0, "xml");
+		int rc = bfc_object_tostring(xml, buf, sizeof(buf), "xml");
+		L4SC_DEBUG(logger, "%s", buf);
+		assert(rc > 0);
+		assert(rc < sizeof(buf));
+		assert(rc <= len);
+		assert(strcmp(buf, expectation) == 0);
+	} while (0 /*just once*/);
+
 	return (0);
 }

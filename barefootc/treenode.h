@@ -62,6 +62,12 @@ int bfc_node_append_c_str(bfc_nodeptr_t node, const char *cp);
 
 int bfc_node_encode_xml(bfc_cnodeptr_t node,
 			char *buf, size_t bufsize, int level);
+int bfc_node_decode_xml(bfc_nodeptr_t node, bfc_cstrptr_t s, size_t offs);
+
+struct bfc_node_xml_parse_state;
+int bfc_node_parse_xmltags(bfc_nodeptr_t rootnode, bfc_cstrptr_t s,
+			   struct bfc_node_xml_parse_state *st);
+
 
 #ifdef __cplusplus
 };

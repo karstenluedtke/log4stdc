@@ -279,6 +279,7 @@ libbarefootc_a_SOURCES+= containers/bfc_node_append_child.c
 libbarefootc_a_SOURCES+= containers/bfc_node_append_text.c
 libbarefootc_a_SOURCES+= containers/bfc_node_append_c_str.c
 libbarefootc_a_SOURCES+= containers/bfc_node_encode_xml.c
+libbarefootc_a_SOURCES+= containers/bfc_node_decode_xml.c
 libbarefootc_a_SOURCES+= mempools/stdcpool.c
 libbarefootc_a_SOURCES+= mempools/defaultpool.c
 libbarefootc_a_SOURCES+= mempools/chainedpool.c
@@ -2466,4 +2467,10 @@ tests_treenode_encode_xml_SOURCES = tests/treenode/encode_xml.c
 tests_treenode_encode_xml_LDADD = libbarefootc.a liblog4stdc.a
 tests_treenode_encode_xml_DEPENDENCIES = libbarefootc.a liblog4stdc.a
 TESTS += tests/treenode/encode_xml
+
+check_PROGRAMS += tests/treenode/decode_xml
+tests_treenode_decode_xml_SOURCES = tests/treenode/decode_xml.c
+tests_treenode_decode_xml_LDADD = libbarefootc.a liblog4stdc.a
+tests_treenode_decode_xml_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+TESTS += tests/treenode/decode_xml
 

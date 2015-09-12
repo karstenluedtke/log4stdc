@@ -11,7 +11,7 @@ bfc_new(void **objpp, bfc_classptr_t cls, struct mempool *pool)
 
 	RETVAR_CMETHCALL(size, bfc_classptr_t, cls,
 			 clonesize, (NULL),
-			 4*sizeof(struct bfc_objhdr));
+			 4*sizeof(struct bfc_basic_object));
 	newobj = mempool_alloc(pool, size);
 	if (newobj == NULL) {
 		return (-ENOMEM);

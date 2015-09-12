@@ -54,6 +54,7 @@ int bfc_node_set_xml_attribute(bfc_nodeptr_t node,
 			       bfc_cstrptr_t name, bfc_cstrptr_t val);
 bfc_cstrptr_t bfc_node_get_attribute_string(bfc_nodeptr_t node,
 					    bfc_cstrptr_t name);
+int bfc_node_new_attribute_map(bfc_node_t *node, bfc_contptr_t *attrpp);
 
 int bfc_node_append(bfc_nodeptr_t node, const char *chldtypes, ...);
 int bfc_node_append_child(bfc_nodeptr_t node, bfc_nodeptr_t child);

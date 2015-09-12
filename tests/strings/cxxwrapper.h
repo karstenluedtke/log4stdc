@@ -74,7 +74,7 @@ namespace barefootc {
 
 		typedef bfc_string_classptr_t classptrT;
 
-		struct bfc_string bfcstr;
+		bfc_string_t bfcstr;
 
 		Allocator saved_allocator;
 		

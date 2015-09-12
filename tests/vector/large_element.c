@@ -35,7 +35,7 @@ test(void *initialized_vector, unsigned elem_size)
 	int rc;
 	char *p0, *p1;
 	BFC_VECTOR(testvec, char, 0) *vec = initialized_vector;
-	unsigned k, n = CV1_BOUNDARY(vec) + CV1_ELEMENTS(vec);
+	unsigned k, n = CV1_BOUNDARY(vec) + CV1_ELEMENTS(vec) + 5;
 	BFC_VECTOR(testv2s, char, 1200) v2;
 
 	L4SC_DEBUG(logger, "%s(vec %p, elem_size %u) n=%u",

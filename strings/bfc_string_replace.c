@@ -7,6 +7,7 @@
 #define NEED_BFC_STRING_CLASS 1
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "string_private.h"
 
 /**
  * @brief    bfc_string_replace
@@ -17,7 +18,7 @@ bfc_string_replace(bfc_strptr_t s, size_t pos1, size_t n1, bfc_cstrptr_t str)
 	if ((pos1 == BFC_NPOS) || (pos1 > bfc_strlen(s))) {
 		return (-ERANGE);
 	}
-	if (BFC_CLASS(s)->traits == BFC_CLASS(str)->traits) {
+	if (STRING_TRAITS(s) == STRING_TRAITS(str)) {
 		size_t len = bfc_strlen(str);
 		const char *data = bfc_strdata(str);
 		return (bfc_string_replace_buffer(s, pos1, n1, data, len));

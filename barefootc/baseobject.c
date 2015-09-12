@@ -139,7 +139,7 @@ bfc_default_clone_object(bfc_cobjptr_t obj,
 size_t
 bfc_get_base_object_size(bfc_cobjptr_t obj)
 {
-	return (sizeof(struct bfc_objhdr));
+	return (sizeof(struct bfc_basic_object));
 }
 
 unsigned  

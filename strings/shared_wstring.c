@@ -10,6 +10,7 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/mempool.h"
+#include "string_private.h"
 #include "log4stdc.h"
 
 #ifndef STRING_CLASS_NAME
@@ -18,10 +19,6 @@
 
 
 extern const struct bfc_classhdr bfc_wchar_traits_class;
-
-struct bfc_shared_wstring {
-	BFC_STRINGHDR(bfc_string_classptr_t, wchar_t)
-};
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
@@ -78,8 +75,6 @@ const struct bfc_string_class bfc_shared_wstring_class = {
 	.replace_ranges	= bfc_shared_wstring_replace_ranges,
 };
 
-#define GET_STRBUF(s)		BFC_UNCONST(wchar_t*,(s)->name)
-#define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
 
 int
 bfc_init_shared_wstring(void *buf, size_t bufsize, struct mempool *pool)
@@ -119,7 +114,7 @@ bfc_init_shared_wstring_buffer(void *buf, size_t bufsize,
 	}
 
 	SET_STRBUF(obj, s);
-	obj->bufsize = obj->len = n;
+	STRING_BUFSIZE(obj) = STRING_LEN(obj) = n;
 	return (BFC_SUCCESS);
 }
 
@@ -139,7 +134,7 @@ bfc_init_shared_wstring_c_str(void *buf, size_t bufsize, const wchar_t* s)
 void
 bfc_destroy_shared_wstring(bfc_strptr_t obj)
 {
-	bfc_string_classptr_t cls;
+	bfc_classptr_t cls;
 
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
 		BFC_DESTROY_EPILOGUE(obj, cls);
@@ -149,15 +144,15 @@ bfc_destroy_shared_wstring(bfc_strptr_t obj)
 size_t
 bfc_shared_wstring_objsize(bfc_cstrptr_t obj)
 {
-	return (sizeof(struct bfc_shared_wstring));
+	return (sizeof(bfc_string_t));
 }
 
 // capacity:
 int
 bfc_shared_wstring_resize(bfc_strptr_t s, size_t n, int c)
 {
-	if (n <= s->len) {
-		s->len = n;
+	if (n <= STRING_LEN(s)) {
+		STRING_LEN(s) = n;
 		return (BFC_SUCCESS);
 	} else {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -170,7 +165,7 @@ bfc_shared_wstring_resize(bfc_strptr_t s, size_t n, int c)
 size_t
 bfc_shared_wstring_capacity(bfc_cstrptr_t s)
 {
-	return (s->len);
+	return (STRING_LEN(s));
 }
 
 int
@@ -180,7 +175,7 @@ bfc_shared_wstring_reserve(bfc_strptr_t s, size_t n)
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_ERROR(logger, "%s: too large %ld", __FUNCTION__, (long)n);
 		return (-EINVAL);
-	} else if (n <= s->len) {
+	} else if (n <= STRING_LEN(s)) {
 		return (BFC_SUCCESS);
 	}
 	return (-ENOMEM);
@@ -198,7 +193,7 @@ int
 bfc_shared_wstring_assign_buffer(bfc_strptr_t s, const wchar_t *s2, size_t n)
 {
 	SET_STRBUF(s, s2);
-	s->bufsize = s->len = n;
+	STRING_BUFSIZE(s) = STRING_LEN(s) = n;
 	return (BFC_SUCCESS);
 }
 
@@ -230,7 +225,7 @@ void
 bfc_shared_wstring_pop_back(bfc_strptr_t s)
 {
 	if (bfc_wstrlen(s) > 0) {
-		s->len--;
+		STRING_LEN(s)--;
 	}
 }
 
@@ -255,12 +250,12 @@ bfc_shared_wstring_replace_buffer(bfc_strptr_t s, size_t pos, size_t n1,
 			return (BFC_SUCCESS);
 		} else if (pos == 0) {
 			/* erase the first characters in the string */
-			s->len  -= nkill;
-			s->offs += nkill;
+			STRING_LEN(s)  -= nkill;
+			STRING_OFFSET(s) += nkill;
 			return (BFC_SUCCESS);
 		} else if (pos + nkill == bfc_wstring_length(s)) {
 			/* erase the last characters in the string */
-			s->len  -= nkill;
+			STRING_LEN(s)  -= nkill;
 			return (BFC_SUCCESS);
 		} else {
 			L4SC_ERROR(logger, "%s: erased seq @%ld len %ld must "

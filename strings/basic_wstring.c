@@ -11,6 +11,7 @@
 #include "barefootc/string.h"
 #include "barefootc/mempool.h"
 #include "barefootc/unconst.h"
+#include "string_private.h"
 #include "log4stdc.h"
 
 #ifndef STRING_CLASS_NAME
@@ -25,10 +26,6 @@ static int clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize,
 						struct mempool *pool);
 
 extern const struct bfc_classhdr bfc_wchar_traits_class;
-
-struct bfc_basic_wstring {
-	BFC_STRINGHDR(bfc_string_classptr_t, wchar_t)
-};
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
@@ -56,9 +53,6 @@ const struct bfc_string_class bfc_basic_wstring_class = {
 	.replace_ranges	= bfc_basic_string_replace_ranges,
 };
 
-#define GET_STRBUF(s)		BFC_UNCONST(wchar_t*,(s)->name)
-#define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
-
 int
 bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 {
@@ -82,7 +76,7 @@ bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 		return (-ENOMEM);
 	}
 	SET_STRBUF(s, charbuf);
-	s->bufsize = n;
+	STRING_BUFSIZE(s) = n;
 	charbuf[0] = 0;
 	return (BFC_SUCCESS);
 }
@@ -117,12 +111,12 @@ bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 		return (-ENOMEM);
 	}
 	SET_STRBUF(obj, charbuf);
-	obj->bufsize = (n+1);
+	STRING_BUFSIZE(obj) = (n+1);
 	if (n > 0) {
-		(*obj->vptr->traits->copy)(charbuf, s, n);
+		(*STRING_TRAITS(obj)->copy)(charbuf, s, n);
 	}
 	charbuf[n] = 0;
-	obj->len = n;
+	STRING_LEN(obj) = n;
 	return (BFC_SUCCESS);
 }
 
@@ -170,12 +164,12 @@ bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 		return (-ENOMEM);
 	}
 	SET_STRBUF(obj, charbuf);
-	obj->bufsize = (n+1);
+	STRING_BUFSIZE(obj) = (n+1);
 	if (n > 0) {
-		(*obj->vptr->traits->assign)(charbuf, n, c);
+		(*STRING_TRAITS(obj)->assign)(charbuf, n, c);
 	}
 	charbuf[n] = 0;
-	obj->len = n;
+	STRING_LEN(obj) = n;
 	return (BFC_SUCCESS);
 }
 
@@ -192,10 +186,10 @@ bfc_init_basic_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str)
 		__FUNCTION__, buf, (long) bufsize, str);
 
 	SET_STRBUF(obj, GET_STRBUF(str));
-	obj->len = str->len;
-	obj->bufsize = str->bufsize;
-	str->bufsize = 0;
-	str->len = 0;
+	STRING_LEN(obj) = STRING_LEN(str);
+	STRING_BUFSIZE(obj) = STRING_BUFSIZE(str);
+	STRING_BUFSIZE(str) = 0;
+	STRING_LEN(str) = 0;
 	SET_STRBUF(str, NULL);
 	return (BFC_SUCCESS);
 }
@@ -203,11 +197,11 @@ bfc_init_basic_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str)
 void
 bfc_destroy_basic_wstring(bfc_strptr_t obj)
 {
-	bfc_string_classptr_t cls;
+	bfc_classptr_t cls;
 
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
 		wchar_t *charbuf = GET_STRBUF(obj);
-		obj->len = obj->bufsize = 0;
+		STRING_LEN(obj) = STRING_BUFSIZE(obj) = 0;
 		SET_STRBUF(obj, NULL);
 		if (charbuf) {
 			bfc_free_stringbuf(charbuf);
@@ -228,20 +222,20 @@ clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize, struct mempool *pool)
 size_t
 bfc_basic_wstring_objsize(bfc_cstrptr_t obj)
 {
-	return (sizeof(struct bfc_basic_wstring));
+	return (sizeof(bfc_string_t));
 }
 
 // capacity:
 size_t
 bfc_basic_wstring_length(bfc_cstrptr_t s)
 {
-	return (s->len);
+	return (STRING_LEN(s));
 }
 
 size_t
 bfc_basic_wstring_max_size(bfc_cstrptr_t s)
 {
-	return ((0xFFF0uL << 7*(sizeof(s->bufsize)-2)) / sizeof(wchar_t));
+	return ((0xFFF0uL << 7*(sizeof(STRING_BUFSIZE(s))-2)) / sizeof(wchar_t));
 }
 
 int
@@ -249,20 +243,21 @@ bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c)
 {
 	int rc = -ENOSPC;
 
-	if (n <= s->len) {
-		wchar_t *data = GET_STRBUF(s) + s->offs;
-		s->len = n;
-		data[s->len] = '\0';
+	if (n <= STRING_LEN(s)) {
+		wchar_t *data = GET_STRBUF(s) + STRING_OFFSET(s);
+		STRING_LEN(s) = n;
+		data[STRING_LEN(s)] = '\0';
 		return (BFC_SUCCESS);
 	} else if ((rc = bfc_basic_wstring_reserve(s, n)) == BFC_SUCCESS) {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 		L4SC_DEBUG(logger, "%s: got %ld chars", __FUNCTION__, (long)n);
-		wchar_t *data = GET_STRBUF(s) + s->offs;
-		(*s->vptr->traits->assign)(data + s->len, n - s->len, c);
-		s->len = n;
+		size_t oldlen = STRING_LEN(s);
+		wchar_t *data = GET_STRBUF(s) + STRING_OFFSET(s);
+		(*STRING_TRAITS(s)->assign)(data + oldlen, n - oldlen, c);
+		STRING_LEN(s) = n;
 		data[n] = '\0';
 		L4SC_DEBUG(logger, "%s(%p): %ld chars @%p",
-			__FUNCTION__, s, (long) s->len, GET_STRBUF(s));
+			__FUNCTION__, s, (long) STRING_LEN(s), GET_STRBUF(s));
 		return (BFC_SUCCESS);
 	} else {
 		l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -275,8 +270,8 @@ bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c)
 size_t
 bfc_basic_wstring_capacity(bfc_cstrptr_t s)
 {
-	if (s->bufsize > 0) {
-		return (s->bufsize - 1);
+	if (STRING_BUFSIZE(s) > 0) {
+		return (STRING_BUFSIZE(s) - 1);
 	}
 	return (0);
 }
@@ -292,8 +287,8 @@ bfc_basic_wstring_reserve(bfc_strptr_t s, size_t n)
 		L4SC_ERROR(logger, "%s: too large %ld", __FUNCTION__, (long)n);
 		return (-EINVAL);
 	}
-	need = s->offs + n + 1;
-	if (need <= s->bufsize) {
+	need = STRING_OFFSET(s) + n + 1;
+	if (need <= STRING_BUFSIZE(s)) {
 		return (BFC_SUCCESS);
 	}
 	p = bfc_realloc_stringbuf(GET_STRBUF(s), need * sizeof(wchar_t));
@@ -304,7 +299,7 @@ bfc_basic_wstring_reserve(bfc_strptr_t s, size_t n)
 		return (-ENOMEM);
 	}
 	SET_STRBUF(s, p);
-	s->bufsize = need;
+	STRING_BUFSIZE(s) = need;
 	return (BFC_SUCCESS);
 }
 

@@ -95,15 +95,37 @@ bfc_node_set_name(bfc_nodeptr_t node, bfc_cstrptr_t name)
 	return (rc);
 }
 
+int
+bfc_node_new_attribute_map(bfc_node_t *node, bfc_contptr_t *attrpp)
+{
+	int rc = -ENOMEM;
+	struct mempool *pool = node->vec.pool;
+	const size_t size = 500;
+	bfc_linear_string_map_t *map = bfc_mempool_calloc(pool, 1, size);
+	extern const bfc_class_t bfc_string_pair_class;
+	const bfc_classptr_t pairclass = &bfc_string_pair_class;
+
+	if (((map = bfc_mempool_calloc(pool, 1, size)) != NULL)
+	 && ((rc = bfc_init_linear_map(map, size, pairclass, pool)) >= 0)) {
+		*attrpp = (bfc_contptr_t) map;
+		map->log2_indirect = 3;
+		map->log2_double_indirect = 7;
+		rc = map->elem_direct;
+	}
+	return (rc);
+}
+
 static int
 new_attribute_map(bfc_node_t *node, bfc_ccontptr_t attrs)
 {
-	struct mempool *pool = node->vec.pool;
-	bfc_string_map_t *map = bfc_mempool_calloc(pool, 1, sizeof(*map));
+	bfc_contptr_t map;
+	int rc;
+
+	if ((rc = bfc_node_new_attribute_map(node, &map)) < 0) {
+		return (rc);
+	}
 	if (map != NULL) {
 		bfc_contptr_t oldattrs;
-		int estimate = attrs? bfc_map_size(attrs)+4: 16;
-		BFC_STRING_MAP_INIT(map, estimate, pool);
 		if (attrs) {
 			bfc_container_assign_copy((bfc_contptr_t)map, attrs);
 		}

@@ -6,6 +6,7 @@
 #include <errno.h>
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "string_private.h"
 #include "log4stdc.h"
 
 struct bfc_string_class {
@@ -25,7 +26,7 @@ bfc_init_basic_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, str %p)",
 		__FUNCTION__, buf, (long) bufsize, pool, str);
 
-	if (BFC_CLASS(str)->traits == bfc_basic_wstring_class.traits) {
+	if (STRING_TRAITS(str) == bfc_basic_wstring_class.traits) {
 		return bfc_init_basic_wstring_buffer(buf, bufsize, pool,
 					bfc_wstrdata(str), bfc_wstrlen(str));
 	} else {

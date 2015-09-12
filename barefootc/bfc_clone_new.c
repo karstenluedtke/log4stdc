@@ -12,7 +12,7 @@ bfc_clone_new(const void *obj, void **objpp, struct mempool *pool)
 
 	RETVAR_METHCALL(size, bfc_classptr_t, srcobj,
 			clonesize, (srcobj),
-			4*sizeof(struct bfc_objhdr));
+			4*sizeof(struct bfc_basic_object));
 	newobj = mempool_alloc(pool, size);
 	if (newobj == NULL) {
 		return (-ENOMEM);

@@ -48,11 +48,14 @@ typedef const struct bfc_map_class *bfc_map_class_ptr_t;
 
 #ifdef _MSC_VER /* msc does not allow zero-sized arrays */
 #define BFC_MAP(mapname,elemtype) \
-	BFC_VECTOR(mapname##_pair,elemtype,1)
+	BFC_VECTOR(mapname##_pair_vector,elemtype,1)
 #else
 #define BFC_MAP(mapname,elemtype) \
-	BFC_VECTOR(mapname##_pair,elemtype,0)
+	BFC_VECTOR(mapname##_pair_vector,elemtype,0)
 #endif
+
+#define BFC_LINEAR_MAP(mapname,elemtype) \
+	BFC_VECTOR(mapname##_pair_vector,elemtype,4)
 
 typedef BFC_MAP(bfc_string_map, bfc_string_pair_t) bfc_string_map_t;
 typedef BFC_MAP(bfc_strref_map, bfc_strref_pair_t) bfc_strref_map_t;
@@ -60,6 +63,9 @@ typedef BFC_MAP(bfc_object_map, bfc_string_object_pair_t) bfc_object_map_t;
 typedef BFC_MAP(bfc_objref_map, bfc_string_objref_pair_t) bfc_objref_map_t;
 typedef BFC_MAP(bfc_string_objref_map, bfc_string_objref_pair_t)
 							bfc_string_objref_map_t;
+
+typedef BFC_LINEAR_MAP(bfc_linear_string_map, bfc_string_pair_t)
+							bfc_linear_string_map_t;
 
 /**
  * @brief    Initialize a map.
@@ -120,6 +126,30 @@ do {									\
 	extern const bfc_class_t bfc_int_string_pair_class;		\
 	BFC_MAP_INIT(map, estimate, &bfc_int_string_pair_class, mpool);	\
 } while (0 /*just once*/)
+
+/**
+ * @brief    Initialize a linear map.
+ *
+ * The map shall be defined using the BFC_LINEAR_MAP macro.
+ * Sets internal data.
+ *
+ * @param[out]   map   		Pointer to a new map.
+ * @param[in]    pairclass 	Class of the pairs (bfc_classptr_t).
+ * @param[in]    mpool 		Memory pool to use.
+ * @return       None.
+ */
+ 
+#define BFC_LINEAR_MAP_INIT(map,pairclass,mpool) \
+do {									\
+	bfc_init_linear_map(map,sizeof(*map),pairclass,mpool);		\
+} while (0 /*just once*/)
+
+#define BFC_LINEAR_STRING_MAP_INIT(map,mpool) \
+do {									\
+	extern const bfc_class_t bfc_string_pair_class;			\
+	BFC_LINEAR_MAP_INIT(map,&bfc_string_pair_class,mpool);		\
+} while (0 /*just once*/)
+
 /** @} */
 
 int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);
@@ -128,6 +158,9 @@ int bfc_map_reserve(bfc_contptr_t map, size_t n);
 size_t bfc_map_size(bfc_ccontptr_t);
 size_t bfc_map_load_limit(const void *map);
 size_t bfc_map_load_percent(const void *map);
+
+int bfc_init_linear_map(void *, size_t, bfc_classptr_t, struct mempool *);
+int bfc_init_linear_map_copy(void *, size_t, struct mempool *, bfc_ccontptr_t);
 
 int bfc_map_insert_objects(bfc_contptr_t, bfc_objptr_t, bfc_objptr_t,
 			   bfc_iterptr_t position, size_t possize);

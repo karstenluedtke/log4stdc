@@ -11,6 +11,7 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/mempool.h"
+#include "string_private.h"
 #include "log4stdc.h"
 
 extern const struct bfc_classhdr bfc_iso8859_1_traits_class;
@@ -65,7 +66,6 @@ const struct bfc_string_class bfc_buffered_iso8859_1_string_class = {
 	.buffered_substr= bfc_buffered_iso8859_1_substr
 };
 
-#define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
 
 int
 bfc_init_empty_iso8859_1_string(void *buf, size_t bufsize,
@@ -106,7 +106,7 @@ bfc_init_shared_iso8859_1_string(void *buf, size_t bufsize,
 	}
 
 	SET_STRBUF(obj, s);
-	obj->bufsize = obj->len = n;
+	STRING_BUFSIZE(obj) = STRING_LEN(obj) = n;
 	return (BFC_SUCCESS);
 }
 
@@ -144,7 +144,7 @@ bfc_init_buffered_iso8859_1_string(void *buf, size_t bufsize,
 	}
 
 	SET_STRBUF(obj, s);
-	obj->bufsize = obj->len = n;
+	STRING_BUFSIZE(obj) = STRING_LEN(obj) = n;
 	return (BFC_SUCCESS);
 }
 
@@ -203,14 +203,14 @@ get_codept(bfc_cstrptr_t s, size_t pos)
 	unsigned codept;
 
 	p = (char*) bfc_string_index((bfc_strptr_t)(uintptr_t)s, pos);
-	codept = (*s->vptr->traits->to_int)(*p);
+	codept = (*STRING_TRAITS(s)->to_int)(*p);
 	return (codept);
 }
 
 static int
 set_codept(bfc_strptr_t s, size_t pos, long codept)
 {
-	char c = (*s->vptr->traits->to_char)((int)codept);
+	char c = (*STRING_TRAITS(s)->to_char)((int)codept);
 
 	if ((pos == BFC_NPOS) || (pos > bfc_strlen(s))) {
 		return (-ERANGE);

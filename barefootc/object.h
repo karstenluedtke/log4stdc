@@ -21,9 +21,10 @@ extern "C" {
 #include <errno.h>
 
 struct bfc_objhdr;
-typedef struct bfc_objhdr bfc_object_t;
-typedef struct bfc_objhdr *bfc_objptr_t;
-typedef const struct bfc_objhdr *bfc_cobjptr_t;
+struct bfc_basic_object;
+typedef struct bfc_basic_object bfc_object_t;
+typedef struct bfc_basic_object *bfc_objptr_t;
+typedef const struct bfc_basic_object *bfc_cobjptr_t;
 
 struct bfc_classhdr;
 typedef struct bfc_classhdr bfc_class_t;
@@ -51,8 +52,16 @@ struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
 };
 
+struct bfc_basic_object {
+	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
+	size_t	length;
+	size_t	private_6;
+	size_t	private_7;
+};
+
 #define BFC_STATIC_OBJHDR_INITIALIZERS(cls,name) \
-	&cls, name, 30000, (struct bfc_mutex *)0, (struct mempool *)0
+	(bfc_classptr_t) &cls, name, 30000,      \
+	(struct bfc_mutex *)0, (struct mempool *)0
 
 #define BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,elemT) \
 	classptrT	super;	  /**< possible super class */		     \
@@ -145,7 +154,7 @@ struct bfc_classhdr {
 
 #define RETURN_CMETHCALL(classT,cls,vmeth,args,dflt)			\
 	if (cls) {							\
-		classT __cls = cls;					\
+		classT __cls = (classT) cls;				\
 		do {							\
 			if (__cls->vmeth) {				\
 				return (*__cls->vmeth) args;		\
@@ -159,7 +168,7 @@ struct bfc_classhdr {
 
 #define RETVAR_CMETHCALL(var,classT,cls,vmeth,args,dflt)		\
 	if (cls) {							\
-		classT __cls = cls;					\
+		classT __cls = (classT) cls;				\
 		do {							\
 			if (__cls->vmeth) {				\
 				var = (*__cls->vmeth) args;		\
@@ -178,7 +187,7 @@ struct bfc_classhdr {
 
 #define VOID_CMETHCALL(classT,cls,vmeth,args)				\
 	if (cls) {							\
-		classT __cls = cls;					\
+		classT __cls = (classT) cls;				\
 		do {							\
 			if (__cls->vmeth) {				\
 				(*__cls->vmeth) args;			\
@@ -200,7 +209,7 @@ struct bfc_classhdr {
 		if (super) {						\
 			bfc_init_object(super, obj, size, pool);	\
 		}							\
-		obj->vptr = (cls);					\
+		obj->vptr = (void *) (cls);				\
 		obj->name = #obj;					\
 		bfc_init_refcount(obj, 1);				\
 	}

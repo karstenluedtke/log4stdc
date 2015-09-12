@@ -6,6 +6,8 @@
 #include <errno.h>
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "barefootc/unconst.h"
+#include "string_private.h"
 #include "log4stdc.h"
 
 struct bfc_string_class {
@@ -13,8 +15,6 @@ struct bfc_string_class {
 			     bfc_strptr_t, bfc_cstrptr_t, wchar_t)
 };
 
-#define GET_STRBUF(s)		((s)->name)
-#define SET_STRBUF(s,buf)	(s)->name = (buf)
 
 /**
  * @brief    bfc_init_wstring_move
@@ -32,10 +32,10 @@ bfc_init_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str)
 		return(rc);
 	}
 	SET_STRBUF(obj, GET_STRBUF(str));
-	obj->len = str->len;
-	obj->bufsize = str->bufsize;
-	str->bufsize = 0;
-	str->len = 0;
+	STRING_LEN(obj) = STRING_LEN(str);
+	STRING_BUFSIZE(obj) = STRING_BUFSIZE(str);
+	STRING_BUFSIZE(str) = 0;
+	STRING_LEN(str) = 0;
 	SET_STRBUF(str, NULL);
 	return (rc);
 }

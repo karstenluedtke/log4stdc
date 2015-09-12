@@ -147,6 +147,8 @@ test(int n1, struct test_kv kv[])
 		assert(o2 == o1);
 		assert(o1->refc == 2);
 		bfc_object_tostring(o1, buf, sizeof(buf), NULL);
+		L4SC_DEBUG(logger, "%s: v1[%d] = \"%s\", expect \"%s\"",
+					__FUNCTION__, i, buf, kv[i].val);
 		assert(strcmp(buf, kv[i].val) == 0);
 	}
 

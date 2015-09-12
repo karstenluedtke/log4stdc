@@ -8,6 +8,7 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
+#include "string_private.h"
 
 /**
  * @brief    bfc_string_replace_range
@@ -16,7 +17,7 @@ int
 bfc_string_replace_range(bfc_strptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
 			 bfc_cstrptr_t s2)
 {
-	if (BFC_CLASS(s)->traits == BFC_CLASS(s2)->traits) {
+	if (STRING_TRAITS(s) == STRING_TRAITS(s2)) {
 		size_t len = bfc_strlen(s2);
 		const char *data = bfc_strdata(s2);
 		return (bfc_string_replace_range_buffer(s, i1, i2, data, len));

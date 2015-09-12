@@ -7,6 +7,7 @@
 #define NEED_BFC_STRING_CLASS 1
 #include "barefootc/object.h"
 #include "barefootc/string.h"
+#include "string_private.h"
 #include "log4stdc.h"
 
 /**

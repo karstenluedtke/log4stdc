@@ -164,7 +164,6 @@ struct bfc_string_class {
 	}
 
 #define	bfc_strlen(s)	((s)->length)
-#define bfc_strdata(s)	(((s)->private_6 == 0)? (s)->name: bfc_string_data(s))
 
 /*
  * bfc_string_t

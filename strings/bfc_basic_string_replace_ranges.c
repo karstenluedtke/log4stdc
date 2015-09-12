@@ -9,6 +9,7 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/iterator.h"
+#include "string_private.h"
 #include "log4stdc.h"
 
 /**

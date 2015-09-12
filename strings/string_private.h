@@ -6,3 +6,4 @@
 #define GET_STRBUF(s)		BFC_UNCONST(wchar_t*,(s)->name)
 #define SET_STRBUF(s,buf)	(s)->name = (const char *)(buf)
 
+#define bfc_strdata(s)	((STRING_OFFSET(s) == 0)? (s)->name: bfc_string_data(s))

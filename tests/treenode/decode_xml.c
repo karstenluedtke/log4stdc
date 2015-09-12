@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 		bfc_object_tostring(&root, buf, sizeof(buf), "xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);
-		assert(strcmp(buf, bfc_strdata(&input)) == 0);
+		assert(strcmp(buf, bfc_string_data(&input)) == 0);
 	} while (0 /*just once*/);
 
 	do {
@@ -75,7 +75,7 @@ main(int argc, char *argv[])
 		bfc_object_tostring(&root, buf, sizeof(buf), "xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);
-		assert(strcmp(buf, bfc_strdata(&input)) == 0);
+		assert(strcmp(buf, bfc_string_data(&input)) == 0);
 	} while (0 /*just once*/);
 
 	do {
@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 		bfc_object_tostring(&root, buf, sizeof(buf), "xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);
-		assert(strcmp(buf, bfc_strdata(&input)) == 0);
+		assert(strcmp(buf, bfc_string_data(&input)) == 0);
 	} while (0 /*just once*/);
 
 	do {
@@ -116,7 +116,7 @@ main(int argc, char *argv[])
 		bfc_object_tostring(&root, buf, sizeof(buf), "xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);
-		assert(strcmp(buf, bfc_strdata(&input)) == 0);
+		assert(strcmp(buf, bfc_string_data(&input)) == 0);
 	} while (0 /*just once*/);
 
 	return (0);

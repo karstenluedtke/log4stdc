@@ -1101,12 +1101,12 @@ namespace barefootc {
 		// 21.4.7, string operations:
 		const charT* c_str() const noexcept
 		{
-			return (const charT *) bfc_strdata(&bfcstr);
+			return (const charT *) bfc_string_data(&bfcstr);
 		}
 
 		const charT* data() const noexcept
 		{
-			return (const charT *) bfc_strdata(&bfcstr);
+			return (const charT *) bfc_string_data(&bfcstr);
 		}
 
 		allocator_type get_allocator() const noexcept

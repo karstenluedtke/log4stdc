@@ -29,20 +29,13 @@ extern const struct bfc_classhdr bfc_natural_class;
 extern const struct bfc_classhdr bfc_real_number_class;
 extern const struct bfc_classhdr bfc_boolean_class;
 
-struct bfc_number {
-	BFC_OBJHDR(bfc_classptr_t, struct bfc_number *)
-	union bfc_number_un {
-		ptrdiff_t	n;
-		double		f;
-	} 			u;
-};
-
-typedef struct bfc_number bfc_number_t;
-typedef struct bfc_number *bfc_numptr_t;
-typedef const struct bfc_number *bfc_cnumptr_t;
+typedef struct bfc_basic_object bfc_number_t;
+typedef struct bfc_basic_object *bfc_numptr_t;
+typedef const struct bfc_basic_object *bfc_cnumptr_t;
 
 #define BFC_SIGNED_NUMBER(x) \
- { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_number_class,"int"), { (ptrdiff_t)(x) } }
+ { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_number_class,"int"), \
+   sizeof(ptrdiff_t), (size_t)(ptrdiff_t)(x) }
 
 #define BFC_NUMBER_LOGGER	"barefootc.number",16
 
@@ -58,6 +51,12 @@ int bfc_integer_object_tostring(bfc_cobjptr_t obj,
 				char *buf, size_t bufsize, const char *fmt);
 void bfc_integer_dump_object(bfc_cobjptr_t obj, int depth,
 					struct l4sc_logger *log);
+const void *bfc_number_first(bfc_cobjptr_t obj);
+void *bfc_number_index(bfc_objptr_t obj, size_t pos);
+long bfc_integer_getlong(bfc_cobjptr_t obj, size_t pos);
+int bfc_integer_setlong(bfc_objptr_t obj, size_t pos, long val);
+bfc_objptr_t bfc_integer_place(bfc_objptr_t obj, size_t pos,
+				bfc_objptr_t val, struct mempool *pool);
 
 int bfc_init_real_number_object(void *buf,size_t bufsize,struct mempool *pool);
 size_t bfc_get_real_number_object_size(bfc_cobjptr_t obj);
@@ -67,6 +66,10 @@ int bfc_real_number_object_tostring(bfc_cobjptr_t obj,
 				char *buf, size_t bufsize, const char *fmt);
 void bfc_real_number_dump_object(bfc_cobjptr_t obj, int depth,
 					struct l4sc_logger *log);
+double bfc_real_number_get(bfc_cobjptr_t obj);
+int bfc_real_number_set(bfc_objptr_t obj, double val);
+long bfc_real_number_getlong(bfc_cobjptr_t obj, size_t pos);
+int bfc_real_number_setlong(bfc_objptr_t obj, size_t pos, long val);
 
 int bfc_init_boolean_object(void *buf, size_t bufsize, struct mempool *pool);
 size_t bfc_get_boolean_object_size(bfc_cobjptr_t obj);

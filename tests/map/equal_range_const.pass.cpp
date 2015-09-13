@@ -55,7 +55,7 @@ int main()
 	P *p = (P *)bfc_container_first(r.first.bfciter());
 	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first(p);
 	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 30);
+        assert(bfc_object_getlong(num) == 30);
         assert(bfc_string_compare_c_str(str, "thirty") == 0);
 
 	bfc_number_t key5 = BFC_SIGNED_NUMBER(5);

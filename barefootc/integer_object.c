@@ -13,6 +13,9 @@
 #define snprintf _snprintf
 #endif
 
+static void *
+place_integer(bfc_objptr_t obj, size_t pos, void *p, struct mempool *pool);
+
 const struct bfc_classhdr bfc_number_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
@@ -32,10 +35,18 @@ const struct bfc_classhdr bfc_number_class = {
 	/* .length 	*/ bfc_number_get_object_length,
 	/* .tostring 	*/ bfc_integer_object_tostring,
 	/* .dump 	*/ bfc_integer_dump_object,
-	/* .spare13 	*/ NULL,
-	/* .spare14 	*/ NULL,
-	/* .spare15 	*/ NULL,
+	/* .first 	*/ bfc_number_first,
+	/* .index 	*/ bfc_number_index,
+	/* .getl 	*/ bfc_integer_getlong,
+	/* .setl 	*/ bfc_integer_setlong,
+	/* .place 	*/ place_integer,
+	NULL,
 };
+
+#define UNSIGNED_INT(obj)	(obj)->private_6
+#define GET_UNSIGNED(obj)	(UNSIGNED_INT(obj))
+#define GET_SIGNED(obj)		((ptrdiff_t) (UNSIGNED_INT(obj)))
+#define SET_NUMBER(obj,val)	UNSIGNED_INT(obj) = (size_t)(ptrdiff_t)(val)
 
 int
 bfc_init_integer_object(void *buf, size_t bufsize, struct mempool *pool)
@@ -48,24 +59,6 @@ bfc_init_integer_object(void *buf, size_t bufsize, struct mempool *pool)
 		obj->vptr = (bfc_classptr_t) &bfc_number_class;
 	}
 	return (BFC_SUCCESS);
-}
-
-int
-bfc_number_init_refcount(bfc_objptr_t obj, int n)
-{
-	return (-ENOSYS);
-}
-
-int
-bfc_number_incr_refcount(bfc_objptr_t obj)
-{
-	return (-ENOSYS);
-}
-
-int
-bfc_number_decr_refcount(bfc_objptr_t obj)
-{
-	return (-ENOSYS);
 }
 
 void
@@ -96,16 +89,14 @@ bfc_get_integer_object_size(bfc_cobjptr_t obj)
 unsigned  
 bfc_integer_get_hashcode(bfc_cobjptr_t obj, int hashlen)
 {
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
-	return (bfc_reduce_hashcode(p->u.n, 8*sizeof(p->u.n), hashlen));
+	return (bfc_reduce_hashcode(UNSIGNED_INT(obj),
+				    8*sizeof(UNSIGNED_INT(obj)), hashlen));
 }
 
 int
 bfc_integer_is_equal(bfc_cobjptr_t obj, bfc_cobjptr_t other)
 {
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
-	bfc_cnumptr_t q = (bfc_cnumptr_t) other;
-	return (p->u.n == q->u.n);
+	return (UNSIGNED_INT(obj) == UNSIGNED_INT(other));
 }
 
 size_t
@@ -114,36 +105,73 @@ bfc_number_get_object_length(bfc_cobjptr_t obj)
 	return (1);
 }
 
+const void *
+bfc_number_first(bfc_cobjptr_t obj)
+{
+	return (&UNSIGNED_INT(obj));
+}
+
+void *
+bfc_number_index(bfc_objptr_t obj, size_t pos)
+{
+	return (&UNSIGNED_INT(obj));
+}
+
+long
+bfc_integer_getlong(bfc_cobjptr_t obj, size_t pos)
+{
+	return ((long) GET_SIGNED(obj));
+}
+
+int
+bfc_integer_setlong(bfc_objptr_t obj, size_t pos, long val)
+{
+	SET_NUMBER(obj, val);
+	return(BFC_SUCCESS);
+}
+
+static void *
+place_integer(bfc_objptr_t obj, size_t pos, void *p, struct mempool *pool)
+{
+	bfc_objptr_t other = (bfc_objptr_t) p;
+
+	if (other && bfc_instance_of_class(other, BFC_CLASS(obj))) {
+		UNSIGNED_INT(obj) = UNSIGNED_INT(other);
+	} else if (other && BFC_CLASS(other)) {
+		SET_NUMBER(obj, bfc_object_getlong(other));
+	}
+	return (obj);
+}
+
 int
 bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
 			    const char *fmt)
 {
 	int rc = 0;
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
 	char *dp = buf;
 	char tmp[40];
 		
-	if (p == NULL) {
+	if (obj == NULL) {
 		return (-EFAULT);
 	} else if ((buf == NULL) || (bufsize == 0)) {
 		dp = tmp;
 	}
 
 	if (fmt == NULL) {
-		if ((rc = snprintf(dp, bufsize, "%ld", (long) p->u.n)) < 0) {
-			rc = snprintf(tmp, sizeof(tmp), "%ld", (long) p->u.n);
+		if ((rc = snprintf(dp, bufsize, "%ld", (long) GET_SIGNED(obj))) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), "%ld", (long) GET_SIGNED(obj));
 		}
 	} else if (strchr(fmt, 'l')) {
-		if ((rc = snprintf(dp, bufsize, fmt, (long) p->u.n)) < 0) {
-			rc = snprintf(tmp, sizeof(tmp), fmt, (long) p->u.n);
+		if ((rc = snprintf(dp, bufsize, fmt, (long) GET_SIGNED(obj))) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, (long) GET_SIGNED(obj));
 		}
 	} else if (strchr(fmt, 'u')) {
-		if ((rc = snprintf(dp, bufsize, fmt, (unsigned) p->u.n)) < 0) {
-			rc = snprintf(tmp, sizeof(tmp), fmt, (unsigned) p->u.n);
+		if ((rc = snprintf(dp, bufsize, fmt, (unsigned) GET_UNSIGNED(obj))) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, (unsigned) GET_SIGNED(obj));
 		}
 	} else {
-		if ((rc = snprintf(dp, bufsize, fmt, (int) p->u.n)) < 0) {
-			rc = snprintf(tmp, sizeof(tmp), fmt, (int) p->u.n);
+		if ((rc = snprintf(dp, bufsize, fmt, (int) GET_SIGNED(obj))) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, (int) GET_SIGNED(obj));
 		}
 	}
 	return (rc);
@@ -152,11 +180,9 @@ bfc_integer_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
 void
 bfc_integer_dump_object(bfc_cobjptr_t obj, int depth, struct l4sc_logger *log)
 {
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
-
-	if (obj && BFC_CLASS(obj) && p) {
+	if (obj && BFC_CLASS(obj)) {
 		L4SC_DEBUG(log, "%s object @%p: %ld",
-			BFC_CLASS(obj)->name, obj, (long) p->u.n);
+			BFC_CLASS(obj)->name, obj, (long) GET_SIGNED(obj));
 	}
 }
 

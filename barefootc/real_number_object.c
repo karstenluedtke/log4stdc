@@ -28,7 +28,11 @@ const struct bfc_classhdr bfc_real_number_class = {
 	.length	  = bfc_number_get_object_length,
 	.tostring = bfc_real_number_object_tostring,
 	.dump	  = bfc_real_number_dump_object,
+	.getl	  = bfc_real_number_getlong,
+	.setl	  = bfc_real_number_setlong,
 };
+
+#define REAL_VAL(obj)		(*(double*) &(obj)->private_6)
 
 int
 bfc_init_real_number_object(void *buf, size_t bufsize, struct mempool *pool)
@@ -52,16 +56,40 @@ bfc_get_real_number_object_size(bfc_cobjptr_t obj)
 unsigned  
 bfc_real_number_get_hashcode(bfc_cobjptr_t obj, int hashlen)
 {
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
-	return (bfc_reduce_hashcode(p->u.f, 8*sizeof(p->u.f), hashlen));
+	return (bfc_reduce_hashcode(REAL_VAL(obj),
+				    8*sizeof(REAL_VAL(obj)), hashlen));
 }
 
 int
 bfc_real_number_is_equal(bfc_cobjptr_t obj, bfc_cobjptr_t other)
 {
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
-	bfc_cnumptr_t q = (bfc_cnumptr_t) other;
-	return (p->u.f == q->u.f);
+	return (REAL_VAL(obj) == REAL_VAL(other));
+}
+
+double
+bfc_real_number_get(bfc_cobjptr_t obj)
+{
+	return (REAL_VAL(obj));
+}
+
+int
+bfc_real_number_set(bfc_objptr_t obj, double val)
+{
+	REAL_VAL(obj) = val;
+	return (BFC_SUCCESS);
+}
+
+long
+bfc_real_number_getlong(bfc_cobjptr_t obj, size_t pos)
+{
+	return ((long) REAL_VAL(obj));
+}
+
+int
+bfc_real_number_setlong(bfc_objptr_t obj, size_t pos, long val)
+{
+	REAL_VAL(obj) = val;
+	return (BFC_SUCCESS);
 }
 
 int
@@ -69,23 +97,22 @@ bfc_real_number_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
 				const char *fmt)
 {
 	int rc = 0;
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
 	char *dp = buf;
 	char tmp[40];
 		
-	if (p == NULL) {
+	if (obj == NULL) {
 		return (-EFAULT);
 	} else if ((buf == NULL) || (bufsize == 0)) {
 		dp = tmp;
 	}
 
 	if (fmt == NULL) {
-		if ((rc = snprintf(dp, bufsize, "%.3f", p->u.f)) < 0) {
-			rc = snprintf(tmp, sizeof(tmp), "%.3f", p->u.f);
+		if ((rc = snprintf(dp, bufsize, "%.3f", REAL_VAL(obj))) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), "%.3f", REAL_VAL(obj));
 		}
 	} else {
-		if ((rc = snprintf(dp, bufsize, fmt, p->u.f)) < 0) {
-			rc = snprintf(tmp, sizeof(tmp), fmt, p->u.f);
+		if ((rc = snprintf(dp, bufsize, fmt, REAL_VAL(obj))) < 0) {
+			rc = snprintf(tmp, sizeof(tmp), fmt, REAL_VAL(obj));
 		}
 	}
 	return (rc);
@@ -94,11 +121,9 @@ bfc_real_number_object_tostring(bfc_cobjptr_t obj, char *buf, size_t bufsize,
 void
 bfc_real_number_dump_object(bfc_cobjptr_t obj,int depth,struct l4sc_logger *log)
 {
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
-
-	if (obj && BFC_CLASS(obj) && p) {
+	if (obj && BFC_CLASS(obj)) {
 		L4SC_DEBUG(log, "%s object @%p: %.3f",
-			BFC_CLASS(obj)->name, obj, p->u.f);
+			BFC_CLASS(obj)->name, obj, REAL_VAL(obj));
 	}
 }
 

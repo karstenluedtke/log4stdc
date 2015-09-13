@@ -68,7 +68,7 @@ int main()
 	P *p = (P *)bfc_container_first(i.bfciter());
 	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first(p);
 	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 1);
+        assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
 	bfc_number_t key2 = BFC_SIGNED_NUMBER(2);
@@ -79,7 +79,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 2);
+        assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
 	bfc_number_t key3 = BFC_SIGNED_NUMBER(3);
@@ -90,7 +90,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 3);
+        assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
 	bfc_number_t key4 = BFC_SIGNED_NUMBER(4);
@@ -101,7 +101,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 4);
+        assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }
     {
@@ -134,7 +134,7 @@ int main()
 	P *p = (P *)bfc_container_first(i.bfciter());
 	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first(p);
 	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 1);
+        assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
 	bfc_number_t key2 = BFC_SIGNED_NUMBER(2);
@@ -145,7 +145,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 2);
+        assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
 	bfc_number_t key3 = BFC_SIGNED_NUMBER(3);
@@ -156,7 +156,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 3);
+        assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
 	bfc_number_t key4 = BFC_SIGNED_NUMBER(4);
@@ -167,7 +167,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 4);
+        assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }
     {
@@ -200,7 +200,7 @@ int main()
 	P *p = (P *)bfc_container_first(i.bfciter());
 	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first(p);
 	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 1);
+        assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
 	bfc_number_t key2 = BFC_SIGNED_NUMBER(2);
@@ -211,7 +211,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 2);
+        assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
 	bfc_number_t key3 = BFC_SIGNED_NUMBER(3);
@@ -222,7 +222,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 3);
+        assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
 	bfc_number_t key4 = BFC_SIGNED_NUMBER(4);
@@ -233,7 +233,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 4);
+        assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }
     {
@@ -266,7 +266,7 @@ int main()
 	P *p = (P *)bfc_container_first(i.bfciter());
 	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first(p);
 	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 1);
+        assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
 	bfc_number_t key2 = BFC_SIGNED_NUMBER(2);
@@ -277,7 +277,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 2);
+        assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
 	bfc_number_t key3 = BFC_SIGNED_NUMBER(3);
@@ -288,7 +288,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 3);
+        assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
 	bfc_number_t key4 = BFC_SIGNED_NUMBER(4);
@@ -299,7 +299,7 @@ int main()
 	p = (P *)bfc_container_first(i.bfciter());
 	num = (bfc_cnumptr_t)bfc_container_first(p);
 	str = (bfc_cstrptr_t)bfc_container_index(p,1);
-        assert(num->u.n == 4);
+        assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }
 #if 0

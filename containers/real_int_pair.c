@@ -14,6 +14,7 @@
 #include "barefootc/object.h"
 #include "barefootc/string.h"
 #include "barefootc/pair.h"
+#include "barefootc/container.h"
 #include "barefootc/unconst.h"
 #include "log4stdc.h"
 
@@ -35,12 +36,18 @@ static int
 init_real_int_pair(void *buf, size_t bufsize, struct mempool *pool)
 {
 	struct bfc_number_pair *pair = (struct bfc_number_pair *) buf;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	if (bufsize < sizeof(*pair)) {
 		return (-ENOSPC);
 	}
 	pair->vptr = (bfc_pair_class_ptr_t) &bfc_int_pair_class;
 	bfc_init_real_number_object(&pair->first, sizeof(pair->first), pool);
 	bfc_init_integer_object(&pair->second, sizeof(pair->second), pool);
+
+	L4SC_DEBUG(logger, "%s(%p, %ld, %p): classes %s, %s",
+		__FUNCTION__, buf, (long) bufsize, pool,
+		BFC_CLASS(&pair->first)->name, BFC_CLASS(&pair->second)->name);
+
 	return (BFC_SUCCESS);
 }
 

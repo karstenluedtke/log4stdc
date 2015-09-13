@@ -99,22 +99,32 @@ namespace barefootc {
 		const Allocator saved_allocator;
 		float saved_max_load_factor;
 
-		void init_map(struct mempool *pool,
-			      bfc_number_t& k, bfc_number_t& v)
+		void init_map(struct mempool *pool)
 		{
-			BFC_MAP_INIT(&bfcmap, 100,
-				(bfc_classptr_t) &bfc_int_pair_class, pool);
+			bfc_classptr_t paircls = (bfc_classptr_t) &bfc_int_string_pair_class;
+			BFC_MAP_INIT(&bfcmap, 100, paircls, pool);
 			l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
-			L4SC_DEBUG(log, "%s: sizes: k %d, v %d, value_type %d, elem_size %d",
-				__FUNCTION__, (int) sizeof(k), (int) sizeof(v), (int) sizeof(value_type), (int) bfcmap.elem_size);
+			L4SC_DEBUG(log, "%s: sizes: value_type %d, elem_size %d",
+				__FUNCTION__, (int) sizeof(value_type), (int) bfcmap.elem_size);
 		}
 
 		void init_map(struct mempool *pool,
-			      bfc_number_t& k, bfc_string_t& v)
+			      bfc_number_t& k, bfc_object_t& v)
 		{
-			BFC_MAP_INIT(&bfcmap, 100,
-				(bfc_classptr_t) &bfc_int_string_pair_class,
-				pool);
+			bfc_classptr_t paircls = (bfc_classptr_t) &bfc_int_string_pair_class;
+			if (bfc_instance_of_class(&k, &bfc_real_number_class)
+			 && bfc_instance_of_class(&v, &bfc_number_class)) {
+				paircls = (bfc_classptr_t) &bfc_real_int_pair_class;
+			} else if (bfc_instance_of_class(&k, &bfc_number_class)
+			        && bfc_instance_of_class(&v, &bfc_number_class)) {
+				paircls = (bfc_classptr_t) &bfc_int_pair_class;
+			} else if (bfc_instance_of_class(&k, &bfc_number_class)
+			        && bfc_instance_of_class(&v, (bfc_classptr_t) &bfc_string_class)) {
+				paircls = (bfc_classptr_t) &bfc_int_string_pair_class;
+			} else {
+				throw(std::runtime_error("unknown value class"));
+			}
+			BFC_MAP_INIT(&bfcmap, 100, paircls, pool);
 			l4sc_logger_ptr_t log = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 			L4SC_DEBUG(log, "%s: sizes: k %d, v %d, value_type %d, elem_size %d",
 				__FUNCTION__, (int) sizeof(k), (int) sizeof(v), (int) sizeof(value_type), (int) bfcmap.elem_size);
@@ -136,25 +146,22 @@ namespace barefootc {
 	public:
 		map(): saved_allocator(), saved_max_load_factor(1.0)
 		{
-			key_type k;
-			mapped_type v;
-			init_map(get_stdc_mempool(), k, v);
+			init_map(get_stdc_mempool());
 		}
 
 		explicit map(const Allocator& a):
 			saved_allocator(a), saved_max_load_factor(1.0)
 		{
-			key_type k;
-			mapped_type v;
-			init_map(get_stdc_mempool(), k, v);
+			init_map(get_stdc_mempool());
 		}
 
 
 		map(pair_iterator first, pair_iterator lim):
 			saved_allocator(), saved_max_load_factor(1.0)
 		{
-			key_type k;
-			mapped_type v;
+			value_type kvpair = *first;
+			key_type k = kvpair.first;
+			mapped_type v = kvpair.second;
 
 			init_map(get_stdc_mempool(), k, v);
 			for (pair_iterator it(first); it != lim; it++) {

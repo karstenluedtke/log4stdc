@@ -148,6 +148,7 @@ dump_pair(const struct bfc_number_pair *pair,int depth,struct l4sc_logger *log)
 	if (pair && BFC_CLASS(pair)) {
 		L4SC_DEBUG(log, "%s @%p: %ld, %ld",
 			((bfc_classptr_t) BFC_CLASS(pair))->name, pair,
-			(long) pair->first.u.n, (long) pair->second.u.n);
+			bfc_object_getlong(&pair->first),
+			bfc_object_getlong(&pair->second));
 	}
 }

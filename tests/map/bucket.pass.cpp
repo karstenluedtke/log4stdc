@@ -54,7 +54,7 @@ int main()
         assert(bc >= 5);
 	bfc_number_t key = BFC_SIGNED_NUMBER(0);
         for (size_t i = 0; i < 13; ++i) {
-	    key.u.n = i;
+	    bfc_object_setlong(&key, i);
 	    L4SC_DEBUG(logger, "%s: key %d, bucket %d/%d",
 		__FUNCTION__, (int) i, (int) c.bucket(key), (int) bc);
             assert(c.bucket(key) == i % bc);

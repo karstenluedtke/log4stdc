@@ -195,7 +195,7 @@ dump_pair(const struct bfc_number_string_pair *pair, int depth,
 	if (pair && BFC_CLASS(pair)) {
 		L4SC_DEBUG(log, "%s @%p: %ld",
 			((bfc_classptr_t) BFC_CLASS(pair))->name, pair,
-			(long) pair->first.u.n);
+			bfc_object_getlong(&pair->first));
 		if (depth > 1) {
 			bfc_cobjptr_t obj;
 			if ((obj = bfc_container_cindex(pair, 1)) != NULL) {

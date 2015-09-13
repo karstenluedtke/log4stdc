@@ -15,7 +15,7 @@ bfc_node_new_boolean_element(bfc_cnodeptr_t ancestor, const char *name, int val)
 
 	if ((bfc_new((void **) &number, &bfc_boolean_class, pool) >= 0)
 	 && (number != NULL)) {
-		number->u.n = val;
+		bfc_object_setlong(number, val);
 		node = bfc_node_new_element(ancestor, "nO", name, number);
 	}
 	return (node);

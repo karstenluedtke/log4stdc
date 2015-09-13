@@ -34,7 +34,7 @@ P P3(double k, int v)
 	P p = { &bfc_real_int_pair_class,
 		{ &bfc_real_number_class, 0 },
 		BFC_SIGNED_NUMBER(v) };
-	p.first.u.f = k;
+	bfc_real_number_set(&p.first, k);
 	return (p);
 }
 		
@@ -46,34 +46,35 @@ int main()
     l4sc_configure_from_xml_file("log4j.xml");
     logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
     {
-        C c;
+	P init[] = { P3(0.0, 0) }; // just for initializing the pair type
+        C c(init,init);            // begin == last, nothing inserted
         R r = c.insert(P3(3.5, 3));
         assert(r.second);
         assert(c.size() == 1);
 	const P *rp = (P *) bfc_iterator_index(r.first.bfciter());
-        assert(rp->first.u.f == 3.5);
-        assert(rp->second.u.n == 3);
+        assert(bfc_real_number_get(&rp->first) == 3.5);
+        assert(bfc_object_getlong(&rp->second) == 3);
 
         r = c.insert(P3(3.5, 4));
         assert(!r.second);
         assert(c.size() == 1);
 	rp = (P *) bfc_iterator_index(r.first.bfciter());
-        assert(rp->first.u.f == 3.5);
-        assert(rp->second.u.n == 3);
+        assert(bfc_real_number_get(&rp->first) == 3.5);
+        assert(bfc_object_getlong(&rp->second) == 3);
 
         r = c.insert(P3(4.5, 4));
         assert(r.second);
         assert(c.size() == 2);
 	rp = (P *) bfc_iterator_index(r.first.bfciter());
-        assert(rp->first.u.f == 4.5);
-        assert(rp->second.u.n == 4);
+        assert(bfc_real_number_get(&rp->first) == 4.5);
+        assert(bfc_object_getlong(&rp->second) == 4);
 
         r = c.insert(P3(5.5, 4));
         assert(r.second);
         assert(c.size() == 3);
 	rp = (P *) bfc_iterator_index(r.first.bfciter());
-        assert(rp->first.u.f == 5.5);
-        assert(rp->second.u.n == 4);
+        assert(bfc_real_number_get(&rp->first) == 5.5);
+        assert(bfc_object_getlong(&rp->second) == 4);
     }
 #if 0
 #if __cplusplus >= 201103L

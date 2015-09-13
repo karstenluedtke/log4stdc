@@ -27,9 +27,8 @@ extern "C" {
 struct bfc_container_class;
 typedef const struct bfc_container_class *bfc_container_classptr_t;
 
-struct bfc_container;
-typedef struct bfc_container *bfc_contptr_t;
-typedef const struct bfc_container *bfc_ccontptr_t;
+typedef struct bfc_basic_object *bfc_contptr_t;
+typedef const struct bfc_basic_object *bfc_ccontptr_t;
 
 #define BFC_CONTAINER_METHODS(contptrT,ccontptrT,elemT)			\
 	/* Modifiers */							\

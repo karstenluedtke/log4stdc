@@ -162,7 +162,7 @@ clone_treenode(bfc_ccontptr_t cont,
 static void
 destroy_treenode(bfc_contptr_t cont)
 {
-	bfc_container_classptr_t cls;
+	bfc_classptr_t cls;
 
 	if (cont && (cls = BFC_CLASS(cont))) {
 		bfc_nodeptr_t node = (bfc_nodeptr_t) cont;

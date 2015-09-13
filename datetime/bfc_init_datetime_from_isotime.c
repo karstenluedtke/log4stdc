@@ -95,13 +95,16 @@ bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 		}
 	}
 
-	date->day = days;
-	date->secs = secs;
-	date->frac = (sub > 0)? bfc_datetime_frac_from_decimal(sub, sublen): 0;
+	bfc_datetime_set_long(date, BFC_DATETIME_DAYS_SINCE_1970, days);
+	bfc_datetime_set_long(date, BFC_DATETIME_SECOND_OF_DAY,   secs);
+	bfc_datetime_set_long(date, BFC_DATETIME_FRACTION_OF_SEC,
+		(sub > 0)? bfc_datetime_frac_from_decimal(sub, sublen): 0);
 
 	L4SC_DEBUG(logger, "%s: %s -> %ldd, %lus + %lu/4294967296",
-		__FUNCTION__, s, (long) date->day,
-		(unsigned long) date->secs, (unsigned long) date->frac);
+		__FUNCTION__, s,
+		bfc_datetime_get_long(date, BFC_DATETIME_DAYS_SINCE_1970),
+		bfc_datetime_get_long(date, BFC_DATETIME_SECOND_OF_DAY),
+		bfc_datetime_get_long(date, BFC_DATETIME_FRACTION_OF_SEC));
 
 	return (rc);
 }

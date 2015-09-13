@@ -17,19 +17,24 @@ test1(const char *s)
 	time_t t0;
 	struct tm tm0;
 	bfc_datetime_t t;
+	long actual_days;
+	unsigned long actual_secs;
 	int rc;
 	char buf[40], buf2[26];
 
 	rc = bfc_init_datetime_from_isotime(&t, sizeof(t), s, strlen(s));
 	assert (rc >= 0);
 
-	t0 = (time_t) 86400 * t.day + t.secs;
+	actual_days = bfc_datetime_get_long(&t, BFC_DATETIME_DAYS_SINCE_1970);
+	actual_secs = bfc_datetime_get_long(&t, BFC_DATETIME_SECOND_OF_DAY);
+
+	t0 = (time_t) 86400 * actual_days + actual_secs;
 	tm0 = *gmtime(&t0);
 	strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", &tm0);
 
-	assert (t.secs/3600 == tm0.tm_hour);
-	assert ((t.secs/60) % 60 == tm0.tm_min);
-	assert (t.secs % 60 == tm0.tm_sec);
+	assert (actual_secs/3600 == tm0.tm_hour);
+	assert ((actual_secs/60) % 60 == tm0.tm_min);
+	assert (actual_secs % 60 == tm0.tm_sec);
 
 	rc = bfc_datetime_to_isodate(&t, buf2, sizeof(buf2));
 	L4SC_DEBUG(logger, "%s: %s -> %s", __FUNCTION__, s, buf2);

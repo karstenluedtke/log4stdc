@@ -69,7 +69,7 @@ const struct bfc_datetime_class bfc_datetime_class = {
 	/* intentionally not using selective initialization for base class: */
 	/* I want the compiler to complain if something is missing.         */
 	/* .super 	*/ NULL,
-	/* .name 	*/ "forward datetime",
+	/* .name 	*/ "datetime",
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ init_datetime,
@@ -134,7 +134,7 @@ init_datetime(void *buf, size_t bufsize, struct mempool *pool)
 		return (-ENOSPC);
 	}
 	memset(date, 0, sizeof(*date));
-	date->vptr = &bfc_datetime_class;
+	date->vptr = (bfc_classptr_t) &bfc_datetime_class;
 	return (BFC_SUCCESS);
 }
 
@@ -146,7 +146,7 @@ bfc_init_datetime(void *buf, size_t bufsize)
 		return (-ENOSPC);
 	}
 	memset(date, 0, sizeof(*date));
-	date->vptr = &bfc_datetime_class;
+	date->vptr = (bfc_classptr_t) &bfc_datetime_class;
 	return (BFC_SUCCESS);
 }
 
@@ -158,11 +158,22 @@ bfc_init_datetime_copy(void *buf, size_t bufsize, const void *src)
 		return (-ENOSPC);
 	}
 	memcpy(date, src, sizeof(*date));
-	date->vptr = &bfc_datetime_class;
+	date->vptr = (bfc_classptr_t) &bfc_datetime_class;
 	return (BFC_SUCCESS);
 }
 
 #define SECONDS_PER_DAY		((uint32_t) 24 * 3600)
+
+#define DAYS_SINCE_1970(obj)	(obj)->length
+#define SECOND_OF_DAY(obj)	(obj)->private_6
+#define FRACTION_OF_SEC(obj)	(obj)->private_7
+
+#define GET_DAYS(obj)		((ptrdiff_t) (DAYS_SINCE_1970(obj)))
+#define SET_DAYS(obj,val)	DAYS_SINCE_1970(obj) = (size_t)(ptrdiff_t)(val)
+#define GET_SECS(obj)		((uint32_t) (SECOND_OF_DAY(obj)))
+#define SET_SECS(obj,val)	SECOND_OF_DAY(obj) = (size_t)(uint32_t)(val)
+#define GET_FRAC(obj)		((uint32_t) (FRACTION_OF_SEC(obj)))
+#define SET_FRAC(obj,val)	FRACTION_OF_SEC(obj) = (size_t)(uint32_t)(val)
 
 int
 bfc_init_datetime_from_time_t(void *buf, size_t bufsize, time_t secs)
@@ -174,11 +185,13 @@ bfc_init_datetime_from_time_t(void *buf, size_t bufsize, time_t secs)
 		return (rc);
 	}
 	if (secs > 0) {
-		date->day  = secs / SECONDS_PER_DAY;
-		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
+		size_t day = secs / SECONDS_PER_DAY;
+		SET_DAYS(date, day);
+		SET_SECS(date, secs - ((time_t) day * SECONDS_PER_DAY));
 	} else if (secs < 0) {
-		date->day  = (secs - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
-		date->secs = secs - ((time_t) date->day * SECONDS_PER_DAY);
+		ptrdiff_t day = (secs - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
+		SET_DAYS(date, day);
+		SET_SECS(date, secs - ((time_t) day * SECONDS_PER_DAY));
 	}
 	return (rc);
 }
@@ -188,6 +201,7 @@ bfc_init_datetime_precise(void *buf, size_t bufsize,
 			  time_t secs, unsigned long nsecs)
 {
 	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	uint32_t fraction;
 	int rc;
 
 	if ((rc = bfc_init_datetime_from_time_t(buf, bufsize, secs)) >= 0) {
@@ -197,7 +211,8 @@ bfc_init_datetime_precise(void *buf, size_t bufsize,
 		 *      =  (nsecs * (2**61 / 10**9)) >> 29
 		 *     ~= ((nsecs * 2305843010) >> 32) << 3
 		 */
-		date->frac = (umul32_hiword(nsecs, 2305843010uL) << 3);
+		fraction = (umul32_hiword(nsecs, 2305843010uL) << 3);
+		SET_FRAC(date, fraction);
 	}
 	return (rc);
 }
@@ -208,6 +223,7 @@ bfc_init_datetime_from_timespec(void *buf, size_t bufsize,
 				const struct timespec *ts)
 {
 	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	uint32_t fraction;
 	int rc;
 
 	if ((rc = bfc_init_datetime_from_time_t(buf,bufsize,ts->tv_sec)) >= 0) {
@@ -217,7 +233,8 @@ bfc_init_datetime_from_timespec(void *buf, size_t bufsize,
 		 *      =  (nsecs * (2**61 / 10**9)) >> 29
 		 *     ~= ((nsecs * 2305843010) >> 32) << 3
 		 */
-		date->frac = umul32_shr29(ts->tv_nsec, 2305843010uL);
+		fraction = umul32_shr29(ts->tv_nsec, 2305843010uL);
+		SET_FRAC(date, fraction);
 	}
 	return (rc);
 }
@@ -228,6 +245,7 @@ bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 				const struct timeval *tv)
 {
 	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	uint32_t fraction;
 	int rc;
 
 	if ((rc = bfc_init_datetime_from_time_t(buf,bufsize,tv->tv_sec)) >= 0) {
@@ -237,7 +255,8 @@ bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 		 *      =  (usecs * (2**51 / 10**6)) >> 19
 		 *     ~= ((usecs * 2251799814) >> 32) << 13
 		 */
-		date->frac = umul32_shr19(tv->tv_usec, 2251799814uL);
+		fraction = umul32_shr19(tv->tv_usec, 2251799814uL);
+		SET_FRAC(date, fraction);
 	}
 	return (rc);
 }
@@ -269,16 +288,16 @@ clone_datetime(bfc_cdateptr_t date,
 size_t
 bfc_datetime_objsize(bfc_cdateptr_t date)
 {
-	return (sizeof(struct bfc_datetime));
+	return (sizeof(bfc_datetime_t));
 }
 
 static unsigned  
 bfc_datetime_hashcode(bfc_cdateptr_t date, int hashlen)
 {
 	uint32_t x;
-	x  = date->day;
-	x ^= date->secs;
-	x ^= (date->frac << 10) ^ (date->frac >> 22);
+	x  = GET_DAYS(date);
+	x ^= GET_SECS(date);
+	x ^= (GET_FRAC(date) << 10) ^ (GET_FRAC(date) >> 22);
 	return (bfc_reduce_hashcode(x, 8*sizeof(x), hashlen));
 }
 
@@ -288,9 +307,9 @@ datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other)
 	if (date == other) {
 		return (1);
 	}
-	return ((date->day == other->day)
-	     && (date->secs == other->secs)
-	     && (date->frac == other->frac));
+	return ((GET_DAYS(date) == GET_DAYS(other))
+	     && (GET_SECS(date) == GET_SECS(other))
+	     && (GET_FRAC(date) == GET_FRAC(other)));
 }
 
 size_t
@@ -303,12 +322,27 @@ static int
 datetime_tostring(bfc_cdateptr_t date,
 		  char *buf, size_t bufsize, const char *fmt)
 {
+	int rc = 0;
+	char tmp[32];
+
 	if (date && BFC_CLASS(date)) {
-		snprintf(buf, bufsize, "%s @%p: %ld %ld.%lx",
-			 BFC_CLASS(date)->name, date, (long) date->day,
-			 (long) date->secs, (unsigned long) date->frac);
+		if (fmt && (fmt[0] == 'Z')) {
+			if (buf && (bufsize > 0)
+			   && ((rc = to_isodate(date, buf, bufsize)) > 0)) {
+				/* ok, printed */
+			} else {
+				rc = to_isodate(date, tmp, sizeof(tmp));
+			}
+		} else {
+			if (buf && (bufsize > 0)
+			 && ((rc = to_local_isodate(date, buf, bufsize)) > 0)) {
+				/* ok, printed */
+			} else {
+				rc = to_local_isodate(date, tmp, sizeof(tmp));
+			}
+		}
 	}
-	return (0);
+	return (rc);
 }
 
 static void
@@ -316,8 +350,8 @@ dump_datetime(bfc_cdateptr_t date, int depth, struct l4sc_logger *log)
 {
 	if (date && BFC_CLASS(date)) {
 		L4SC_DEBUG(log, "%s @%p: %ld %ld.%lx",
-			 BFC_CLASS(date)->name, date, (long) date->day,
-			 (long) date->secs, (unsigned long) date->frac);
+			 BFC_CLASS(date)->name, date, (long) GET_DAYS(date),
+			 (long)GET_SECS(date), (unsigned long)GET_FRAC(date));
 	}
 }
 
@@ -326,27 +360,32 @@ bfc_datetime_set_long(bfc_dateptr_t date, size_t pos, long val)
 {
 	if (pos != 0) {
 		switch (pos) {
-		case 1: date->day  = (int32_t)  val;
+		case BFC_DATETIME_DAYS_SINCE_1970:
+			SET_DAYS(date, val);
 			return (BFC_SUCCESS);
-		case 2: date->secs = (uint32_t) val;
+		case BFC_DATETIME_SECOND_OF_DAY:
+			SET_SECS(date, (uint32_t) val);
 			return (BFC_SUCCESS);
-		case 3: date->frac = (uint32_t) val;
+		case BFC_DATETIME_FRACTION_OF_SEC:
+			SET_FRAC(date, (uint32_t) val);
 			return (BFC_SUCCESS);
 		default: ;
 		}
 	}
 	if (val > 0) {
-		date->day  = val / SECONDS_PER_DAY;
-		date->secs = val - ((time_t) date->day * SECONDS_PER_DAY);
-		date->frac = 0;
+		unsigned long day = val / SECONDS_PER_DAY;
+		SET_DAYS(date, day);
+		SET_SECS(date, val - ((time_t) day * SECONDS_PER_DAY));
+		FRACTION_OF_SEC(date) = 0;
 	} else if (val < 0) {
-		date->day  = (val - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
-		date->secs = val - ((time_t) date->day * SECONDS_PER_DAY);
-		date->frac = 0;
+		signed long day = (val - SECONDS_PER_DAY + 1) / SECONDS_PER_DAY;
+		SET_DAYS(date, day);
+		SET_SECS(date, val - ((time_t) day * SECONDS_PER_DAY));
+		FRACTION_OF_SEC(date) = 0;
 	} else {
-		date->day  = 0;
-		date->secs = 0;
-		date->frac = 0;
+		DAYS_SINCE_1970(date) = 0;
+		SECOND_OF_DAY(date)   = 0;
+		FRACTION_OF_SEC(date) = 0;
 	}
 	return (BFC_SUCCESS);
 }
@@ -356,53 +395,59 @@ bfc_datetime_get_long(bfc_cdateptr_t date, size_t pos)
 {
 	if (pos != 0) {
 		switch (pos) {
-		case 1: return ((long) date->day);
-		case 2: return ((long) date->secs);
-		case 3: return ((long) date->frac);
+		case BFC_DATETIME_DAYS_SINCE_1970:
+			return ((long) GET_DAYS(date));
+		case BFC_DATETIME_SECOND_OF_DAY:
+			return ((long) GET_SECS(date));
+		case BFC_DATETIME_FRACTION_OF_SEC:
+			return ((long) GET_FRAC(date));
 		default: ;
 		}
 	}
-	return ((long) 24 * 3600 * date->day + date->secs);
+	return ((long) 24 * 3600 * GET_DAYS(date) + GET_SECS(date));
 }
 
 time_t
 bfc_datetime_secs(bfc_cdateptr_t date)
 {
-	return ((time_t) 24 * 3600 * date->day + date->secs);
+	return ((time_t) 24 * 3600 * GET_DAYS(date) + GET_SECS(date));
 }
 
 int
 bfc_datetime_msecs(bfc_cdateptr_t date)
 {
-	if (date->frac >= 4290000000uL) {
+	uint32_t fraction = GET_FRAC(date);
+	if (fraction >= 4290000000uL) {
 		return (999);
 	}
-	return ((int) umul32_hiword(date->frac + (uint32_t) 2147483uL, 1000u));
+	return ((int) umul32_hiword(fraction + (uint32_t) 2147483uL, 1000u));
 }
 
 long
 bfc_datetime_usecs(bfc_cdateptr_t date)
 {
-	if (date->frac >= 4294963000uL) {
+	uint32_t fraction = GET_FRAC(date);
+	if (fraction >= 4294963000uL) {
 		return (999999L);
 	}
-	return ((long) umul32_hiword(date->frac + 2147, (uint32_t) 1000000uL));
+	return ((long) umul32_hiword(fraction + 2147, (uint32_t) 1000000uL));
 }
 
 long
 bfc_datetime_nsecs(bfc_cdateptr_t date)
 {
-	if (date->frac >= 4294967290uL) {
+	uint32_t fraction = GET_FRAC(date);
+	if (fraction >= 4294967290uL) {
 		return (999999999L);
 	}
-	return ((long) umul32_hiword(date->frac + 2, (uint32_t) 1000000000uL));
+	return ((long) umul32_hiword(fraction + 2, (uint32_t) 1000000000uL));
 }
 
 long
 bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 {
-	int32_t days = last->day - first->day;
-	int32_t secs = last->secs - first->secs;
+	int32_t days = GET_DAYS(last) - GET_DAYS(first);
+	int32_t secs = GET_SECS(last) - GET_SECS(first);
 
 	return ((days == 0)? (long)secs: (long)days * SECONDS_PER_DAY + secs);
 }
@@ -412,12 +457,14 @@ bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 {
 	uint32_t diff;
 	long msecs = bfc_datetime_secs_between(first, last) * 1000u;
+	uint32_t first_frac= GET_FRAC(first);
+	uint32_t last_frac = GET_FRAC(last);
 
-	if (last->frac > first->frac) {
-		diff = last->frac - first->frac;
+	if (last_frac > first_frac) {
+		diff = last_frac - first_frac;
 		msecs += umul32_hiword(diff + (uint32_t) 2147483uL, 1000u);
-	} else if (first->frac > last->frac) {
-		diff = first->frac - last->frac;
+	} else if (first_frac > last_frac) {
+		diff = first_frac - last_frac;
 		msecs -= umul32_hiword(diff + (uint32_t) 2147483uL, 1000u);
 	}
 
@@ -429,12 +476,14 @@ bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 {
 	uint32_t diff;
 	long usecs = bfc_datetime_secs_between(first, last) * 1000000uL;
+	uint32_t first_frac= GET_FRAC(first);
+	uint32_t last_frac = GET_FRAC(last);
 
-	if (last->frac > first->frac) {
-		diff = last->frac - first->frac;
+	if (last_frac > first_frac) {
+		diff = last_frac - first_frac;
 		usecs += umul32_hiword(diff + 2147 /*round*/, 1000000uL);
-	} else if (first->frac > last->frac) {
-		diff = first->frac - last->frac;
+	} else if (first_frac > last_frac) {
+		diff = first_frac - last_frac;
 		usecs -= umul32_hiword(diff + 2147 /*round*/, 1000000uL);
 	}
 
@@ -446,12 +495,14 @@ bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 {
 	uint32_t diff;
 	long nsecs = bfc_datetime_secs_between(first, last) * 1000000000uL;
+	uint32_t first_frac= GET_FRAC(first);
+	uint32_t last_frac = GET_FRAC(last);
 
-	if (last->frac > first->frac) {
-		diff = last->frac - first->frac;
+	if (last_frac > first_frac) {
+		diff = last_frac - first_frac;
 		nsecs += umul32_hiword(diff + 2 /*round*/, 1000000000uL);
-	} else if (first->frac > last->frac) {
-		diff = first->frac - last->frac;
+	} else if (first_frac > last_frac) {
+		diff = first_frac - last_frac;
 		nsecs -= umul32_hiword(diff + 2 /*round*/, 1000000000uL);
 	}
 
@@ -461,19 +512,19 @@ bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 int
 bfc_datetime_advance_secs(bfc_dateptr_t date, signed long secs)
 {
-	signed long s = date->secs + secs;
+	signed long s = GET_SECS(date) + secs;
 	unsigned long days;
 
 	if (s >= 86400L) {
 		days = (s < 2*86400L)? 1uL: (unsigned long) s / 86400uL;
-		date->day += (uint32_t) days;
-		date->secs = (uint32_t)(s - (days * 86400uL));
+		SET_DAYS(date, GET_DAYS(date) + days);
+		SET_SECS(date, s - (days * 86400uL));
 	} else if (s < 0) {
 		days = (s >= -86400L)? 1uL: (unsigned long)(86399L-s)/86400uL;
-		date->day -= (uint32_t) days;
-		date->secs = (uint32_t)(s + (days * 86400uL));
+		SET_DAYS(date, GET_DAYS(date) - days);
+		SET_SECS(date, s + (days * 86400uL));
 	} else {
-		date->secs = (uint32_t) s;
+		SET_SECS(date, s);
 	}
 
 	return (BFC_SUCCESS);
@@ -482,14 +533,14 @@ bfc_datetime_advance_secs(bfc_dateptr_t date, signed long secs)
 int
 bfc_datetime_advance_msecs(bfc_dateptr_t date, signed long msecs)
 {
-	int64_t sum  = (int64_t) 4294967L * msecs + date->frac;
+	int64_t sum  = (int64_t) 4294967L * msecs + GET_FRAC(date);
 	int32_t secs = (int32_t) (sum >> 32);
 
 	if (secs == 0) {
-		date->frac = (uint32_t) sum;
+		SET_FRAC(date, (uint32_t) sum);
 	} else {
 		bfc_datetime_advance_secs(date, secs);
-		date->frac = (uint32_t) sum;
+		SET_FRAC(date, (uint32_t) sum);
 	}
 
 	return (BFC_SUCCESS);
@@ -498,14 +549,14 @@ bfc_datetime_advance_msecs(bfc_dateptr_t date, signed long msecs)
 int
 bfc_datetime_advance_usecs(bfc_dateptr_t date, signed long usecs)
 {
-	int64_t sum  = (int64_t) 4295 * usecs + date->frac;
+	int64_t sum  = (int64_t) 4295 * usecs + GET_FRAC(date);
 	int32_t secs = (int32_t) (sum >> 32);
 
 	if (secs == 0) {
-		date->frac = (uint32_t) sum;
+		SET_FRAC(date, (uint32_t) sum);
 	} else {
 		bfc_datetime_advance_secs(date, secs);
-		date->frac = (uint32_t) sum;
+		SET_FRAC(date, (uint32_t) sum);
 	}
 
 	return (BFC_SUCCESS);
@@ -514,14 +565,14 @@ bfc_datetime_advance_usecs(bfc_dateptr_t date, signed long usecs)
 int
 bfc_datetime_advance_nsecs(bfc_dateptr_t date, signed long nsecs)
 {
-	int64_t sum  = (int64_t) 4 * nsecs + date->frac;
+	int64_t sum  = (int64_t) 4 * nsecs + GET_FRAC(date);
 	int32_t secs = (int32_t) (sum >> 32);
 
 	if (secs == 0) {
-		date->frac = (uint32_t) sum;
+		SET_FRAC(date, (uint32_t) sum);
 	} else {
 		bfc_datetime_advance_secs(date, secs);
-		date->frac = (uint32_t) sum;
+		SET_FRAC(date, (uint32_t) sum);
 	}
 
 	return (BFC_SUCCESS);
@@ -534,7 +585,8 @@ static int
 to_localtime(bfc_cdateptr_t date, struct tm *tm)
 {
 	int rc = BFC_SUCCESS;
-	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * date->day + date->secs;
+	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * GET_DAYS(date)
+	             + GET_SECS(date);
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 	__time64_t t = (__time64_t) secs;
 #if defined(HAVE__LOCALTIME64_S)
@@ -569,7 +621,8 @@ static int
 to_gmtime(bfc_cdateptr_t date, struct tm *tm)
 {
 	int rc = BFC_SUCCESS;
-	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * date->day + date->secs;
+	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * GET_DAYS(date)
+	             + GET_SECS(date);
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 	__time64_t t = (__time64_t) secs;
 #if defined(HAVE__LOCALTIME64_S)
@@ -624,8 +677,8 @@ static int
 to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm)
 {
 	int rc = BFC_SUCCESS;
-	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * date->day
-				+ date->secs + offset_to_seconds(offs);
+	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * GET_DAYS(date)
+	             + GET_SECS(date) + offset_to_seconds(offs);
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 	__time64_t t = (__time64_t) secs;
 #if defined(HAVE__LOCALTIME64_S)

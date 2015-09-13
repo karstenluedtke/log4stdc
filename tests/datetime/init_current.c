@@ -17,6 +17,8 @@ test1(void)
 	time_t t0, t1;
 	struct tm tm0;
 	bfc_datetime_t t;
+	long actual_days;
+	unsigned long actual_secs;
 	int rc;
 	char buf[40], buf2[25];
 
@@ -30,16 +32,22 @@ test1(void)
 	strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", &tm0);
 	L4SC_INFO(logger, "%s: current systime is %sZ (%ld)",
 		__FUNCTION__, buf, (long) t0); 
+
+	actual_days = bfc_datetime_get_long(&t, BFC_DATETIME_DAYS_SINCE_1970);
+	actual_secs = bfc_datetime_get_long(&t, BFC_DATETIME_SECOND_OF_DAY);
+
 	L4SC_INFO(logger,
 		"%s: current bfc_datetime is %ldT%02u:%02u:%02uZ (%ld)",
-		__FUNCTION__, (long) t.day,
-		t.secs/3600, (t.secs/60) % 60, t.secs % 60,
-		86400uL * t.day + t.secs);
+		__FUNCTION__, (long) actual_days,
+		(unsigned) (actual_secs/3600),
+		(unsigned) ((actual_secs/60) % 60),
+		(unsigned) (actual_secs % 60),
+		86400uL * actual_days + actual_secs);
 
 	assert (rc >= 0);
-	assert (t.secs/3600 == tm0.tm_hour);
-	assert ((t.secs/60) % 60 == tm0.tm_min);
-	assert (t.secs % 60 == tm0.tm_sec);
+	assert (actual_secs/3600 == tm0.tm_hour);
+	assert ((actual_secs/60) % 60 == tm0.tm_min);
+	assert (actual_secs % 60 == tm0.tm_sec);
 
 	rc = bfc_datetime_to_isodate(&t, buf2, sizeof(buf2));
 	L4SC_INFO(logger, "%s: formatted bfc_datetime is %s",

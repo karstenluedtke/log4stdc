@@ -23,16 +23,22 @@ t1(const char *s, long days, unsigned long secs)
 {
 	int rc;
 	bfc_datetime_t t;
+	long actual_days;
+	unsigned long actual_secs, actual_frac;
 
 	rc = bfc_init_datetime_from_isotime(&t, sizeof(t), s, strlen(s));
 
+	actual_days = bfc_datetime_get_long(&t, BFC_DATETIME_DAYS_SINCE_1970);
+	actual_secs = bfc_datetime_get_long(&t, BFC_DATETIME_SECOND_OF_DAY);
+	actual_frac = bfc_datetime_get_long(&t, BFC_DATETIME_FRACTION_OF_SEC);
+
 	L4SC_DEBUG(logger, "%s: %s -> %ldd, %lus + %lu/2**32",
-		__FUNCTION__, s, (long) t.day,
-		(unsigned long) t.secs, (unsigned long) t.frac);
+		__FUNCTION__, s, actual_days, actual_secs, actual_frac);
+
 	assert (rc >= 0);
-	assert (t.day  == days);
-	assert (t.secs == secs);
-	assert (t.frac == 0);
+	assert (actual_days == days);
+	assert (actual_secs == secs);
+	assert (actual_frac == 0);
 }
 
 void
@@ -41,16 +47,22 @@ t2(const char *s, long days, unsigned long secs, unsigned long frac)
 	int rc;
 	bfc_datetime_t t;
 	unsigned long tolerance = 30000; /* 7 ppm. */
+	long actual_days;
+	unsigned long actual_secs, actual_frac;
 
 	rc = bfc_init_datetime_from_isotime(&t, sizeof(t), s, strlen(s));
 
+	actual_days = bfc_datetime_get_long(&t, BFC_DATETIME_DAYS_SINCE_1970);
+	actual_secs = bfc_datetime_get_long(&t, BFC_DATETIME_SECOND_OF_DAY);
+	actual_frac = bfc_datetime_get_long(&t, BFC_DATETIME_FRACTION_OF_SEC);
+
 	L4SC_DEBUG(logger, "%s: %s -> %ldd, %lus + %lu/2**32",
-		__FUNCTION__, s, (long) t.day,
-		(unsigned long) t.secs, (unsigned long) t.frac);
+		__FUNCTION__, s, actual_days, actual_secs, actual_frac);
 	assert (rc >= 0);
-	assert (t.day  == days);
-	assert (t.secs == secs);
-	assert ((t.frac >= frac - tolerance) && (t.frac <= frac + tolerance));
+	assert (actual_days == days);
+	assert (actual_secs == secs);
+	assert ((actual_frac >= frac - tolerance)
+	     && (actual_frac <= frac + tolerance));
 }
 
 void
@@ -59,16 +71,21 @@ t3(const char *s, int long days, unsigned long secs, unsigned long frac)
 	int rc;
 	bfc_datetime_t t;
 	unsigned long tolerance = 30000; /* 7 ppm. */
+	long actual_days;
+	unsigned long actual_secs, actual_frac;
 
 	rc = bfc_init_datetime_from_isotime(&t, sizeof(t), s, strlen(s));
 
+	actual_days = bfc_datetime_get_long(&t, BFC_DATETIME_DAYS_SINCE_1970);
+	actual_secs = bfc_datetime_get_long(&t, BFC_DATETIME_SECOND_OF_DAY);
+	actual_frac = bfc_datetime_get_long(&t, BFC_DATETIME_FRACTION_OF_SEC);
+
 	L4SC_DEBUG(logger, "%s: %s -> %ldd, %lus + %lu/2**32",
-		__FUNCTION__, s, (long) t.day,
-		(unsigned long) t.secs, (unsigned long) t.frac);
+		__FUNCTION__, s, actual_days, actual_secs, actual_frac);
 	assert (rc >= 0);
-	assert (t.day  == days);
-	assert (t.secs == secs);
-	assert (t.frac >= frac - tolerance);
+	assert (actual_days == days);
+	assert (actual_secs == secs);
+	assert (actual_frac >= frac - tolerance);
 }
 
 int

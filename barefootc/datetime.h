@@ -48,25 +48,21 @@ typedef const struct bfc_datetime_class *bfc_datetime_classptr_t;
  * to the POSIX definition.
  */
 
+#if 0
 struct bfc_datetime {
 	BFC_OBJHDR(bfc_datetime_classptr_t,struct bfc_datetime *)
 	int32_t		day;	/**< day after Jan 1st, 1970; or 0     */
 	uint32_t	secs;	/**< seconds of the day (UTC)          */
 	uint32_t	frac;	/**< fractional part of time, 1s/2**32 */
 };
+#endif
 
-#define BFC_DATETIMEHDR(classptrT,objptrT) \
-	BFC_OBJHDR(classptrT,objptrT)
-	int32_t		day;	/**< day after Jan 1st, 1970; or 0   */	\
-	uint32_t	secs;	/**< seconds of the day (UTC)        */	\
-	uint32_t	frac;	/**< fractional part of time, 1s/2**32 */
+typedef struct bfc_basic_object bfc_datetime_t;
+typedef struct bfc_basic_object *bfc_dateptr_t;
+typedef const struct bfc_basic_object *bfc_cdateptr_t;
 
-typedef struct bfc_datetime bfc_datetime_t;
-typedef struct bfc_datetime *bfc_dateptr_t;
-typedef const struct bfc_datetime *bfc_cdateptr_t;
-
-typedef struct bfc_datetime *bfc_timeptr_t;
-typedef const struct bfc_datetime *bfc_ctimeptr_t;
+typedef struct bfc_basic_object *bfc_timeptr_t;
+typedef const struct bfc_basic_object *bfc_ctimeptr_t;
 
 #define BFC_DATETIME_METHODS(dateptrT,cdateptrT)			\
 	/* comparision */						\
@@ -135,6 +131,9 @@ long	bfc_datetime_nsecs(bfc_cdateptr_t date);
 
 long	bfc_datetime_get_long(bfc_cdateptr_t date, size_t pos);
 int	bfc_datetime_set_long(bfc_dateptr_t date, size_t pos, long val);
+#define BFC_DATETIME_DAYS_SINCE_1970	1
+#define BFC_DATETIME_SECOND_OF_DAY	2
+#define BFC_DATETIME_FRACTION_OF_SEC	3
 
 long	bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
 long	bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);

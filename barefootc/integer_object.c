@@ -14,7 +14,7 @@
 #endif
 
 static void *
-place_integer(bfc_objptr_t obj, size_t pos, void *p, struct mempool *pool);
+place_integer(bfc_objptr_t obj, size_t pos, void *p, bfc_mempool_t pool);
 
 const struct bfc_classhdr bfc_number_class = {
 	/* intentionally not using selective initialization for base class: */
@@ -49,9 +49,9 @@ const struct bfc_classhdr bfc_number_class = {
 #define SET_NUMBER(obj,val)	UNSIGNED_INT(obj) = (size_t)(ptrdiff_t)(val)
 
 int
-bfc_init_integer_object(void *buf, size_t bufsize, struct mempool *pool)
+bfc_init_integer_object(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
-	bfc_numptr_t obj = (bfc_numptr_t) buf;
+	bfc_objptr_t obj = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*obj)) {
 		return (-ENOSPC);
 	} else {
@@ -69,7 +69,7 @@ bfc_number_destroy_object(bfc_objptr_t obj)
 
 int
 bfc_number_clone_object(bfc_cobjptr_t obj,
-			void *buf, size_t bufsize, struct mempool *pool)
+			void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	size_t size = bfc_object_size(obj);
 	if (bufsize < size) {
@@ -131,7 +131,7 @@ bfc_integer_setlong(bfc_objptr_t obj, size_t pos, long val)
 }
 
 static void *
-place_integer(bfc_objptr_t obj, size_t pos, void *p, struct mempool *pool)
+place_integer(bfc_objptr_t obj, size_t pos, void *p, bfc_mempool_t pool)
 {
 	bfc_objptr_t other = (bfc_objptr_t) p;
 

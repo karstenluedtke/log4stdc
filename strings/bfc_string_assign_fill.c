@@ -12,7 +12,7 @@
  * @brief    bfc_string_assign_fill
  */
 int
-bfc_string_assign_fill(bfc_strptr_t s, size_t n, int c)
+bfc_string_assign_fill(bfc_objptr_t s, size_t n, int c)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			assign_fill, (s, n, c),

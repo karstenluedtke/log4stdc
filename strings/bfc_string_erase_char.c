@@ -12,7 +12,7 @@
  * @brief    bfc_string_erase_char
  */
 int
-bfc_string_erase_char(bfc_strptr_t s, bfc_iterptr_t p)
+bfc_string_erase_char(bfc_objptr_t s, bfc_iterptr_t p)
 {
 	size_t pos;
 

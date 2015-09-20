@@ -99,7 +99,7 @@ namespace barefootc {
 		const Allocator saved_allocator;
 		float saved_max_load_factor;
 
-		void init_map(struct mempool *pool)
+		void init_map(bfc_mempool_t pool)
 		{
 			bfc_classptr_t paircls = (bfc_classptr_t) &bfc_int_string_pair_class;
 			BFC_MAP_INIT(&bfcmap, 100, paircls, pool);
@@ -108,7 +108,7 @@ namespace barefootc {
 				__FUNCTION__, (int) sizeof(value_type), (int) bfcmap.elem_size);
 		}
 
-		void init_map(struct mempool *pool,
+		void init_map(bfc_mempool_t pool,
 			      bfc_number_t& k, bfc_object_t& v)
 		{
 			bfc_classptr_t paircls = (bfc_classptr_t) &bfc_int_string_pair_class;
@@ -166,7 +166,7 @@ namespace barefootc {
 			init_map(get_stdc_mempool(), k, v);
 			for (pair_iterator it(first); it != lim; it++) {
 				value_type pair = *it;
-				bfc_map_insert_objects((bfc_contptr_t)&bfcmap,
+				bfc_map_insert_objects((bfc_objptr_t)&bfcmap,
 						(bfc_objptr_t)&pair.first,
 						(bfc_objptr_t)&pair.second,
 						NULL, 0);
@@ -217,12 +217,12 @@ namespace barefootc {
 
 		void reserve(size_type n)
 		{
-			bfc_map_reserve((bfc_contptr_t)&bfcmap, n);
+			bfc_map_reserve((bfc_objptr_t)&bfcmap, n);
 		}
 		
 		void rehash(size_type n)
 		{
-			bfc_map_rehash((bfc_contptr_t)&bfcmap, n);
+			bfc_map_rehash((bfc_objptr_t)&bfcmap, n);
 		}
 		
 #if 0
@@ -303,10 +303,10 @@ map<Key,T,Compare,Allocator>& y);
 			bfc_destroy((bfc_objptr_t) &bfcmap);
 		}
 
-		bfc_contptr_t contptr() const
+		bfc_objptr_t contptr() const
 		{
 			void *map = const_cast<void *>((const void *) &bfcmap);
-			return ((bfc_contptr_t) map);
+			return ((bfc_objptr_t) map);
 		}
 
 		map<Key,T,Compare,Allocator>&

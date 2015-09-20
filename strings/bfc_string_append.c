@@ -13,7 +13,7 @@
  * @brief    bfc_string_append
  */
 int
-bfc_string_append(bfc_strptr_t s, bfc_cstrptr_t s2)
+bfc_string_append(bfc_objptr_t s, bfc_cobjptr_t s2)
 {
 	if (STRING_TRAITS(s) == STRING_TRAITS(s2)) {
 		size_t len = bfc_strlen(s2);

@@ -12,7 +12,7 @@
  * @brief    bfc_string_reserve
  */
 int
-bfc_string_reserve(bfc_strptr_t s, size_t n)
+bfc_string_reserve(bfc_objptr_t s, size_t n)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			reserve, (s, n),

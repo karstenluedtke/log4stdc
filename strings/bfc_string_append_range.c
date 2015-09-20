@@ -14,7 +14,7 @@
  * @brief    bfc_string_append_range
  */
 int
-bfc_string_append_range(bfc_strptr_t s,
+bfc_string_append_range(bfc_objptr_t s,
 			 bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);

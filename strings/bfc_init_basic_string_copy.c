@@ -14,8 +14,8 @@
  * @brief    bfc_init_basic_string_copy
  */
 int
-bfc_init_basic_string_copy(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cstrptr_t str)
+bfc_init_basic_string_copy(void *buf, size_t bufsize, bfc_mempool_t pool,
+				bfc_cobjptr_t str)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 

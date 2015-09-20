@@ -12,8 +12,8 @@
  * @brief    bfc_string_compare_substrs
  */
 int
-bfc_string_compare_substrs(bfc_cstrptr_t s, size_t pos1, size_t n1,
-				 bfc_cstrptr_t str, size_t pos2, size_t n2)
+bfc_string_compare_substrs(bfc_cobjptr_t s, size_t pos1, size_t n1,
+				 bfc_cobjptr_t str, size_t pos2, size_t n2)
 {
 	const size_t l2 = bfc_string_sublen(str, pos2, n2);
 	const char *s2 = bfc_string_subdata(str, (l2 > 0)? pos2: 0);

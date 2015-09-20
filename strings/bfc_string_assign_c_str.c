@@ -13,7 +13,7 @@
  * @brief    bfc_string_assign_c_str
  */
 int
-bfc_string_assign_c_str(bfc_strptr_t s, const void *s2)
+bfc_string_assign_c_str(bfc_objptr_t s, const void *s2)
 {
 	size_t n = (*STRING_TRAITS(s)->szlen)(s2);
 

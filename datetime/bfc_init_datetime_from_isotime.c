@@ -18,7 +18,7 @@ int
 bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 				const char *s, size_t len)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	unsigned yr, m, d, hr, min, sec=0;
 	unsigned long sub=0;
 	const char *zone = NULL;

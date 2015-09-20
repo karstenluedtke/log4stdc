@@ -41,7 +41,7 @@ const struct bfc_classhdr bfc_object_class = {
 };
 
 int
-bfc_default_init_object(void *buf, size_t bufsize, struct mempool *pool)
+bfc_default_init_object(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(const struct bfc_object_class *,
 			  bfc_objptr_t, object, buf, bufsize, pool,
@@ -117,7 +117,7 @@ bfc_default_move_object(bfc_objptr_t obj, void *buf, size_t bufsize)
 
 int
 bfc_default_clone_object(bfc_cobjptr_t obj,
-			 void *buf, size_t bufsize, struct mempool *pool)
+			 void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_objptr_t object = (bfc_objptr_t) buf;
 	size_t size = bfc_object_size(obj);

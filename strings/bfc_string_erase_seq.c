@@ -12,7 +12,7 @@
  * @brief    bfc_string_erase_seq
  */
 int
-bfc_string_erase_seq(bfc_strptr_t s, size_t pos, size_t len)
+bfc_string_erase_seq(bfc_objptr_t s, size_t pos, size_t len)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			replace_buffer, (s, pos, len, NULL, 0),

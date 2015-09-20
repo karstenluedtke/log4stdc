@@ -13,7 +13,7 @@
  * @brief    bfc_string_index
  */
 char *
-bfc_string_index(bfc_strptr_t s, size_t pos)
+bfc_string_index(bfc_objptr_t s, size_t pos)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			index, (s, pos),

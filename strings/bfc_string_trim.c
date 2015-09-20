@@ -12,7 +12,7 @@
  * @brief    bfc_string_trim
  */
 int
-bfc_string_trim(bfc_strptr_t s)
+bfc_string_trim(bfc_objptr_t s)
 {
 	size_t len = bfc_strlen(s);
 	size_t start = 0, limit = len;

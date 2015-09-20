@@ -18,7 +18,7 @@
 #include "barefootc/unconst.h"
 #include "log4stdc.h"
 
-static int init_real_int_pair(void *buf, size_t bufsize, struct mempool *pool);
+static int init_real_int_pair(void *buf, size_t bufsize, bfc_mempool_t pool);
 
 struct bfc_pair_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_pair_class *,
@@ -33,7 +33,7 @@ const struct bfc_pair_class bfc_real_int_pair_class = {
 };
 
 static int
-init_real_int_pair(void *buf, size_t bufsize, struct mempool *pool)
+init_real_int_pair(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	struct bfc_number_pair *pair = (struct bfc_number_pair *) buf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);

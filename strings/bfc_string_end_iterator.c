@@ -12,7 +12,7 @@
  * @brief    bfc_string_end_iterator
  */
 int
-bfc_string_end_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bufsize)
+bfc_string_end_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bufsize)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			ilimit, (s, it, bufsize),

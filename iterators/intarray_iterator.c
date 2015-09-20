@@ -14,7 +14,7 @@
 #include "barefootc/iterator.h"
 #include "log4stdc.h"
 
-static int init_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static int init_iterator(void *buf,size_t bufsize,bfc_mempool_t pool);
 static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
 
@@ -72,7 +72,7 @@ const struct bfc_iterator_class bfc_intarray_reverse_iterator_class = {
 };
 
 static int
-init_iterator(void *buf, size_t bufsize, struct mempool *pool)
+init_iterator(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_iterptr_t it = (bfc_iterptr_t) buf;
 	if (bufsize < sizeof(*it)) {

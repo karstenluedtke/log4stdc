@@ -16,7 +16,7 @@
 #define snprintf _snprintf
 #endif
 
-static struct mempool *pool;
+static bfc_mempool_t pool;
 static l4sc_logger_ptr_t logger;
 
 struct test_kv {
@@ -24,9 +24,9 @@ struct test_kv {
 	const char *val;
 };
 
-static bfc_objptr_t create_test_object(const char *v, struct mempool *pool);
+static bfc_objptr_t create_test_object(const char *v, bfc_mempool_t pool);
 
-static int  init_test_object(void *buf, size_t bufsize, struct mempool *pool);
+static int  init_test_object(void *buf, size_t bufsize, bfc_mempool_t pool);
 static void destroy_test_object(bfc_objptr_t obj);
 static int  test_object_tostring(bfc_cobjptr_t obj,
 				 char *buf, size_t bufsize, const char *fmt);
@@ -40,7 +40,7 @@ bfc_class_t test_object_class = {
 };
 
 static bfc_objptr_t
-create_test_object(const char *v, struct mempool *pool)
+create_test_object(const char *v, bfc_mempool_t pool)
 {
 	bfc_objptr_t obj;
 	int vlen = strlen(v);
@@ -55,7 +55,7 @@ create_test_object(const char *v, struct mempool *pool)
 }
 
 static int
-init_test_object(void *buf, size_t bufsize, struct mempool *pool)
+init_test_object(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_objptr_t obj = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*obj)) {
@@ -117,10 +117,10 @@ test(int n1, struct test_kv kv[])
 		bfc_objptr_t obj = create_test_object(kv[i].val, pool);
 		bfc_objptr_t ret;
 		bfc_init_refcount(obj, 1);
-		ret = bfc_container_place((bfc_contptr_t)&v1, kv[i].pos, obj, NULL);
+		ret = bfc_container_place((bfc_objptr_t)&v1, kv[i].pos, obj, NULL);
 		assert(ret == obj);
 		assert(obj->refc == 2);
-		assert(bfc_container_index((bfc_contptr_t)&v1, kv[i].pos) == obj);
+		assert(bfc_container_index((bfc_objptr_t)&v1, kv[i].pos) == obj);
 		bfc_decr_refcount(obj);
 		assert(obj->refc == 1);
 	}
@@ -131,7 +131,7 @@ test(int n1, struct test_kv kv[])
 
 	// bfc_object_dump((bfc_objptr_t) pool, 1, logger);
 
-	bfc_container_assign_copy((bfc_contptr_t) &v2, (bfc_ccontptr_t) &v1);
+	bfc_container_assign_copy((bfc_objptr_t) &v2, (bfc_cobjptr_t) &v1);
 	bfc_object_dump((bfc_objptr_t)&v2, 2, logger);
 	L4SC_DEBUG(logger, "%s: v2 size is %ld, expect %ld", __FUNCTION__,
 		(long)bfc_object_length((bfc_objptr_t)&v2),

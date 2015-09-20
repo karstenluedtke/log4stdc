@@ -21,7 +21,7 @@ static int indicate_start_tag(struct bfc_tag_parse_state *st, int tagtype);
 static int indicate_end_tag(struct bfc_tag_parse_state *st, int tagtype);
 
 int
-bfc_parse_xmltags(bfc_cstrptr_t s, struct bfc_tag_parse_state *st)
+bfc_parse_xmltags(bfc_cobjptr_t s, struct bfc_tag_parse_state *st)
 {
 	int rc, iterations = 0;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);

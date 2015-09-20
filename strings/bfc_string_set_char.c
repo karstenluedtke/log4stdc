@@ -12,7 +12,7 @@
  * @brief    bfc_string_set_char
  */
 int
-bfc_string_set_char(bfc_strptr_t s, size_t pos, long c)
+bfc_string_set_char(bfc_objptr_t s, size_t pos, long c)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s, setl, (s, pos, c), -ENOSYS);
 }

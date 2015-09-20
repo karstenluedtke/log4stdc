@@ -61,7 +61,7 @@ namespace barefootc {
 
 		const Allocator saved_allocator;
 
-		void init_vector(struct mempool *pool)
+		void init_vector(bfc_mempool_t pool)
 		{
 			BFC_VECTOR_INIT_POOL(&bfcvec, pool);
 			bfc_init_vector_class(&bfcvec, sizeof(bfcvec), pool);
@@ -118,7 +118,7 @@ namespace barefootc {
 				}
 			} else {
 				rc = bfc_container_assign_fill(
-					(bfc_contptr_t)&bfcvec, n, &value);
+					(bfc_objptr_t)&bfcvec, n, &value);
 				if (rc < 0) {
 					throw_replace_error(-rc);
 				}
@@ -141,7 +141,7 @@ namespace barefootc {
 				}
 			} else {
 				rc = bfc_container_assign_fill(
-					(bfc_contptr_t)&bfcvec, n, &value);
+					(bfc_objptr_t)&bfcvec, n, &value);
 				if (rc < 0) {
 					throw_replace_error(-rc);
 				}
@@ -158,7 +158,7 @@ namespace barefootc {
 		{
 			int rc;
 			init_vector(get_stdc_mempool());
-			rc = bfc_container_assign_range((bfc_contptr_t)&bfcvec,
+			rc = bfc_container_assign_range((bfc_objptr_t)&bfcvec,
 					first.bfciter(), last.bfciter());
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -170,7 +170,7 @@ namespace barefootc {
 		{
 			int rc;
 			init_vector(get_stdc_mempool());
-			rc = bfc_container_assign_range((bfc_contptr_t)&bfcvec,
+			rc = bfc_container_assign_range((bfc_objptr_t)&bfcvec,
 					first.bfciter(), last.bfciter());
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -200,9 +200,9 @@ namespace barefootc {
 			bfc_destroy((bfc_objptr_t) &bfcvec);
 		}
 
-		bfc_contptr_t contptr() const
+		bfc_objptr_t contptr() const
 		{
-			return ((bfc_contptr_t) &bfcvec);
+			return ((bfc_objptr_t) &bfcvec);
 		}
 
 		vector<T,Allocator>& operator=(const vector<T,Allocator>& x)
@@ -280,22 +280,22 @@ namespace barefootc {
 
 		size_type max_size() const
 		{
-			return (bfc_container_max_size((bfc_contptr_t)&bfcvec));
+			return (bfc_container_max_size((bfc_objptr_t)&bfcvec));
 		}
 
 		void resize(size_type sz)
 		{
-			bfc_container_resize((bfc_contptr_t)&bfcvec, sz, NULL);
+			bfc_container_resize((bfc_objptr_t)&bfcvec, sz, NULL);
 		}
 
 		void resize(size_type sz, const T& c)
 		{
-			bfc_container_resize((bfc_contptr_t)&bfcvec, sz, &c);
+			bfc_container_resize((bfc_objptr_t)&bfcvec, sz, &c);
 		}
 
 		size_type capacity() const
 		{
-			return (bfc_container_capacity((bfc_contptr_t)&bfcvec));
+			return (bfc_container_capacity((bfc_objptr_t)&bfcvec));
 		}
 
 		bool empty() const
@@ -305,12 +305,12 @@ namespace barefootc {
 
 		void reserve(size_type n)
 		{
-			bfc_container_reserve((bfc_contptr_t)&bfcvec, n);
+			bfc_container_reserve((bfc_objptr_t)&bfcvec, n);
 		}
 
 		void shrink_to_fit()
 		{
-			bfc_container_reserve((bfc_contptr_t)&bfcvec, 0);
+			bfc_container_reserve((bfc_objptr_t)&bfcvec, 0);
 		}
 
 		// element access:
@@ -328,28 +328,28 @@ namespace barefootc {
 		{
 			const T *p;
 			p = (const T*)bfc_container_index(
-					(bfc_ccontptr_t)&bfcvec, n);
+					(bfc_cobjptr_t)&bfcvec, n);
 			return (*p);
 		}
 
 		reference at(size_type n)
 		{
 			T *p;
-			p = (T*)bfc_container_index((bfc_contptr_t)&bfcvec, n);
+			p = (T*)bfc_container_index((bfc_objptr_t)&bfcvec, n);
 			return (*p);
 		}
 
 		reference front()
 		{
 			T *p;
-			p = (T*)bfc_container_index((bfc_contptr_t)&bfcvec, 0);
+			p = (T*)bfc_container_index((bfc_objptr_t)&bfcvec, 0);
 			return (*p);
 		}
 
 		const_reference front() const
 		{
 			const T *p;
-			p = (const T*)bfc_container_first((bfc_ccontptr_t)&bfcvec);
+			p = (const T*)bfc_container_first((bfc_cobjptr_t)&bfcvec);
 			return (*p);
 		}
 
@@ -369,14 +369,14 @@ namespace barefootc {
 		T* data() noexcept
 		{
 			T *p;
-			p = (T*)bfc_container_index((bfc_contptr_t)&bfcvec, 0);
+			p = (T*)bfc_container_index((bfc_objptr_t)&bfcvec, 0);
 			return (p);
 		}
 
 		const T* data() const noexcept
 		{
 			const T *p;
-			p = (const T*)bfc_container_first((bfc_contptr_t)&bfcvec);
+			p = (const T*)bfc_container_first((bfc_objptr_t)&bfcvec);
 			return (p);
 		}
 
@@ -384,7 +384,7 @@ namespace barefootc {
 		// 23.3.6.5, modifiers:
 		void push_back(const T& x)
 		{
-			bfc_container_push_back((bfc_contptr_t)&bfcvec, &x);
+			bfc_container_push_back((bfc_objptr_t)&bfcvec, &x);
 		}
 
 #if __cplusplus >= 201103L
@@ -394,7 +394,7 @@ namespace barefootc {
 #endif
 		void pop_back()
 		{
-			bfc_container_pop_back((bfc_contptr_t)&bfcvec);
+			bfc_container_pop_back((bfc_objptr_t)&bfcvec);
 		}
 
 		iterator insert(const_iterator position, const T& x)
@@ -402,7 +402,7 @@ namespace barefootc {
 			iterator it(position);
 			int rc;
 			rc = bfc_container_insert_element(
-				(bfc_contptr_t)&bfcvec, it.bfciter(), &x);
+				(bfc_objptr_t)&bfcvec, it.bfciter(), &x);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -415,7 +415,7 @@ namespace barefootc {
 			iterator it(position);
 			int rc;
 			rc = bfc_container_insert_fill(
-				(bfc_contptr_t)&bfcvec, it.bfciter(), n, &x);
+				(bfc_objptr_t)&bfcvec, it.bfciter(), n, &x);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -427,7 +427,7 @@ namespace barefootc {
 			iterator it(position);
 			int rc;
 			rc = bfc_container_insert_fill(
-				(bfc_contptr_t)&bfcvec, it.bfciter(), n, &x);
+				(bfc_objptr_t)&bfcvec, it.bfciter(), n, &x);
 			if (rc < 0) {
 				throw_replace_error(-rc);
 			}
@@ -439,7 +439,7 @@ namespace barefootc {
 		{
 			iterator it(position);
 			int rc;
-			rc = bfc_container_insert_range((bfc_contptr_t)&bfcvec,
+			rc = bfc_container_insert_range((bfc_objptr_t)&bfcvec,
 				it.bfciter(), first.bfciter(), last.bfciter());
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -462,7 +462,7 @@ namespace barefootc {
 		iterator erase(const_iterator position)
 		{
 			int rc;
-			rc = bfc_container_erase_element((bfc_contptr_t)&bfcvec,
+			rc = bfc_container_erase_element((bfc_objptr_t)&bfcvec,
 							 position.bfciter());
 			if (rc < 0) {
 				throw_replace_error(-rc);
@@ -473,7 +473,7 @@ namespace barefootc {
 		iterator erase(const_iterator first, const_iterator last)
 		{
 			int rc;
-			rc = bfc_container_erase_range((bfc_contptr_t)&bfcvec,
+			rc = bfc_container_erase_range((bfc_objptr_t)&bfcvec,
 					 first.bfciter(), last.bfciter());
 			if (rc < 0) {
 				throw_replace_error(-rc);

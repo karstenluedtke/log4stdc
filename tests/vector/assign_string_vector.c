@@ -16,7 +16,7 @@
 #define snprintf _snprintf
 #endif
 
-static struct mempool *pool;
+static bfc_mempool_t pool;
 static l4sc_logger_ptr_t logger;
 
 static int
@@ -43,7 +43,7 @@ test(int n1, const size_t s1[])
 	assert(rc >= 0);
 
 	for (i=0; i < n1; i++) {
-		bfc_strptr_t s = (bfc_strptr_t) bfc_vector_have(&v1, s1[i]);
+		bfc_objptr_t s = (bfc_objptr_t) bfc_vector_have(&v1, s1[i]);
 		assert(s != NULL);
 		snprintf(buf, sizeof(buf), "element #%d @%ld", i, (long)s1[i]);
 		rc = bfc_init_basic_string_c_str(s, v1.elem_size, pool, buf);
@@ -60,7 +60,7 @@ test(int n1, const size_t s1[])
 	bfc_object_dump((bfc_cobjptr_t)pool, 1, logger);
 	assert(bfc_object_length((bfc_objptr_t)pool) >= initial_poolsize + stringbytes);
 
-	bfc_container_assign_copy((bfc_contptr_t) &v2, (bfc_ccontptr_t) &v1);
+	bfc_container_assign_copy((bfc_objptr_t) &v2, (bfc_cobjptr_t) &v1);
 	bfc_object_dump((bfc_cobjptr_t)&v2, 2, logger);
 	L4SC_DEBUG(logger, "%s: v2 size is %ld, expect %ld", __FUNCTION__,
 		(long)bfc_object_length((bfc_objptr_t)&v2),
@@ -76,8 +76,8 @@ test(int n1, const size_t s1[])
 	bfc_destroy((bfc_objptr_t)&v1);
 
 	for (i=0; i < n1; i++) {
-		bfc_cstrptr_t s = (bfc_cstrptr_t)bfc_container_index(
-						(bfc_contptr_t)&v2, s1[i]);
+		bfc_cobjptr_t s = (bfc_cobjptr_t)bfc_container_index(
+						(bfc_objptr_t)&v2, s1[i]);
 		assert(s != NULL);
 		snprintf(buf, sizeof(buf), "element #%d @%ld", i, (long)s1[i]);
 		L4SC_DEBUG(logger, "%s: expecting \"%s\"", __FUNCTION__, buf);

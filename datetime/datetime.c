@@ -46,21 +46,21 @@ struct tm *_localtime64(const __time64_t *);
 #include "log4stdc.h"
 #include "umul32_hiword.h"
 
-static int init_datetime(void *buf, size_t bufsize, struct mempool *pool);
-static int clone_datetime(bfc_cdateptr_t date,
-		   void *buf, size_t bufsize, struct mempool *pool);
-static int datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
-static unsigned bfc_datetime_hashcode(bfc_cdateptr_t date, int hashlen);
-static void dump_datetime(bfc_cdateptr_t date,int depth,struct l4sc_logger*log);
-static int datetime_tostring(bfc_cdateptr_t date,
+static int init_datetime(void *buf, size_t bufsize, bfc_mempool_t pool);
+static int clone_datetime(bfc_cobjptr_t date,
+		   void *buf, size_t bufsize, bfc_mempool_t pool);
+static int datetime_equals(bfc_cobjptr_t date, bfc_cobjptr_t other);
+static unsigned bfc_datetime_hashcode(bfc_cobjptr_t date, int hashlen);
+static void dump_datetime(bfc_cobjptr_t date,int depth,struct l4sc_logger*log);
+static int datetime_tostring(bfc_cobjptr_t date,
 			     char *buf, size_t bufsize, const char *fmt);
 
-static int to_gmtime(bfc_cdateptr_t date, struct tm *tm);
-static int to_localtime(bfc_cdateptr_t date, struct tm *tm);
-static int to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm);
-static int to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize);
-static int to_local_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize);
-static int to_world_isodate(bfc_cdateptr_t date, int offs,
+static int to_gmtime(bfc_cobjptr_t date, struct tm *tm);
+static int to_localtime(bfc_cobjptr_t date, struct tm *tm);
+static int to_worldtime(bfc_cobjptr_t date, int offs, struct tm *tm);
+static int to_isodate(bfc_cobjptr_t date, char *buf, size_t bufsize);
+static int to_local_isodate(bfc_cobjptr_t date, char *buf, size_t bufsize);
+static int to_world_isodate(bfc_cobjptr_t date, int offs,
 					char *buf, size_t bufsize);
 
 static void last_method(void) { }
@@ -127,9 +127,9 @@ const struct bfc_datetime_class bfc_datetime_class = {
 };
 
 static int
-init_datetime(void *buf, size_t bufsize, struct mempool *pool)
+init_datetime(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*date)) {
 		return (-ENOSPC);
 	}
@@ -141,7 +141,7 @@ init_datetime(void *buf, size_t bufsize, struct mempool *pool)
 int
 bfc_init_datetime(void *buf, size_t bufsize)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*date)) {
 		return (-ENOSPC);
 	}
@@ -153,7 +153,7 @@ bfc_init_datetime(void *buf, size_t bufsize)
 int
 bfc_init_datetime_copy(void *buf, size_t bufsize, const void *src)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*date)) {
 		return (-ENOSPC);
 	}
@@ -178,7 +178,7 @@ bfc_init_datetime_copy(void *buf, size_t bufsize, const void *src)
 int
 bfc_init_datetime_from_time_t(void *buf, size_t bufsize, time_t secs)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	int rc;
 	
 	if ((rc = bfc_init_datetime(buf, bufsize)) < 0) {
@@ -200,7 +200,7 @@ int
 bfc_init_datetime_precise(void *buf, size_t bufsize,
 			  time_t secs, unsigned long nsecs)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	uint32_t fraction;
 	int rc;
 
@@ -222,7 +222,7 @@ int
 bfc_init_datetime_from_timespec(void *buf, size_t bufsize,
 				const struct timespec *ts)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	uint32_t fraction;
 	int rc;
 
@@ -244,7 +244,7 @@ int
 bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 				const struct timeval *tv)
 {
-	bfc_dateptr_t date = (bfc_dateptr_t) buf;
+	bfc_objptr_t date = (bfc_objptr_t) buf;
 	uint32_t fraction;
 	int rc;
 
@@ -262,13 +262,13 @@ bfc_init_datetime_from_timeval(void *buf, size_t bufsize,
 }
 
 void
-bfc_destroy_datetime(bfc_dateptr_t date)
+bfc_destroy_datetime(bfc_objptr_t date)
 {
 	date->vptr = NULL;
 }
 
 int
-bfc_clone_datetime(bfc_cdateptr_t date, void *buf, size_t bufsize)
+bfc_clone_datetime(bfc_cobjptr_t date, void *buf, size_t bufsize)
 {
 	size_t size = bfc_object_size(date);
 	if (bufsize < size) {
@@ -279,20 +279,20 @@ bfc_clone_datetime(bfc_cdateptr_t date, void *buf, size_t bufsize)
 }
 
 static int
-clone_datetime(bfc_cdateptr_t date,
-		void *buf, size_t bufsize, struct mempool *pool)
+clone_datetime(bfc_cobjptr_t date,
+		void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	return (bfc_clone_datetime(date, buf, bufsize));
 }
 
 size_t
-bfc_datetime_objsize(bfc_cdateptr_t date)
+bfc_datetime_objsize(bfc_cobjptr_t date)
 {
 	return (sizeof(bfc_datetime_t));
 }
 
 static unsigned  
-bfc_datetime_hashcode(bfc_cdateptr_t date, int hashlen)
+bfc_datetime_hashcode(bfc_cobjptr_t date, int hashlen)
 {
 	uint32_t x;
 	x  = GET_DAYS(date);
@@ -302,7 +302,7 @@ bfc_datetime_hashcode(bfc_cdateptr_t date, int hashlen)
 }
 
 static int
-datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other)
+datetime_equals(bfc_cobjptr_t date, bfc_cobjptr_t other)
 {
 	if (date == other) {
 		return (1);
@@ -313,13 +313,13 @@ datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other)
 }
 
 size_t
-bfc_datetime_length(bfc_cdateptr_t date)
+bfc_datetime_length(bfc_cobjptr_t date)
 {
 	return (1);
 }
 
 static int
-datetime_tostring(bfc_cdateptr_t date,
+datetime_tostring(bfc_cobjptr_t date,
 		  char *buf, size_t bufsize, const char *fmt)
 {
 	int rc = 0;
@@ -346,7 +346,7 @@ datetime_tostring(bfc_cdateptr_t date,
 }
 
 static void
-dump_datetime(bfc_cdateptr_t date, int depth, struct l4sc_logger *log)
+dump_datetime(bfc_cobjptr_t date, int depth, struct l4sc_logger *log)
 {
 	if (date && BFC_CLASS(date)) {
 		L4SC_DEBUG(log, "%s @%p: %ld %ld.%lx",
@@ -356,7 +356,7 @@ dump_datetime(bfc_cdateptr_t date, int depth, struct l4sc_logger *log)
 }
 
 int
-bfc_datetime_set_long(bfc_dateptr_t date, size_t pos, long val)
+bfc_datetime_set_long(bfc_objptr_t date, size_t pos, long val)
 {
 	if (pos != 0) {
 		switch (pos) {
@@ -391,7 +391,7 @@ bfc_datetime_set_long(bfc_dateptr_t date, size_t pos, long val)
 }
 
 long
-bfc_datetime_get_long(bfc_cdateptr_t date, size_t pos)
+bfc_datetime_get_long(bfc_cobjptr_t date, size_t pos)
 {
 	if (pos != 0) {
 		switch (pos) {
@@ -408,13 +408,13 @@ bfc_datetime_get_long(bfc_cdateptr_t date, size_t pos)
 }
 
 time_t
-bfc_datetime_secs(bfc_cdateptr_t date)
+bfc_datetime_secs(bfc_cobjptr_t date)
 {
 	return ((time_t) 24 * 3600 * GET_DAYS(date) + GET_SECS(date));
 }
 
 int
-bfc_datetime_msecs(bfc_cdateptr_t date)
+bfc_datetime_msecs(bfc_cobjptr_t date)
 {
 	uint32_t fraction = GET_FRAC(date);
 	if (fraction >= 4290000000uL) {
@@ -424,7 +424,7 @@ bfc_datetime_msecs(bfc_cdateptr_t date)
 }
 
 long
-bfc_datetime_usecs(bfc_cdateptr_t date)
+bfc_datetime_usecs(bfc_cobjptr_t date)
 {
 	uint32_t fraction = GET_FRAC(date);
 	if (fraction >= 4294963000uL) {
@@ -434,7 +434,7 @@ bfc_datetime_usecs(bfc_cdateptr_t date)
 }
 
 long
-bfc_datetime_nsecs(bfc_cdateptr_t date)
+bfc_datetime_nsecs(bfc_cobjptr_t date)
 {
 	uint32_t fraction = GET_FRAC(date);
 	if (fraction >= 4294967290uL) {
@@ -444,7 +444,7 @@ bfc_datetime_nsecs(bfc_cdateptr_t date)
 }
 
 long
-bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+bfc_datetime_secs_between(bfc_cobjptr_t first, bfc_cobjptr_t last)
 {
 	int32_t days = GET_DAYS(last) - GET_DAYS(first);
 	int32_t secs = GET_SECS(last) - GET_SECS(first);
@@ -453,7 +453,7 @@ bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 }
 
 long
-bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+bfc_datetime_msecs_between(bfc_cobjptr_t first, bfc_cobjptr_t last)
 {
 	uint32_t diff;
 	long msecs = bfc_datetime_secs_between(first, last) * 1000u;
@@ -472,7 +472,7 @@ bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 }
 
 long
-bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+bfc_datetime_usecs_between(bfc_cobjptr_t first, bfc_cobjptr_t last)
 {
 	uint32_t diff;
 	long usecs = bfc_datetime_secs_between(first, last) * 1000000uL;
@@ -491,7 +491,7 @@ bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 }
 
 long
-bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
+bfc_datetime_nsecs_between(bfc_cobjptr_t first, bfc_cobjptr_t last)
 {
 	uint32_t diff;
 	long nsecs = bfc_datetime_secs_between(first, last) * 1000000000uL;
@@ -510,7 +510,7 @@ bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last)
 }
 
 int
-bfc_datetime_advance_secs(bfc_dateptr_t date, signed long secs)
+bfc_datetime_advance_secs(bfc_objptr_t date, signed long secs)
 {
 	signed long s = GET_SECS(date) + secs;
 	unsigned long days;
@@ -531,7 +531,7 @@ bfc_datetime_advance_secs(bfc_dateptr_t date, signed long secs)
 }
 
 int
-bfc_datetime_advance_msecs(bfc_dateptr_t date, signed long msecs)
+bfc_datetime_advance_msecs(bfc_objptr_t date, signed long msecs)
 {
 	int64_t sum  = (int64_t) 4294967L * msecs + GET_FRAC(date);
 	int32_t secs = (int32_t) (sum >> 32);
@@ -547,7 +547,7 @@ bfc_datetime_advance_msecs(bfc_dateptr_t date, signed long msecs)
 }
 
 int
-bfc_datetime_advance_usecs(bfc_dateptr_t date, signed long usecs)
+bfc_datetime_advance_usecs(bfc_objptr_t date, signed long usecs)
 {
 	int64_t sum  = (int64_t) 4295 * usecs + GET_FRAC(date);
 	int32_t secs = (int32_t) (sum >> 32);
@@ -563,7 +563,7 @@ bfc_datetime_advance_usecs(bfc_dateptr_t date, signed long usecs)
 }
 
 int
-bfc_datetime_advance_nsecs(bfc_dateptr_t date, signed long nsecs)
+bfc_datetime_advance_nsecs(bfc_objptr_t date, signed long nsecs)
 {
 	int64_t sum  = (int64_t) 4 * nsecs + GET_FRAC(date);
 	int32_t secs = (int32_t) (sum >> 32);
@@ -582,7 +582,7 @@ bfc_datetime_advance_nsecs(bfc_dateptr_t date, signed long nsecs)
 #define POSIX_SECS_PER_DAY	86400L
 
 static int
-to_localtime(bfc_cdateptr_t date, struct tm *tm)
+to_localtime(bfc_cobjptr_t date, struct tm *tm)
 {
 	int rc = BFC_SUCCESS;
 	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * GET_DAYS(date)
@@ -618,7 +618,7 @@ to_localtime(bfc_cdateptr_t date, struct tm *tm)
 }
 
 static int
-to_gmtime(bfc_cdateptr_t date, struct tm *tm)
+to_gmtime(bfc_cobjptr_t date, struct tm *tm)
 {
 	int rc = BFC_SUCCESS;
 	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * GET_DAYS(date)
@@ -674,7 +674,7 @@ offset_to_seconds(int offs)
 }
 
 static int
-to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm)
+to_worldtime(bfc_cobjptr_t date, int offs, struct tm *tm)
 {
 	int rc = BFC_SUCCESS;
 	int64_t secs = (int64_t) POSIX_SECS_PER_DAY * GET_DAYS(date)
@@ -710,7 +710,7 @@ to_worldtime(bfc_cdateptr_t date, int offs, struct tm *tm)
 }
 
 static int
-to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
+to_isodate(bfc_cobjptr_t date, char *buf, size_t bufsize)
 {
 	int rc, len;
 	struct tm tm;
@@ -739,7 +739,7 @@ to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
 }
 
 static int
-to_world_isodate(bfc_cdateptr_t date, int offs, char *buf, size_t bufsize)
+to_world_isodate(bfc_cobjptr_t date, int offs, char *buf, size_t bufsize)
 {
 	int rc, len;
 	struct tm tm;
@@ -782,7 +782,7 @@ to_world_isodate(bfc_cdateptr_t date, int offs, char *buf, size_t bufsize)
 }
 
 static int
-to_local_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
+to_local_isodate(bfc_cobjptr_t date, char *buf, size_t bufsize)
 {
 	int rc, offs, len;
 	struct tm tm, utc;

@@ -16,14 +16,14 @@
 
 extern const struct bfc_classhdr bfc_cp1250_traits_class;
 
-static long get_codept(bfc_cstrptr_t s, size_t pos);
-static int set_codept(bfc_strptr_t s, size_t pos, long c);
-static int init_begin_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs);
-static int init_limit_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs);
-static int init_rbegin_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs);
-static int init_rlimit_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs);
+static long get_codept(bfc_cobjptr_t s, size_t pos);
+static int set_codept(bfc_objptr_t s, size_t pos, long c);
+static int init_begin_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs);
+static int init_limit_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs);
+static int init_rbegin_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs);
+static int init_rlimit_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs);
 
-static int mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+static int mutable_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
 
 const struct bfc_string_class bfc_shared_cp1250_string_class = {
@@ -69,13 +69,13 @@ const struct bfc_string_class bfc_buffered_cp1250_string_class = {
 
 int
 bfc_init_empty_cp1250_string(void *buf, size_t bufsize,
-				  struct mempool *pool)
+				  bfc_mempool_t pool)
 {
 	static const long zbuf = 0;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, s, buf, bufsize, pool,
+			  bfc_objptr_t, s, buf, bufsize, pool,
 			  &bfc_shared_cp1250_string_class);
 
 	L4SC_WARN(logger, "%s(%p, %ld, pool %p): default constructor called!",
@@ -92,7 +92,7 @@ bfc_init_shared_cp1250_string(void *buf, size_t bufsize,
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, obj, buf, bufsize, NULL,
+			  bfc_objptr_t, obj, buf, bufsize, NULL,
 			  &bfc_shared_cp1250_string_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, s %p, n %ld)",
@@ -130,7 +130,7 @@ bfc_init_buffered_cp1250_string(void *buf, size_t bufsize,
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, obj, buf, bufsize, NULL,
+			  bfc_objptr_t, obj, buf, bufsize, NULL,
 			  &bfc_buffered_cp1250_string_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, s %p, n %ld)",
@@ -149,7 +149,7 @@ bfc_init_buffered_cp1250_string(void *buf, size_t bufsize,
 }
 
 int
-bfc_shared_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+bfc_shared_cp1250_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 						void *buf, size_t bufsize)
 {
 	const char *data = bfc_string_subdata(s, pos);
@@ -162,7 +162,7 @@ bfc_shared_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 }
 
 static int
-mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n, void *buf, size_t bufsize)
+mutable_substr(bfc_cobjptr_t s, size_t pos, size_t n, void *buf, size_t bufsize)
 {
 	const char *data = bfc_string_subdata(s, pos);
 	const size_t sublen = bfc_string_sublen(s, pos, n);
@@ -176,7 +176,7 @@ mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n, void *buf, size_t bufsize)
 }
 
 int
-bfc_buffered_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+bfc_buffered_cp1250_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 				void *buf, size_t bufsize,
 				void *databuf, size_t dbufsize)
 {
@@ -188,7 +188,7 @@ bfc_buffered_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 	rc = bfc_init_buffered_cp1250_string(buf, bufsize,
 						 databuf, dbufsize);
 	if (rc >= 0) {
-		bfc_strptr_t substr = (bfc_strptr_t) buf;
+		bfc_objptr_t substr = (bfc_objptr_t) buf;
 		const char *data = bfc_string_subdata(s, pos);
 		const size_t sublen = bfc_string_sublen(s, pos, n);
 		rc = bfc_string_assign_buffer(substr, data, sublen);
@@ -197,27 +197,27 @@ bfc_buffered_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
 }
 
 static long
-get_codept(bfc_cstrptr_t s, size_t pos)
+get_codept(bfc_cobjptr_t s, size_t pos)
 {
 	const char *p;
 	unsigned codept;
 
-	p = (char*) bfc_string_index((bfc_strptr_t)(uintptr_t)s, pos);
+	p = (char*) bfc_string_index((bfc_objptr_t)(uintptr_t)s, pos);
 	codept = (*STRING_TRAITS(s)->to_int)(*p);
 	return (codept);
 }
 
 static int
-set_codept(bfc_strptr_t s, size_t pos, long codept)
+set_codept(bfc_objptr_t s, size_t pos, long codept)
 {
 	char c = (*STRING_TRAITS(s)->to_char)((int)codept);
 
 	if ((pos == BFC_NPOS) || (pos > bfc_strlen(s))) {
 		return (-ERANGE);
 	} else if (pos == bfc_strlen(s)) {
-		bfc_string_push_back((bfc_strptr_t)s, c);
+		bfc_string_push_back((bfc_objptr_t)s, c);
 	} else {
-		char *p = (char*)bfc_string_index((bfc_strptr_t)s, pos);
+		char *p = (char*)bfc_string_index((bfc_objptr_t)s, pos);
 		*p = c;
 	}
 	return (BFC_SUCCESS);
@@ -227,20 +227,20 @@ set_codept(bfc_strptr_t s, size_t pos, long codept)
 #define INIT_REVERSE_ITERATOR	bfc_init_reverse_iterator
 
 static int
-init_begin_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
+init_begin_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs)
 {
 	return (INIT_FORWARD_ITERATOR(it, bs, (bfc_cobjptr_t)s, 0));
 }
 
 static int
-init_limit_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
+init_limit_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs)
 {
 	size_t pos = bfc_strlen(s);
 	return (INIT_FORWARD_ITERATOR(it, bs, (bfc_cobjptr_t)s, pos));
 }
 
 static int
-init_rbegin_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
+init_rbegin_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs)
 {
 	size_t n = bfc_strlen(s);
 	size_t pos = (n > 0)? (n-1): BFC_NPOS;
@@ -248,7 +248,7 @@ init_rbegin_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
 }
 
 static int
-init_rlimit_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bs)
+init_rlimit_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bs)
 {
 	return (INIT_REVERSE_ITERATOR(it, bs, (bfc_cobjptr_t)s, BFC_NPOS));
 }

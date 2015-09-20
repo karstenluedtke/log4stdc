@@ -16,7 +16,7 @@
  * @brief    bfc_strdata
  */
 const char *
-bfc_strdata(bfc_cstrptr_t s)
+bfc_strdata(bfc_cobjptr_t s)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s, first, (s), s->name);
 }

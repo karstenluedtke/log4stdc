@@ -13,7 +13,7 @@
  * @brief    bfc_string_erase_range
  */
 int
-bfc_string_erase_range(bfc_strptr_t s,bfc_iterptr_t first,bfc_iterptr_t last)
+bfc_string_erase_range(bfc_objptr_t s,bfc_iterptr_t first,bfc_iterptr_t last)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			replace_range_buffer, (s, first, last, NULL, 0),

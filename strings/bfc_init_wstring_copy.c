@@ -10,15 +10,15 @@
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			     bfc_strptr_t, bfc_cstrptr_t, wchar_t)
+			     bfc_objptr_t, bfc_cobjptr_t, wchar_t)
 };
 
 /**
  * @brief    bfc_init_wstring_copy
  */
 int
-bfc_init_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cstrptr_t str)
+bfc_init_wstring_copy(void *buf, size_t bufsize, bfc_mempool_t pool,
+				bfc_cobjptr_t str)
 {
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);

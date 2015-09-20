@@ -27,7 +27,7 @@
 #include "barefootc/mempool.h"
 #include "logobjects.h"
 
-static int init_xml_configurator(void *, size_t, struct mempool *);
+static int init_xml_configurator(void *, size_t, bfc_mempool_t );
 static size_t get_xml_configurator_size(l4sc_configurator_cptr_t obj);
 
 static int configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path);
@@ -45,7 +45,7 @@ const struct l4sc_configurator_class l4sc_xml_configurator_class = {
 };
 
 static int
-init_xml_configurator(void *buf, size_t bufsize, struct mempool *pool)
+init_xml_configurator(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_configurator_class_ptr_t,
 			  l4sc_configurator_ptr_t,configurator,buf,bufsize,pool,
@@ -71,10 +71,10 @@ struct parsing_state {
 };
 
 struct element_values {
-	bfc_cstrptr_t name;
-	bfc_cstrptr_t value;
-	bfc_cstrptr_t ref;
-	bfc_cstrptr_t class;
+	bfc_cobjptr_t name;
+	bfc_cobjptr_t value;
+	bfc_cobjptr_t ref;
+	bfc_cobjptr_t class;
 };
 
 static int

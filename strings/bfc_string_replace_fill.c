@@ -13,7 +13,7 @@
  * @brief    bfc_string_replace_fill
  */
 int
-bfc_string_replace_fill(bfc_strptr_t s, size_t pos, size_t n1, size_t n2, int c)
+bfc_string_replace_fill(bfc_objptr_t s, size_t pos, size_t n1, size_t n2, int c)
 {
 	bfc_iterator_t i1, i2, j1, j2;
 

@@ -12,7 +12,7 @@
  * @brief    bfc_string_sublen
  */
 size_t
-bfc_string_sublen(bfc_cstrptr_t s, size_t pos, size_t n)
+bfc_string_sublen(bfc_cobjptr_t s, size_t pos, size_t n)
 {
 	size_t remain, len = bfc_strlen(s);
 	if ((pos == BFC_NPOS) || (pos >= len)) {

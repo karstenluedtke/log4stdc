@@ -12,7 +12,7 @@
  * @brief    bfc_string_pop_back
  */
 void
-bfc_string_pop_back(bfc_strptr_t s)
+bfc_string_pop_back(bfc_objptr_t s)
 {
 	VOID_METHCALL(bfc_string_classptr_t, s, pop_back, (s));
 }

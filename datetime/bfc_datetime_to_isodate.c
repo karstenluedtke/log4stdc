@@ -3,7 +3,7 @@
 #include "barefootc/datetime.h"
 
 int
-bfc_datetime_to_isodate(bfc_cdateptr_t date, char *buf, size_t bufsize)
+bfc_datetime_to_isodate(bfc_cobjptr_t date, char *buf, size_t bufsize)
 {
 	RETURN_METHCALL(bfc_datetime_classptr_t, date,
 			to_isodate, (date, buf, bufsize),

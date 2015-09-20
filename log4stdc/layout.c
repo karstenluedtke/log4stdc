@@ -33,7 +33,7 @@ struct tm *_localtime64(const __time64_t *);
 
 #include "logobjects.h"
 
-static int init_patternlayout(void *, size_t, struct mempool *);
+static int init_patternlayout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
 static unsigned get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen);
 static int  is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other);
@@ -76,7 +76,7 @@ const struct l4sc_layout_class l4sc_patternlayout_class = {
 };
 
 static int
-init_patternlayout(void *buf, size_t bufsize, struct mempool *pool)
+init_patternlayout(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t,
 			  l4sc_layout_ptr_t, layout, buf, bufsize, pool,

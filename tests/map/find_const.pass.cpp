@@ -51,8 +51,8 @@ int main()
 	bfc_number_t key30 = BFC_SIGNED_NUMBER(30);
         C::const_iterator i = c.find(key30);
 	P *p = (P *)bfc_iterator_index(i.bfciter());
-	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	bfc_cobjptr_t num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	bfc_cobjptr_t str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 30);
         assert(bfc_string_compare_c_str(str, "thirty") == 0);
 

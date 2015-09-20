@@ -34,9 +34,9 @@ const struct bfc_classhdr bfc_boolean_class = {
 #define GET_BOOLEAN(obj)	(BOOLEAN_VAL(obj) != 0)
 
 int
-bfc_init_boolean_object(void *buf, size_t bufsize, struct mempool *pool)
+bfc_init_boolean_object(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
-	bfc_numptr_t obj = (bfc_numptr_t) buf;
+	bfc_objptr_t obj = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*obj)) {
 		return (-ENOSPC);
 	} else {
@@ -55,7 +55,7 @@ bfc_get_boolean_object_size(bfc_cobjptr_t obj)
 unsigned  
 bfc_boolean_get_hashcode(bfc_cobjptr_t obj, int hashlen)
 {
-	bfc_cnumptr_t p = (bfc_cnumptr_t) obj;
+	bfc_cobjptr_t p = (bfc_cobjptr_t) obj;
 	return ((GET_BOOLEAN(p))? 1 : 0);
 }
 

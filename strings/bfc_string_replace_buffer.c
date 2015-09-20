@@ -12,7 +12,7 @@
  * @brief    bfc_string_replace_buffer
  */
 int
-bfc_string_replace_buffer(bfc_strptr_t s, size_t pos, size_t n1,
+bfc_string_replace_buffer(bfc_objptr_t s, size_t pos, size_t n1,
 			  const void *s2, size_t n2)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,

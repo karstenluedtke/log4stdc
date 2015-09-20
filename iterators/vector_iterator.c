@@ -13,10 +13,10 @@
 #include "barefootc/vector.h"
 #include "log4stdc.h"
 
-static int init_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static int init_iterator(void *buf,size_t bufsize,bfc_mempool_t pool);
 static int advance_forward(bfc_iterptr_t it, ptrdiff_t n);
 
-static int init_object_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static int init_object_iterator(void *buf,size_t bufsize,bfc_mempool_t pool);
 static int advance_object_forward(bfc_iterptr_t it, ptrdiff_t n);
 
 extern const struct bfc_iterator_class bfc_forward_iterator_class;
@@ -42,7 +42,7 @@ const struct bfc_iterator_class bfc_object_vector_forward_iterator_class = {
 };
 
 static int
-init_iterator(void *buf, size_t bufsize, struct mempool *pool)
+init_iterator(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_iterptr_t it = (bfc_iterptr_t) buf;
 	if (bufsize < sizeof(*it)) {
@@ -71,7 +71,7 @@ bfc_init_vector_iterator(void *buf, size_t bufsize,
 }
 
 static int
-init_object_iterator(void *buf, size_t bufsize, struct mempool *pool)
+init_object_iterator(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_iterptr_t it = (bfc_iterptr_t) buf;
 	if (bufsize < sizeof(*it)) {

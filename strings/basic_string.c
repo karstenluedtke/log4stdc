@@ -12,8 +12,8 @@
 #define STRING_CLASS_NAME			"basic_string"
 
 #define	wchar_t					char
-#define bfc_strptr_t				bfc_strptr_t
-#define bfc_cstrptr_t				bfc_cstrptr_t
+#define bfc_objptr_t				bfc_objptr_t
+#define bfc_cobjptr_t				bfc_cobjptr_t
 #define bfc_basic_wstring			bfc_basic_string
 
 #define bfc_wstring_class			bfc_string_class

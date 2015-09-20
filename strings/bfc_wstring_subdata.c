@@ -11,16 +11,16 @@
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			     bfc_strptr_t, bfc_cstrptr_t, wchar_t)
+			     bfc_objptr_t, bfc_cobjptr_t, wchar_t)
 };
 
 /**
  * @brief    bfc_wstring_subdata
  */
 const wchar_t *
-bfc_wstring_subdata(bfc_cstrptr_t s, size_t pos)
+bfc_wstring_subdata(bfc_cobjptr_t s, size_t pos)
 {
-	bfc_strptr_t s1 = BFC_UNCONST(bfc_strptr_t, s);
+	bfc_objptr_t s1 = BFC_UNCONST(bfc_objptr_t, s);
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			index, (s1, pos),
 			((const wchar_t *)s->name)+pos);

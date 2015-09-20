@@ -15,15 +15,15 @@
 #include "barefootc/unconst.h"
 #include "log4stdc.h"
 
-static void destroy_map(bfc_contptr_t map);
-static int map_equals(bfc_ccontptr_t map, bfc_ccontptr_t other);
-static int begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize);
-static int map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
+static void destroy_map(bfc_objptr_t map);
+static int map_equals(bfc_cobjptr_t map, bfc_cobjptr_t other);
+static int begin_iterator(bfc_cobjptr_t map, bfc_iterptr_t it, size_t bufsize);
+static int map_insert_range(bfc_objptr_t map, bfc_iterptr_t ignored_position,
 			    bfc_iterptr_t first, bfc_iterptr_t last);
-static int map_assign_range(bfc_contptr_t map,
+static int map_assign_range(bfc_objptr_t map,
 			    bfc_iterptr_t first, bfc_iterptr_t last);
 
-static int find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth,
+static int find_by_name(bfc_cobjptr_t map, bfc_cobjptr_t key, int depth,
 			bfc_iterptr_t it);
 
 #define BFC_MAP_HASHLEN(map)	(CV2_LOG2ELEM(map))
@@ -43,7 +43,7 @@ const struct bfc_map_class bfc_unordered_map_class = {
 
 int
 bfc_init_map_class(void *buf, size_t bufsize, int estimate,
-		   bfc_classptr_t pairclass, struct mempool *pool)
+		   bfc_classptr_t pairclass, bfc_mempool_t pool)
 {
 	int rc;
 	long boundary = 4 * estimate;
@@ -79,8 +79,8 @@ bfc_init_map_class(void *buf, size_t bufsize, int estimate,
 }
 
 int
-bfc_init_map_copy(void *buf, size_t bufsize, struct mempool *pool,
-		  bfc_ccontptr_t src)
+bfc_init_map_copy(void *buf, size_t bufsize, bfc_mempool_t pool,
+		  bfc_cobjptr_t src)
 {
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) buf;
 	const bfc_char_vector_t *svec = (const bfc_char_vector_t *) src;
@@ -97,13 +97,13 @@ bfc_init_map_copy(void *buf, size_t bufsize, struct mempool *pool,
 		vec->elem_class = svec->elem_class;
 		vec->log2_indirect = svec->log2_indirect;
 		vec->log2_double_indirect = svec->log2_double_indirect;
-		rc = bfc_container_assign_copy((bfc_contptr_t) vec, src);
+		rc = bfc_container_assign_copy((bfc_objptr_t) vec, src);
 	}
 	return (rc);
 }
 
 static void
-destroy_map(bfc_contptr_t map)
+destroy_map(bfc_objptr_t map)
 {
 	bfc_classptr_t cls;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
@@ -114,7 +114,7 @@ destroy_map(bfc_contptr_t map)
 }
 
 static int
-begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize)
+begin_iterator(bfc_cobjptr_t map, bfc_iterptr_t it, size_t bufsize)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	int rc = bfc_init_object_vector_iterator(it, bufsize,
@@ -135,7 +135,7 @@ begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize)
 }
 
 size_t
-bfc_map_size(bfc_ccontptr_t map)
+bfc_map_size(bfc_cobjptr_t map)
 {
 	size_t n = 0;
 	ptrdiff_t dist;
@@ -183,7 +183,7 @@ bfc_map_load_percent(const void *map)
 }
 
 int
-bfc_map_reserve(bfc_contptr_t map, size_t n)
+bfc_map_reserve(bfc_objptr_t map, size_t n)
 {
 	size_t oldsize, limit;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
@@ -247,8 +247,8 @@ bfc_map_keyhashcode(const void *map, const void *key)
 }
 
 static int
-place_pair_kv(bfc_contptr_t pair, bfc_objptr_t key, bfc_objptr_t value,
-	      struct mempool *pool)
+place_pair_kv(bfc_objptr_t pair, bfc_objptr_t key, bfc_objptr_t value,
+	      bfc_mempool_t pool)
 {
 	if ((bfc_container_place(pair, 0, key, pool) != NULL)
 	 && (bfc_container_place(pair, 1, value, pool) != NULL)) {
@@ -258,12 +258,12 @@ place_pair_kv(bfc_contptr_t pair, bfc_objptr_t key, bfc_objptr_t value,
 }
 
 int
-bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
+bfc_map_insert_objects(bfc_objptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		       bfc_iterptr_t position, size_t possize)
 {
 	int rc = -ENOENT;
 	unsigned idx;
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_mutex_ptr_t locked;
@@ -292,7 +292,7 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		rc = bfc_container_find_by_name(map, key, 1, it);
 		if (rc == -ENOENT) {
 			idx = bfc_iterator_position(it);
-			pair = (bfc_contptr_t) bfc_vector_have(vec, idx);
+			pair = (bfc_objptr_t) bfc_vector_have(vec, idx);
 			L4SC_DEBUG(logger, "%s: pair %p at #%u",
 						__FUNCTION__, pair, idx);
 			if (pair == NULL) {
@@ -328,12 +328,12 @@ bfc_map_insert_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 }
 
 int
-bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
+bfc_map_replace_objects(bfc_objptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		        bfc_iterptr_t position, size_t possize)
 {
 	int rc = -ENOENT;
 	unsigned idx;
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_mutex_ptr_t locked;
@@ -362,7 +362,7 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 		rc = bfc_container_find_by_name(map, key, 1, it);
 		if (rc == -ENOENT) {
 			idx = bfc_iterator_position(it);
-			pair = (bfc_contptr_t) bfc_vector_have(vec, idx);
+			pair = (bfc_objptr_t) bfc_vector_have(vec, idx);
 			L4SC_DEBUG(logger, "%s: new pair %p at #%u",
 						__FUNCTION__, pair, idx);
 			if (pair == NULL) {
@@ -375,7 +375,7 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
 			}
 		} else if (rc >= 0) {
 			idx = bfc_iterator_position(it);
-			pair = (bfc_contptr_t) bfc_iterator_index(it);
+			pair = (bfc_objptr_t) bfc_iterator_index(it);
 			L4SC_DEBUG(logger, "%s: exiting pair %p at #%u",
 						__FUNCTION__, pair, idx);
 			if (pair == NULL) {
@@ -406,12 +406,12 @@ bfc_map_replace_objects(bfc_contptr_t map, bfc_objptr_t key, bfc_objptr_t value,
  * @return		Index of the pair in the map, or negative on error.
  */
 static int
-find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth, bfc_iterptr_t it)
+find_by_name(bfc_cobjptr_t map, bfc_cobjptr_t key, int depth, bfc_iterptr_t it)
 {
 	int rc = -ENOENT;
 	unsigned idx, lim;
 	bfc_cobjptr_t pkey;
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_mutex_ptr_t locked;
@@ -431,7 +431,7 @@ find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth, bfc_iterptr_t it)
 		idx = bfc_map_keyhashcode(map, key);
 		lim = BFC_VECTOR_GET_SIZE(vec);
 		do {
-			pair = (bfc_contptr_t) bfc_vector_ref(vec, idx);
+			pair = (bfc_objptr_t) bfc_vector_ref(vec, idx);
 			if (pair == NULL) {
 				/* entry never allocated */
 				break;
@@ -451,7 +451,7 @@ find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth, bfc_iterptr_t it)
 			lim = idx+1;
 			idx = bfc_map_keyhashcode(map, key);
 			do {
-				pair = (bfc_contptr_t) bfc_vector_ref(vec, idx);
+				pair = (bfc_objptr_t) bfc_vector_ref(vec, idx);
 				if ((pair != NULL)
 				 && ((BFC_CLASS((bfc_cobjptr_t)pair) != NULL)
 				 && ((pkey = bfc_container_first(pair)) != NULL)
@@ -484,8 +484,8 @@ find_by_name(bfc_ccontptr_t map, bfc_cobjptr_t key, int depth, bfc_iterptr_t it)
 	return (rc);
 }
 
-bfc_contptr_t
-bfc_map_find_pair(bfc_contptr_t map, bfc_cobjptr_t key)
+bfc_objptr_t
+bfc_map_find_pair(bfc_objptr_t map, bfc_cobjptr_t key)
 {
 	bfc_iterator_t it;
 
@@ -498,9 +498,9 @@ bfc_map_find_pair(bfc_contptr_t map, bfc_cobjptr_t key)
 }
 
 bfc_objptr_t
-bfc_map_find_value(bfc_contptr_t map, bfc_cobjptr_t key)
+bfc_map_find_value(bfc_objptr_t map, bfc_cobjptr_t key)
 {
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_objptr_t  pval = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
@@ -525,9 +525,9 @@ bfc_map_find_value(bfc_contptr_t map, bfc_cobjptr_t key)
 }
 
 bfc_objptr_t
-bfc_map_index_value(bfc_contptr_t map, size_t idx)
+bfc_map_index_value(bfc_objptr_t map, size_t idx)
 {
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_objptr_t  pval = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
@@ -549,11 +549,11 @@ bfc_map_index_value(bfc_contptr_t map, size_t idx)
 }
 
 int
-bfc_map_count(bfc_contptr_t map, bfc_cobjptr_t key)
+bfc_map_count(bfc_objptr_t map, bfc_cobjptr_t key)
 {
 	int count = 0;
 	bfc_cobjptr_t pkey;
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_mutex_ptr_t locked;
@@ -583,7 +583,7 @@ bfc_map_count(bfc_contptr_t map, bfc_cobjptr_t key)
 		bfc_iterator_dump(&limit, 1, logger);
 		while (bfc_iterator_distance(&it, &limit) > 0) {
 			bfc_iterator_dump(&it, 1, logger);
-			pair = (bfc_contptr_t) bfc_iterator_index(&it);
+			pair = (bfc_objptr_t) bfc_iterator_index(&it);
 			if (pair && (BFC_CLASS((bfc_cobjptr_t)pair) != NULL)
 			    && (bfc_object_dump(pair, 2, logger), 1)
 			    && ((pkey = bfc_container_first(pair)) != NULL)
@@ -602,12 +602,12 @@ bfc_map_count(bfc_contptr_t map, bfc_cobjptr_t key)
 }
 
 int
-bfc_map_bucket_size(bfc_contptr_t map, bfc_cobjptr_t key)
+bfc_map_bucket_size(bfc_objptr_t map, bfc_cobjptr_t key)
 {
 	unsigned idx;
 	int count = 0;
 	bfc_cobjptr_t pkey;
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_mutex_ptr_t locked;
@@ -625,7 +625,7 @@ bfc_map_bucket_size(bfc_contptr_t map, bfc_cobjptr_t key)
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		idx = bfc_map_keyhashcode(map, key);
 		do {
-			pair = (bfc_contptr_t) bfc_vector_ref(vec, idx);
+			pair = (bfc_objptr_t) bfc_vector_ref(vec, idx);
 			if (pair == NULL) {
 				/* entry never allocated */
 				break;
@@ -645,7 +645,7 @@ bfc_map_bucket_size(bfc_contptr_t map, bfc_cobjptr_t key)
 }
 
 int
-bfc_map_erase_index(bfc_contptr_t map, size_t idx)
+bfc_map_erase_index(bfc_objptr_t map, size_t idx)
 {
 	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
@@ -668,9 +668,9 @@ bfc_map_erase_index(bfc_contptr_t map, size_t idx)
 }
 
 int
-bfc_map_erase_key(bfc_contptr_t map, bfc_cobjptr_t key)
+bfc_map_erase_key(bfc_objptr_t map, bfc_cobjptr_t key)
 {
-	bfc_contptr_t pair = NULL;
+	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
 	bfc_mutex_ptr_t locked;
 	int rc = -ENOENT;
@@ -695,7 +695,7 @@ bfc_map_erase_key(bfc_contptr_t map, bfc_cobjptr_t key)
 }
 
 int
-bfc_map_erase_iter(bfc_contptr_t map, bfc_iterptr_t iter)
+bfc_map_erase_iter(bfc_objptr_t map, bfc_iterptr_t iter)
 {
 	bfc_objptr_t pair = NULL;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
@@ -718,7 +718,7 @@ bfc_map_erase_iter(bfc_contptr_t map, bfc_iterptr_t iter)
 }
 
 int
-bfc_map_rehash(bfc_contptr_t map, size_t n)
+bfc_map_rehash(bfc_objptr_t map, size_t n)
 {
 	int rc = BFC_SUCCESS;
 	size_t clonesize;
@@ -737,7 +737,7 @@ bfc_map_rehash(bfc_contptr_t map, size_t n)
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		/* bfc_init_vector_move clears the source vector */
-		rc = bfc_init_vector_move(tmp, clonesize, (bfc_contptr_t)vec);
+		rc = bfc_init_vector_move(tmp, clonesize, (bfc_objptr_t)vec);
 		if (rc >= 0) {
 			vec->log2_double_indirect = 1;
 			while (n > (size_t) CV2_ELEMENTS(vec)) {
@@ -792,7 +792,7 @@ bfc_map_rehash(bfc_contptr_t map, size_t n)
 }
 
 static int
-map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
+map_insert_range(bfc_objptr_t map, bfc_iterptr_t ignored_position,
 		 bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	int rc = BFC_SUCCESS;
@@ -829,7 +829,7 @@ map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
 }
 
 static int
-map_assign_range(bfc_contptr_t map, bfc_iterptr_t first, bfc_iterptr_t last)
+map_assign_range(bfc_objptr_t map, bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	int rc;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
@@ -839,7 +839,7 @@ map_assign_range(bfc_contptr_t map, bfc_iterptr_t first, bfc_iterptr_t last)
 	bfc_init_iterator(&it, sizeof(it), (bfc_objptr_t)vec, 0);
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		bfc_container_resize((bfc_contptr_t)vec, 0, NULL);
+		bfc_container_resize((bfc_objptr_t)vec, 0, NULL);
 		rc = map_insert_range(map, &it, first, last);
 		if (rc >= 0) {
 			rc = BFC_VECTOR_GET_SIZE(vec);
@@ -858,7 +858,7 @@ map_assign_range(bfc_contptr_t map, bfc_iterptr_t first, bfc_iterptr_t last)
 }
 
 static int
-map_is_subset(bfc_ccontptr_t map, bfc_ccontptr_t other)
+map_is_subset(bfc_cobjptr_t map, bfc_cobjptr_t other)
 {
 	int rc = 0;
 	bfc_char_vector_t *vec = (bfc_char_vector_t *) map;
@@ -897,7 +897,7 @@ map_is_subset(bfc_ccontptr_t map, bfc_ccontptr_t other)
 }
 
 static int
-map_equals(bfc_ccontptr_t map, bfc_ccontptr_t other)
+map_equals(bfc_cobjptr_t map, bfc_cobjptr_t other)
 {
 	if (map == other) {
 		return (1);

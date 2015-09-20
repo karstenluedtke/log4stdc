@@ -13,9 +13,9 @@
 
 int
 bfc_node_set_xml_attribute(bfc_objptr_t node,
-			   bfc_cstrptr_t name, bfc_cstrptr_t val)
+			   bfc_cobjptr_t name, bfc_cobjptr_t val)
 {
-	bfc_contptr_t map;
+	bfc_objptr_t map;
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 

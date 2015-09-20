@@ -10,7 +10,7 @@
 #include "barefootc/container.h"
 
 struct bfc_container {
-	BFC_OBJHDR(bfc_container_classptr_t, bfc_contptr_t)
+	BFC_OBJHDR(bfc_container_classptr_t, bfc_objptr_t)
 };
 
 /**
@@ -18,7 +18,7 @@ struct bfc_container {
  */
 int
 
-bfc_container_assign_copy(bfc_contptr_t c, bfc_ccontptr_t src)
+bfc_container_assign_copy(bfc_objptr_t c, bfc_cobjptr_t src)
 {
 	bfc_iterator_t first, last;
 

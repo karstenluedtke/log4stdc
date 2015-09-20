@@ -12,7 +12,7 @@
  * @brief    bfc_string_append_buffer
  */
 int
-bfc_string_append_buffer(bfc_strptr_t s, const void *s2, size_t n)
+bfc_string_append_buffer(bfc_objptr_t s, const void *s2, size_t n)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			append_buffer, (s, s2, n),

@@ -10,14 +10,14 @@
 #include "barefootc/container.h"
 
 struct bfc_container {
-	BFC_OBJHDR(bfc_container_classptr_t, bfc_contptr_t)
+	BFC_OBJHDR(bfc_container_classptr_t, bfc_objptr_t)
 };
 
 /**
  * @brief    bfc_container_pop_back
  */
 void
-bfc_container_pop_back(bfc_contptr_t c)
+bfc_container_pop_back(bfc_objptr_t c)
 {
 	VOID_METHCALL(bfc_container_classptr_t, c, pop_back, (c));
 }

@@ -22,22 +22,22 @@
 
 /* define struct bfc_container for the remainder of this file ... */
 struct bfc_container {
-	BFC_OBJHDR(bfc_container_classptr_t,bfc_contptr_t)
+	BFC_OBJHDR(bfc_container_classptr_t,bfc_objptr_t)
 };
 
-static int clone_treenode(bfc_ccontptr_t cont,
-	       void *buf, size_t bufsize, struct mempool *pool);
-static void destroy_treenode(bfc_contptr_t cont);
-static size_t treenode_size(bfc_ccontptr_t cont);
-static int treenode_equals(bfc_ccontptr_t cont, bfc_ccontptr_t other);
-static unsigned treenode_hashcode(bfc_ccontptr_t cont, int hashlen);
-static int treenode_tostring(bfc_ccontptr_t cont,
+static int clone_treenode(bfc_cobjptr_t cont,
+	       void *buf, size_t bufsize, bfc_mempool_t pool);
+static void destroy_treenode(bfc_objptr_t cont);
+static size_t treenode_size(bfc_cobjptr_t cont);
+static int treenode_equals(bfc_cobjptr_t cont, bfc_cobjptr_t other);
+static unsigned treenode_hashcode(bfc_cobjptr_t cont, int hashlen);
+static int treenode_tostring(bfc_cobjptr_t cont,
 			     char *buf, size_t bufsize, const char *fmt);
-static bfc_mempool_t treenode_pool(bfc_ccontptr_t cntr);
+static bfc_mempool_t treenode_pool(bfc_cobjptr_t cntr);
 
 struct bfc_treenode_class {
 	BFC_CONTAINER_CLASS_DEF(const struct bfc_treenode_class *,
-				bfc_contptr_t, bfc_ccontptr_t, bfc_object_t)
+				bfc_objptr_t, bfc_cobjptr_t, bfc_object_t)
 };
 
 extern const struct bfc_vector_class bfc_objref_vector_class;
@@ -57,7 +57,7 @@ const struct bfc_container_class bfc_treenode_class = {
 };
 
 int
-bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool)
+bfc_init_treenode(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_nodeptr_t node = (bfc_nodeptr_t) buf;
 	int rc;
@@ -77,7 +77,7 @@ bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 static bfc_mempool_t
-treenode_pool(bfc_ccontptr_t cntr)
+treenode_pool(bfc_cobjptr_t cntr)
 {
 	bfc_nodeptr_t node = (bfc_nodeptr_t) cntr;
 
@@ -85,13 +85,13 @@ treenode_pool(bfc_ccontptr_t cntr)
 }
 
 int
-bfc_node_set_name(bfc_objptr_t treenode, bfc_cstrptr_t name)
+bfc_node_set_name(bfc_objptr_t treenode, bfc_cobjptr_t name)
 {
 	int rc;
 	size_t colon;
 	bfc_nodeptr_t node = (bfc_nodeptr_t) treenode;
-	bfc_strptr_t str = &node->tagname;
-	struct mempool *pool = bfc_container_pool(treenode);
+	bfc_objptr_t str = &node->tagname;
+	bfc_mempool_t pool = bfc_container_pool(treenode);
 	bfc_iterator_t it;
 
 	rc = bfc_init_basic_string_copy(str, sizeof(node->tagname), pool, name);
@@ -107,10 +107,10 @@ bfc_node_set_name(bfc_objptr_t treenode, bfc_cstrptr_t name)
 }
 
 int
-bfc_node_new_attribute_map(bfc_objptr_t node, bfc_contptr_t *attrpp)
+bfc_node_new_attribute_map(bfc_objptr_t node, bfc_objptr_t *attrpp)
 {
 	int rc = -ENOMEM;
-	struct mempool *pool = bfc_container_pool(node);
+	bfc_mempool_t pool = bfc_container_pool(node);
 	const size_t size = 500;
 	bfc_linear_string_map_t *map = bfc_mempool_calloc(pool, 1, size);
 	extern const bfc_class_t bfc_string_pair_class;
@@ -118,7 +118,7 @@ bfc_node_new_attribute_map(bfc_objptr_t node, bfc_contptr_t *attrpp)
 
 	if (((map = bfc_mempool_calloc(pool, 1, size)) != NULL)
 	 && ((rc = bfc_init_linear_map(map, size, pairclass, pool)) >= 0)) {
-		*attrpp = (bfc_contptr_t) map;
+		*attrpp = (bfc_objptr_t) map;
 		map->log2_indirect = 3;
 		map->log2_double_indirect = 7;
 		rc = map->elem_direct;
@@ -127,22 +127,22 @@ bfc_node_new_attribute_map(bfc_objptr_t node, bfc_contptr_t *attrpp)
 }
 
 static int
-new_attribute_map(bfc_node_t *node, bfc_ccontptr_t attrs)
+new_attribute_map(bfc_node_t *node, bfc_cobjptr_t attrs)
 {
-	bfc_contptr_t map;
+	bfc_objptr_t map;
 	int rc;
 
 	if ((rc = bfc_node_new_attribute_map((bfc_objptr_t)node, &map)) < 0) {
 		return (rc);
 	}
 	if (map != NULL) {
-		bfc_contptr_t oldattrs;
+		bfc_objptr_t oldattrs;
 		if (attrs) {
-			bfc_container_assign_copy((bfc_contptr_t)map, attrs);
+			bfc_container_assign_copy((bfc_objptr_t)map, attrs);
 		}
 		bfc_init_refcount(map, 1);
 		oldattrs = node->attributes;
-		node->attributes = (bfc_contptr_t) map;
+		node->attributes = (bfc_objptr_t) map;
 		if (oldattrs && BFC_CLASS(oldattrs)) {
 			bfc_decr_refcount(oldattrs);
 		}
@@ -153,16 +153,16 @@ new_attribute_map(bfc_node_t *node, bfc_ccontptr_t attrs)
 }
 
 static int
-clone_treenode(bfc_ccontptr_t cont,
-	       void *buf, size_t bufsize, struct mempool *pool)
+clone_treenode(bfc_cobjptr_t cont,
+	       void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_nodeptr_t node = (bfc_nodeptr_t) buf;
 	bfc_cnodeptr_t src = (bfc_cnodeptr_t) cont;
 	int rc;
 
 	if ((rc = bfc_init_treenode(node, bufsize, pool)) >= 0) {
-		bfc_node_set_name((bfc_contptr_t)node, &src->tagname);
-		bfc_container_assign_copy((bfc_contptr_t)&node->vec, cont);
+		bfc_node_set_name((bfc_objptr_t)node, &src->tagname);
+		bfc_container_assign_copy((bfc_objptr_t)&node->vec, cont);
 		if (src->attributes) {
 			new_attribute_map(node, src->attributes);
 		}
@@ -171,13 +171,13 @@ clone_treenode(bfc_ccontptr_t cont,
 }
 
 static void
-destroy_treenode(bfc_contptr_t cont)
+destroy_treenode(bfc_objptr_t cont)
 {
 	bfc_classptr_t cls;
 
 	if (cont && (cls = BFC_CLASS(cont))) {
 		bfc_nodeptr_t node = (bfc_nodeptr_t) cont;
-		bfc_contptr_t attrs = node->attributes;
+		bfc_objptr_t attrs = node->attributes;
 		node->attributes = NULL;
 		bfc_destroy(&node->tagname);
 		if (attrs != NULL) {
@@ -188,13 +188,13 @@ destroy_treenode(bfc_contptr_t cont)
 }
 
 static size_t 
-treenode_size(bfc_ccontptr_t cont)
+treenode_size(bfc_cobjptr_t cont)
 {
 	return (sizeof(struct bfc_treenode));
 }
 
 static int
-treenode_equals(bfc_ccontptr_t cont, bfc_ccontptr_t other)
+treenode_equals(bfc_cobjptr_t cont, bfc_cobjptr_t other)
 {
 	if (cont == other) {
 		return (1);
@@ -203,13 +203,13 @@ treenode_equals(bfc_ccontptr_t cont, bfc_ccontptr_t other)
 }
 
 static unsigned
-treenode_hashcode(bfc_ccontptr_t cont, int hashlen)
+treenode_hashcode(bfc_cobjptr_t cont, int hashlen)
 {
 	bfc_cnodeptr_t node = (bfc_cnodeptr_t) cont;
 	return (bfc_object_hashcode(&node->tagname, hashlen));
 }
 
-static int treenode_tostring(bfc_ccontptr_t node,
+static int treenode_tostring(bfc_cobjptr_t node,
 			     char *buf, size_t bufsize, const char *fmt)
 {
 	int level = 0;

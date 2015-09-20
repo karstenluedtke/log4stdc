@@ -14,8 +14,8 @@
  * @brief    bfc_init_basic_string_substr
  */
 int
-bfc_init_basic_string_substr(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cstrptr_t str, size_t pos, size_t n)
+bfc_init_basic_string_substr(void *buf, size_t bufsize, bfc_mempool_t pool,
+				bfc_cobjptr_t str, size_t pos, size_t n)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 

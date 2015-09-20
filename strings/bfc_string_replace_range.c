@@ -14,8 +14,8 @@
  * @brief    bfc_string_replace_range
  */
 int
-bfc_string_replace_range(bfc_strptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
-			 bfc_cstrptr_t s2)
+bfc_string_replace_range(bfc_objptr_t s, bfc_iterptr_t i1, bfc_iterptr_t i2,
+			 bfc_cobjptr_t s2)
 {
 	if (STRING_TRAITS(s) == STRING_TRAITS(s2)) {
 		size_t len = bfc_strlen(s2);

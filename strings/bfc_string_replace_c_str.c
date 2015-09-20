@@ -13,7 +13,7 @@
  * @brief    bfc_string_replace_c_str
  */
 int
-bfc_string_replace_c_str(bfc_strptr_t s, size_t pos, size_t n1,
+bfc_string_replace_c_str(bfc_objptr_t s, size_t pos, size_t n1,
 					const void *s2)
 {
 	size_t n = (*STRING_TRAITS(s)->szlen)(s2);

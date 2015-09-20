@@ -12,7 +12,7 @@
  * @brief    bfc_string_find_first_of_char
  */
 size_t
-bfc_string_find_first_of_char(bfc_cstrptr_t s, int c, size_t pos)
+bfc_string_find_first_of_char(bfc_cobjptr_t s, int c, size_t pos)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			find_first_of_char, (s, c, pos),

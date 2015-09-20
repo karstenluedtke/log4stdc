@@ -30,7 +30,7 @@
 
 #define MAX_APPENDERS_PER_LOGGER 4
 
-static int init_logger(void *, size_t, struct mempool *);
+static int init_logger(void *, size_t, bfc_mempool_t );
 static void destroy_logger(l4sc_logger_ptr_t logger);
 static void do_not_destroy(l4sc_logger_ptr_t logger);
 static size_t	  get_logger_size(l4sc_logger_cptr_t obj);
@@ -151,7 +151,7 @@ struct loggerpool {
 struct loggerpool l4sc_loggers = { &rootlogger, &l4sclogger };
 
 static int
-init_logger(void *buf, size_t bufsize, struct mempool *pool)
+init_logger(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_logger_class_ptr_t,
 			  l4sc_logger_ptr_t, logger, buf, bufsize, pool,
@@ -382,7 +382,7 @@ l4sc_get_logger(const char *name, int namelen)
 {
 	l4sc_logger_ptr_t logger = NULL;
 	int rc, nlen = (namelen > 0)? namelen: strlen(name);
-	struct mempool *pool = get_default_mempool();
+	bfc_mempool_t pool = get_default_mempool();
 
 	BFC_LIST_FOREACH(logger, &l4sc_loggers, next) {
 		if ((strncasecmp(logger->name, name, nlen) == 0)

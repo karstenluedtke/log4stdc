@@ -11,7 +11,7 @@
 #include "barefootc/string.h"
 #include "log4stdc.h"
 
-static int  init_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static int  init_iterator(void *buf,size_t bufsize,bfc_mempool_t pool);
 static long forward_getchar(bfc_citerptr_t it, size_t pos);
 static int  forward_putchar(bfc_iterptr_t it, size_t pos, long unicode);
 static int  advance_forward(bfc_iterptr_t it, ptrdiff_t n);
@@ -49,7 +49,7 @@ const struct bfc_iterator_class bfc_reverse_utf8_iterator_class = {
 };
 
 static int
-init_iterator(void *buf, size_t bufsize, struct mempool *pool)
+init_iterator(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_iterptr_t it = (bfc_iterptr_t) buf;
 	if (bufsize < sizeof(*it)) {
@@ -103,7 +103,7 @@ bfc_init_utf8_reverse_iterator(void *buf, size_t bufsize,
 static long
 forward_getchar(bfc_citerptr_t it, size_t pos)
 {
-	bfc_cstrptr_t s = (bfc_cstrptr_t) it->obj;
+	bfc_cobjptr_t s = (bfc_cobjptr_t) it->obj;
 	size_t p = it->pos + pos;
 	uint32_t unicode;
 	long rc, rc2, rc3, rc4, rc5;
@@ -170,7 +170,7 @@ static int
 forward_putchar(bfc_iterptr_t it, size_t pos, long unicode)
 {
 	int rc;
-	bfc_strptr_t s = (bfc_strptr_t) it->obj;
+	bfc_objptr_t s = (bfc_objptr_t) it->obj;
 	size_t p = it->pos + pos;
 	uint32_t u = (uint32_t) unicode;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -225,7 +225,7 @@ static int
 advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 {
 	int i, rc;
-	bfc_cstrptr_t s = (bfc_cstrptr_t) it->obj;
+	bfc_cobjptr_t s = (bfc_cobjptr_t) it->obj;
 	const size_t len = bfc_strlen(s);
 	
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -278,7 +278,7 @@ static int
 advance_reverse(bfc_iterptr_t it, ptrdiff_t n)
 {
 	int i, rc;
-	bfc_cstrptr_t s = (bfc_cstrptr_t) it->obj;
+	bfc_cobjptr_t s = (bfc_cobjptr_t) it->obj;
 	const size_t len = bfc_strlen(s);
 	
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -311,7 +311,7 @@ static long
 reverse_getchar(bfc_citerptr_t it, size_t pos)
 {
 	long rc;
-	bfc_cstrptr_t s = (bfc_cstrptr_t) it->obj;
+	bfc_cobjptr_t s = (bfc_cobjptr_t) it->obj;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	if ((rc = bfc_string_get_char(s, it->pos)) < 0x80) {
@@ -326,7 +326,7 @@ reverse_getchar(bfc_citerptr_t it, size_t pos)
 static int
 reverse_putchar(bfc_iterptr_t it, size_t pos, long unicode)
 {
-	bfc_strptr_t s = (bfc_strptr_t) it->obj;
+	bfc_objptr_t s = (bfc_objptr_t) it->obj;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	if ((unicode >= 0) && (unicode < 0x80)) {

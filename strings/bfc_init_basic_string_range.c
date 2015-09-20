@@ -13,10 +13,10 @@
  * @brief    bfc_init_basic_string_range
  */
 int
-bfc_init_basic_string_range(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_basic_string_range(void *buf, size_t bufsize, bfc_mempool_t pool,
 				bfc_iterptr_t begin, bfc_iterptr_t end)
 {
-	bfc_strptr_t s = (bfc_strptr_t) buf;
+	bfc_objptr_t s = (bfc_objptr_t) buf;
 	int rc;
 	bfc_iterator_t zero;
 

@@ -53,9 +53,9 @@ extern const struct bfc_mutex_class bfc_win32_mutex_class;
 #define bfc_mutex_unlock(mutex)	\
 	(*BFC_CLASS(mutex)->unlock)(mutex,__FILE__,__LINE__,__FUNCTION__)
 
-int bfc_new_posix_mutex(struct bfc_mutex **, struct mempool *,
+int bfc_new_posix_mutex(struct bfc_mutex **, bfc_mempool_t ,
 			const char *, int, const char *);
-int bfc_new_win32_mutex(struct bfc_mutex **, struct mempool *,
+int bfc_new_win32_mutex(struct bfc_mutex **, bfc_mempool_t ,
 			const char *, int, const char *);
 #ifndef bfc_new_mutex
 #if defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)

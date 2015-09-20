@@ -12,7 +12,7 @@
  * @brief    bfc_string_length
  */
 size_t
-bfc_string_length(bfc_cstrptr_t s)
+bfc_string_length(bfc_cobjptr_t s)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s, length, (s), 0);
 }

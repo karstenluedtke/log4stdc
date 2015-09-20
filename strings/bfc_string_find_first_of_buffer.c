@@ -12,7 +12,7 @@
  * @brief    bfc_string_find_first_of_buffer
  */
 size_t
-bfc_string_find_first_of_buffer(bfc_cstrptr_t s,
+bfc_string_find_first_of_buffer(bfc_cobjptr_t s,
 				const void *s2, size_t pos, size_t n)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,

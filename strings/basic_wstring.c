@@ -18,18 +18,18 @@
 #define STRING_CLASS_NAME "basic_wstring"
 #endif
 
-void *bfc_alloc_stringbuf(struct mempool *pool, size_t nbytes);
+void *bfc_alloc_stringbuf(bfc_mempool_t pool, size_t nbytes);
 void *bfc_realloc_stringbuf(void *charbuf, size_t nbytes);
 void  bfc_free_stringbuf(void *charbuf);
 
-static int clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize,
-						struct mempool *pool);
+static int clone_string(bfc_cobjptr_t obj, void *buf, size_t bufsize,
+						bfc_mempool_t pool);
 
 extern const struct bfc_classhdr bfc_wchar_traits_class;
 
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			bfc_strptr_t, bfc_cstrptr_t, wchar_t)
+			bfc_objptr_t, bfc_cobjptr_t, wchar_t)
 };
 
 extern const struct bfc_string_class bfc_wstring_class;
@@ -55,14 +55,14 @@ const struct bfc_string_class bfc_basic_wstring_class = {
 };
 
 int
-bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
+bfc_init_basic_wstring(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	wchar_t *charbuf;
 	const unsigned n = 60 - 3*sizeof(void *);
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, s, buf, bufsize, pool,
+			  bfc_objptr_t, s, buf, bufsize, pool,
 			  &bfc_basic_wstring_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p)",
@@ -83,14 +83,14 @@ bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 int
-bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, bfc_mempool_t pool,
 				const wchar_t* s, size_t n)
 {
 	wchar_t *charbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, obj, buf, bufsize, pool,
+			  bfc_objptr_t, obj, buf, bufsize, pool,
 			  &bfc_basic_wstring_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, s %p, n %ld)",
@@ -122,7 +122,7 @@ bfc_init_basic_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_basic_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_basic_wstring_c_str(void *buf, size_t bufsize, bfc_mempool_t pool,
 				const wchar_t* s)
 {
 	int n;
@@ -136,14 +136,14 @@ bfc_init_basic_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
+bfc_init_basic_wstring_fill(void *buf, size_t bufsize, bfc_mempool_t pool,
 				size_t n, int c)
 {
 	wchar_t *charbuf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, obj, buf, bufsize, pool,
+			  bfc_objptr_t, obj, buf, bufsize, pool,
 			  &bfc_basic_wstring_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, pool %p, n %ld, c %02x)",
@@ -175,12 +175,12 @@ bfc_init_basic_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_basic_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str)
+bfc_init_basic_wstring_move(void *buf, size_t bufsize, bfc_objptr_t str)
 {
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	BFC_STRING_INIT_PROLOGUE(bfc_string_classptr_t,
-			  bfc_strptr_t, obj, buf, bufsize, NULL,
+			  bfc_objptr_t, obj, buf, bufsize, NULL,
 			  &bfc_basic_wstring_class);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, str %p)",
@@ -196,7 +196,7 @@ bfc_init_basic_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str)
 }
 
 void
-bfc_destroy_basic_wstring(bfc_strptr_t obj)
+bfc_destroy_basic_wstring(bfc_objptr_t obj)
 {
 	bfc_classptr_t cls;
 
@@ -212,35 +212,35 @@ bfc_destroy_basic_wstring(bfc_strptr_t obj)
 }
 
 static int
-clone_string(bfc_cstrptr_t obj, void *buf, size_t bufsize, struct mempool *pool)
+clone_string(bfc_cobjptr_t obj, void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	size_t len = bfc_wstring_length(obj);
 	const wchar_t *p = bfc_wstring_data(obj);
-	struct mempool *newpool = pool? pool: bfc_basic_string_pool(obj);
+	bfc_mempool_t newpool = pool? pool: bfc_basic_string_pool(obj);
 	return (bfc_init_basic_wstring_buffer(buf, bufsize, newpool, p, len));
 }
 
 size_t
-bfc_basic_wstring_objsize(bfc_cstrptr_t obj)
+bfc_basic_wstring_objsize(bfc_cobjptr_t obj)
 {
 	return (sizeof(bfc_string_t));
 }
 
 // capacity:
 size_t
-bfc_basic_wstring_length(bfc_cstrptr_t s)
+bfc_basic_wstring_length(bfc_cobjptr_t s)
 {
 	return (STRING_LEN(s));
 }
 
 size_t
-bfc_basic_wstring_max_size(bfc_cstrptr_t s)
+bfc_basic_wstring_max_size(bfc_cobjptr_t s)
 {
 	return ((0xFFF0uL << 7*(sizeof(STRING_BUFSIZE(s))-2)) / sizeof(wchar_t));
 }
 
 int
-bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c)
+bfc_basic_wstring_resize(bfc_objptr_t s, size_t n, int c)
 {
 	int rc = -ENOSPC;
 
@@ -269,7 +269,7 @@ bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c)
 }
 
 size_t
-bfc_basic_wstring_capacity(bfc_cstrptr_t s)
+bfc_basic_wstring_capacity(bfc_cobjptr_t s)
 {
 	if (STRING_BUFSIZE(s) > 0) {
 		return (STRING_BUFSIZE(s) - 1);
@@ -278,7 +278,7 @@ bfc_basic_wstring_capacity(bfc_cstrptr_t s)
 }
 
 int
-bfc_basic_wstring_reserve(bfc_strptr_t s, size_t n)
+bfc_basic_wstring_reserve(bfc_objptr_t s, size_t n)
 {
 	wchar_t *p;
 	size_t need;

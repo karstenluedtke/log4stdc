@@ -185,10 +185,10 @@ struct l4sc_configurator {
 	BFC_OBJHDR(l4sc_configurator_class_ptr_t,l4sc_configurator_ptr_t)
 };
 
-int  l4sc_default_init_object(void *buf, size_t bufsize, struct mempool *pool);
+int  l4sc_default_init_object(void *buf, size_t bufsize, bfc_mempool_t pool);
 void l4sc_default_destroy_object(l4sc_objptr_t obj);
 int  l4sc_default_clone_object(l4sc_objcptr_t obj, void *buf, size_t bufsize,
-							struct mempool *pool);
+							bfc_mempool_t pool);
 size_t l4sc_default_get_object_size(l4sc_objcptr_t obj);
 unsigned l4sc_default_get_object_hashcode(l4sc_objcptr_t obj, int hashlen);
 unsigned l4sc_reduce_hashcode(size_t origval, int origlen, int hashlen);

@@ -19,9 +19,9 @@
 #include "log4stdc.h"
 
 static int init_string_ref_pair(void *buf, size_t bufsize,
-				   struct mempool *pool);
+				   bfc_mempool_t pool);
 static int clone_pair(const struct bfc_string_ref_pair *obj,
-				void *buf,size_t bufsize,struct mempool *pool);
+				void *buf,size_t bufsize,bfc_mempool_t pool);
 static void destroy_pair(struct bfc_string_ref_pair *pair);
 
 static size_t pair_clonesize(const struct bfc_string_ref_pair *pair);
@@ -37,7 +37,7 @@ static bfc_cobjptr_t pair_first(const struct bfc_string_ref_pair *pair);
 static bfc_objptr_t pair_index(struct bfc_string_ref_pair *pair, size_t pos);
 static bfc_objptr_t place_string_ref_pair_element(
 			struct bfc_string_ref_pair *pair,
-			size_t pos, bfc_objptr_t val, struct mempool *pool);
+			size_t pos, bfc_objptr_t val, bfc_mempool_t pool);
 
 struct bfc_pair_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_pair_class *,
@@ -63,7 +63,7 @@ const struct bfc_pair_class bfc_string_ref_pair_class = {
 };
 
 int
-bfc_init_basic_string_ref_pair(void *buf, size_t bufsize, struct mempool *pool)
+bfc_init_basic_string_ref_pair(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	struct bfc_string_ref_pair *pair = (struct bfc_string_ref_pair *) buf;
 	if (bufsize < sizeof(*pair)) {
@@ -95,7 +95,7 @@ bfc_init_shared_string_ref_pair(void *buf, size_t bufsize)
 }
 
 static int
-init_string_ref_pair(void *buf, size_t bufsize, struct mempool *pool)
+init_string_ref_pair(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	return (bfc_init_shared_string_ref_pair(buf, bufsize));
 }
@@ -103,12 +103,12 @@ init_string_ref_pair(void *buf, size_t bufsize, struct mempool *pool)
 static bfc_objptr_t
 place_string_ref_pair_element(struct bfc_string_ref_pair *pair,
 				  size_t pos, bfc_objptr_t val,
-				  struct mempool *pool)
+				  bfc_mempool_t pool)
 {
 	bfc_objptr_t p = (bfc_objptr_t) &pair->first;
 
 	if (pos == 0) {
-		bfc_strptr_t str = (bfc_strptr_t) val;
+		bfc_objptr_t str = (bfc_objptr_t) val;
 		size_t bufsize = sizeof(pair->first);
 
 		p = (bfc_objptr_t) &pair->first;
@@ -142,7 +142,7 @@ place_string_ref_pair_element(struct bfc_string_ref_pair *pair,
 
 static int
 clone_pair(const struct bfc_string_ref_pair *obj,
-	   void *buf, size_t bufsize, struct mempool *pool)
+	   void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	struct bfc_string_ref_pair *pair = (struct bfc_string_ref_pair *) buf;
 	struct bfc_string_ref_pair *src =

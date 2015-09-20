@@ -16,7 +16,7 @@
 #define snprintf _snprintf
 #endif
 
-static struct mempool *pool;
+static bfc_mempool_t pool;
 static l4sc_logger_ptr_t logger;
 
 #define CRLF "\r\n"

@@ -22,7 +22,7 @@ struct tag_expectations {
 
 static int
 on_start_tag(struct bfc_tag_parse_state *st, bfc_ctagptr_t tag,
-	     bfc_cstrptr_t name, int nattrs, bfc_string_t attrs[])
+	     bfc_cobjptr_t name, int nattrs, bfc_string_t attrs[])
 {
 	int i, rc;
 	struct tag_expectations *expectations = st->userdata;
@@ -55,7 +55,7 @@ on_start_tag(struct bfc_tag_parse_state *st, bfc_ctagptr_t tag,
 
 static int
 on_end_tag(struct bfc_tag_parse_state *st, bfc_ctagptr_t starttag,
-				bfc_ctagptr_t endtag, bfc_cstrptr_t name)
+				bfc_ctagptr_t endtag, bfc_cobjptr_t name)
 {
 	struct tag_expectations *expectations = st->userdata;
 	char nm[80];

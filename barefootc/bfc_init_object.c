@@ -7,7 +7,7 @@
 
 int
 bfc_init_object(bfc_classptr_t cls,
-		void *buf, size_t bufsize, struct mempool *pool)
+		void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	int levels;
 	bfc_classptr_t super;

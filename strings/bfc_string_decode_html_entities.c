@@ -277,7 +277,7 @@ static const struct entity_table html_entities[] = {
  * @brief    bfc_string_decode_html_entities
  */
 int
-bfc_string_decode_html_entities(bfc_strptr_t s)
+bfc_string_decode_html_entities(bfc_objptr_t s)
 {
 	size_t pos = 0;
 	size_t len, amp, sem;

@@ -13,7 +13,7 @@
  * @brief    bfc_string_rfind_c_str
  */
 size_t
-bfc_string_rfind_c_str(bfc_cstrptr_t s, const void *s2, size_t pos)
+bfc_string_rfind_c_str(bfc_cobjptr_t s, const void *s2, size_t pos)
 {
 	size_t n = (*STRING_TRAITS(s)->szlen)(s2);
 

@@ -131,7 +131,7 @@
 #include "wstring.c"
 
 static int
-cstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize, const char *fmt)
+cstring_tostring(bfc_cobjptr_t s, char *buf, size_t bufsize, const char *fmt)
 {
 	size_t len;
 
@@ -149,7 +149,7 @@ cstring_tostring(bfc_cstrptr_t s, char *buf, size_t bufsize, const char *fmt)
 }
 
 static void
-dump_cstring(bfc_cstrptr_t s, int depth, struct l4sc_logger *log)
+dump_cstring(bfc_cobjptr_t s, int depth, struct l4sc_logger *log)
 {
 	if (s && BFC_CLASS(s)) {
 		const size_t len = bfc_strlen(s);

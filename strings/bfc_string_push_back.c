@@ -12,7 +12,7 @@
  * @brief    bfc_string_push_back
  */
 int
-bfc_string_push_back(bfc_strptr_t s, int c)
+bfc_string_push_back(bfc_objptr_t s, int c)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s, push_back, (s, c), -ENOSYS);
 }

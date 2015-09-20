@@ -69,8 +69,8 @@ namespace barefootc {
 		static const size_type npos = -1;
 		
 	private:
-		typedef bfc_strptr_t strptrT;
-		typedef bfc_cstrptr_t cstrptrT;
+		typedef bfc_objptr_t strptrT;
+		typedef bfc_cobjptr_t cstrptrT;
 
 		typedef bfc_string_classptr_t classptrT;
 
@@ -129,7 +129,7 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const char *s, size_t n)
+			    bfc_mempool_t pool, const char *s, size_t n)
 		{
 			return bfc_init_basic_string_buffer(buf, bufsize,
 								pool, s, n);
@@ -137,14 +137,14 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const char *s)
+			    bfc_mempool_t pool, const char *s)
 		{
 			return bfc_init_basic_string_c_str(buf,bufsize,pool,s);
 		}
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, size_t n, char c)
+			    bfc_mempool_t pool, size_t n, char c)
 		{
 			return bfc_init_basic_string_fill(buf, bufsize,
 								pool, n, c);
@@ -152,7 +152,7 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const char *s,
+			    bfc_mempool_t pool, const char *s,
 			    const basic_string& str)
 		{
 			int rc;
@@ -163,7 +163,7 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const char *s,
+			    bfc_mempool_t pool, const char *s,
 			    const basic_string& str, size_t pos, size_t n)
 		{
 			int rc;
@@ -177,7 +177,7 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const char *s,
+			    bfc_mempool_t pool, const char *s,
 			    const_iterator begin, const_iterator end)
 		{
 			int rc;
@@ -198,7 +198,7 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const wchar_t *s, size_t n)
+			    bfc_mempool_t pool, const wchar_t *s, size_t n)
 		{
 			return bfc_init_basic_wstring_buffer(buf, bufsize,
 								pool, s, n);
@@ -206,14 +206,14 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const wchar_t *s)
+			    bfc_mempool_t pool, const wchar_t *s)
 		{
 			return bfc_init_basic_wstring_c_str(buf,bufsize,pool,s);
 		}
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, size_t n, wchar_t c)
+			    bfc_mempool_t pool, size_t n, wchar_t c)
 		{
 			return bfc_init_basic_wstring_fill(buf, bufsize,
 								pool, n, c);
@@ -221,23 +221,23 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const wchar_t *s,
+			    bfc_mempool_t pool, const wchar_t *s,
 			    const basic_string& str)
 		{
 			int rc;
 			rc = bfc_init_basic_wstring_copy(buf, bufsize, pool,
-						(bfc_cstrptr_t) &str.bfcstr);
+						(bfc_cobjptr_t) &str.bfcstr);
 			return (rc);
 		}
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const wchar_t *s,
+			    bfc_mempool_t pool, const wchar_t *s,
 			    const basic_string& str, size_t pos, size_t n)
 		{
 			int rc;
 			rc = bfc_init_basic_wstring_substr(buf, bufsize, pool,
-					(bfc_cstrptr_t) &str.bfcstr, pos, n);
+					(bfc_cobjptr_t) &str.bfcstr, pos, n);
 			if (rc < 0) {
 				throw_substr_error(-rc);
 			}
@@ -246,7 +246,7 @@ namespace barefootc {
 
 		static int
 		init_string(void *buf, size_t bufsize,
-			    struct mempool *pool, const wchar_t *s,
+			    bfc_mempool_t pool, const wchar_t *s,
 			    const_iterator begin, const_iterator end)
 		{
 			int rc;

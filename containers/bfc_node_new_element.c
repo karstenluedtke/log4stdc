@@ -23,10 +23,10 @@ bfc_node_new_element(bfc_cobjptr_t ancestor, const char *chldtypes, ...)
 {
 	bfc_nodeptr_t node;
 	size_t space = bfc_object_size(ancestor);
-	struct mempool *pool = bfc_container_pool(ancestor);
+	bfc_mempool_t pool = bfc_container_pool(ancestor);
 	const char *cp, *currtype;
 	bfc_objptr_t obj;
-	bfc_strptr_t s;
+	bfc_objptr_t s;
 	va_list ap;
 
 	if ((node = bfc_mempool_calloc(pool, 1, sizeof(*node))) == NULL) {
@@ -39,7 +39,7 @@ bfc_node_new_element(bfc_cobjptr_t ancestor, const char *chldtypes, ...)
 	for (currtype = chldtypes; currtype && *currtype; currtype++) {
 		switch (*currtype) {
 		case 'N':
-			s = va_arg(ap, bfc_strptr_t);
+			s = va_arg(ap, bfc_objptr_t);
 			bfc_node_set_name((bfc_objptr_t)node, s);
 			break;
 		case 'n':
@@ -55,14 +55,14 @@ bfc_node_new_element(bfc_cobjptr_t ancestor, const char *chldtypes, ...)
 			space = sizeof(bfc_string_t);
 			if ((s = bfc_mempool_alloc(pool, space)) != NULL) {
 				bfc_init_basic_string_c_str(s, space, pool, cp);
-				bfc_container_push_back((bfc_contptr_t)node, s);
+				bfc_container_push_back((bfc_objptr_t)node, s);
 			}
 			break;
 		case 'S': case 'T':
 		case 'E': case 'O':
 		default:
 			obj = va_arg(ap, bfc_objptr_t);
-			bfc_container_push_back((bfc_contptr_t)node, obj);
+			bfc_container_push_back((bfc_objptr_t)node, obj);
 		}
 	}
 	va_end(ap);

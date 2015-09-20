@@ -34,7 +34,7 @@
 #include "barefootc/mempool.h"
 #include "barefootc/synchronization.h"
 
-static int init_appender(void *, size_t, struct mempool *);
+static int init_appender(void *, size_t, bfc_mempool_t );
 static void destroy_appender(l4sc_appender_ptr_t appender);
 static size_t get_appender_size(l4sc_appender_cptr_t obj);
 
@@ -83,7 +83,7 @@ const struct l4sc_appender_class l4sc_file_appender_class = {
 static char initial_working_directory[256] = { 0 };
 
 static int
-init_appender(void *buf, size_t bufsize, struct mempool *pool)
+init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
@@ -140,7 +140,7 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 			LOGINFO(("%s: File set to \"%s\"",
 				__FUNCTION__, obj->filename));
 		} else {
-			struct mempool *pool = obj->parent_pool?
+			bfc_mempool_t pool = obj->parent_pool?
 							obj->parent_pool:
 							get_default_mempool();
 			char *p = mempool_alloc(pool, n+20);
@@ -212,7 +212,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
 	if (msg && (msg->msglen > 0)) {
 		l4sc_layout_cptr_t layout = &appender->layout;
-		struct mempool *pool = appender->parent_pool;
+		bfc_mempool_t pool = appender->parent_pool;
 		const size_t bufsize = msg->msglen + 200;
 		char *poolmem = ((bufsize > 2000) && pool)?
 				bfc_mempool_alloc(pool, bufsize):

@@ -14,7 +14,7 @@
 #include "barefootc/mempool.h"
 #include "barefootc/utf8.h"
 
-static struct mempool *pool;
+static bfc_mempool_t pool;
 static l4sc_logger_ptr_t logger;
 
 static int

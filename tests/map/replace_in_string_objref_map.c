@@ -17,7 +17,7 @@
 #define snprintf _snprintf
 #endif
 
-static struct mempool *pool;
+static bfc_mempool_t pool;
 static l4sc_logger_ptr_t logger;
 
 struct test_kv {
@@ -26,7 +26,7 @@ struct test_kv {
 
 static bfc_objptr_t create_test_object(const char *v);
 
-static int  init_test_object(void *buf, size_t bufsize, struct mempool *pool);
+static int  init_test_object(void *buf, size_t bufsize, bfc_mempool_t pool);
 static void destroy_test_object(bfc_objptr_t obj);
 static int  test_object_tostring(bfc_cobjptr_t obj,
 				 char *buf, size_t bufsize, const char *fmt);
@@ -55,7 +55,7 @@ create_test_object(const char *v)
 }
 
 static int
-init_test_object(void *buf, size_t bufsize, struct mempool *pool)
+init_test_object(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_objptr_t obj = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*obj)) {
@@ -117,14 +117,14 @@ test(int n1, const struct test_kv init[],
 		bfc_init_refcount(vobj, 1);
 		assert(BFC_CLASS(vobj) == &test_object_class);
 		assert(strcmp(vobj->name, init[i].v) == 0);
-		rc = bfc_map_insert_objects((bfc_contptr_t) &map,
+		rc = bfc_map_insert_objects((bfc_objptr_t) &map,
 					    (bfc_objptr_t) &kstr, vobj,
 					    NULL, 0);
 		assert(rc >= 0);
 		bfc_decr_refcount(vobj); /* vobj now ref'd by map only */
 		vobj = NULL;
 	}
-	assert(bfc_map_size((bfc_ccontptr_t)&map) == n1);
+	assert(bfc_map_size((bfc_cobjptr_t)&map) == n1);
 
 	for (i=0; i < n2; i++) {
 		bfc_string_t kstr;
@@ -134,7 +134,7 @@ test(int n1, const struct test_kv init[],
 		vobj = create_test_object(repl[i].v);
 		bfc_init_refcount(vobj, 1);
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), repl[i].k);
-		rc = bfc_map_replace_objects((bfc_contptr_t) &map,
+		rc = bfc_map_replace_objects((bfc_objptr_t) &map,
 					     (bfc_objptr_t) &kstr, vobj,
 					     NULL, 0);
 		assert(rc >= 0);
@@ -149,7 +149,7 @@ test(int n1, const struct test_kv init[],
 		bfc_objptr_t vp;
 		char vbuf[80];
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), expect[i].k);
-		vp = bfc_map_find_value((bfc_contptr_t) &map,
+		vp = bfc_map_find_value((bfc_objptr_t) &map,
 					(bfc_objptr_t) &kstr);
 		assert(vp != NULL);
 		bfc_object_tostring(vp, vbuf, sizeof(vbuf), NULL);
@@ -157,7 +157,7 @@ test(int n1, const struct test_kv init[],
 				__FUNCTION__, expect[i].k, vbuf);
 		assert(strcmp(vbuf, expect[i].v) == 0);
 	}
-	assert(bfc_map_size((bfc_ccontptr_t)&map) == n3);
+	assert(bfc_map_size((bfc_cobjptr_t)&map) == n3);
 
 	bfc_destroy((bfc_objptr_t)&map);
 

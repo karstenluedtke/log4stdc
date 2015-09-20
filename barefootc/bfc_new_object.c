@@ -3,7 +3,7 @@
 #include "barefootc/mempool.h"
 
 int
-bfc_new(bfc_objptr_t *objpp, bfc_classptr_t cls, struct mempool *pool)
+bfc_new(bfc_objptr_t *objpp, bfc_classptr_t cls, bfc_mempool_t pool)
 {
 	bfc_objptr_t newobj = NULL;
 	size_t size;

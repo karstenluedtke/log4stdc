@@ -41,8 +41,8 @@ struct posix_mutex {
 	} u;
 };
 
-static int  init_mutex(void *, size_t, struct mempool *);
-static int  clone_mutex(bfc_mutex_ptr_t, void *, size_t, struct mempool *);
+static int  init_mutex(void *, size_t, bfc_mempool_t );
+static int  clone_mutex(bfc_mutex_ptr_t, void *, size_t, bfc_mempool_t );
 static void destroy_mutex(bfc_mutex_ptr_t);
 static size_t mutex_size(bfc_mutex_ptr_t);
 static void dump_mutex(bfc_mutex_ptr_t, int, struct l4sc_logger *);
@@ -76,7 +76,7 @@ const struct bfc_mutex_class bfc_posix_mutex_class = {
 #endif
 
 static int
-init_mutex(void *buf, size_t bufsize, struct mempool *pool)
+init_mutex(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(const struct bfc_object_class *,
 			  struct posix_mutex *, object, buf, bufsize, pool,
@@ -104,7 +104,7 @@ destroy_mutex(bfc_mutex_ptr_t obj)
 
 static int
 clone_mutex(bfc_mutex_ptr_t obj,
-	    void *buf, size_t bufsize, struct mempool *pool)
+	    void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	return (init_mutex(buf, bufsize, pool? pool: obj->parent_pool));
 }
@@ -145,7 +145,7 @@ dump_mutex(bfc_mutex_ptr_t obj, int depth, struct l4sc_logger *log)
 }
 
 int
-bfc_new_posix_mutex(struct bfc_mutex **objpp, struct mempool *pool,
+bfc_new_posix_mutex(struct bfc_mutex **objpp, bfc_mempool_t pool,
 		    const char *file, int line, const char *func)
 {
 	struct posix_mutex *object = NULL;

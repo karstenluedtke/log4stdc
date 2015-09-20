@@ -7,7 +7,7 @@
 void
 bfc_delete(bfc_objptr_t obj)
 {
-	struct mempool *pool;
+	bfc_mempool_t pool;
 
 	if (obj && BFC_CLASS(obj)) {
 		pool = obj->parent_pool;

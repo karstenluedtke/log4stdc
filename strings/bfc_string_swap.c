@@ -12,7 +12,7 @@
  * @brief    bfc_string_swap
  */
 void
-bfc_string_swap(bfc_strptr_t s, bfc_strptr_t str)
+bfc_string_swap(bfc_objptr_t s, bfc_objptr_t str)
 {
 	VOID_METHCALL(bfc_string_classptr_t, s, swap, (s, str));
 }

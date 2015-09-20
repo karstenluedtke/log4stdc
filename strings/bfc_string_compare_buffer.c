@@ -12,7 +12,7 @@
  * @brief    bfc_string_compare_buffer
  */
 int
-bfc_string_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
+bfc_string_compare_buffer(bfc_cobjptr_t s, size_t pos1, size_t n1,
 			  const void *s2, size_t n2)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,

@@ -35,9 +35,9 @@ const struct bfc_classhdr bfc_real_number_class = {
 #define REAL_VAL(obj)		(*(double*) &(obj)->private_6)
 
 int
-bfc_init_real_number_object(void *buf, size_t bufsize, struct mempool *pool)
+bfc_init_real_number_object(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
-	bfc_numptr_t obj = (bfc_numptr_t) buf;
+	bfc_objptr_t obj = (bfc_objptr_t) buf;
 	if (bufsize < sizeof(*obj)) {
 		return (-ENOSPC);
 	} else {

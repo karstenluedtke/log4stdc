@@ -3,7 +3,7 @@
 #include "barefootc/mempool.h"
 
 int
-bfc_clone_new(bfc_cobjptr_t obj, bfc_objptr_t *newpp, struct mempool *pool)
+bfc_clone_new(bfc_cobjptr_t obj, bfc_objptr_t *newpp, bfc_mempool_t pool)
 {
 	bfc_cobjptr_t srcobj = (bfc_cobjptr_t) obj;
 	bfc_objptr_t newobj = NULL;

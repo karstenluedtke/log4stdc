@@ -12,8 +12,8 @@
  * @brief    bfc_string_append_substr
  */
 int
-bfc_string_append_substr(bfc_strptr_t s,
-			  bfc_cstrptr_t s2, size_t subpos, size_t sublen)
+bfc_string_append_substr(bfc_objptr_t s,
+			  bfc_cobjptr_t s2, size_t subpos, size_t sublen)
 {
 	const char *data = bfc_string_subdata(s2, subpos);
 	size_t len = bfc_string_sublen(s2, subpos, sublen);

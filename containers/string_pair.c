@@ -17,9 +17,9 @@
 #include "barefootc/unconst.h"
 #include "log4stdc.h"
 
-static int init_string_pair(void *buf, size_t bufsize, struct mempool *pool);
+static int init_string_pair(void *buf, size_t bufsize, bfc_mempool_t pool);
 static int clone_pair(const struct bfc_string_pair *obj,
-				void *buf,size_t bufsize,struct mempool *pool);
+				void *buf,size_t bufsize,bfc_mempool_t pool);
 static void destroy_pair(struct bfc_string_pair *pair);
 
 static size_t pair_clonesize(const struct bfc_string_pair *pair);
@@ -28,10 +28,10 @@ static int pair_equals(const struct bfc_string_pair *pair,
 			const struct bfc_string_pair *other);
 static void dump_pair(const struct bfc_string_pair *pair,
 			int depth, struct l4sc_logger *log);
-static bfc_cstrptr_t pair_first(const struct bfc_string_pair *pair);
-static bfc_strptr_t  pair_index(struct bfc_string_pair *pair, size_t pos);
-static bfc_strptr_t  place_string_pair_element(struct bfc_string_pair *pair,
-			size_t pos, bfc_strptr_t str, struct mempool *pool);
+static bfc_cobjptr_t pair_first(const struct bfc_string_pair *pair);
+static bfc_objptr_t  pair_index(struct bfc_string_pair *pair, size_t pos);
+static bfc_objptr_t  place_string_pair_element(struct bfc_string_pair *pair,
+			size_t pos, bfc_objptr_t str, bfc_mempool_t pool);
 
 struct bfc_string_pair_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_string_pair_class *,
@@ -55,7 +55,7 @@ const struct bfc_string_pair_class bfc_string_pair_class = {
 };
 
 int
-bfc_init_basic_string_pair(void *buf, size_t bufsize, struct mempool *pool)
+bfc_init_basic_string_pair(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	struct bfc_string_pair *pair = (struct bfc_string_pair *) buf;
 	if (bufsize < sizeof(*pair)) {
@@ -81,16 +81,16 @@ bfc_init_shared_string_pair(void *buf, size_t bufsize)
 }
 
 static int
-init_string_pair(void *buf, size_t bufsize, struct mempool *pool)
+init_string_pair(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	return (bfc_init_shared_string_pair(buf, bufsize));
 }
 
-static bfc_strptr_t
+static bfc_objptr_t
 place_string_pair_element(struct bfc_string_pair *pair, size_t pos,
-			   bfc_strptr_t str, struct mempool *pool)
+			   bfc_objptr_t str, bfc_mempool_t pool)
 {
-	bfc_strptr_t s;
+	bfc_objptr_t s;
 	size_t bufsize;
 	
 	if (pos > 0) {
@@ -118,7 +118,7 @@ place_string_pair_element(struct bfc_string_pair *pair, size_t pos,
 
 static int
 clone_pair(const struct bfc_string_pair *obj,
-	   void *buf, size_t bufsize, struct mempool *pool)
+	   void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	struct bfc_string_pair *pair = (struct bfc_string_pair *) buf;
 	struct bfc_string_pair *src = BFC_UNCONST(struct bfc_string_pair*, obj);
@@ -150,13 +150,13 @@ destroy_pair(struct bfc_string_pair *pair)
 	}
 }
 
-static bfc_cstrptr_t
+static bfc_cobjptr_t
 pair_first(const struct bfc_string_pair *pair)
 {
 	return (&pair->first);
 }
 
-static bfc_strptr_t
+static bfc_objptr_t
 pair_index(struct bfc_string_pair *pair, size_t pos)
 {
 	return ((pos > 0)? &pair->second: &pair->first);

@@ -12,7 +12,7 @@
  * @brief    bfc_string_assign_substr
  */
 int
-bfc_string_assign_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
+bfc_string_assign_substr(bfc_objptr_t s, bfc_cobjptr_t s2,
 			 		size_t subpos, size_t sublen)
 {
 	const char *data = bfc_string_subdata(s2, subpos);

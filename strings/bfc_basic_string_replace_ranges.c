@@ -16,7 +16,7 @@
  * @brief    bfc_basic_string_replace_ranges
  */
 int
-bfc_basic_string_replace_ranges(bfc_strptr_t s,
+bfc_basic_string_replace_ranges(bfc_objptr_t s,
 				bfc_iterptr_t i1, bfc_iterptr_t i2,
 				bfc_iterptr_t j1, bfc_iterptr_t j2)
 {
@@ -43,7 +43,7 @@ bfc_basic_string_replace_ranges(bfc_strptr_t s,
 		e = bfc_strlen(s);
 	}
 	if (e > 0) {
-		struct mempool *pool = bfc_basic_string_pool(s);
+		bfc_mempool_t pool = bfc_basic_string_pool(s);
 		RETVAR_METHCALL(rc, bfc_string_classptr_t, s,
 				init, (&tail, sizeof(tail), pool), -ENOSYS);
 		if (rc < 0) {

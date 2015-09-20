@@ -16,7 +16,7 @@
 #define snprintf _snprintf
 #endif
 
-static struct mempool *pool;
+static bfc_mempool_t pool;
 static l4sc_logger_ptr_t logger;
 
 struct test_kv {
@@ -39,7 +39,7 @@ test(int n1, const struct test_kv kv[])
 		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__,kv[i].k,kv[i].v);
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
 		bfc_init_shared_string_c_str(&vstr, sizeof(vstr), kv[i].v);
-		rc = bfc_map_insert_objects((bfc_contptr_t) &map,
+		rc = bfc_map_insert_objects((bfc_objptr_t) &map,
 					    (bfc_objptr_t) &kstr,
 					    (bfc_objptr_t) &vstr,
 					    NULL, 0);
@@ -47,19 +47,19 @@ test(int n1, const struct test_kv kv[])
 	}
 
 	bfc_object_dump((bfc_cobjptr_t)&map, 99, logger);
-	assert(bfc_map_size((bfc_ccontptr_t)&map) == n1);
+	assert(bfc_map_size((bfc_cobjptr_t)&map) == n1);
 
 	for (i=0; i < n1; i++) {
 		bfc_string_t kstr;
 		bfc_objptr_t vp;
 		char vbuf[80];
 		bfc_init_shared_string_c_str(&kstr, sizeof(kstr), kv[i].k);
-		vp = bfc_map_find_value((bfc_contptr_t) &map,
+		vp = bfc_map_find_value((bfc_objptr_t) &map,
 					(bfc_objptr_t) &kstr);
 		assert(vp != NULL);
 		bfc_object_tostring(vp, vbuf, sizeof(vbuf), NULL);
 		L4SC_DEBUG(logger, "%s: %s = %s",__FUNCTION__, kv[i].k, vbuf);
-		assert(bfc_string_compare_c_str((bfc_cstrptr_t)vp,kv[i].v)==0);
+		assert(bfc_string_compare_c_str((bfc_cobjptr_t)vp,kv[i].v)==0);
 	}
 
 	bfc_destroy((bfc_objptr_t) &map);

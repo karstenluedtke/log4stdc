@@ -16,15 +16,15 @@
 #include "barefootc/xmltag.h"
 #include "log4stdc.h"
 
-static int  init_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static int  init_iterator(void *buf,size_t bufsize,bfc_mempool_t pool);
 static int  iterator_tostring(bfc_ctagptr_t tag,
 			      char *buf, size_t bufsize, const char *fmt);
 static void dump_iterator(bfc_ctagptr_t tag,int depth,struct l4sc_logger *log);
 static int  advance_forward(bfc_tagptr_t tag, ptrdiff_t n);
-static int  get_xmltag_name(bfc_ctagptr_t tag,bfc_strptr_t buf,size_t bufsize);
-static int  get_xmltag_attrs(bfc_ctagptr_t tag,bfc_strptr_t buf,size_t bufsize);
+static int  get_xmltag_name(bfc_ctagptr_t tag,bfc_objptr_t buf,size_t bufsize);
+static int  get_xmltag_attrs(bfc_ctagptr_t tag,bfc_objptr_t buf,size_t bufsize);
 static int  get_namespace_prefix(bfc_ctagptr_t tag,
-					bfc_strptr_t buf, size_t bufsize);
+					bfc_objptr_t buf, size_t bufsize);
 
 extern const struct bfc_iterator_class bfc_forward_iterator_class;
 
@@ -46,7 +46,7 @@ const struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class = {
 };
 
 static int
-init_iterator(void *buf, size_t bufsize, struct mempool *pool)
+init_iterator(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_tagptr_t tag = (bfc_tagptr_t) buf;
 	if (bufsize < sizeof(*tag)) {
@@ -58,7 +58,7 @@ init_iterator(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 int
-bfc_init_xmltag(void *buf, size_t bufsize, bfc_cstrptr_t doc, size_t offset)
+bfc_init_xmltag(void *buf, size_t bufsize, bfc_cobjptr_t doc, size_t offset)
 {
 	int rc;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
@@ -68,7 +68,7 @@ bfc_init_xmltag(void *buf, size_t bufsize, bfc_cstrptr_t doc, size_t offset)
 	if ((rc = init_iterator(buf, bufsize, NULL)) == BFC_SUCCESS) {
 		bfc_tagptr_t tag = (bfc_tagptr_t) buf;
 		size_t len = bfc_strlen(doc);
-		tag->obj = (bfc_strptr_t) (uintptr_t) doc;
+		tag->obj = (bfc_objptr_t) (uintptr_t) doc;
 		tag->pos = offset;
 		if (offset == BFC_NPOS) {
 			tag->pos = len;
@@ -122,7 +122,7 @@ advance_forward(bfc_tagptr_t tag, ptrdiff_t n)
 int
 bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 {
-	bfc_strptr_t s = tag->obj;
+	bfc_objptr_t s = tag->obj;
 	size_t ti, ni, ne, te;
 	size_t offs = tag->pos + tag->length;
 	size_t limit = bfc_strlen(s);
@@ -199,7 +199,7 @@ bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 int
 bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 {
-	bfc_strptr_t s = starttag->obj;
+	bfc_objptr_t s = starttag->obj;
 	size_t offs = starttag->pos + starttag->length;
 	size_t limit = bfc_strlen(s);
 	size_t nameoffs= starttag->nameoffs;
@@ -244,7 +244,7 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 }
 
 static int
-get_xmltag_name(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
+get_xmltag_name(bfc_ctagptr_t tag, bfc_objptr_t buf, size_t bufsize)
 {
 	return (bfc_string_shared_substr(tag->obj,
 		  tag->pos + tag->nameoffs, tag->namelen, buf, bufsize));
@@ -253,7 +253,7 @@ get_xmltag_name(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
 static int
 get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 {
-	bfc_strptr_t ap, s = tag->obj;
+	bfc_objptr_t ap, s = tag->obj;
 	size_t pos = tag->pos + tag->nameoffs + tag->namelen;
 	size_t limit = tag->pos + tag->length;
 	unsigned n=0, maxattrs = (unsigned) (bufsize / (2*sizeof(attrs[0])));
@@ -321,7 +321,7 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 }
 
 static int
-get_namespace_prefix(bfc_ctagptr_t tag, bfc_strptr_t buf, size_t bufsize)
+get_namespace_prefix(bfc_ctagptr_t tag, bfc_objptr_t buf, size_t bufsize)
 {
 	if (tag->nameoffs > 2) {
 		return (bfc_string_shared_substr(tag->obj,

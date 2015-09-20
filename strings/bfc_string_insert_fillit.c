@@ -13,7 +13,7 @@
  * @brief    bfc_string_insert_fillit
  */
 int
-bfc_string_insert_fillit(bfc_strptr_t s, bfc_iterptr_t p, size_t n, int c)
+bfc_string_insert_fillit(bfc_objptr_t s, bfc_iterptr_t p, size_t n, int c)
 {
 	size_t pos;
 	bfc_iterator_t j1, j2;

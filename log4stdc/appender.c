@@ -36,7 +36,7 @@
 					  ANDROID_LOG_VERBOSE )
 #endif
 
-static int init_appender(void *, size_t, struct mempool *);
+static int init_appender(void *, size_t, bfc_mempool_t );
 static void destroy_appender(l4sc_appender_ptr_t appender);
 static size_t get_appender_size(l4sc_appender_cptr_t obj);
 
@@ -83,7 +83,7 @@ struct appenderpool l4sc_appenders = { NULL, NULL };
 const char obsolete_appender_name[] = "###obsolete-appender###";
 
 static int
-init_appender(void *buf, size_t bufsize, struct mempool *pool)
+init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
@@ -161,7 +161,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 		}
 #endif
 
-		struct mempool *pool = appender->parent_pool;
+		bfc_mempool_t pool = appender->parent_pool;
 		const size_t bufsize = msg->msglen + 100;
 		char *poolmem = ((bufsize > 2000) && pool)?
 				bfc_mempool_alloc(pool, bufsize):
@@ -230,7 +230,7 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 	int rc;
 	l4sc_appender_ptr_t appender = NULL;
 	l4sc_appender_class_ptr_t cl, clazz = NULL;
-	struct mempool *pool = get_default_mempool();
+	bfc_mempool_t pool = get_default_mempool();
 
 	if (kind && (klen >= 5)) {
 		clazz = &l4sc_sysout_appender_class;

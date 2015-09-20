@@ -58,11 +58,6 @@ struct bfc_datetime {
 #endif
 
 typedef struct bfc_basic_object bfc_datetime_t;
-typedef struct bfc_basic_object *bfc_dateptr_t;
-typedef const struct bfc_basic_object *bfc_cdateptr_t;
-
-typedef struct bfc_basic_object *bfc_timeptr_t;
-typedef const struct bfc_basic_object *bfc_ctimeptr_t;
 
 #define BFC_DATETIME_METHODS(dateptrT,cdateptrT)			\
 	/* comparision */						\
@@ -99,7 +94,7 @@ typedef const struct bfc_basic_object *bfc_ctimeptr_t;
 
 struct bfc_datetime_class {
 	BFC_DATETIME_CLASS_DEF(bfc_datetime_classptr_t,
-				bfc_dateptr_t, bfc_cdateptr_t)
+				bfc_objptr_t, bfc_cobjptr_t)
 };
 
 struct timeval;
@@ -117,46 +112,46 @@ int	bfc_init_datetime_from_isotime(void *buf, size_t bufsize,
 					const char *s, size_t len);
 int	bfc_init_datetime_precise(void *buf, size_t bufsize,
 					time_t secs, unsigned long nsecs);
-void	bfc_destroy_datetime(bfc_dateptr_t date);
-int	bfc_clone_datetime(bfc_cdateptr_t obj, void *buf, size_t bufsize);
-size_t	bfc_datetime_objsize(bfc_cdateptr_t date);
-int	bfc_datetime_equals(bfc_cdateptr_t date, bfc_cdateptr_t other);
-size_t	bfc_datetime_length(bfc_cdateptr_t date);
-size_t	bfc_datetime_position(bfc_cdateptr_t date);
+void	bfc_destroy_datetime(bfc_objptr_t date);
+int	bfc_clone_datetime(bfc_cobjptr_t obj, void *buf, size_t bufsize);
+size_t	bfc_datetime_objsize(bfc_cobjptr_t date);
+int	bfc_datetime_equals(bfc_cobjptr_t date, bfc_cobjptr_t other);
+size_t	bfc_datetime_length(bfc_cobjptr_t date);
+size_t	bfc_datetime_position(bfc_cobjptr_t date);
 
-time_t	bfc_datetime_secs(bfc_cdateptr_t date);
-int	bfc_datetime_msecs(bfc_cdateptr_t date);
-long	bfc_datetime_usecs(bfc_cdateptr_t date);
-long	bfc_datetime_nsecs(bfc_cdateptr_t date);
+time_t	bfc_datetime_secs(bfc_cobjptr_t date);
+int	bfc_datetime_msecs(bfc_cobjptr_t date);
+long	bfc_datetime_usecs(bfc_cobjptr_t date);
+long	bfc_datetime_nsecs(bfc_cobjptr_t date);
 
-long	bfc_datetime_get_long(bfc_cdateptr_t date, size_t pos);
-int	bfc_datetime_set_long(bfc_dateptr_t date, size_t pos, long val);
+long	bfc_datetime_get_long(bfc_cobjptr_t date, size_t pos);
+int	bfc_datetime_set_long(bfc_objptr_t date, size_t pos, long val);
 #define BFC_DATETIME_DAYS_SINCE_1970	1
 #define BFC_DATETIME_SECOND_OF_DAY	2
 #define BFC_DATETIME_FRACTION_OF_SEC	3
 
-long	bfc_datetime_secs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
-long	bfc_datetime_msecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
-long	bfc_datetime_usecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
-long	bfc_datetime_nsecs_between(bfc_cdateptr_t first, bfc_cdateptr_t last);
+long	bfc_datetime_secs_between(bfc_cobjptr_t first, bfc_cobjptr_t last);
+long	bfc_datetime_msecs_between(bfc_cobjptr_t first, bfc_cobjptr_t last);
+long	bfc_datetime_usecs_between(bfc_cobjptr_t first, bfc_cobjptr_t last);
+long	bfc_datetime_nsecs_between(bfc_cobjptr_t first, bfc_cobjptr_t last);
 
-int	bfc_datetime_advance_secs(bfc_dateptr_t date, signed long secs);
-int	bfc_datetime_advance_msecs(bfc_dateptr_t date, signed long msecs);
-int	bfc_datetime_advance_usecs(bfc_dateptr_t date, signed long usecs);
-int	bfc_datetime_advance_nsecs(bfc_dateptr_t date, signed long nsecs);
+int	bfc_datetime_advance_secs(bfc_objptr_t date, signed long secs);
+int	bfc_datetime_advance_msecs(bfc_objptr_t date, signed long msecs);
+int	bfc_datetime_advance_usecs(bfc_objptr_t date, signed long usecs);
+int	bfc_datetime_advance_nsecs(bfc_objptr_t date, signed long nsecs);
 
 long	bfc_datetime_days_to_date(unsigned year, unsigned month, unsigned day);
 uint32_t bfc_datetime_frac_from_decimal(unsigned long sub, int sublen);
 
-int	bfc_datetime_to_gmtime(bfc_cdateptr_t date, struct tm *tm);
-int	bfc_datetime_to_localtime(bfc_cdateptr_t date, struct tm *tm);
-int	bfc_datetime_to_worldtime(bfc_cdateptr_t date,int offs,struct tm *tm);
-int	bfc_datetime_to_isodate(bfc_cdateptr_t date,char *buf,size_t bufsize);
-int	bfc_datetime_to_local_isodate(bfc_cdateptr_t date,
+int	bfc_datetime_to_gmtime(bfc_cobjptr_t date, struct tm *tm);
+int	bfc_datetime_to_localtime(bfc_cobjptr_t date, struct tm *tm);
+int	bfc_datetime_to_worldtime(bfc_cobjptr_t date,int offs,struct tm *tm);
+int	bfc_datetime_to_isodate(bfc_cobjptr_t date,char *buf,size_t bufsize);
+int	bfc_datetime_to_local_isodate(bfc_cobjptr_t date,
 					char *buf, size_t bufsize);
-int	bfc_datetime_to_world_isodate(bfc_cdateptr_t date, int offs,
+int	bfc_datetime_to_world_isodate(bfc_cobjptr_t date, int offs,
 					char *buf, size_t bufsize);
-int	bfc_datetime_format(bfc_cdateptr_t date, const char *fmt,
+int	bfc_datetime_format(bfc_cobjptr_t date, const char *fmt,
 					char *buf, size_t bufsize);
 
 #ifdef __cplusplus

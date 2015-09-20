@@ -13,7 +13,7 @@
  * @brief    bfc_string_insert_char
  */
 int
-bfc_string_insert_char(bfc_strptr_t s, bfc_iterptr_t p, int c)
+bfc_string_insert_char(bfc_objptr_t s, bfc_iterptr_t p, int c)
 {
 	bfc_iterator_t j1, j2;
 

@@ -14,7 +14,7 @@
  * @brief    bfc_string_append_iter_range
  */
 int
-bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
+bfc_string_append_iter_range(bfc_objptr_t s, bfc_iterptr_t it,
 			     bfc_iterptr_t first, bfc_iterptr_t last)
 {
 	int rc;

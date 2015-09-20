@@ -32,7 +32,7 @@ bfc_init_current_datetime(void *buf, size_t bufsize)
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 	if ((rc = bfc_init_datetime(buf, bufsize)) >= 0) {
-		bfc_dateptr_t date = (bfc_dateptr_t) buf;
+		bfc_objptr_t date = (bfc_objptr_t) buf;
 		UINT64 ftim, secs;
 		unsigned long frac;
 		FILETIME ft;

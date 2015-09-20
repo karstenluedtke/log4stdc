@@ -12,8 +12,8 @@
  * @brief    bfc_string_replace_substr
  */
 int
-bfc_string_replace_substr(bfc_strptr_t s,size_t pos1,size_t n1,
-	 			bfc_cstrptr_t str, size_t pos2, size_t n2)
+bfc_string_replace_substr(bfc_objptr_t s,size_t pos1,size_t n1,
+	 			bfc_cobjptr_t str, size_t pos2, size_t n2)
 {
 	const char *data = bfc_string_subdata(str, pos2);
 	size_t len = bfc_string_sublen(str, pos2, n2);

@@ -13,8 +13,8 @@
  * @brief    bfc_string_compare_substr
  */
 int
-bfc_string_compare_substr(bfc_cstrptr_t s, size_t pos1, size_t n1,
-					bfc_cstrptr_t str)
+bfc_string_compare_substr(bfc_cobjptr_t s, size_t pos1, size_t n1,
+					bfc_cobjptr_t str)
 {
 	size_t n2 = bfc_strlen(str);
 	const char *s2 = bfc_strdata(str);

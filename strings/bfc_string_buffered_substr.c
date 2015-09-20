@@ -12,7 +12,7 @@
  * @brief    bfc_string_buffered_substr
  */
 int
-bfc_string_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+bfc_string_buffered_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 			   void *buf, size_t bufsize,
 			   void *databuf, size_t dbufsize)
 {

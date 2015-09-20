@@ -12,7 +12,7 @@
  * @brief    bfc_string_data
  */
 const char *
-bfc_string_data(bfc_cstrptr_t s)
+bfc_string_data(bfc_cobjptr_t s)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			first, (s),

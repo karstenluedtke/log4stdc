@@ -12,7 +12,7 @@
 #include "log4stdc.h"
 
 int
-bfc_string_init_refcount(bfc_strptr_t s, int n)
+bfc_string_init_refcount(bfc_objptr_t s, int n)
 {
 #ifdef HAVE_STRING_REFCOUNT
 	bfc_init_atomic_counter(s->refc, n);
@@ -23,7 +23,7 @@ bfc_string_init_refcount(bfc_strptr_t s, int n)
 }
 
 int
-bfc_string_incr_refcount(bfc_strptr_t s)
+bfc_string_incr_refcount(bfc_objptr_t s)
 {
 #ifdef HAVE_STRING_REFCOUNT
 	int incremented_refcount = bfc_incr_atomic_counter(s->refc);
@@ -34,12 +34,12 @@ bfc_string_incr_refcount(bfc_strptr_t s)
 }
 
 int
-bfc_string_decr_refcount(bfc_strptr_t s)
+bfc_string_decr_refcount(bfc_objptr_t s)
 {
 #ifdef HAVE_STRING_REFCOUNT
 	int decremented_refcount = bfc_decr_atomic_counter(s->refc);
 	if (decremented_refcount == 0) {
-		struct mempool *pool = s->parent_pool;
+		bfc_mempool_t pool = s->parent_pool;
 		bfc_destroy(s);
 		if (pool) {
 			s->pool = NULL;

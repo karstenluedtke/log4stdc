@@ -12,7 +12,7 @@
 #include "barefootc/mempool.h"
 #include "barefootc/utf8.h"
 
-static struct mempool *pool;
+static bfc_mempool_t pool;
 static l4sc_logger_ptr_t logger;
 
 static int
@@ -70,7 +70,7 @@ test(void *initialized_vector, unsigned elem_size)
 	bfc_object_dump((bfc_objptr_t)vec, 1, logger);
 
 	for (k=0; k < n; k++) {
-		p1 = (char *) bfc_container_index((bfc_contptr_t) vec, k);
+		p1 = (char *) bfc_container_index((bfc_objptr_t) vec, k);
 		L4SC_DEBUG(logger, "%s: vec[%u] @%p %c%c%c...%c",
 		    __FUNCTION__, k, p1, p1[0], p1[1], p1[2], p1[elem_size-1]);
 		assert(p1 != NULL);
@@ -82,12 +82,12 @@ test(void *initialized_vector, unsigned elem_size)
 	L4SC_DEBUG(logger, "%s: vec.zero_element @%p", __FUNCTION__, p1);
 	assert(test_all_equal(p1, 0, elem_size) == 0);
 
-	rc = bfc_init_vector_copy(&v2, sizeof(v2), pool, (bfc_ccontptr_t) vec);
+	rc = bfc_init_vector_copy(&v2, sizeof(v2), pool, (bfc_cobjptr_t) vec);
 	assert(rc >= 0);
 	bfc_object_dump((bfc_objptr_t)&v2, 1, logger);
 
 	for (k=0; k < n; k++) {
-		p1 = (char *) bfc_container_index((bfc_contptr_t) &v2, k);
+		p1 = (char *) bfc_container_index((bfc_objptr_t) &v2, k);
 		L4SC_DEBUG(logger, "%s: v2[%u] @%p %c%c%c...%c",
 		    __FUNCTION__, k, p1, p1[0], p1[1], p1[2], p1[elem_size-1]);
 		assert(p1 != NULL);
@@ -108,7 +108,7 @@ test(void *initialized_vector, unsigned elem_size)
 	assert(test_all_equal(p1, 0, elem_size) == 0);
 	if (elem_size > 1000) {
 		k = CV1_BOUNDARY(&v2) - 1;
-		p0 = (char *) bfc_container_index((bfc_contptr_t)&v2, k);
+		p0 = (char *) bfc_container_index((bfc_objptr_t)&v2, k);
 		L4SC_DEBUG(logger, "%s: v2[%u] @%p", __FUNCTION__, k, p0);
 		assert(p1 == p0 + elem_size);
 	}

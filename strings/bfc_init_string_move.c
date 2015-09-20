@@ -15,10 +15,10 @@
  * @brief    bfc_init_string_move
  */
 int
-bfc_init_string_move(void *buf, size_t bufsize, bfc_strptr_t str)
+bfc_init_string_move(void *buf, size_t bufsize, bfc_objptr_t str)
 {
 	int rc;
-	bfc_strptr_t obj = (bfc_strptr_t) buf;
+	bfc_objptr_t obj = (bfc_objptr_t) buf;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_STRING_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %ld, str %p)",

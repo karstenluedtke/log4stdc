@@ -195,7 +195,7 @@ tostring_with_entities(bfc_cobjptr_t node,
 	int specials_in_buf = 0;
 	size_t tmpsize;
 	char *tmp;
-	struct mempool *pool;
+	bfc_mempool_t pool;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	if ((rc = bfc_object_tostring(child, buf, bufsize, NULL)) <= 0) {
@@ -293,7 +293,7 @@ static int
 encode_xml_attributes(bfc_cobjptr_t node, char *buf, size_t bufsize)
 {
 	size_t len = 0, spare;
-	bfc_contptr_t attrmap;
+	bfc_objptr_t attrmap;
 	bfc_iterator_t iter, limit;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -313,7 +313,7 @@ encode_xml_attributes(bfc_cobjptr_t node, char *buf, size_t bufsize)
 
 	while (bfc_iterator_distance(&iter, &limit) > 0) {
 		int rc1, rc2;
-		bfc_contptr_t pair = bfc_iterator_index(&iter);
+		bfc_objptr_t pair = bfc_iterator_index(&iter);
 		bfc_cobjptr_t name, value;
 		bfc_iterator_advance(&iter, 1);
 		if (pair == NULL) {

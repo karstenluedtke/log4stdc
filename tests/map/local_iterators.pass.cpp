@@ -66,8 +66,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	P *p = (P *)bfc_iterator_index(i.bfciter());
-	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	bfc_cobjptr_t num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	bfc_cobjptr_t str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
@@ -77,8 +77,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
@@ -88,8 +88,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
@@ -99,8 +99,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }
@@ -132,8 +132,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	P *p = (P *)bfc_iterator_index(i.bfciter());
-	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	bfc_cobjptr_t num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	bfc_cobjptr_t str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
@@ -143,8 +143,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
@@ -154,8 +154,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
@@ -165,8 +165,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }
@@ -198,8 +198,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	P *p = (P *)bfc_iterator_index(i.bfciter());
-	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	bfc_cobjptr_t num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	bfc_cobjptr_t str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
@@ -209,8 +209,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
@@ -220,8 +220,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
@@ -231,8 +231,8 @@ int main()
         j = c.end(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }
@@ -264,8 +264,8 @@ int main()
         j = c.cend(b);
         assert(i.distance(j) == 1);
 	P *p = (P *)bfc_iterator_index(i.bfciter());
-	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	bfc_cobjptr_t num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	bfc_cobjptr_t str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 1);
         assert(bfc_string_compare_c_str(str, "one") == 0);
 
@@ -275,8 +275,8 @@ int main()
         j = c.cend(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 2);
         assert(bfc_string_compare_c_str(str, "two") == 0);
 
@@ -286,8 +286,8 @@ int main()
         j = c.cend(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 3);
         assert(bfc_string_compare_c_str(str, "three") == 0);
 
@@ -297,8 +297,8 @@ int main()
         j = c.cend(b);
         assert(i.distance(j) == 1);
 	p = (P *)bfc_iterator_index(i.bfciter());
-	num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
-	str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
+	num = (bfc_cobjptr_t)bfc_container_first((bfc_objptr_t)p);
+	str = (bfc_cobjptr_t)bfc_container_index((bfc_objptr_t)p,1);
         assert(bfc_object_getlong(num) == 4);
         assert(bfc_string_compare_c_str(str, "four") == 0);
     }

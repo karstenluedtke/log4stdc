@@ -13,7 +13,7 @@
  * @brief    bfc_string_rfind_range
  */
 size_t
-bfc_string_rfind_range(bfc_cstrptr_t s,
+bfc_string_rfind_range(bfc_cobjptr_t s,
 		       bfc_citerptr_t pattern, bfc_citerptr_t pattend,
 		       size_t pos)
 {

@@ -16,12 +16,12 @@
 #include "barefootc/iterator.h"
 #include "log4stdc.h"
 
-static int default_init_iterator(void *buf,size_t bufsize,struct mempool *pool);
+static int default_init_iterator(void *buf,size_t bufsize,bfc_mempool_t pool);
 static int init_refcount(bfc_iterptr_t it, int n);
 static int incr_refcount(bfc_iterptr_t it);
 static int decr_refcount(bfc_iterptr_t it);
 static int clone_iterator(bfc_citerptr_t it,
-		void *buf, size_t bufsize, struct mempool *pool);
+		void *buf, size_t bufsize, bfc_mempool_t pool);
 static int iterator_equals(bfc_citerptr_t it, bfc_citerptr_t other);
 static unsigned bfc_iterator_hashcode(bfc_citerptr_t it, int hashlen);
 static void dump_iterator(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
@@ -132,7 +132,7 @@ const struct bfc_iterator_class bfc_reverse_iterator_class = {
 };
 
 static int
-default_init_iterator(void *buf, size_t bufsize, struct mempool *pool)
+default_init_iterator(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	bfc_iterptr_t it = (bfc_iterptr_t) buf;
 	if (bufsize < sizeof(*it)) {
@@ -220,7 +220,7 @@ bfc_clone_iterator(bfc_citerptr_t obj, void *buf, size_t bufsize)
 
 static int
 clone_iterator(bfc_citerptr_t it,
-		void *buf, size_t bufsize, struct mempool *pool)
+		void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	return (bfc_clone_iterator(it, buf, bufsize));
 }

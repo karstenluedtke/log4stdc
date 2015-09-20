@@ -849,7 +849,7 @@ void *bfc_vector_have(void *, unsigned);
 void *bfc_vector_set (void *, unsigned, void *);
 void *bfc_vector_ref (void *, unsigned);
 
-int bfc_init_vector_class(void *, size_t, struct mempool *);
+int bfc_init_vector_class(void *, size_t, bfc_mempool_t );
 #define bfc_init_vector(vec,bufsize,pool)				\
 do {									\
 	BFC_VECTOR_INIT_POOL(vec,pool);					\
@@ -857,15 +857,15 @@ do {									\
 } while (0)
 
 int bfc_init_vector_by_element_size(void *buf, size_t bufsize,
-				struct mempool *pool, size_t elem_size);
-int bfc_init_vector_copy(void *, size_t, struct mempool *, bfc_cobjptr_t);
+				bfc_mempool_t pool, size_t elem_size);
+int bfc_init_vector_copy(void *, size_t, bfc_mempool_t , bfc_cobjptr_t);
 int bfc_init_vector_move(void *, size_t, bfc_objptr_t);
 
-int bfc_init_object_vector_class(void *, size_t, struct mempool *);
-int bfc_init_object_vector_copy(void *, size_t, struct mempool*, bfc_cobjptr_t);
+int bfc_init_object_vector_class(void *, size_t, bfc_mempool_t );
+int bfc_init_object_vector_copy(void *, size_t, bfc_mempool_t , bfc_cobjptr_t);
 
-int bfc_init_objref_vector_class(void *, size_t, struct mempool *);
-int bfc_init_objref_vector_copy(void *, size_t, struct mempool*, bfc_cobjptr_t);
+int bfc_init_objref_vector_class(void *, size_t, bfc_mempool_t );
+int bfc_init_objref_vector_copy(void *, size_t, bfc_mempool_t , bfc_cobjptr_t);
 
 struct l4sc_logger;
 void bfc_vector_dump_structure(const void *, struct l4sc_logger *);

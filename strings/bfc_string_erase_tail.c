@@ -12,7 +12,7 @@
  * @brief    bfc_string_erase_tail
  */
 int
-bfc_string_erase_tail(bfc_strptr_t s, size_t pos)
+bfc_string_erase_tail(bfc_objptr_t s, size_t pos)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			replace_buffer, (s, pos, BFC_NPOS, NULL, 0),

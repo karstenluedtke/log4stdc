@@ -62,7 +62,7 @@ typedef BFC_PAIR(bfc_object_pair, bfc_object_t, bfc_object_t) bfc_object_pair_t;
 typedef BFC_PAIR(bfc_objref_pair, bfc_objptr_t, bfc_objptr_t) bfc_objref_pair_t;
 typedef BFC_PAIR(bfc_string_object_pair, bfc_string_t, bfc_object_t)
 						       bfc_string_object_pair_t;
-typedef BFC_PAIR(bfc_strref_pair, bfc_strptr_t, bfc_strptr_t) bfc_strref_pair_t;
+typedef BFC_PAIR(bfc_strref_pair, bfc_objptr_t, bfc_objptr_t) bfc_strref_pair_t;
 /** @} */
 
 #ifdef __cplusplus

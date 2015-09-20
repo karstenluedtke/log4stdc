@@ -12,7 +12,7 @@
  * @brief    bfc_string_mutable_substr
  */
 int
-bfc_string_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+bfc_string_mutable_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 			  void *buf, size_t bufsize)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s,

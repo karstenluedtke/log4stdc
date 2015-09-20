@@ -11,7 +11,7 @@
 
 struct stringbuffer {
 	bfc_classptr_t	cls;
-	struct mempool *pool;
+	bfc_mempool_t pool;
 	size_t		size;
 	char		buf[1 /* or longer */];
 };
@@ -25,7 +25,7 @@ static const struct {
 };
 
 void *
-bfc_alloc_stringbuf(struct mempool *pool, size_t nbytes)
+bfc_alloc_stringbuf(bfc_mempool_t pool, size_t nbytes)
 {
 	struct stringbuffer *b;
 
@@ -44,7 +44,7 @@ bfc_alloc_stringbuf(struct mempool *pool, size_t nbytes)
 void *
 bfc_realloc_stringbuf(void *charbuf, size_t nbytes)
 {
-	struct mempool *pool;
+	bfc_mempool_t pool;
 	l4sc_logger_ptr_t logger;
 	struct stringbuffer *b = (struct stringbuffer *)
 			((char*)charbuf - offsetof(struct stringbuffer, buf));
@@ -71,7 +71,7 @@ bfc_realloc_stringbuf(void *charbuf, size_t nbytes)
 void
 bfc_free_stringbuf(void *charbuf)
 {
-	struct mempool *pool;
+	bfc_mempool_t pool;
 	struct stringbuffer *b = (struct stringbuffer *)
 			((char*)charbuf - offsetof(struct stringbuffer, buf));
 
@@ -90,9 +90,9 @@ bfc_free_stringbuf(void *charbuf)
 #define GET_STRBUF(s)		((s)->name)
 
 bfc_mempool_t
-bfc_basic_string_pool(bfc_cstrptr_t s)
+bfc_basic_string_pool(bfc_cobjptr_t s)
 {
-	struct mempool *pool;
+	bfc_mempool_t pool;
 	const char *charbuf = GET_STRBUF(s);
 	const struct stringbuffer *b = (struct stringbuffer *)
 			((char*)charbuf - offsetof(struct stringbuffer, buf));

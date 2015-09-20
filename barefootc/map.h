@@ -27,8 +27,8 @@ extern "C" {
 /** @addtogroup class_definitions */
 struct bfc_map_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_map_class *,
-			      bfc_contptr_t, bfc_ccontptr_t, bfc_contptr_t)
-	BFC_CONTAINER_METHODS(bfc_contptr_t, bfc_ccontptr_t, bfc_contptr_t)
+			      bfc_objptr_t, bfc_cobjptr_t, bfc_objptr_t)
+	BFC_CONTAINER_METHODS(bfc_objptr_t, bfc_cobjptr_t, bfc_objptr_t)
 };
 typedef const struct bfc_map_class *bfc_map_class_ptr_t;
 /** @} */
@@ -152,31 +152,31 @@ do {									\
 
 /** @} */
 
-int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, struct mempool *);
-int bfc_init_map_copy(void *, size_t, struct mempool *, bfc_ccontptr_t);
-int bfc_map_reserve(bfc_contptr_t map, size_t n);
-size_t bfc_map_size(bfc_ccontptr_t);
+int bfc_init_map_class(void *, size_t, int, bfc_classptr_t, bfc_mempool_t );
+int bfc_init_map_copy(void *, size_t, bfc_mempool_t , bfc_cobjptr_t);
+int bfc_map_reserve(bfc_objptr_t map, size_t n);
+size_t bfc_map_size(bfc_cobjptr_t);
 size_t bfc_map_load_limit(const void *map);
 size_t bfc_map_load_percent(const void *map);
 
-int bfc_init_linear_map(void *, size_t, bfc_classptr_t, struct mempool *);
-int bfc_init_linear_map_copy(void *, size_t, struct mempool *, bfc_ccontptr_t);
+int bfc_init_linear_map(void *, size_t, bfc_classptr_t, bfc_mempool_t );
+int bfc_init_linear_map_copy(void *, size_t, bfc_mempool_t , bfc_cobjptr_t);
 
-int bfc_map_insert_objects(bfc_contptr_t, bfc_objptr_t, bfc_objptr_t,
+int bfc_map_insert_objects(bfc_objptr_t, bfc_objptr_t, bfc_objptr_t,
 			   bfc_iterptr_t position, size_t possize);
-int bfc_map_replace_objects(bfc_contptr_t, bfc_objptr_t, bfc_objptr_t,
+int bfc_map_replace_objects(bfc_objptr_t, bfc_objptr_t, bfc_objptr_t,
 			    bfc_iterptr_t position, size_t possize);
-int bfc_map_erase_key(bfc_contptr_t, bfc_cobjptr_t);
-int bfc_map_erase_iter(bfc_contptr_t, bfc_iterptr_t);
-int bfc_map_erase_index(bfc_contptr_t, size_t);
+int bfc_map_erase_key(bfc_objptr_t, bfc_cobjptr_t);
+int bfc_map_erase_iter(bfc_objptr_t, bfc_iterptr_t);
+int bfc_map_erase_index(bfc_objptr_t, size_t);
 
-bfc_contptr_t bfc_map_find_pair(bfc_contptr_t, bfc_cobjptr_t);
-bfc_objptr_t  bfc_map_find_value(bfc_contptr_t, bfc_cobjptr_t);
-bfc_objptr_t  bfc_map_index_value(bfc_contptr_t, size_t);
-int bfc_map_count(bfc_contptr_t, bfc_cobjptr_t);
-int bfc_map_bucket_size(bfc_contptr_t, bfc_cobjptr_t);
+bfc_objptr_t bfc_map_find_pair(bfc_objptr_t, bfc_cobjptr_t);
+bfc_objptr_t  bfc_map_find_value(bfc_objptr_t, bfc_cobjptr_t);
+bfc_objptr_t  bfc_map_index_value(bfc_objptr_t, size_t);
+int bfc_map_count(bfc_objptr_t, bfc_cobjptr_t);
+int bfc_map_bucket_size(bfc_objptr_t, bfc_cobjptr_t);
 unsigned bfc_map_keyhashcode(const void *, const void *); /* c++ bucket() */
-int bfc_map_rehash(bfc_contptr_t, size_t);
+int bfc_map_rehash(bfc_objptr_t, size_t);
 
 #ifdef __cplusplus
 };

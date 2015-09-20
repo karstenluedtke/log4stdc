@@ -10,14 +10,14 @@
 #include "barefootc/container.h"
 
 struct bfc_container {
-	BFC_OBJHDR(bfc_container_classptr_t, bfc_contptr_t)
+	BFC_OBJHDR(bfc_container_classptr_t, bfc_objptr_t)
 };
 
 /**
  * @brief    bfc_container_capacity
  */
 size_t
-bfc_container_capacity(bfc_ccontptr_t c)
+bfc_container_capacity(bfc_cobjptr_t c)
 {
 	RETURN_METHCALL(bfc_container_classptr_t, c,
 			capacity, (c),

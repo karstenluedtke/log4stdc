@@ -14,9 +14,9 @@
  * @brief    bfc_string_subdata
  */
 const char *
-bfc_string_subdata(bfc_cstrptr_t s, size_t pos)
+bfc_string_subdata(bfc_cobjptr_t s, size_t pos)
 {
-	bfc_strptr_t s1 = BFC_UNCONST(bfc_strptr_t, s);
+	bfc_objptr_t s1 = BFC_UNCONST(bfc_objptr_t, s);
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			index,(s1,pos),
 			s->name + pos);

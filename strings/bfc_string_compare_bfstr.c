@@ -13,7 +13,7 @@
  * @brief    bfc_string_compare_bfstr
  */
 int
-bfc_string_compare_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str)
+bfc_string_compare_bfstr(bfc_cobjptr_t s, bfc_cobjptr_t str)
 {
 	size_t n1 = bfc_strlen(s);
 	size_t n2 = bfc_strlen(str);

@@ -13,7 +13,7 @@
  * @brief    bfc_string_replace_range_fill
  */
 int
-bfc_string_replace_range_fill(bfc_strptr_t s,
+bfc_string_replace_range_fill(bfc_objptr_t s,
 			      bfc_iterptr_t i1, bfc_iterptr_t i2,
 			      size_t n, int c)
 {

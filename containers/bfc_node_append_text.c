@@ -17,7 +17,7 @@
  * @brief    bfc_node_append_text
  */
 int
-bfc_node_append_text(bfc_objptr_t node, bfc_cstrptr_t text)
+bfc_node_append_text(bfc_objptr_t node, bfc_cobjptr_t text)
 {
 	return (bfc_container_push_back(node, text));
 }

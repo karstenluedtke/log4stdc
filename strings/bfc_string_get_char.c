@@ -12,7 +12,7 @@
  * @brief    bfc_string_get_char
  */
 long
-bfc_string_get_char(bfc_cstrptr_t s, size_t pos)
+bfc_string_get_char(bfc_cobjptr_t s, size_t pos)
 {
 	RETURN_METHCALL(bfc_string_classptr_t, s, getl, (s, pos), -ENOSYS);
 }

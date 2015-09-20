@@ -4,7 +4,7 @@
 
 int
 bfc_clone_object(bfc_cobjptr_t obj,
-		 void *buf, size_t bufsize, struct mempool *pool)
+		 void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	int rc;
 

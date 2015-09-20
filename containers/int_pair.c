@@ -17,9 +17,9 @@
 #include "barefootc/unconst.h"
 #include "log4stdc.h"
 
-static int init_int_pair(void *buf, size_t bufsize, struct mempool *pool);
+static int init_int_pair(void *buf, size_t bufsize, bfc_mempool_t pool);
 static int clone_pair(const struct bfc_number_pair *obj,
-				void *buf,size_t bufsize,struct mempool *pool);
+				void *buf,size_t bufsize,bfc_mempool_t pool);
 static void destroy_pair(struct bfc_number_pair *pair);
 
 static size_t pair_clonesize(const struct bfc_number_pair *pair);
@@ -31,7 +31,7 @@ static void dump_pair(const struct bfc_number_pair *pair,
 static bfc_cobjptr_t pair_first(const struct bfc_number_pair *pair);
 static bfc_objptr_t pair_index(struct bfc_number_pair *pair, size_t pos);
 static bfc_objptr_t place_int_pair_element(struct bfc_number_pair *pair,
-			size_t pos, bfc_objptr_t val, struct mempool *pool);
+			size_t pos, bfc_objptr_t val, bfc_mempool_t pool);
 
 struct bfc_pair_class {
 	BFC_CONTAINER_CLASSHDR(const struct bfc_number_pair_class *,
@@ -55,7 +55,7 @@ const struct bfc_pair_class bfc_int_pair_class = {
 };
 
 static int
-init_int_pair(void *buf, size_t bufsize, struct mempool *pool)
+init_int_pair(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	struct bfc_number_pair *pair = (struct bfc_number_pair *) buf;
 	if (bufsize < sizeof(*pair)) {
@@ -69,7 +69,7 @@ init_int_pair(void *buf, size_t bufsize, struct mempool *pool)
 
 static bfc_objptr_t
 place_int_pair_element(struct bfc_number_pair *pair, size_t pos,
-			   bfc_objptr_t val, struct mempool *pool)
+			   bfc_objptr_t val, bfc_mempool_t pool)
 {
 	bfc_objptr_t p;
 	
@@ -86,7 +86,7 @@ place_int_pair_element(struct bfc_number_pair *pair, size_t pos,
 
 static int
 clone_pair(const struct bfc_number_pair *obj,
-	   void *buf, size_t bufsize, struct mempool *pool)
+	   void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	struct bfc_number_pair *pair = (struct bfc_number_pair *) buf;
 	struct bfc_number_pair *src = BFC_UNCONST(struct bfc_number_pair*, obj);

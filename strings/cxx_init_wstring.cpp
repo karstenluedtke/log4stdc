@@ -10,14 +10,14 @@ barefootc::init_string(void *buf, size_t bufsize, const wchar_t *s, size_t n)
 
 int
 barefootc::init_string(void *buf, size_t bufsize,
-	struct mempool *pool, const wchar_t *s, size_t n)
+	bfc_mempool_t pool, const wchar_t *s, size_t n)
 {
 	return bfc_init_basic_wstring_buffer(buf, bufsize, pool, s, n);
 }
 
 int
 barefootc::init_string(void *buf, size_t bufsize,
-	struct mempool *pool, size_t n, wchar_t c)
+	bfc_mempool_t pool, size_t n, wchar_t c)
 {
 	return bfc_init_basic_wstring_fill(buf, bufsize, pool, n, c);
 }

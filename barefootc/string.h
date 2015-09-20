@@ -52,8 +52,6 @@ struct bfc_string {
 #endif
 
 typedef struct bfc_basic_object bfc_string_t;
-typedef struct bfc_basic_object *bfc_strptr_t;
-typedef const struct bfc_basic_object *bfc_cstrptr_t;
 
 #define BFCSTR(s) \
  { BFC_STATIC_OBJHDR_INITIALIZERS(bfc_shared_string_class, s), \
@@ -145,7 +143,7 @@ typedef const struct bfc_basic_object *bfc_cstrptr_t;
 #ifdef NEED_BFC_STRING_CLASS
 struct bfc_string_class {
 	BFC_STRING_CLASS_DEF(bfc_string_classptr_t,
-			     bfc_strptr_t, bfc_cstrptr_t, char)
+			     bfc_objptr_t, bfc_cobjptr_t, char)
 };
 #endif
 
@@ -169,365 +167,365 @@ struct bfc_string_class {
  * bfc_string_t
  */
 /* Constructors */
-int	bfc_init_string(void *buf, size_t bufsize, struct mempool *pool);
-int	bfc_init_string_copy(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cstrptr_t str);
-int	bfc_init_string_move(void *buf, size_t bufsize, bfc_strptr_t str);
-int	bfc_init_string_substr(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cstrptr_t str, size_t pos, size_t n);
-int	bfc_init_string_buffer(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_string(void *buf, size_t bufsize, bfc_mempool_t pool);
+int	bfc_init_string_copy(void *buf, size_t bufsize, bfc_mempool_t pool,
+				bfc_cobjptr_t str);
+int	bfc_init_string_move(void *buf, size_t bufsize, bfc_objptr_t str);
+int	bfc_init_string_substr(void *buf, size_t bufsize, bfc_mempool_t pool,
+				bfc_cobjptr_t str, size_t pos, size_t n);
+int	bfc_init_string_buffer(void *buf, size_t bufsize, bfc_mempool_t pool,
 				const char* s, size_t n);
-int	bfc_init_string_c_str(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_string_c_str(void *buf, size_t bufsize, bfc_mempool_t pool,
 				const char* s);
-int	bfc_init_string_fill(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_string_fill(void *buf, size_t bufsize, bfc_mempool_t pool,
 				size_t n, int c);
-int	bfc_init_string_range(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_string_range(void *buf, size_t bufsize, bfc_mempool_t pool,
 				bfc_iterptr_t begin, bfc_iterptr_t end);
-void	bfc_destroy_string(bfc_strptr_t obj);
-size_t	bfc_string_objsize(bfc_cstrptr_t obj);
+void	bfc_destroy_string(bfc_objptr_t obj);
+size_t	bfc_string_objsize(bfc_cobjptr_t obj);
 
 /* Capacity */
-size_t	bfc_string_length(bfc_cstrptr_t s);
-size_t	bfc_string_max_size(bfc_cstrptr_t s);
-int	bfc_string_resize(bfc_strptr_t s, size_t n, int c);
-size_t	bfc_string_capacity(bfc_cstrptr_t s);
-int	bfc_string_reserve(bfc_strptr_t s, size_t n);
-size_t	bfc_string_sublen(bfc_cstrptr_t s, size_t pos, size_t n);
+size_t	bfc_string_length(bfc_cobjptr_t s);
+size_t	bfc_string_max_size(bfc_cobjptr_t s);
+int	bfc_string_resize(bfc_objptr_t s, size_t n, int c);
+size_t	bfc_string_capacity(bfc_cobjptr_t s);
+int	bfc_string_reserve(bfc_objptr_t s, size_t n);
+size_t	bfc_string_sublen(bfc_cobjptr_t s, size_t pos, size_t n);
 
 /* Element access */
-const char *bfc_string_subdata(bfc_cstrptr_t s, size_t pos);
-char *bfc_string_index(bfc_strptr_t s, size_t pos);
-const char *bfc_string_data(bfc_cstrptr_t s);  /* not zero terminated */
-long bfc_string_get_char(bfc_cstrptr_t s, size_t pos);
-int bfc_string_set_char(bfc_strptr_t s, size_t pos, long c);
+const char *bfc_string_subdata(bfc_cobjptr_t s, size_t pos);
+char *bfc_string_index(bfc_objptr_t s, size_t pos);
+const char *bfc_string_data(bfc_cobjptr_t s);  /* not zero terminated */
+long bfc_string_get_char(bfc_cobjptr_t s, size_t pos);
+int bfc_string_set_char(bfc_objptr_t s, size_t pos, long c);
 
 /* Iterators */
-int bfc_string_begin_iterator(bfc_cstrptr_t s,bfc_iterptr_t it,size_t bufsize);
-int bfc_string_end_iterator(bfc_cstrptr_t s, bfc_iterptr_t it, size_t bufsize);
-int bfc_string_reverse_begin_iterator(bfc_cstrptr_t s,
+int bfc_string_begin_iterator(bfc_cobjptr_t s,bfc_iterptr_t it,size_t bufsize);
+int bfc_string_end_iterator(bfc_cobjptr_t s, bfc_iterptr_t it, size_t bufsize);
+int bfc_string_reverse_begin_iterator(bfc_cobjptr_t s,
 					bfc_iterptr_t it, size_t bufsize);
-int bfc_string_reverse_end_iterator(bfc_cstrptr_t s,
+int bfc_string_reverse_end_iterator(bfc_cobjptr_t s,
 					bfc_iterptr_t it, size_t bufsize);
 
 /* Modifiers */
-int     bfc_string_assign(bfc_strptr_t s, bfc_cstrptr_t s2);
-int     bfc_string_assign_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
+int     bfc_string_assign(bfc_objptr_t s, bfc_cobjptr_t s2);
+int     bfc_string_assign_substr(bfc_objptr_t s, bfc_cobjptr_t s2,
 			 		size_t subpos, size_t sublen);
-int     bfc_string_assign_c_str(bfc_strptr_t s, const void *s2);
-int     bfc_string_assign_buffer(bfc_strptr_t s, const void *s2, size_t n);
-int     bfc_string_assign_fill(bfc_strptr_t s, size_t n, int c);
-int     bfc_string_assign_range(bfc_strptr_t s,
+int     bfc_string_assign_c_str(bfc_objptr_t s, const void *s2);
+int     bfc_string_assign_buffer(bfc_objptr_t s, const void *s2, size_t n);
+int     bfc_string_assign_fill(bfc_objptr_t s, size_t n, int c);
+int     bfc_string_assign_range(bfc_objptr_t s,
 				bfc_iterptr_t first, bfc_iterptr_t last);
-int     bfc_string_append(bfc_strptr_t s, bfc_cstrptr_t s2);
-int     bfc_string_append_substr(bfc_strptr_t s, bfc_cstrptr_t s2,
+int     bfc_string_append(bfc_objptr_t s, bfc_cobjptr_t s2);
+int     bfc_string_append_substr(bfc_objptr_t s, bfc_cobjptr_t s2,
 			 		size_t subpos, size_t sublen);
-int     bfc_string_append_c_str(bfc_strptr_t s, const void *s2);
-int     bfc_string_append_buffer(bfc_strptr_t s, const void *s2, size_t n);
-int     bfc_string_append_fill(bfc_strptr_t s, size_t n, int c);
-int     bfc_string_append_range(bfc_strptr_t s,
+int     bfc_string_append_c_str(bfc_objptr_t s, const void *s2);
+int     bfc_string_append_buffer(bfc_objptr_t s, const void *s2, size_t n);
+int     bfc_string_append_fill(bfc_objptr_t s, size_t n, int c);
+int     bfc_string_append_range(bfc_objptr_t s,
 				bfc_iterptr_t first, bfc_iterptr_t last);
-int     bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
+int     bfc_string_append_iter_range(bfc_objptr_t s, bfc_iterptr_t it,
 				bfc_iterptr_t first, bfc_iterptr_t last);
-int	bfc_string_push_back(bfc_strptr_t s, int c);
-int     bfc_string_insert(bfc_strptr_t s, size_t pos, bfc_cstrptr_t s2);
-int     bfc_string_insert_substr(bfc_strptr_t s, size_t pos,
-			bfc_cstrptr_t s2, size_t subpos, size_t sublen);
-int     bfc_string_insert_c_str(bfc_strptr_t s, size_t pos, const void *s2);
-int     bfc_string_insert_buffer(bfc_strptr_t s, size_t pos,
+int	bfc_string_push_back(bfc_objptr_t s, int c);
+int     bfc_string_insert(bfc_objptr_t s, size_t pos, bfc_cobjptr_t s2);
+int     bfc_string_insert_substr(bfc_objptr_t s, size_t pos,
+			bfc_cobjptr_t s2, size_t subpos, size_t sublen);
+int     bfc_string_insert_c_str(bfc_objptr_t s, size_t pos, const void *s2);
+int     bfc_string_insert_buffer(bfc_objptr_t s, size_t pos,
 			 		const void *s2, size_t n);
-int     bfc_string_insert_fill(bfc_strptr_t s, size_t pos, size_t n, int c);
-int     bfc_string_insert_fillit(bfc_strptr_t s,bfc_iterptr_t p,size_t n,int c);
-int     bfc_string_insert_char(bfc_strptr_t s, bfc_iterptr_t p, int c);
-int     bfc_string_insert_range(bfc_strptr_t s, bfc_iterptr_t p,
+int     bfc_string_insert_fill(bfc_objptr_t s, size_t pos, size_t n, int c);
+int     bfc_string_insert_fillit(bfc_objptr_t s,bfc_iterptr_t p,size_t n,int c);
+int     bfc_string_insert_char(bfc_objptr_t s, bfc_iterptr_t p, int c);
+int     bfc_string_insert_range(bfc_objptr_t s, bfc_iterptr_t p,
 				bfc_iterptr_t first, bfc_iterptr_t last);
-int     bfc_string_erase_seq(bfc_strptr_t s, size_t pos, size_t len);
-int     bfc_string_erase_tail(bfc_strptr_t s, size_t pos);
-int     bfc_string_erase_char(bfc_strptr_t s, bfc_iterptr_t p);
-int     bfc_string_erase_range(bfc_strptr_t s,
+int     bfc_string_erase_seq(bfc_objptr_t s, size_t pos, size_t len);
+int     bfc_string_erase_tail(bfc_objptr_t s, size_t pos);
+int     bfc_string_erase_char(bfc_objptr_t s, bfc_iterptr_t p);
+int     bfc_string_erase_range(bfc_objptr_t s,
 				bfc_iterptr_t first, bfc_iterptr_t last);
-void    bfc_string_pop_back(bfc_strptr_t s);
-int     bfc_string_replace(bfc_strptr_t s, size_t pos1,size_t n1,
-					bfc_cstrptr_t str);
-int     bfc_string_replace_substr(bfc_strptr_t s,size_t pos1,size_t n1,
-	 			bfc_cstrptr_t str, size_t pos2, size_t n2);
-int     bfc_string_replace_buffer(bfc_strptr_t s, size_t pos,size_t n1,
+void    bfc_string_pop_back(bfc_objptr_t s);
+int     bfc_string_replace(bfc_objptr_t s, size_t pos1,size_t n1,
+					bfc_cobjptr_t str);
+int     bfc_string_replace_substr(bfc_objptr_t s,size_t pos1,size_t n1,
+	 			bfc_cobjptr_t str, size_t pos2, size_t n2);
+int     bfc_string_replace_buffer(bfc_objptr_t s, size_t pos,size_t n1,
 					const void *s2, size_t n2);
-int     bfc_string_replace_c_str(bfc_strptr_t s, size_t pos, size_t n1,
+int     bfc_string_replace_c_str(bfc_objptr_t s, size_t pos, size_t n1,
 					const void *s2);
-int     bfc_string_replace_fill(bfc_strptr_t s, size_t pos, size_t n1,
+int     bfc_string_replace_fill(bfc_objptr_t s, size_t pos, size_t n1,
 					size_t n2, int c);
-int     bfc_string_replace_range(bfc_strptr_t s, bfc_iterptr_t i1,
-					bfc_iterptr_t i2, bfc_cstrptr_t s2);
-int     bfc_string_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_string_replace_range(bfc_objptr_t s, bfc_iterptr_t i1,
+					bfc_iterptr_t i2, bfc_cobjptr_t s2);
+int     bfc_string_replace_range_buffer(bfc_objptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const void *s2, size_t n);
-int     bfc_string_replace_range_c_str(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_string_replace_range_c_str(bfc_objptr_t s, bfc_iterptr_t i1,
 					bfc_iterptr_t i2, const void *s2);
-int     bfc_string_replace_range_fill(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_string_replace_range_fill(bfc_objptr_t s, bfc_iterptr_t i1,
 					bfc_iterptr_t i2, size_t n, int c);
-int     bfc_string_replace_ranges(bfc_strptr_t s,
+int     bfc_string_replace_ranges(bfc_objptr_t s,
 				  bfc_iterptr_t i1, bfc_iterptr_t i2,
 				  bfc_iterptr_t j1, bfc_iterptr_t j2);
-size_t	bfc_string_copy(bfc_cstrptr_t s, void *s2, size_t n, size_t pos);
-void	bfc_string_swap(bfc_strptr_t s, bfc_strptr_t str);
+size_t	bfc_string_copy(bfc_cobjptr_t s, void *s2, size_t n, size_t pos);
+void	bfc_string_swap(bfc_objptr_t s, bfc_objptr_t str);
 
-int	bfc_string_trim(bfc_strptr_t s);
+int	bfc_string_trim(bfc_objptr_t s);
 
 /* String operations */
-size_t	bfc_string_find_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str, size_t pos);
-size_t	bfc_string_find_buffer(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_bfstr(bfc_cobjptr_t s,bfc_cobjptr_t str, size_t pos);
+size_t	bfc_string_find_buffer(bfc_cobjptr_t s, const void *s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_c_str(bfc_cstrptr_t s, const void *s2, size_t pos);
-size_t	bfc_string_find_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_string_find_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+size_t	bfc_string_find_c_str(bfc_cobjptr_t s, const void *s2, size_t pos);
+size_t	bfc_string_find_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_string_find_range(bfc_cobjptr_t s, bfc_citerptr_t pattern,
 					bfc_citerptr_t pattend, size_t pos);
-size_t	bfc_string_rfind_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str,size_t pos);
-size_t	bfc_string_rfind_buffer(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_rfind_bfstr(bfc_cobjptr_t s,bfc_cobjptr_t str,size_t pos);
+size_t	bfc_string_rfind_buffer(bfc_cobjptr_t s, const void *s2,
 					size_t pos, size_t n);
-size_t	bfc_string_rfind_c_str(bfc_cstrptr_t s, const void *s2,size_t pos);
-size_t	bfc_string_rfind_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_string_rfind_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+size_t	bfc_string_rfind_c_str(bfc_cobjptr_t s, const void *s2,size_t pos);
+size_t	bfc_string_rfind_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_string_rfind_range(bfc_cobjptr_t s, bfc_citerptr_t pattern,
 					bfc_citerptr_t pattend, size_t pos);
-size_t	bfc_string_find_first_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
+size_t	bfc_string_find_first_of_bfstr(bfc_cobjptr_t s, bfc_cobjptr_t str,
 					size_t pos);
-size_t	bfc_string_find_first_of_buffer(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_first_of_buffer(bfc_cobjptr_t s, const void *s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_first_of_c_str(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_first_of_c_str(bfc_cobjptr_t s, const void *s2,
 					size_t pos);
-size_t	bfc_string_find_first_of_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_string_find_first_of_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+size_t	bfc_string_find_first_of_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_string_find_first_of_range(bfc_cobjptr_t s, bfc_citerptr_t pattern,
 					bfc_citerptr_t pattend, size_t pos);
-size_t	bfc_string_find_last_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
+size_t	bfc_string_find_last_of_bfstr(bfc_cobjptr_t s, bfc_cobjptr_t str,
 					size_t pos);
-size_t	bfc_string_find_last_of_buffer(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_last_of_buffer(bfc_cobjptr_t s, const void *s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_last_of_c_str(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_last_of_c_str(bfc_cobjptr_t s, const void *s2,
 					size_t pos);
-size_t	bfc_string_find_last_of_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_string_find_last_of_range(bfc_cstrptr_t s, bfc_citerptr_t pattern,
+size_t	bfc_string_find_last_of_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_string_find_last_of_range(bfc_cobjptr_t s, bfc_citerptr_t pattern,
 					bfc_citerptr_t pattend, size_t pos);
-size_t	bfc_string_find_first_not_of_bfstr(bfc_cstrptr_t s,bfc_cstrptr_t str,
+size_t	bfc_string_find_first_not_of_bfstr(bfc_cobjptr_t s,bfc_cobjptr_t str,
 					size_t pos);
-size_t	bfc_string_find_first_not_of_buffer(bfc_cstrptr_t s,const void *s2,
+size_t	bfc_string_find_first_not_of_buffer(bfc_cobjptr_t s,const void *s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_first_not_of_c_str(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_first_not_of_c_str(bfc_cobjptr_t s, const void *s2,
 					size_t pos);
-size_t	bfc_string_find_first_not_of_char(bfc_cstrptr_t s, int c,
+size_t	bfc_string_find_first_not_of_char(bfc_cobjptr_t s, int c,
 					size_t pos);
-size_t	bfc_string_find_first_not_of_range(bfc_cstrptr_t s,
+size_t	bfc_string_find_first_not_of_range(bfc_cobjptr_t s,
 					bfc_citerptr_t pattern,
 					bfc_citerptr_t pattend, size_t pos);
-size_t	bfc_string_find_last_not_of_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str,
+size_t	bfc_string_find_last_not_of_bfstr(bfc_cobjptr_t s, bfc_cobjptr_t str,
 					size_t pos);
-size_t	bfc_string_find_last_not_of_buffer(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_last_not_of_buffer(bfc_cobjptr_t s, const void *s2,
 					size_t pos, size_t n);
-size_t	bfc_string_find_last_not_of_c_str(bfc_cstrptr_t s, const void *s2,
+size_t	bfc_string_find_last_not_of_c_str(bfc_cobjptr_t s, const void *s2,
 					size_t pos);
-size_t	bfc_string_find_last_not_of_char(bfc_cstrptr_t s, int c,
+size_t	bfc_string_find_last_not_of_char(bfc_cobjptr_t s, int c,
 					size_t pos);
-size_t	bfc_string_find_last_not_of_range(bfc_cstrptr_t s,
+size_t	bfc_string_find_last_not_of_range(bfc_cobjptr_t s,
 					bfc_citerptr_t pattern,
 					bfc_citerptr_t pattend, size_t pos);
-int	bfc_string_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_string_shared_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int	bfc_string_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_string_mutable_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int	bfc_string_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_string_buffered_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
-int	bfc_string_compare_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str);
-int	bfc_string_compare_substr(bfc_cstrptr_t s, size_t pos1, size_t n1,
-					bfc_cstrptr_t str);
-int	bfc_string_compare_substrs(bfc_cstrptr_t s, size_t pos1, size_t n1,
-				 bfc_cstrptr_t str, size_t pos2, size_t n2);
-int	bfc_string_compare_c_str(bfc_cstrptr_t s, const void *s2);
-int	bfc_string_compare_substr_c_str(bfc_cstrptr_t s, size_t pos1,
+int	bfc_string_compare_bfstr(bfc_cobjptr_t s, bfc_cobjptr_t str);
+int	bfc_string_compare_substr(bfc_cobjptr_t s, size_t pos1, size_t n1,
+					bfc_cobjptr_t str);
+int	bfc_string_compare_substrs(bfc_cobjptr_t s, size_t pos1, size_t n1,
+				 bfc_cobjptr_t str, size_t pos2, size_t n2);
+int	bfc_string_compare_c_str(bfc_cobjptr_t s, const void *s2);
+int	bfc_string_compare_substr_c_str(bfc_cobjptr_t s, size_t pos1,
 					size_t n1, const void *s2);
-int	bfc_string_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
+int	bfc_string_compare_buffer(bfc_cobjptr_t s, size_t pos1, size_t n1,
 					const void *s2, size_t n2);
 int	bfc_string_compare_ranges(bfc_citerptr_t i1, bfc_citerptr_t i2,
 					bfc_citerptr_t j1, bfc_citerptr_t j2);
 int	bfc_string_compare_next_range(bfc_citerptr_t it, bfc_citerptr_t limit,
 				bfc_citerptr_t pattern, bfc_citerptr_t pattend);
 
-int	bfc_string_decode_html_entities(bfc_strptr_t s);
+int	bfc_string_decode_html_entities(bfc_objptr_t s);
 
 /*
  * Specific functions for char strings
  */
 /* Capacity */
-size_t	bfc_cstring_length(bfc_cstrptr_t s);
-size_t	bfc_cstring_max_size(bfc_cstrptr_t s);
-int	bfc_cstring_resize(bfc_strptr_t s, size_t n, int c);
-size_t	bfc_cstring_capacity(bfc_cstrptr_t s);
-int	bfc_cstring_reserve(bfc_strptr_t s, size_t n);
-size_t	bfc_cstring_charsize(bfc_cstrptr_t s);
+size_t	bfc_cstring_length(bfc_cobjptr_t s);
+size_t	bfc_cstring_max_size(bfc_cobjptr_t s);
+int	bfc_cstring_resize(bfc_objptr_t s, size_t n, int c);
+size_t	bfc_cstring_capacity(bfc_cobjptr_t s);
+int	bfc_cstring_reserve(bfc_objptr_t s, size_t n);
+size_t	bfc_cstring_charsize(bfc_cobjptr_t s);
 
 /* Element access */
-char *bfc_cstring_index(bfc_strptr_t s, size_t pos);
-const char *bfc_cstring_data(bfc_cstrptr_t s);  /* not zero terminated */
+char *bfc_cstring_index(bfc_objptr_t s, size_t pos);
+const char *bfc_cstring_data(bfc_cobjptr_t s);  /* not zero terminated */
 
 /* Modifiers */
-int     bfc_cstring_assign_buffer(bfc_strptr_t s, const char *s2,size_t n);
-int     bfc_cstring_assign_fill(bfc_strptr_t s, size_t n, int c);
-int     bfc_cstring_append_buffer(bfc_strptr_t s, const char *s2, size_t n);
-int     bfc_cstring_append_fill(bfc_strptr_t s, size_t n, int c);
-int	bfc_cstring_push_back(bfc_strptr_t s, int c);
-void    bfc_cstring_pop_back(bfc_strptr_t s);
-int     bfc_cstring_replace_buffer(bfc_strptr_t s, size_t pos,size_t n1,
+int     bfc_cstring_assign_buffer(bfc_objptr_t s, const char *s2,size_t n);
+int     bfc_cstring_assign_fill(bfc_objptr_t s, size_t n, int c);
+int     bfc_cstring_append_buffer(bfc_objptr_t s, const char *s2, size_t n);
+int     bfc_cstring_append_fill(bfc_objptr_t s, size_t n, int c);
+int	bfc_cstring_push_back(bfc_objptr_t s, int c);
+void    bfc_cstring_pop_back(bfc_objptr_t s);
+int     bfc_cstring_replace_buffer(bfc_objptr_t s, size_t pos,size_t n1,
 					const char* s2, size_t n2);
-int     bfc_cstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_cstring_replace_range_buffer(bfc_objptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const char* s2, size_t n);
-int     bfc_cstring_replace_ranges(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_cstring_replace_ranges(bfc_objptr_t s, bfc_iterptr_t i1,
 			bfc_iterptr_t i2, bfc_iterptr_t j1, bfc_iterptr_t j2);
-size_t	bfc_cstring_copy(bfc_cstrptr_t s, char* s2, size_t n, size_t pos);
-void	bfc_cstring_swap(bfc_strptr_t s, bfc_strptr_t str);
+size_t	bfc_cstring_copy(bfc_cobjptr_t s, char* s2, size_t n, size_t pos);
+void	bfc_cstring_swap(bfc_objptr_t s, bfc_objptr_t str);
 
 /* String operations */
-size_t	bfc_cstring_find_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_cstring_find_buffer(bfc_cstrptr_t s, const char* s2,
+size_t	bfc_cstring_find_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_cstring_find_buffer(bfc_cobjptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_cstring_rfind_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_cstring_rfind_buffer(bfc_cstrptr_t s, const char* s2,
+size_t	bfc_cstring_rfind_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_cstring_rfind_buffer(bfc_cobjptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_cstring_find_first_of_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_cstring_find_first_of_buffer(bfc_cstrptr_t s, const char* s2,
+size_t	bfc_cstring_find_first_of_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_cstring_find_first_of_buffer(bfc_cobjptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_cstring_find_last_of_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_cstring_find_last_of_buffer(bfc_cstrptr_t s, const char* s2,
+size_t	bfc_cstring_find_last_of_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_cstring_find_last_of_buffer(bfc_cobjptr_t s, const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_cstring_find_first_not_of_char(bfc_cstrptr_t s, int c,
+size_t	bfc_cstring_find_first_not_of_char(bfc_cobjptr_t s, int c,
 					size_t pos);
-size_t	bfc_cstring_find_first_not_of_buffer(bfc_cstrptr_t s,const char* s2,
+size_t	bfc_cstring_find_first_not_of_buffer(bfc_cobjptr_t s,const char* s2,
 					size_t pos, size_t n);
-size_t	bfc_cstring_find_last_not_of_char(bfc_cstrptr_t s, int c,
+size_t	bfc_cstring_find_last_not_of_char(bfc_cobjptr_t s, int c,
 					size_t pos);
-size_t	bfc_cstring_find_last_not_of_buffer(bfc_cstrptr_t s, const char* s2,
+size_t	bfc_cstring_find_last_not_of_buffer(bfc_cobjptr_t s, const char* s2,
 					size_t pos, size_t n);
-int	bfc_cstring_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_cstring_shared_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int	bfc_cstring_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_cstring_mutable_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int	bfc_cstring_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_cstring_buffered_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
-int	bfc_cstring_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
+int	bfc_cstring_compare_buffer(bfc_cobjptr_t s, size_t pos1, size_t n1,
 					const char* s2, size_t n2);
 
 /*
  * bfc_wstring_t
  */
 /* Constructors */
-int	bfc_init_wstring(void *buf, size_t bufsize, struct mempool *pool);
-int	bfc_init_wstring_copy(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cstrptr_t str);
-int	bfc_init_wstring_move(void *buf, size_t bufsize, bfc_strptr_t str);
-int	bfc_init_wstring_substr(void *buf, size_t bufsize, struct mempool *pool,
-				bfc_cstrptr_t str, size_t pos, size_t n);
-int	bfc_init_wstring_buffer(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_wstring(void *buf, size_t bufsize, bfc_mempool_t pool);
+int	bfc_init_wstring_copy(void *buf, size_t bufsize, bfc_mempool_t pool,
+				bfc_cobjptr_t str);
+int	bfc_init_wstring_move(void *buf, size_t bufsize, bfc_objptr_t str);
+int	bfc_init_wstring_substr(void *buf, size_t bufsize, bfc_mempool_t pool,
+				bfc_cobjptr_t str, size_t pos, size_t n);
+int	bfc_init_wstring_buffer(void *buf, size_t bufsize, bfc_mempool_t pool,
 				const wchar_t* s, size_t n);
-int	bfc_init_wstring_c_str(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_wstring_c_str(void *buf, size_t bufsize, bfc_mempool_t pool,
 				const wchar_t* s);
-int	bfc_init_wstring_fill(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_wstring_fill(void *buf, size_t bufsize, bfc_mempool_t pool,
 				size_t n, int c);
-int	bfc_init_wstring_range(void *buf, size_t bufsize, struct mempool *pool,
+int	bfc_init_wstring_range(void *buf, size_t bufsize, bfc_mempool_t pool,
 				bfc_iterptr_t begin, bfc_iterptr_t end);
-void	bfc_destroy_wstring(bfc_strptr_t obj);
-size_t	bfc_wstring_objsize(bfc_cstrptr_t obj);
+void	bfc_destroy_wstring(bfc_objptr_t obj);
+size_t	bfc_wstring_objsize(bfc_cobjptr_t obj);
 
 /* Capacity */
-size_t	bfc_wstrlen(bfc_cstrptr_t s);
-size_t	bfc_wstring_length(bfc_cstrptr_t s);
-size_t	bfc_wstring_max_size(bfc_cstrptr_t s);
-int	bfc_wstring_resize(bfc_strptr_t s, size_t n, int c);
-size_t	bfc_wstring_capacity(bfc_cstrptr_t s);
-int	bfc_wstring_reserve(bfc_strptr_t s, size_t n);
-size_t	bfc_wstring_sublen(bfc_cstrptr_t s, size_t pos, size_t n);
-size_t	bfc_wstring_charsize(bfc_cstrptr_t s);
+size_t	bfc_wstrlen(bfc_cobjptr_t s);
+size_t	bfc_wstring_length(bfc_cobjptr_t s);
+size_t	bfc_wstring_max_size(bfc_cobjptr_t s);
+int	bfc_wstring_resize(bfc_objptr_t s, size_t n, int c);
+size_t	bfc_wstring_capacity(bfc_cobjptr_t s);
+int	bfc_wstring_reserve(bfc_objptr_t s, size_t n);
+size_t	bfc_wstring_sublen(bfc_cobjptr_t s, size_t pos, size_t n);
+size_t	bfc_wstring_charsize(bfc_cobjptr_t s);
 
 /* Element access */
-wchar_t *bfc_wstring_index(bfc_strptr_t s, size_t pos);
-const wchar_t *bfc_wstring_data(bfc_cstrptr_t s);  /* not zero terminated */
-const wchar_t *bfc_wstrdata(bfc_cstrptr_t s);
-const wchar_t *bfc_wstring_subdata(bfc_cstrptr_t s, size_t pos);
+wchar_t *bfc_wstring_index(bfc_objptr_t s, size_t pos);
+const wchar_t *bfc_wstring_data(bfc_cobjptr_t s);  /* not zero terminated */
+const wchar_t *bfc_wstrdata(bfc_cobjptr_t s);
+const wchar_t *bfc_wstring_subdata(bfc_cobjptr_t s, size_t pos);
 
 /* Modifiers */
-int     bfc_wstring_assign_buffer(bfc_strptr_t s, const wchar_t *s2,size_t n);
-int     bfc_wstring_assign_fill(bfc_strptr_t s, size_t n, int c);
-int     bfc_wstring_append_buffer(bfc_strptr_t s, const wchar_t *s2, size_t n);
-int     bfc_wstring_append_fill(bfc_strptr_t s, size_t n, int c);
-int	bfc_wstring_push_back(bfc_strptr_t s, int c);
-void    bfc_wstring_pop_back(bfc_strptr_t s);
-int     bfc_wstring_replace_buffer(bfc_strptr_t s, size_t pos,size_t n1,
+int     bfc_wstring_assign_buffer(bfc_objptr_t s, const wchar_t *s2,size_t n);
+int     bfc_wstring_assign_fill(bfc_objptr_t s, size_t n, int c);
+int     bfc_wstring_append_buffer(bfc_objptr_t s, const wchar_t *s2, size_t n);
+int     bfc_wstring_append_fill(bfc_objptr_t s, size_t n, int c);
+int	bfc_wstring_push_back(bfc_objptr_t s, int c);
+void    bfc_wstring_pop_back(bfc_objptr_t s);
+int     bfc_wstring_replace_buffer(bfc_objptr_t s, size_t pos,size_t n1,
 					const wchar_t* s2, size_t n2);
-int     bfc_wstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_wstring_replace_range_buffer(bfc_objptr_t s, bfc_iterptr_t i1,
 				bfc_iterptr_t i2, const wchar_t* s2, size_t n);
-int     bfc_wstring_replace_ranges(bfc_strptr_t s, bfc_iterptr_t i1,
+int     bfc_wstring_replace_ranges(bfc_objptr_t s, bfc_iterptr_t i1,
 			bfc_iterptr_t i2, bfc_iterptr_t j1, bfc_iterptr_t j2);
-size_t	bfc_wstring_copy(bfc_cstrptr_t s, wchar_t* s2, size_t n, size_t pos);
-void	bfc_wstring_swap(bfc_strptr_t s, bfc_strptr_t str);
+size_t	bfc_wstring_copy(bfc_cobjptr_t s, wchar_t* s2, size_t n, size_t pos);
+void	bfc_wstring_swap(bfc_objptr_t s, bfc_objptr_t str);
 
 /* String operations */
-size_t	bfc_wstring_find_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_wstring_find_buffer(bfc_cstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_wstring_find_buffer(bfc_cobjptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_rfind_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_wstring_rfind_buffer(bfc_cstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_rfind_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_wstring_rfind_buffer(bfc_cobjptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_first_of_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_wstring_find_first_of_buffer(bfc_cstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_first_of_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_wstring_find_first_of_buffer(bfc_cobjptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_last_of_char(bfc_cstrptr_t s, int c, size_t pos);
-size_t	bfc_wstring_find_last_of_buffer(bfc_cstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_last_of_char(bfc_cobjptr_t s, int c, size_t pos);
+size_t	bfc_wstring_find_last_of_buffer(bfc_cobjptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_first_not_of_char(bfc_cstrptr_t s, int c,
+size_t	bfc_wstring_find_first_not_of_char(bfc_cobjptr_t s, int c,
 					size_t pos);
-size_t	bfc_wstring_find_first_not_of_buffer(bfc_cstrptr_t s,const wchar_t* s2,
+size_t	bfc_wstring_find_first_not_of_buffer(bfc_cobjptr_t s,const wchar_t* s2,
 					size_t pos, size_t n);
-size_t	bfc_wstring_find_last_not_of_char(bfc_cstrptr_t s, int c,
+size_t	bfc_wstring_find_last_not_of_char(bfc_cobjptr_t s, int c,
 					size_t pos);
-size_t	bfc_wstring_find_last_not_of_buffer(bfc_cstrptr_t s, const wchar_t* s2,
+size_t	bfc_wstring_find_last_not_of_buffer(bfc_cobjptr_t s, const wchar_t* s2,
 					size_t pos, size_t n);
-int	bfc_wstring_shared_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_wstring_shared_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int	bfc_wstring_mutable_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_wstring_mutable_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int	bfc_wstring_buffered_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int	bfc_wstring_buffered_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
-int	bfc_wstring_compare_buffer(bfc_cstrptr_t s, size_t pos1, size_t n1,
+int	bfc_wstring_compare_buffer(bfc_cobjptr_t s, size_t pos1, size_t n1,
 					const wchar_t* s2, size_t n2);
 
 /*
  * bfc_basic_string_t
  */
 /* Constructors */
-int	bfc_init_basic_string(void *buf, size_t bufsize, struct mempool *pool);
+int	bfc_init_basic_string(void *buf, size_t bufsize, bfc_mempool_t pool);
 int	bfc_init_basic_string_copy(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_cstrptr_t str);
-int	bfc_init_basic_string_move(void *buf, size_t bufsize, bfc_strptr_t str);
+		bfc_mempool_t pool, bfc_cobjptr_t str);
+int	bfc_init_basic_string_move(void *buf, size_t bufsize, bfc_objptr_t str);
 int	bfc_init_basic_string_substr(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
+		bfc_mempool_t pool, bfc_cobjptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_string_buffer(void *buf, size_t bufsize,
-		struct mempool *pool, const char* s, size_t n);
+		bfc_mempool_t pool, const char* s, size_t n);
 int	bfc_init_basic_string_c_str(void *buf, size_t bufsize,
-		struct mempool *pool, const char* s);
+		bfc_mempool_t pool, const char* s);
 int	bfc_init_basic_string_fill(void *buf, size_t bufsize,
-		struct mempool *pool, size_t n, int c);
+		bfc_mempool_t pool, size_t n, int c);
 int	bfc_init_basic_string_range(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_iterptr_t begin, bfc_iterptr_t end);
-void	bfc_destroy_basic_string(bfc_strptr_t obj);
-size_t	bfc_basic_string_objsize(bfc_cstrptr_t obj);
-bfc_mempool_t bfc_basic_string_pool(bfc_cstrptr_t s);
+		bfc_mempool_t pool, bfc_iterptr_t begin, bfc_iterptr_t end);
+void	bfc_destroy_basic_string(bfc_objptr_t obj);
+size_t	bfc_basic_string_objsize(bfc_cobjptr_t obj);
+bfc_mempool_t bfc_basic_string_pool(bfc_cobjptr_t s);
 
 /* Capacity */
-size_t	bfc_basic_string_length(bfc_cstrptr_t s);
-size_t	bfc_basic_string_max_size(bfc_cstrptr_t s);
-int	bfc_basic_string_resize(bfc_strptr_t s, size_t n, int c);
-size_t	bfc_basic_string_capacity(bfc_cstrptr_t s);
-int	bfc_basic_string_reserve(bfc_strptr_t s, size_t n);
+size_t	bfc_basic_string_length(bfc_cobjptr_t s);
+size_t	bfc_basic_string_max_size(bfc_cobjptr_t s);
+int	bfc_basic_string_resize(bfc_objptr_t s, size_t n, int c);
+size_t	bfc_basic_string_capacity(bfc_cobjptr_t s);
+int	bfc_basic_string_reserve(bfc_objptr_t s, size_t n);
 
 /* Modifiers */
-int     bfc_basic_string_replace_ranges(bfc_strptr_t s,
+int     bfc_basic_string_replace_ranges(bfc_objptr_t s,
 				  bfc_iterptr_t i1, bfc_iterptr_t i2,
 				  bfc_iterptr_t j1, bfc_iterptr_t j2);
 
@@ -535,159 +533,159 @@ int     bfc_basic_string_replace_ranges(bfc_strptr_t s,
  * bfc_basic_wstring_t
  */
 /* Constructors */
-int	bfc_init_basic_wstring(void *buf, size_t bufsize, struct mempool *pool);
+int	bfc_init_basic_wstring(void *buf, size_t bufsize, bfc_mempool_t pool);
 int	bfc_init_basic_wstring_copy(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_cstrptr_t str);
-int	bfc_init_basic_wstring_move(void *buf,size_t bufsize, bfc_strptr_t str);
+		bfc_mempool_t pool, bfc_cobjptr_t str);
+int	bfc_init_basic_wstring_move(void *buf,size_t bufsize, bfc_objptr_t str);
 int	bfc_init_basic_wstring_substr(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_cstrptr_t str, size_t pos, size_t n);
+		bfc_mempool_t pool, bfc_cobjptr_t str, size_t pos, size_t n);
 int	bfc_init_basic_wstring_buffer(void *buf, size_t bufsize,
-		struct mempool *pool, const wchar_t* s, size_t n);
+		bfc_mempool_t pool, const wchar_t* s, size_t n);
 int	bfc_init_basic_wstring_c_str(void *buf, size_t bufsize,
-		struct mempool *pool, const wchar_t* s);
+		bfc_mempool_t pool, const wchar_t* s);
 int	bfc_init_basic_wstring_fill(void *buf, size_t bufsize,
-		struct mempool *pool, size_t n, int c);
+		bfc_mempool_t pool, size_t n, int c);
 int	bfc_init_basic_wstring_range(void *buf, size_t bufsize,
-		struct mempool *pool, bfc_iterptr_t begin, bfc_iterptr_t end);
-void	bfc_destroy_basic_wstring(bfc_strptr_t obj);
-size_t	bfc_basic_wstring_objsize(bfc_cstrptr_t obj);
+		bfc_mempool_t pool, bfc_iterptr_t begin, bfc_iterptr_t end);
+void	bfc_destroy_basic_wstring(bfc_objptr_t obj);
+size_t	bfc_basic_wstring_objsize(bfc_cobjptr_t obj);
 
 /* Capacity */
-size_t	bfc_basic_wstring_length(bfc_cstrptr_t s);
-size_t	bfc_basic_wstring_max_size(bfc_cstrptr_t s);
-int	bfc_basic_wstring_resize(bfc_strptr_t s, size_t n, int c);
-size_t	bfc_basic_wstring_capacity(bfc_cstrptr_t s);
-int	bfc_basic_wstring_reserve(bfc_strptr_t s, size_t n);
+size_t	bfc_basic_wstring_length(bfc_cobjptr_t s);
+size_t	bfc_basic_wstring_max_size(bfc_cobjptr_t s);
+int	bfc_basic_wstring_resize(bfc_objptr_t s, size_t n, int c);
+size_t	bfc_basic_wstring_capacity(bfc_cobjptr_t s);
+int	bfc_basic_wstring_reserve(bfc_objptr_t s, size_t n);
 
 /*
  * bfc_shared_string_t
  */
 /* Constructors */
 int	bfc_init_shared_string_substr(void *buf, size_t bufsize,
-				      bfc_cstrptr_t str, size_t pos, size_t n);
+				      bfc_cobjptr_t str, size_t pos, size_t n);
 int	bfc_init_shared_string_buffer(void *buf, size_t bufsize,
 				      const char* s, size_t n);
 int	bfc_init_shared_string_c_str(void *buf, size_t bufsize, const char* s);
 int	bfc_init_shared_string_range(void *buf, size_t bufsize,
 				      bfc_iterptr_t begin, bfc_iterptr_t end);
-void	bfc_destroy_shared_string(bfc_strptr_t obj);
-size_t	bfc_shared_string_objsize(bfc_cstrptr_t obj);
+void	bfc_destroy_shared_string(bfc_objptr_t obj);
+size_t	bfc_shared_string_objsize(bfc_cobjptr_t obj);
 
 /* Capacity */
-int	bfc_shared_string_resize(bfc_strptr_t s, size_t n, int c);
-size_t	bfc_shared_string_capacity(bfc_cstrptr_t s);
-int	bfc_shared_string_reserve(bfc_strptr_t s, size_t n);
+int	bfc_shared_string_resize(bfc_objptr_t s, size_t n, int c);
+size_t	bfc_shared_string_capacity(bfc_cobjptr_t s);
+int	bfc_shared_string_reserve(bfc_objptr_t s, size_t n);
 
 /*
  * bfc_shared_wstring_t
  */
 /* Constructors */
 int	bfc_init_shared_wstring_substr(void *buf, size_t bufsize,
-				      bfc_cstrptr_t str, size_t pos, size_t n);
+				      bfc_cobjptr_t str, size_t pos, size_t n);
 int	bfc_init_shared_wstring_buffer(void *buf, size_t bufsize,
 				      const wchar_t* s, size_t n);
 int	bfc_init_shared_wstring_c_str(void *buf, size_t bufsize,
 				      const wchar_t* s);
 int	bfc_init_shared_wstring_range(void *buf, size_t bufsize,
 				      bfc_iterptr_t begin, bfc_iterptr_t end);
-void	bfc_destroy_shared_wstring(bfc_strptr_t obj);
-size_t	bfc_shared_wstring_objsize(bfc_cstrptr_t obj);
+void	bfc_destroy_shared_wstring(bfc_objptr_t obj);
+size_t	bfc_shared_wstring_objsize(bfc_cobjptr_t obj);
 
 /* Capacity */
-int	bfc_shared_wstring_resize(bfc_strptr_t s, size_t n, int c);
-size_t	bfc_shared_wstring_capacity(bfc_cstrptr_t s);
-int	bfc_shared_wstring_reserve(bfc_strptr_t s, size_t n);
+int	bfc_shared_wstring_resize(bfc_objptr_t s, size_t n, int c);
+size_t	bfc_shared_wstring_capacity(bfc_cobjptr_t s);
+int	bfc_shared_wstring_reserve(bfc_objptr_t s, size_t n);
 
 /*
  * bfc_shared_iso8859_string_t
  */
 int bfc_init_empty_iso8859_1_string(void *buf,size_t bufsize,
-					struct mempool* pool);
+					bfc_mempool_t  pool);
 int bfc_init_basic_iso8859_1_string(void *buf, size_t bufsize,
-			struct mempool *pool, const wchar_t* s, size_t n);
+			bfc_mempool_t pool, const wchar_t* s, size_t n);
 int bfc_init_shared_iso8859_1_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
 int bfc_init_shared_iso8859_1_string_c_str(void *buf, size_t bufsize,
 					const char *s);
 int bfc_init_buffered_iso8859_1_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
-int bfc_shared_iso8859_1_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_shared_iso8859_1_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_mutable_iso8859_1_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_mutable_iso8859_1_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_buffered_iso8859_1_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_buffered_iso8859_1_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
 
 int bfc_init_empty_iso8859_2_string(void *buf,size_t bufsize,
-					struct mempool* pool);
+					bfc_mempool_t  pool);
 int bfc_init_basic_iso8859_2_string(void *buf, size_t bufsize,
-			struct mempool *pool, const wchar_t* s, size_t n);
+			bfc_mempool_t pool, const wchar_t* s, size_t n);
 int bfc_init_shared_iso8859_2_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
 int bfc_init_shared_iso8859_2_string_c_str(void *buf, size_t bufsize,
 					const char *s);
 int bfc_init_buffered_iso8859_2_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
-int bfc_shared_iso8859_2_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_shared_iso8859_2_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_mutable_iso8859_2_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_mutable_iso8859_2_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_buffered_iso8859_2_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_buffered_iso8859_2_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
 
 int bfc_init_empty_iso8859_15_string(void *buf,size_t bufsize,
-					struct mempool* pool);
+					bfc_mempool_t  pool);
 int bfc_init_basic_iso8859_15_string(void *buf, size_t bufsize,
-			struct mempool *pool, const wchar_t* s, size_t n);
+			bfc_mempool_t pool, const wchar_t* s, size_t n);
 int bfc_init_shared_iso8859_15_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
 int bfc_init_shared_iso8859_15_string_c_str(void *buf, size_t bufsize,
 					const char *s);
 int bfc_init_buffered_iso8859_15_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
-int bfc_shared_iso8859_15_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_shared_iso8859_15_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_mutable_iso8859_15_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_mutable_iso8859_15_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_buffered_iso8859_15_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_buffered_iso8859_15_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
 
 int bfc_init_empty_cp1250_string(void *buf,size_t bufsize,
-					struct mempool* pool);
+					bfc_mempool_t  pool);
 int bfc_init_basic_cp1250_string(void *buf, size_t bufsize,
-			struct mempool *pool, const wchar_t* s, size_t n);
+			bfc_mempool_t pool, const wchar_t* s, size_t n);
 int bfc_init_shared_cp1250_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
 int bfc_init_shared_cp1250_string_c_str(void *buf, size_t bufsize,
 					const char *s);
 int bfc_init_buffered_cp1250_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
-int bfc_shared_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_shared_cp1250_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_mutable_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_mutable_cp1250_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_buffered_cp1250_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_buffered_cp1250_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
 
 int bfc_init_empty_cp1252_string(void *buf,size_t bufsize,
-					struct mempool* pool);
+					bfc_mempool_t  pool);
 int bfc_init_basic_cp1252_string(void *buf, size_t bufsize,
-			struct mempool *pool, const wchar_t* s, size_t n);
+			bfc_mempool_t pool, const wchar_t* s, size_t n);
 int bfc_init_shared_cp1252_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
 int bfc_init_shared_cp1252_string_c_str(void *buf, size_t bufsize,
 					const char *s);
 int bfc_init_buffered_cp1252_string(void *buf, size_t bufsize,
 					const char *s, size_t n);
-int bfc_shared_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_shared_cp1252_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_mutable_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_mutable_cp1252_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize);
-int bfc_buffered_cp1252_substr(bfc_cstrptr_t s, size_t pos, size_t n,
+int bfc_buffered_cp1252_substr(bfc_cobjptr_t s, size_t pos, size_t n,
 					void *buf, size_t bufsize,
 					void *databuf, size_t dbufsize);
 

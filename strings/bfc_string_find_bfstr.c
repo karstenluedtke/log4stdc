@@ -13,7 +13,7 @@
  * @brief    bfc_string_find_bfstr
  */
 size_t
-bfc_string_find_bfstr(bfc_cstrptr_t s, bfc_cstrptr_t str, size_t pos)
+bfc_string_find_bfstr(bfc_cobjptr_t s, bfc_cobjptr_t str, size_t pos)
 {
 	if (STRING_TRAITS(s) == STRING_TRAITS(str)) {
 		const char *pattern = bfc_strdata(str);

@@ -12,7 +12,7 @@
 int
 bfc_node_append(bfc_objptr_t node, const char *chldtypes, ...)
 {
-	struct mempool *pool = ((bfc_nodeptr_t)node)->vec.pool;
+	struct mempool *pool = bfc_container_pool(node);
 	const char *cp, *currtype;
 	bfc_objptr_t obj;
 	bfc_strptr_t s;

@@ -517,7 +517,7 @@ int	bfc_init_basic_string_range(void *buf, size_t bufsize,
 		struct mempool *pool, bfc_iterptr_t begin, bfc_iterptr_t end);
 void	bfc_destroy_basic_string(bfc_strptr_t obj);
 size_t	bfc_basic_string_objsize(bfc_cstrptr_t obj);
-struct mempool *bfc_basic_string_pool(bfc_cstrptr_t s);
+bfc_mempool_t bfc_basic_string_pool(bfc_cstrptr_t s);
 
 /* Capacity */
 size_t	bfc_basic_string_length(bfc_cstrptr_t s);

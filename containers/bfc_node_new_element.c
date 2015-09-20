@@ -11,12 +11,10 @@
 #include "barefootc/unconst.h"
 
 static int
-init_node(bfc_nodeptr_t node, size_t space, bfc_cnodeptr_t ancestor)
+init_node(bfc_nodeptr_t node, size_t space,
+	  bfc_cobjptr_t ancestor, bfc_mempool_t pool)
 {
-	bfc_cobjptr_t obj = (bfc_cobjptr_t) ancestor;
-	struct mempool *pool = ancestor->vec.pool;
-
-	RETURN_METHCALL(bfc_classptr_t, obj,
+	RETURN_METHCALL(bfc_classptr_t, ancestor,
 			init, (node, space, pool), 0);
 }
 
@@ -25,7 +23,7 @@ bfc_node_new_element(bfc_cobjptr_t ancestor, const char *chldtypes, ...)
 {
 	bfc_nodeptr_t node;
 	size_t space = bfc_object_size(ancestor);
-	struct mempool *pool = ((bfc_cnodeptr_t)ancestor)->vec.pool;
+	struct mempool *pool = bfc_container_pool(ancestor);
 	const char *cp, *currtype;
 	bfc_objptr_t obj;
 	bfc_strptr_t s;
@@ -35,7 +33,7 @@ bfc_node_new_element(bfc_cobjptr_t ancestor, const char *chldtypes, ...)
 		return (NULL);
 	}
 
-	init_node(node, sizeof(*node), (bfc_cnodeptr_t) ancestor);
+	init_node(node, sizeof(*node), ancestor, pool);
 
 	va_start(ap, chldtypes);
 	for (currtype = chldtypes; currtype && *currtype; currtype++) {

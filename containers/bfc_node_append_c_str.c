@@ -21,7 +21,7 @@ int
 bfc_node_append_c_str(bfc_objptr_t node, const char *cp)
 {
 	bfc_strptr_t str;
-	struct mempool *pool = ((bfc_nodeptr_t)node)->vec.pool;
+	struct mempool *pool = bfc_container_pool(node);
 	int rc = BFC_SUCCESS;
 
 	if ((str = bfc_mempool_alloc(pool, sizeof(*str))) != NULL) {

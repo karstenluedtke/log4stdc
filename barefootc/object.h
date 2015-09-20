@@ -37,16 +37,18 @@ struct bfc_mutex;
 struct bfc_iterator;
 struct l4sc_logger;
 
+typedef struct mempool *bfc_mempool_t;
+
 #define BFC_OBJHDR(classptrT,objptrT) \
 	classptrT	vptr;		/**< virtual methods	*/	\
 	const char *	name;		/**< object name	*/	\
 	volatile int	refc;		/**< reference count	*/	\
 	struct bfc_mutex *lock;		/**< for locking the object */	\
-	struct mempool *parent_pool;	/**< for freeing the object */
+	bfc_mempool_t	parent_pool;	/**< for freeing the object */
 
 #define BFC_CONTAINER_HDR(classptrT,objptrT) \
 	BFC_OBJHDR(classptrT,objptrT) \
-	struct mempool *pool;		/**< for allocating children */
+	bfc_mempool_t	pool;		/**< for allocating children */
 
 struct bfc_objhdr {
 	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
@@ -61,19 +63,19 @@ struct bfc_basic_object {
 
 #define BFC_STATIC_OBJHDR_INITIALIZERS(cls,name) \
 	(bfc_classptr_t) &cls, name, 30000,      \
-	(struct bfc_mutex *)0, (struct mempool *)0
+	(struct bfc_mutex *)0, (bfc_mempool_t)0
 
 #define BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,elemT) \
 	classptrT	super;	  /**< possible super class */		     \
 	const char *	name;	  /**< class name */			     \
 	void *		spare2;						     \
 	void *		spare3;						     \
-	int	      (*init)     (void *, size_t, struct mempool *);	     \
+	int	      (*init)     (void *, size_t, bfc_mempool_t);	     \
 	int	      (*initrefc) (objptrT, int);			     \
 	int	      (*incrrefc) (objptrT);				     \
 	int	      (*decrrefc) (objptrT);				     \
 	void	      (*destroy)  (objptrT);				     \
-	int	      (*clone)    (cobjptrT, void*, size_t, struct mempool*);\
+	int	      (*clone)    (cobjptrT, void*, size_t, bfc_mempool_t);  \
 	size_t	      (*clonesize)(cobjptrT);				     \
 	unsigned      (*hashcode) (cobjptrT, int);			     \
 	int	      (*equals)   (cobjptrT, cobjptrT);			     \
@@ -84,7 +86,7 @@ struct bfc_basic_object {
 	elemT *	      (*index)    (objptrT, size_t);			     \
 	long	      (*getl)     (cobjptrT, size_t);			     \
 	int	      (*setl)     (objptrT, size_t, long);		     \
-	elemT *	      (*place)    (objptrT, size_t, elemT*, struct mempool*);\
+	elemT *	      (*place)    (objptrT, size_t, elemT*, bfc_mempool_t);  \
 	int	      (*ibegin)   (cobjptrT, struct bfc_iterator *, size_t); \
 	int	      (*ilimit)   (cobjptrT, struct bfc_iterator *, size_t); \
 	int	      (*rbegin)   (cobjptrT, struct bfc_iterator *, size_t); \
@@ -93,7 +95,7 @@ struct bfc_basic_object {
 	size_t	      (*element_size)(cobjptrT c);			     \
 	size_t	      (*capacity) (cobjptrT c);				     \
 	int	      (*reserve)  (objptrT c, size_t n);		     \
-	void *		spare29;					     \
+	bfc_mempool_t (*getpool)  (cobjptrT c);				     \
 	void *		spare30;					     \
 	void *		spare31;
 
@@ -223,10 +225,10 @@ struct bfc_classhdr {
 	}
 
 
-int  bfc_new(bfc_objptr_t *, bfc_classptr_t, struct mempool *);
-int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
-int  bfc_clone_object(bfc_cobjptr_t, void *, size_t, struct mempool *);
-int  bfc_clone_new(bfc_cobjptr_t, bfc_objptr_t *, struct mempool *);
+int  bfc_new(bfc_objptr_t *, bfc_classptr_t, bfc_mempool_t);
+int  bfc_init_object(bfc_classptr_t, void *, size_t, bfc_mempool_t);
+int  bfc_clone_object(bfc_cobjptr_t, void *, size_t, bfc_mempool_t);
+int  bfc_clone_new(bfc_cobjptr_t, bfc_objptr_t *, bfc_mempool_t	);
 int  bfc_swap_objects(bfc_objptr_t, bfc_objptr_t);
 int  bfc_init_refcount(bfc_objptr_t, int);
 int  bfc_incr_refcount(bfc_objptr_t);
@@ -249,23 +251,25 @@ void bfc_object_dump(bfc_cobjptr_t, int, struct l4sc_logger *);
 #define bfc_object_getlong(_o)		bfc_container_getlong(_o,0)
 #define bfc_object_setlong(_o,_v)	bfc_container_setlong(_o,0,_v)
 
+bfc_mempool_t bfc_container_pool(bfc_cobjptr_t);
+
 const void *bfc_container_first(bfc_cobjptr_t);
 const void *bfc_container_cindex(bfc_cobjptr_t, size_t);
 void *bfc_container_index(bfc_objptr_t, size_t);
 long bfc_container_getlong(bfc_cobjptr_t, size_t);
 int  bfc_container_setlong(bfc_objptr_t, size_t, long);
-bfc_objptr_t bfc_container_place(bfc_objptr_t, size_t, bfc_objptr_t, struct mempool *);
+bfc_objptr_t bfc_container_place(bfc_objptr_t, size_t, bfc_objptr_t, bfc_mempool_t);
 int  bfc_container_begin_iterator(bfc_cobjptr_t, struct bfc_iterator *, size_t);
 int  bfc_container_end_iterator(bfc_cobjptr_t, struct bfc_iterator *, size_t);
 
 size_t bfc_get_base_object_size(bfc_cobjptr_t);
 
-int  bfc_default_init_object(void *, size_t, struct mempool *);
+int  bfc_default_init_object(void *, size_t, bfc_mempool_t);
 int  bfc_default_init_refcount(bfc_objptr_t, int);
 int  bfc_default_incr_refcount(bfc_objptr_t);
 int  bfc_default_decr_refcount(bfc_objptr_t);
 int  bfc_default_move_object(bfc_objptr_t, void *, size_t);
-int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t, struct mempool *);
+int  bfc_default_clone_object(bfc_cobjptr_t, void *, size_t, bfc_mempool_t);
 void bfc_default_destroy_object(bfc_objptr_t);
 
 unsigned bfc_default_get_object_hashcode(bfc_cobjptr_t, int);

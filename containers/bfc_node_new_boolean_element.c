@@ -9,7 +9,7 @@
 bfc_objptr_t
 bfc_node_new_boolean_element(bfc_cobjptr_t ancestor, const char *name, int val)
 {
-	struct mempool *pool = ((bfc_cnodeptr_t)ancestor)->vec.pool;
+	struct mempool *pool = bfc_container_pool(ancestor);
 	bfc_objptr_t number = NULL;
 	bfc_objptr_t node = NULL;
 

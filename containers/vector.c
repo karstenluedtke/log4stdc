@@ -56,6 +56,7 @@ static size_t vector_max_size(bfc_ccontptr_t vec);
 static int vector_resize(bfc_contptr_t vec, size_t n, const void *p);
 static size_t vector_capacity(bfc_ccontptr_t vec);
 static int vector_reserve(bfc_contptr_t vec, size_t n);
+static bfc_mempool_t vector_pool(bfc_ccontptr_t vec);
 
 static int vector_assign_fill(bfc_contptr_t vec, size_t n, const void *p);
 static int vector_assign_range(bfc_contptr_t vec,
@@ -109,6 +110,7 @@ const struct bfc_vector_class bfc_vector_class = {
 	.capacity	= vector_capacity,
 	.reserve	= vector_reserve,
 	.element_size	= vector_element_size,
+	.getpool	= vector_pool,
 	/* Modifiers */
 	.resize		= vector_resize,
 	.assign_fill	= vector_assign_fill,
@@ -695,6 +697,14 @@ vector_reserve(bfc_contptr_t cntr, size_t n)
 		rc = -EBUSY;
 	}
 	return (rc);
+}
+
+static bfc_mempool_t
+vector_pool(bfc_ccontptr_t cntr)
+{
+	basic_cvecptr_t vec = (basic_cvecptr_t) cntr;
+
+	return (vec->pool);
 }
 
 /* Modifiers */

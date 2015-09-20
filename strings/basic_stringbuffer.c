@@ -89,7 +89,7 @@ bfc_free_stringbuf(void *charbuf)
 
 #define GET_STRBUF(s)		((s)->name)
 
-struct mempool *
+bfc_mempool_t
 bfc_basic_string_pool(bfc_cstrptr_t s)
 {
 	struct mempool *pool;

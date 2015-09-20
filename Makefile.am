@@ -241,6 +241,7 @@ libbarefootc_a_SOURCES+= containers/bfc_container_max_size.c
 libbarefootc_a_SOURCES+= containers/bfc_container_capacity.c
 libbarefootc_a_SOURCES+= containers/bfc_container_reserve.c
 libbarefootc_a_SOURCES+= containers/bfc_container_resize.c
+libbarefootc_a_SOURCES+= containers/bfc_container_get_pool.c
 libbarefootc_a_SOURCES+= containers/bfc_container_element_size.c
 libbarefootc_a_SOURCES+= containers/bfc_container_assign_copy.c
 libbarefootc_a_SOURCES+= containers/bfc_container_assign_fill.c

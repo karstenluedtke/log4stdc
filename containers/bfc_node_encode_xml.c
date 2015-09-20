@@ -225,7 +225,7 @@ tostring_with_entities(bfc_cobjptr_t node,
 		L4SC_DEBUG(logger, "%s: with entities in %s, rc = %d",
 						__FUNCTION__, tmp, rc);
 
-	} else if (((pool = ((bfc_cnodeptr_t)node)->vec.pool) != NULL)
+	} else if (((pool = bfc_container_pool(node)) != NULL)
 	        && ((tmp = bfc_mempool_alloc(pool, rc)) != NULL)) {
 		if (specials_in_buf) {
 			memcpy(tmp, buf, rc);

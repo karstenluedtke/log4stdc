@@ -33,6 +33,7 @@ static int treenode_equals(bfc_ccontptr_t cont, bfc_ccontptr_t other);
 static unsigned treenode_hashcode(bfc_ccontptr_t cont, int hashlen);
 static int treenode_tostring(bfc_ccontptr_t cont,
 			     char *buf, size_t bufsize, const char *fmt);
+static bfc_mempool_t treenode_pool(bfc_ccontptr_t cntr);
 
 struct bfc_treenode_class {
 	BFC_CONTAINER_CLASS_DEF(const struct bfc_treenode_class *,
@@ -52,6 +53,7 @@ const struct bfc_container_class bfc_treenode_class = {
 	.equals 	= treenode_equals,
 	.tostring 	= treenode_tostring,
 	//.dump	 	= dump_node,
+	.getpool 	= treenode_pool,
 };
 
 int
@@ -74,6 +76,14 @@ bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool)
 	return (rc);
 }
 
+static bfc_mempool_t
+treenode_pool(bfc_ccontptr_t cntr)
+{
+	bfc_nodeptr_t node = (bfc_nodeptr_t) cntr;
+
+	return (node->vec.pool);
+}
+
 int
 bfc_node_set_name(bfc_objptr_t treenode, bfc_cstrptr_t name)
 {
@@ -81,7 +91,7 @@ bfc_node_set_name(bfc_objptr_t treenode, bfc_cstrptr_t name)
 	size_t colon;
 	bfc_nodeptr_t node = (bfc_nodeptr_t) treenode;
 	bfc_strptr_t str = &node->tagname;
-	struct mempool *pool = node->vec.pool;
+	struct mempool *pool = bfc_container_pool(treenode);
 	bfc_iterator_t it;
 
 	rc = bfc_init_basic_string_copy(str, sizeof(node->tagname), pool, name);
@@ -100,7 +110,7 @@ int
 bfc_node_new_attribute_map(bfc_objptr_t node, bfc_contptr_t *attrpp)
 {
 	int rc = -ENOMEM;
-	struct mempool *pool = ((bfc_cnodeptr_t)node)->vec.pool;
+	struct mempool *pool = bfc_container_pool(node);
 	const size_t size = 500;
 	bfc_linear_string_map_t *map = bfc_mempool_calloc(pool, 1, size);
 	extern const bfc_class_t bfc_string_pair_class;

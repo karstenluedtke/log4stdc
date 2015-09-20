@@ -6,11 +6,11 @@
 #include "barefootc/iterator.h"
 
 int
-bfc_container_end_iterator(const void *obj,
+bfc_container_end_iterator(bfc_cobjptr_t cont,
 			   struct bfc_iterator *it, size_t bufsize)
 {
-	bfc_cobjptr_t o = (bfc_cobjptr_t) obj;
-
-	RETURN_METHCALL(bfc_classptr_t, o, ilimit, (o, it, bufsize), -ENOSYS);
+	RETURN_METHCALL(bfc_classptr_t, cont,
+			ilimit, (cont, it, bufsize),
+			-ENOSYS);
 }
 

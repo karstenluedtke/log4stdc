@@ -4,11 +4,11 @@
 #include "barefootc/object.h"
 
 int
-bfc_instance_of_class(const void *obj, bfc_classptr_t refclass)
+bfc_instance_of_class(bfc_cobjptr_t obj, bfc_classptr_t refclass)
 {
 	bfc_classptr_t cls;
 
-	if (obj && ((cls = BFC_CLASS((bfc_cobjptr_t) obj)) != NULL)) {
+	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
 		do {
 			if (cls == refclass) {
 				return (1);
@@ -19,17 +19,17 @@ bfc_instance_of_class(const void *obj, bfc_classptr_t refclass)
 }
 
 int
-bfc_instance_of_classname(const void *obj, const char *classname)
+bfc_instance_of_classname(bfc_cobjptr_t obj, const char *classname)
 {
 	return (bfc_baseclass_by_name(obj, classname) != NULL);
 }
 
 bfc_classptr_t
-bfc_baseclass_by_name(const void *obj, const char *classname)
+bfc_baseclass_by_name(bfc_cobjptr_t obj, const char *classname)
 {
 	bfc_classptr_t cls;
 
-	if (obj && ((cls = BFC_CLASS((bfc_cobjptr_t) obj)) != NULL)) {
+	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
 		do {
 			if (cls->name && (strcmp(cls->name, classname) == 0)) {
 				return (cls);

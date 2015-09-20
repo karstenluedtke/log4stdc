@@ -67,7 +67,7 @@ bfc_init_map_class(void *buf, size_t bufsize, int estimate,
 				"%s(%p, %ld, estimate %d, pair %p, pool %p):"
 				  " too many entries", __FUNCTION__,
 				vec, (long)bufsize, estimate, pairclass, pool);
-			bfc_destroy(vec);
+			bfc_destroy((bfc_objptr_t)vec);
 			return(-EINVAL);
 		}
 	}
@@ -130,7 +130,7 @@ begin_iterator(bfc_ccontptr_t map, bfc_iterptr_t it, size_t bufsize)
 	}
 	L4SC_DEBUG(logger, "%s(map %p, it %p, bufsize %ld): %d",
 		__FUNCTION__, map, it, (long) bufsize, rc);
-	bfc_object_dump(it, 2, logger);
+	bfc_iterator_dump(it, 2, logger);
 	return (rc);
 }
 
@@ -146,8 +146,9 @@ bfc_map_size(bfc_ccontptr_t map)
 	bfc_iterator_t it, limit;
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
-		bfc_container_begin_iterator(vec, &it, sizeof(it));
-		bfc_container_end_iterator(vec, &limit, sizeof(limit));
+		bfc_container_begin_iterator((bfc_cobjptr_t)vec,&it,sizeof(it));
+		bfc_container_end_iterator((bfc_cobjptr_t)vec,
+							&limit, sizeof(limit));
 		while ((dist = bfc_iterator_distance(&it, &limit)) > 0) {
 			obj = bfc_iterator_index(&it);
 			if (obj && BFC_CLASS(obj)) {
@@ -573,14 +574,15 @@ bfc_map_count(bfc_contptr_t map, bfc_cobjptr_t key)
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		L4SC_TRACE(logger, "%s: locked", __FUNCTION__);
-		bfc_container_begin_iterator(vec, &it, sizeof(it));
+		bfc_container_begin_iterator((bfc_objptr_t)vec,&it,sizeof(it));
 		L4SC_TRACE(logger, "%s: begin iter", __FUNCTION__);
-		bfc_object_dump(&it, 1, logger);
-		bfc_container_end_iterator(vec, &limit, sizeof(limit));
+		bfc_iterator_dump(&it, 1, logger);
+		bfc_container_end_iterator((bfc_objptr_t)vec,
+							&limit, sizeof(limit));
 		L4SC_TRACE(logger, "%s: end iter", __FUNCTION__);
-		bfc_object_dump(&limit, 1, logger);
+		bfc_iterator_dump(&limit, 1, logger);
 		while (bfc_iterator_distance(&it, &limit) > 0) {
-			bfc_object_dump(&it, 1, logger);
+			bfc_iterator_dump(&it, 1, logger);
 			pair = (bfc_contptr_t) bfc_iterator_index(&it);
 			if (pair && (BFC_CLASS((bfc_cobjptr_t)pair) != NULL)
 			    && (bfc_object_dump(pair, 2, logger), 1)
@@ -726,7 +728,7 @@ bfc_map_rehash(bfc_contptr_t map, size_t n)
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 	bfc_iterator_t it, limit;
 
-	clonesize = bfc_object_size(vec);
+	clonesize = bfc_object_size((bfc_cobjptr_t)vec);
 	L4SC_INFO(logger, "%s(%p, %ld): clonesize %ld",
 		__FUNCTION__, map, (long) n, (long) clonesize);
 
@@ -741,16 +743,18 @@ bfc_map_rehash(bfc_contptr_t map, size_t n)
 			while (n > (size_t) CV2_ELEMENTS(vec)) {
 				vec->log2_double_indirect++;
 			}
-			bfc_container_begin_iterator(tmp, &it, sizeof(it));
+			bfc_container_begin_iterator((bfc_objptr_t)tmp,
+							&it, sizeof(it));
 			L4SC_TRACE(logger, "%s: begin iter", __FUNCTION__);
-			bfc_object_dump(&it, 1, logger);
-			bfc_container_end_iterator(tmp, &limit, sizeof(limit));
+			bfc_iterator_dump(&it, 1, logger);
+			bfc_container_end_iterator((bfc_objptr_t)tmp,
+							&limit, sizeof(limit));
 			L4SC_TRACE(logger, "%s: end iter", __FUNCTION__);
-			bfc_object_dump(&limit, 1, logger);
+			bfc_iterator_dump(&limit, 1, logger);
 			while (bfc_iterator_distance(&it, &limit) > 0) {
 				bfc_objptr_t sp;
 				bfc_cobjptr_t key;
-				bfc_object_dump(&it, 1, logger);
+				bfc_iterator_dump(&it, 1, logger);
 				sp = (bfc_objptr_t) bfc_iterator_index(&it);
 				if (sp && (BFC_CLASS(sp) != NULL)
 				 && ((key = bfc_container_first(sp)) != NULL)) {
@@ -783,7 +787,7 @@ bfc_map_rehash(bfc_contptr_t map, size_t n)
 		L4SC_ERROR(logger, "%s(%p) cannot lock", __FUNCTION__, map);
 		rc = -EBUSY;
 	}
-	bfc_destroy(tmp);
+	bfc_destroy((bfc_objptr_t) tmp);
 	return (rc);
 }
 
@@ -799,14 +803,14 @@ map_insert_range(bfc_contptr_t map, bfc_iterptr_t ignored_position,
 	bfc_iterator_t it = *first;
 
 	L4SC_TRACE(logger, "%s: begin iter", __FUNCTION__);
-	bfc_object_dump(&it, 1, logger);
+	bfc_iterator_dump(&it, 1, logger);
 
 	L4SC_TRACE(logger, "%s: end iter", __FUNCTION__);
-	bfc_object_dump(last, 1, logger);
+	bfc_iterator_dump(last, 1, logger);
 
 	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
 		while (bfc_iterator_distance(&it, last) > 0) {
-			bfc_object_dump(&it, 1, logger);
+			bfc_iterator_dump(&it, 1, logger);
 			sp = (bfc_objptr_t) bfc_iterator_index(&it);
 			bfc_iterator_advance(&it, 1);
 			if (sp && (BFC_CLASS(sp) != NULL)

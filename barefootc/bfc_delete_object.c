@@ -5,17 +5,16 @@
 #include "barefootc/mempool.h"
 
 void
-bfc_delete(void *obj)
+bfc_delete(bfc_objptr_t obj)
 {
-	bfc_objptr_t o = (bfc_objptr_t) obj;
 	struct mempool *pool;
 
-	if (o && BFC_CLASS(o)) {
-		pool = o->parent_pool;
-		bfc_destroy(o);
+	if (obj && BFC_CLASS(obj)) {
+		pool = obj->parent_pool;
+		bfc_destroy(obj);
 		if (pool) {
-			o->parent_pool = NULL;
-			mempool_free(pool, o);
+			obj->parent_pool = NULL;
+			mempool_free(pool, obj);
 		}
 	}
 }

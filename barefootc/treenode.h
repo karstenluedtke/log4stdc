@@ -41,32 +41,32 @@ struct bfc_treenode {
 /** @} */
 
 int bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool);
-int bfc_node_set_name(bfc_nodeptr_t node, bfc_cstrptr_t name);
+int bfc_node_set_name(bfc_objptr_t node, bfc_cstrptr_t name);
 
-bfc_nodeptr_t bfc_node_new_element(bfc_cnodeptr_t ancestor,
+bfc_objptr_t bfc_node_new_element(bfc_cobjptr_t ancestor,
 				   const char *chldtypes, ...);
-bfc_nodeptr_t bfc_node_new_integer_element(bfc_cnodeptr_t ancestor,
+bfc_objptr_t bfc_node_new_integer_element(bfc_cobjptr_t ancestor,
 				   const char *name, long val);
-bfc_nodeptr_t bfc_node_new_boolean_element(bfc_cnodeptr_t ancestor,
+bfc_objptr_t bfc_node_new_boolean_element(bfc_cobjptr_t ancestor,
 				   const char *name, int val);
 
-int bfc_node_set_xml_attribute(bfc_nodeptr_t node,
+int bfc_node_set_xml_attribute(bfc_objptr_t node,
 			       bfc_cstrptr_t name, bfc_cstrptr_t val);
-bfc_cstrptr_t bfc_node_get_attribute_string(bfc_nodeptr_t node,
+bfc_cstrptr_t bfc_node_get_attribute_string(bfc_cobjptr_t node,
 					    bfc_cstrptr_t name);
-int bfc_node_new_attribute_map(bfc_node_t *node, bfc_contptr_t *attrpp);
+int bfc_node_new_attribute_map(bfc_objptr_t, bfc_contptr_t *attrpp);
 
-int bfc_node_append(bfc_nodeptr_t node, const char *chldtypes, ...);
-int bfc_node_append_child(bfc_nodeptr_t node, bfc_nodeptr_t child);
-int bfc_node_append_text (bfc_nodeptr_t node, bfc_cstrptr_t text);
-int bfc_node_append_c_str(bfc_nodeptr_t node, const char *cp);
+int bfc_node_append(bfc_objptr_t node, const char *chldtypes, ...);
+int bfc_node_append_child(bfc_objptr_t node, bfc_objptr_t child);
+int bfc_node_append_text (bfc_objptr_t node, bfc_cstrptr_t text);
+int bfc_node_append_c_str(bfc_objptr_t node, const char *cp);
 
-int bfc_node_encode_xml(bfc_cnodeptr_t node,
+int bfc_node_encode_xml(bfc_cobjptr_t node,
 			char *buf, size_t bufsize, int level);
-int bfc_node_decode_xml(bfc_nodeptr_t node, bfc_cstrptr_t s, size_t offs);
+int bfc_node_decode_xml(bfc_objptr_t node, bfc_cstrptr_t s, size_t offs);
 
 struct bfc_node_xml_parse_state;
-int bfc_node_parse_xmltags(bfc_nodeptr_t rootnode, bfc_cstrptr_t s,
+int bfc_node_parse_xmltags(bfc_objptr_t rootnode, bfc_cstrptr_t s,
 			   struct bfc_node_xml_parse_state *st);
 
 

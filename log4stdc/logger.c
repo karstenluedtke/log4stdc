@@ -394,7 +394,7 @@ l4sc_get_logger(const char *name, int namelen)
 	LOGINFO(("%s: logger %.*s not found, creating ...",
 				__FUNCTION__, nlen, name));
 	logger = NULL;
-	rc = bfc_new((void **) &logger, (bfc_classptr_t)&loggercls, pool);
+	rc = bfc_new((bfc_objptr_t *)&logger, (bfc_classptr_t)&loggercls, pool);
 	if ((rc >= 0) && logger) {
 		CMETHCALL(&loggercls, set_name, (logger, name, nlen), (void)0);
 		LOGINFO(("%s: created %s (class %s).",

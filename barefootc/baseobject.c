@@ -7,6 +7,7 @@
 
 #include "barefootc/object.h"
 #include "barefootc/atomic.h"
+#include "barefootc/synchronization.h"
 #include "log4stdc.h"
 
 #if defined(_MSC_VER)
@@ -129,7 +130,7 @@ bfc_default_clone_object(bfc_cobjptr_t obj,
 	if (size >= sizeof(struct bfc_objhdr)) {
 		object->parent_pool = pool;
 		if (object->lock && BFC_CLASS((bfc_objptr_t)object->lock)) {
-			bfc_incr_refcount(object->lock);
+			bfc_mutex_incr_refcount(object->lock);
 		}
 	}
 	bfc_init_refcount(object, 1);

@@ -12,7 +12,7 @@
 #include "log4stdc.h"
 
 int
-bfc_node_set_xml_attribute(bfc_nodeptr_t node,
+bfc_node_set_xml_attribute(bfc_objptr_t node,
 			   bfc_cstrptr_t name, bfc_cstrptr_t val)
 {
 	bfc_contptr_t map;
@@ -22,11 +22,11 @@ bfc_node_set_xml_attribute(bfc_nodeptr_t node,
 	L4SC_TRACE(logger, "%s(node %p, name %p, val %p)",
 				__FUNCTION__, node, name, val);
 
-	if ((map = node->attributes) == NULL) {
+	if ((map = ((bfc_nodeptr_t)node)->attributes) == NULL) {
 		if ((bfc_node_new_attribute_map(node, &map) >= 0)
 		 && (map != NULL)) {
 			bfc_init_refcount(map, 1);
-			node->attributes = (bfc_contptr_t) map;
+			((bfc_nodeptr_t)node)->attributes = map;
 		} else {
 			L4SC_ERROR(logger, "%s: no memory", __FUNCTION__);
 			return (-ENOMEM);

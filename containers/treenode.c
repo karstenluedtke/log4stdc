@@ -75,10 +75,11 @@ bfc_init_treenode(void *buf, size_t bufsize, struct mempool *pool)
 }
 
 int
-bfc_node_set_name(bfc_nodeptr_t node, bfc_cstrptr_t name)
+bfc_node_set_name(bfc_objptr_t treenode, bfc_cstrptr_t name)
 {
 	int rc;
 	size_t colon;
+	bfc_nodeptr_t node = (bfc_nodeptr_t) treenode;
 	bfc_strptr_t str = &node->tagname;
 	struct mempool *pool = node->vec.pool;
 	bfc_iterator_t it;
@@ -96,10 +97,10 @@ bfc_node_set_name(bfc_nodeptr_t node, bfc_cstrptr_t name)
 }
 
 int
-bfc_node_new_attribute_map(bfc_node_t *node, bfc_contptr_t *attrpp)
+bfc_node_new_attribute_map(bfc_objptr_t node, bfc_contptr_t *attrpp)
 {
 	int rc = -ENOMEM;
-	struct mempool *pool = node->vec.pool;
+	struct mempool *pool = ((bfc_cnodeptr_t)node)->vec.pool;
 	const size_t size = 500;
 	bfc_linear_string_map_t *map = bfc_mempool_calloc(pool, 1, size);
 	extern const bfc_class_t bfc_string_pair_class;
@@ -121,7 +122,7 @@ new_attribute_map(bfc_node_t *node, bfc_ccontptr_t attrs)
 	bfc_contptr_t map;
 	int rc;
 
-	if ((rc = bfc_node_new_attribute_map(node, &map)) < 0) {
+	if ((rc = bfc_node_new_attribute_map((bfc_objptr_t)node, &map)) < 0) {
 		return (rc);
 	}
 	if (map != NULL) {
@@ -150,7 +151,7 @@ clone_treenode(bfc_ccontptr_t cont,
 	int rc;
 
 	if ((rc = bfc_init_treenode(node, bufsize, pool)) >= 0) {
-		bfc_node_set_name(node, &src->tagname);
+		bfc_node_set_name((bfc_contptr_t)node, &src->tagname);
 		bfc_container_assign_copy((bfc_contptr_t)&node->vec, cont);
 		if (src->attributes) {
 			new_attribute_map(node, src->attributes);
@@ -198,10 +199,9 @@ treenode_hashcode(bfc_ccontptr_t cont, int hashlen)
 	return (bfc_object_hashcode(&node->tagname, hashlen));
 }
 
-static int treenode_tostring(bfc_ccontptr_t cont,
+static int treenode_tostring(bfc_ccontptr_t node,
 			     char *buf, size_t bufsize, const char *fmt)
 {
-	bfc_cnodeptr_t node = (bfc_cnodeptr_t) cont;
 	int level = 0;
 
 	if (fmt != NULL) {

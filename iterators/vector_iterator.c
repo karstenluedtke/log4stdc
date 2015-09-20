@@ -66,7 +66,7 @@ bfc_init_vector_iterator(void *buf, size_t bufsize,
 		bfc_iterptr_t it = (bfc_iterptr_t) buf;
 		it->vptr = &bfc_vector_forward_iterator_class;
 	}
-	bfc_object_dump(buf, 1, logger);
+	bfc_iterator_dump((bfc_citerptr_t) buf, 1, logger);
 	return (rc);
 }
 
@@ -95,7 +95,7 @@ bfc_init_object_vector_iterator(void *buf, size_t bufsize,
 		bfc_iterptr_t it = (bfc_iterptr_t) buf;
 		it->vptr = &bfc_object_vector_forward_iterator_class;
 	}
-	bfc_object_dump(buf, 1, logger);
+	bfc_iterator_dump((bfc_citerptr_t) buf, 1, logger);
 	return (rc);
 }
 
@@ -196,7 +196,7 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 			it->pos = BFC_NPOS;
 		}
 	}
-	bfc_object_dump(it, 1, logger);
+	bfc_iterator_dump(it, 1, logger);
 	return (BFC_SUCCESS);
 }
 
@@ -238,7 +238,7 @@ advance_object_forward(bfc_iterptr_t it, ptrdiff_t n)
 			it->pos = BFC_NPOS;
 		}
 	}
-	bfc_object_dump(it, 1, logger);
+	bfc_iterator_dump(it, 1, logger);
 	return (BFC_SUCCESS);
 }
 

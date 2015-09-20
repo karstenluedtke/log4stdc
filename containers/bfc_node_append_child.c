@@ -16,7 +16,7 @@
  * @brief    bfc_node_append_child
  */
 int
-bfc_node_append_child(bfc_nodeptr_t node, bfc_nodeptr_t child)
+bfc_node_append_child(bfc_objptr_t node, bfc_objptr_t child)
 {
-	return (bfc_container_push_back((bfc_contptr_t) node, child));
+	return (bfc_container_push_back(node, child));
 }

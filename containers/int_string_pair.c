@@ -131,10 +131,10 @@ static int
 clone_pair(const struct bfc_number_string_pair *obj,
 	   void *buf, size_t bufsize, struct mempool *pool)
 {
-	struct bfc_number_string_pair *pair = (struct bfc_number_string_pair *) buf;
+	struct bfc_number_string_pair *pair=(struct bfc_number_string_pair*)buf;
 	struct bfc_number_string_pair *src =
-				BFC_UNCONST(struct bfc_number_string_pair *, obj);
-	size_t size = bfc_object_size(obj);
+			BFC_UNCONST(struct bfc_number_string_pair *, obj);
+	size_t size = bfc_object_size((bfc_cobjptr_t)obj);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
@@ -198,7 +198,8 @@ dump_pair(const struct bfc_number_string_pair *pair, int depth,
 			bfc_object_getlong(&pair->first));
 		if (depth > 1) {
 			bfc_cobjptr_t obj;
-			if ((obj = bfc_container_cindex(pair, 1)) != NULL) {
+			if ((obj = bfc_container_cindex((bfc_cobjptr_t)pair, 1))
+								      != NULL) {
 				bfc_object_dump(obj, depth-1, log);
 			}
 		}

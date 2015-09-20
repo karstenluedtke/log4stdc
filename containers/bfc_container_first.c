@@ -2,10 +2,8 @@
 #include "barefootc/object.h"
 
 const void *
-bfc_container_first(const void *obj)
+bfc_container_first(bfc_cobjptr_t cont)
 {
-	bfc_cobjptr_t o = (bfc_cobjptr_t) obj;
-
-	RETURN_METHCALL(bfc_classptr_t, o, first, (o), NULL);
+	RETURN_METHCALL(bfc_classptr_t, cont, first, (cont), NULL);
 }
 

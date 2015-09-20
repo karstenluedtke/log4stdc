@@ -35,8 +35,8 @@ main(int argc, char *argv[])
 	bfc_init_treenode(&tmpl, sizeof(tmpl), pool);
 
 	do {
-		bfc_cnodeptr_t tp = (bfc_cnodeptr_t) &tmpl;
-		bfc_cnodeptr_t xml =
+		bfc_cobjptr_t tp = (bfc_cobjptr_t) &tmpl;
+		bfc_cobjptr_t xml =
 		  bfc_node_new_element(tp, "nEE", "transaction",
 		    bfc_node_new_element(tp,"ns", "method", "setDeviceAudio"),
 		    bfc_node_new_element(tp,"nEEEEE", "parameters",
@@ -68,10 +68,10 @@ main(int argc, char *argv[])
 	} while (0 /*just once*/);
 
 	do {
-		bfc_cnodeptr_t tp = (bfc_cnodeptr_t) &tmpl;
+		bfc_cobjptr_t tp = (bfc_cobjptr_t) &tmpl;
 		static bfc_string_t mettag = BFCWSTR(L"method");
 		static bfc_string_t method = BFCSTR("setDeviceAudio");
-		bfc_nodeptr_t xml =
+		bfc_objptr_t xml =
 		  bfc_node_new_element(tp, "nEE", "transaction",
 		    bfc_node_new_element(tp,"NS", &mettag, &method),
 		    bfc_node_new_element(tp,"nEEEEE", "parameters",
@@ -114,8 +114,8 @@ main(int argc, char *argv[])
 	} while (0 /*just once*/);
 
 	do {
-		bfc_cnodeptr_t tp = (bfc_cnodeptr_t) &tmpl;
-		bfc_cnodeptr_t xml =
+		bfc_cobjptr_t tp = (bfc_cobjptr_t) &tmpl;
+		bfc_cobjptr_t xml =
 		  bfc_node_new_element(tp, "nEE", "transaction",
 		    bfc_node_new_element(tp,"ns", "method", "setDeviceAudio"),
 		    bfc_node_new_element(tp,"nEEEEE", "parameters",
@@ -146,14 +146,14 @@ main(int argc, char *argv[])
 	} while (0 /*just once*/);
 
 	do {
-		bfc_cnodeptr_t tp = (bfc_cnodeptr_t) &tmpl;
-		bfc_nodeptr_t xml =
+		bfc_cobjptr_t tp = (bfc_cobjptr_t) &tmpl;
+		bfc_objptr_t xml =
 		  bfc_node_new_element(tp, "nsEsE", "p",
 		    "A text with an ",
 		    bfc_node_new_element(tp,"ns", "img", "image"),
 		    " and a ",
 		    bfc_node_new_element(tp,"ns", "a", "link"));
-		bfc_nodeptr_t child;
+		bfc_objptr_t child;
 		static bfc_string_t img_attr  = BFCSTR("src");
 		static bfc_string_t img_value = BFCSTR("image.png");
 		static bfc_string_t href_attr = BFCSTR("href");
@@ -164,10 +164,10 @@ main(int argc, char *argv[])
 			"</p>" CRLF;
 		char buf[4000];
 
-		child = (bfc_nodeptr_t) bfc_container_index(xml, 1);
+		child = (bfc_objptr_t) bfc_container_index(xml, 1);
 		bfc_node_set_xml_attribute(child, &img_attr, &img_value);
 
-		child = (bfc_nodeptr_t) bfc_container_index(xml, 3);
+		child = (bfc_objptr_t) bfc_container_index(xml, 3);
 		bfc_node_set_xml_attribute(child, &href_attr, &href_value);
 
 		int len= bfc_object_tostring(xml, NULL, 0, "xml");

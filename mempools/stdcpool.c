@@ -100,7 +100,7 @@ clone_pool(const struct mempool *pool, void *buf, size_t bufsize,
 						struct mempool *other)
 {
 	struct mempool *newpool = (struct mempool *) buf;
-	size_t size = bfc_object_size(pool);
+	size_t size = bfc_object_size((bfc_cobjptr_t)pool);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}

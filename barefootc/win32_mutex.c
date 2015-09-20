@@ -44,6 +44,9 @@ const struct bfc_mutex_class bfc_win32_mutex_class = {
 	.super = (bfc_mutex_class_ptr_t) &bfc_object_class,
 	.name = "win32 mutex",
 	.init = init_mutex,
+	.initrefc = (void *) bfc_default_init_refcount,
+	.incrrefc = (void *) bfc_default_incr_refcount,
+	.decrrefc = (void *) bfc_default_decr_refcount,
 	.destroy = destroy_mutex,
 	.clone = clone_mutex,
 	.clonesize = mutex_size,
@@ -132,7 +135,7 @@ bfc_new_win32_mutex(struct bfc_mutex **objpp, struct mempool *pool,
 	struct win32_mutex *object = NULL;
 	int rc;
 
-	rc = bfc_new((void **) &object,
+	rc = bfc_new((bfc_objptr_t *) &object,
 		     (bfc_classptr_t) &bfc_win32_mutex_class, pool);
 	if ((rc >= 0) && object) {
 		object->file = file;

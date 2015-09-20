@@ -20,12 +20,12 @@ init_node(bfc_nodeptr_t node, size_t space, bfc_cnodeptr_t ancestor)
 			init, (node, space, pool), 0);
 }
 
-bfc_nodeptr_t
-bfc_node_new_element(bfc_cnodeptr_t ancestor, const char *chldtypes, ...)
+bfc_objptr_t
+bfc_node_new_element(bfc_cobjptr_t ancestor, const char *chldtypes, ...)
 {
 	bfc_nodeptr_t node;
 	size_t space = bfc_object_size(ancestor);
-	struct mempool *pool = ancestor->vec.pool;
+	struct mempool *pool = ((bfc_cnodeptr_t)ancestor)->vec.pool;
 	const char *cp, *currtype;
 	bfc_objptr_t obj;
 	bfc_strptr_t s;
@@ -35,21 +35,21 @@ bfc_node_new_element(bfc_cnodeptr_t ancestor, const char *chldtypes, ...)
 		return (NULL);
 	}
 
-	init_node(node, sizeof(*node), ancestor);
+	init_node(node, sizeof(*node), (bfc_cnodeptr_t) ancestor);
 
 	va_start(ap, chldtypes);
 	for (currtype = chldtypes; currtype && *currtype; currtype++) {
 		switch (*currtype) {
 		case 'N':
 			s = va_arg(ap, bfc_strptr_t);
-			bfc_node_set_name(node, s);
+			bfc_node_set_name((bfc_objptr_t)node, s);
 			break;
 		case 'n':
 			cp = va_arg(ap, const char *);
 			space = sizeof(bfc_string_t);
 			if ((s = bfc_mempool_alloc(pool, space)) != NULL) {
 				bfc_init_basic_string_c_str(s, space, pool, cp);
-				bfc_node_set_name(node, s);
+				bfc_node_set_name((bfc_objptr_t)node, s);
 			}
 			break;
 		case 's': case 't':
@@ -69,6 +69,6 @@ bfc_node_new_element(bfc_cnodeptr_t ancestor, const char *chldtypes, ...)
 	}
 	va_end(ap);
 
-	return (node);
+	return ((bfc_objptr_t)node);
 }
 

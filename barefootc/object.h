@@ -211,7 +211,7 @@ struct bfc_classhdr {
 		}							\
 		obj->vptr = (void *) (cls);				\
 		obj->name = #obj;					\
-		bfc_init_refcount(obj, 1);				\
+		bfc_init_refcount((bfc_objptr_t) obj, 1);		\
 	}
 
 #define BFC_DESTROY_EPILOGUE(obj,cls)					\
@@ -223,42 +223,40 @@ struct bfc_classhdr {
 	}
 
 
-int  bfc_new(void **, bfc_classptr_t, struct mempool *);
+int  bfc_new(bfc_objptr_t *, bfc_classptr_t, struct mempool *);
 int  bfc_init_object(bfc_classptr_t, void *, size_t, struct mempool *);
-int  bfc_clone_object(const void *, void *, size_t, struct mempool *);
-int  bfc_clone_new(const void *, void **, struct mempool *);
-int  bfc_swap_objects(void *, void *);
-int  bfc_init_refcount(void *, int);
-int  bfc_incr_refcount(void *);
-int  bfc_decr_refcount(void *);
-void bfc_destroy(void *);
-void bfc_delete(void *);
-int  bfc_instance_of_class(const void *, bfc_classptr_t);
-int  bfc_instance_of_classname(const void *, const char *);
-bfc_classptr_t bfc_baseclass_by_name(const void *, const char *);
+int  bfc_clone_object(bfc_cobjptr_t, void *, size_t, struct mempool *);
+int  bfc_clone_new(bfc_cobjptr_t, bfc_objptr_t *, struct mempool *);
+int  bfc_swap_objects(bfc_objptr_t, bfc_objptr_t);
+int  bfc_init_refcount(bfc_objptr_t, int);
+int  bfc_incr_refcount(bfc_objptr_t);
+int  bfc_decr_refcount(bfc_objptr_t);
+void bfc_destroy(bfc_objptr_t);
+void bfc_delete(bfc_objptr_t);
+int  bfc_instance_of_class(bfc_cobjptr_t, bfc_classptr_t);
+int  bfc_instance_of_classname(bfc_cobjptr_t, const char *);
+bfc_classptr_t bfc_baseclass_by_name(bfc_cobjptr_t, const char *);
 
-size_t bfc_object_size(const void *);
-unsigned bfc_object_hashcode(const void *, int hashlen);
+size_t bfc_object_size(bfc_cobjptr_t);
+unsigned bfc_object_hashcode(bfc_cobjptr_t, int hashlen);
 unsigned bfc_reduce_hashcode(size_t origval, int origbits, int hashlen);
-int  bfc_equal_object(const void *, const void *);
-int  bfc_object_equals(const void *, const void *);
-int  bfc_object_length(const void *);
-int  bfc_object_tostring(const void *, char *, size_t, const char *);
-void bfc_object_dump(const void *, int, struct l4sc_logger *);
+#define  bfc_equal_object bfc_object_equals
+int  bfc_object_equals(bfc_cobjptr_t, bfc_cobjptr_t);
+int  bfc_object_length(bfc_cobjptr_t);
+int  bfc_object_tostring(bfc_cobjptr_t, char *, size_t, const char *);
+void bfc_object_dump(bfc_cobjptr_t, int, struct l4sc_logger *);
 
 #define bfc_object_getlong(_o)		bfc_container_getlong(_o,0)
 #define bfc_object_setlong(_o,_v)	bfc_container_setlong(_o,0,_v)
 
-const void *bfc_container_first(const void *);
-const void *bfc_container_cindex(const void *, size_t);
-void *bfc_container_index(void *, size_t);
-long bfc_container_getlong(const void *, size_t);
-int  bfc_container_setlong(void *, size_t, long);
-void *bfc_container_place(void *, size_t, void *, struct mempool *);
-int  bfc_container_begin_iterator(const void *obj,
-				struct bfc_iterator *it, size_t bufsize);
-int  bfc_container_end_iterator(const void *obj, 
-				struct bfc_iterator *it, size_t bufsize);
+const void *bfc_container_first(bfc_cobjptr_t);
+const void *bfc_container_cindex(bfc_cobjptr_t, size_t);
+void *bfc_container_index(bfc_objptr_t, size_t);
+long bfc_container_getlong(bfc_cobjptr_t, size_t);
+int  bfc_container_setlong(bfc_objptr_t, size_t, long);
+bfc_objptr_t bfc_container_place(bfc_objptr_t, size_t, bfc_objptr_t, struct mempool *);
+int  bfc_container_begin_iterator(bfc_cobjptr_t, struct bfc_iterator *, size_t);
+int  bfc_container_end_iterator(bfc_cobjptr_t, struct bfc_iterator *, size_t);
 
 size_t bfc_get_base_object_size(bfc_cobjptr_t);
 

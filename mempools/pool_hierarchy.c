@@ -136,9 +136,9 @@ bfc_mempool_dump_all(int depth, struct l4sc_logger *log)
 	struct mempool *p;
 
 	p = get_stdc_mempool();
-	bfc_incr_refcount(p);
+	bfc_incr_refcount((bfc_objptr_t)p);
 	bfc_mempool_dump_subpools(p, depth, log);
-	bfc_decr_refcount(p);
+	bfc_decr_refcount((bfc_objptr_t)p);
 }
 
 void
@@ -159,7 +159,7 @@ bfc_mempool_dump_subpools(const struct mempool *pool, int depth,
 	pp = alloca((n+1) * sizeof(pp[0]));
 	BFC_LIST_FOREACH(p, &pool->sub_pools, next) {
 		if (i < n) {
-			bfc_incr_refcount(p);
+			bfc_incr_refcount((bfc_objptr_t)p);
 			pp[i++] = p;
 		}
 	}
@@ -192,13 +192,13 @@ bfc_mempool_dump_subpools(const struct mempool *pool, int depth,
 				__FUNCTION__, p, p->prev, pp[i-1]);
 			continue;
 		}
-		bfc_object_dump(p, depth, log);
+		bfc_object_dump((bfc_cobjptr_t)p, depth, log);
 	}
 
 	for (i=0; i < n; i++) {
 		p = pp[i];
 		pp[i] = NULL;
-		bfc_decr_refcount(p);
+		bfc_decr_refcount((bfc_objptr_t)p);
 	}
 }
 

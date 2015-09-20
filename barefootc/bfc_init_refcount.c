@@ -3,10 +3,8 @@
 #include "errno.h"
 
 int
-bfc_init_refcount(void *obj, int n)
+bfc_init_refcount(bfc_objptr_t obj, int n)
 {
-	bfc_objptr_t o = (bfc_objptr_t) obj;
-
-	RETURN_METHCALL(bfc_classptr_t, o, initrefc, (o, n), -ENOSYS);
+	RETURN_METHCALL(bfc_classptr_t, obj, initrefc, (obj, n), -ENOSYS);
 }
 

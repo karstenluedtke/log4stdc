@@ -76,6 +76,7 @@ long	bfc_iterator_getlong(bfc_citerptr_t it);
 int	bfc_iterator_setlong(bfc_iterptr_t it, long val);
 ptrdiff_t bfc_iterator_distance(bfc_citerptr_t first, bfc_citerptr_t limit);
 int	bfc_iterator_advance(bfc_iterptr_t it, ptrdiff_t n);
+void	bfc_iterator_dump(bfc_citerptr_t it,int depth,struct l4sc_logger *log);
 
 int	bfc_init_utf8_iterator(void *buf, size_t bufsize,
 					bfc_cobjptr_t obj, size_t pos);

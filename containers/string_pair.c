@@ -122,7 +122,7 @@ clone_pair(const struct bfc_string_pair *obj,
 {
 	struct bfc_string_pair *pair = (struct bfc_string_pair *) buf;
 	struct bfc_string_pair *src = BFC_UNCONST(struct bfc_string_pair*, obj);
-	size_t size = bfc_object_size(obj);
+	size_t size = bfc_object_size((bfc_cobjptr_t)obj);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
@@ -165,7 +165,7 @@ pair_index(struct bfc_string_pair *pair, size_t pos)
 static unsigned  
 pair_hashcode(const struct bfc_string_pair *pair, int hashlen)
 {
-	bfc_cobjptr_t obj = bfc_container_cindex(pair, 0);
+	bfc_cobjptr_t obj = bfc_container_cindex((bfc_cobjptr_t)pair, 0);
 	return (obj? bfc_object_hashcode(obj, hashlen): 0);
 }
 
@@ -175,13 +175,13 @@ pair_equals(const struct bfc_string_pair *pair,
 {
 	bfc_cobjptr_t obj1, obj2, obj3, obj4;
 
-	obj1 = bfc_container_cindex(pair, 0);
-	obj2 = bfc_container_cindex(other,0);
+	obj1 = bfc_container_cindex((bfc_cobjptr_t)pair, 0);
+	obj2 = bfc_container_cindex((bfc_cobjptr_t)other,0);
 	if (((obj1 == NULL) || (obj2 == NULL)) && (obj1 != obj2)) {
 		return (0);
 	}
-	obj3 = bfc_container_cindex(pair, 1);
-	obj4 = bfc_container_cindex(other,1);
+	obj3 = bfc_container_cindex((bfc_cobjptr_t)pair, 1);
+	obj4 = bfc_container_cindex((bfc_cobjptr_t)other,1);
 	if (((obj3 == NULL) || (obj4 == NULL)) && (obj3 != obj4)) {
 		return (0);
 	}
@@ -197,10 +197,12 @@ dump_pair(const struct bfc_string_pair *pair,int depth,struct l4sc_logger *log)
 			((bfc_classptr_t) BFC_CLASS(pair))->name, pair);
 		if (depth > 1) {
 			bfc_cobjptr_t obj;
-			if ((obj = bfc_container_cindex(pair, 0)) != NULL) {
+			if ((obj = bfc_container_cindex((bfc_cobjptr_t)pair, 0))
+								      != NULL) {
 				bfc_object_dump(obj, depth-1, log);
 			}
-			if ((obj = bfc_container_cindex(pair, 1)) != NULL) {
+			if ((obj = bfc_container_cindex((bfc_cobjptr_t)pair, 1))
+								      != NULL) {
 				bfc_object_dump(obj, depth-1, log);
 			}
 		}

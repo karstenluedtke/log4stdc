@@ -89,7 +89,7 @@ bfc_init_objref_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 	BFC_INIT_PROLOGUE(const struct bfc_vector_class *,
 			  bfc_objptr_t, obj, buf, bufsize, pool,
 			  (bfc_classptr_t) &bfc_objref_vector_class);
-	if (bufsize < bfc_object_size(vec)) {
+	if (bufsize < bfc_object_size((bfc_cobjptr_t)vec)) {
 		return (-ENOSPC);
 	}
 	vec->pool = pool;
@@ -588,8 +588,8 @@ vector_insert_fill(bfc_contptr_t cntr, bfc_iterptr_t position, size_t n,
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %ld, %p): pos %ld/%ld",
 		__FUNCTION__, vec, position,(long)n,obj,(long)pos,(long)size);
-	bfc_object_dump(vec, 1, logger);
-	bfc_object_dump(position, 1, logger);
+	bfc_object_dump((bfc_cobjptr_t)vec, 1, logger);
+	bfc_iterator_dump(position, 1, logger);
 
 	if (n < 1) {
 		return (BFC_SUCCESS);
@@ -637,10 +637,10 @@ vector_insert_range(bfc_contptr_t cntr, bfc_iterptr_t position,
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %p, %p): pos %ld/%ld",
 		__FUNCTION__, vec, position, first, last,(long)pos,(long)size);
-	bfc_object_dump(vec, 1, logger);
-	bfc_object_dump(position, 1, logger);
-	bfc_object_dump(first, 1, logger);
-	bfc_object_dump(last, 1, logger);
+	bfc_object_dump((bfc_cobjptr_t)vec, 1, logger);
+	bfc_iterator_dump(position, 1, logger);
+	bfc_iterator_dump(first, 1, logger);
+	bfc_iterator_dump(last, 1, logger);
 
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);
@@ -701,9 +701,9 @@ vector_erase_range(bfc_contptr_t cntr, bfc_iterptr_t first, bfc_iterptr_t last)
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %p): pos %ld+%ld/%ld",
 		__FUNCTION__, vec, first, last, (long)pos, (long)n, (long)size);
-	bfc_object_dump(vec, 1, logger);
-	bfc_object_dump(first, 1, logger);
-	bfc_object_dump(last, 1, logger);
+	bfc_object_dump((bfc_cobjptr_t)vec, 1, logger);
+	bfc_iterator_dump(first, 1, logger);
+	bfc_iterator_dump(last, 1, logger);
 
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);

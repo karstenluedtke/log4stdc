@@ -147,7 +147,7 @@ clone_pair(const struct bfc_string_ref_pair *obj,
 	struct bfc_string_ref_pair *pair = (struct bfc_string_ref_pair *) buf;
 	struct bfc_string_ref_pair *src =
 				BFC_UNCONST(struct bfc_string_ref_pair *, obj);
-	size_t size = bfc_object_size(obj);
+	size_t size = bfc_object_size((bfc_cobjptr_t)obj);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
@@ -241,7 +241,8 @@ dump_pair(const struct bfc_string_ref_pair *pair, int depth,
 			((bfc_classptr_t) BFC_CLASS(pair))->name, pair, buf);
 		if (depth > 1) {
 			bfc_cobjptr_t obj;
-			if ((obj = bfc_container_cindex(pair, 1)) != NULL) {
+			if ((obj = bfc_container_cindex((bfc_cobjptr_t)pair, 1))
+								      != NULL) {
 				bfc_object_dump(obj, depth-1, log);
 			}
 		}

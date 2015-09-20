@@ -28,7 +28,7 @@ test(int n1, const struct test_kv kv[])
 {
 	int i, rc;
 	bfc_string_map_t map;
-	const size_t initial_poolsize = bfc_object_length(pool);
+	const size_t initial_poolsize = bfc_object_length((bfc_cobjptr_t)pool);
 
 	L4SC_DEBUG(logger, "%s(n1 %d, kv %p)", __FUNCTION__, n1, kv);
 
@@ -46,7 +46,7 @@ test(int n1, const struct test_kv kv[])
 		assert(rc >= 0);
 	}
 
-	bfc_object_dump(&map, 99, logger);
+	bfc_object_dump((bfc_cobjptr_t)&map, 99, logger);
 	assert(bfc_map_size((bfc_ccontptr_t)&map) == n1);
 
 	for (i=0; i < n1; i++) {
@@ -62,11 +62,11 @@ test(int n1, const struct test_kv kv[])
 		assert(bfc_string_compare_c_str((bfc_cstrptr_t)vp,kv[i].v)==0);
 	}
 
-	bfc_destroy(&map);
+	bfc_destroy((bfc_objptr_t) &map);
 
 	L4SC_DEBUG(logger, "%s: final pool size %ld",
-			__FUNCTION__, (long) bfc_object_length(pool));
-	assert(bfc_object_length(pool) == initial_poolsize);
+		__FUNCTION__, (long) bfc_object_length((bfc_cobjptr_t)pool));
+	assert(bfc_object_length((bfc_cobjptr_t)pool) == initial_poolsize);
 
 	L4SC_DEBUG(logger, "%s(n1 %d, kv %p)", "PASS", n1, kv);
 

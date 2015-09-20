@@ -76,7 +76,7 @@ bfc_init_xmltag(void *buf, size_t bufsize, bfc_cstrptr_t doc, size_t offset)
 			rc = -ERANGE;
 		}
 	}
-	bfc_object_dump(buf, 1, logger);
+	bfc_iterator_dump((bfc_citerptr_t) buf, 1, logger);
 	return (rc);
 }
 
@@ -115,7 +115,7 @@ advance_forward(bfc_tagptr_t tag, ptrdiff_t n)
 
 	L4SC_DEBUG(logger, "%s(xmltag %p, %ld): result %d",
 				__FUNCTION__, tag, (long) n, rc);
-	bfc_object_dump(tag, 1, logger);
+	bfc_iterator_dump((bfc_citerptr_t) tag, 1, logger);
 	return (rc);
 }
 
@@ -154,7 +154,8 @@ bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 				next->length  = (unsigned)(ne+3-ti);
 				next->nameoffs= (unsigned short)(ni - ti);
 				next->namelen = (unsigned short)(ne - ni);
-				bfc_object_dump(next, 1, logger);
+				bfc_iterator_dump((bfc_citerptr_t)next,
+								1, logger);
 			}
 			return (tt);
 		} else {
@@ -186,7 +187,8 @@ bfc_find_next_xmltag(bfc_ctagptr_t tag, bfc_tagptr_t next, size_t bufsize)
 				next->length  = (unsigned)(te+1-ti);
 				next->nameoffs= (unsigned short)(ni - ti);
 				next->namelen = (unsigned short)(ne - ni);
-				bfc_object_dump(next, 1, logger);
+				bfc_iterator_dump((bfc_citerptr_t)next,
+								1, logger);
 			}
 			return (tt);
 		}
@@ -211,7 +213,7 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 
 	L4SC_TRACE(logger, "%s(xmltag %p, endtag %p, bufsize %ld)",
 		__FUNCTION__, starttag, endtag, (long) bufsize);
-	bfc_object_dump(starttag, 1, logger);
+	bfc_iterator_dump((bfc_citerptr_t) starttag, 1, logger);
 
 	b2size = 4 * (nameoffs + namelen + 5);
 	databuf = alloca(b2size);
@@ -234,7 +236,7 @@ bfc_find_xml_endtag(bfc_ctagptr_t starttag, bfc_tagptr_t endtag, size_t bufsize)
 			endtag->length  = (unsigned short) patlen;
 			endtag->nameoffs= (unsigned short) nameoffs;
 			endtag->namelen = (unsigned short) namelen;
-			bfc_object_dump(endtag, 1, logger);
+			bfc_iterator_dump((bfc_citerptr_t) endtag, 1, logger);
 		}
 		return (BFC_XML_END_TAG);
 	}
@@ -261,7 +263,7 @@ get_xmltag_attrs(bfc_ctagptr_t tag, bfc_string_t attrs[], size_t bufsize)
 
 	L4SC_TRACE(logger, "%s(xmltag %p, buf %p, size %ld): max %u",
 		__FUNCTION__, tag, attrs, (long) bufsize, maxattrs);
-	bfc_object_dump(tag, 1, logger);
+	bfc_iterator_dump((bfc_citerptr_t) tag, 1, logger);
 
 	for (; (pos < limit) && (n < maxattrs); pos++) {
 		L4SC_DEBUG(logger, "%s: pos %ld/%ld, have %u/%u",

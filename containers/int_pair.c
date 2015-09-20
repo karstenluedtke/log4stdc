@@ -89,8 +89,8 @@ clone_pair(const struct bfc_number_pair *obj,
 	   void *buf, size_t bufsize, struct mempool *pool)
 {
 	struct bfc_number_pair *pair = (struct bfc_number_pair *) buf;
-	struct bfc_number_pair *src = BFC_UNCONST(struct bfc_number_pair *, obj);
-	size_t size = bfc_object_size(obj);
+	struct bfc_number_pair *src = BFC_UNCONST(struct bfc_number_pair*, obj);
+	size_t size = bfc_object_size((bfc_cobjptr_t) obj);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}

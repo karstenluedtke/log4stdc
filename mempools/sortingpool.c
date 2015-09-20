@@ -138,15 +138,15 @@ init_sortingpool(void *buf, size_t bufsize, struct mempool *pool)
 	BFC_INIT_PROLOGUE(bfc_mempool_class_ptr_t,
 			  struct sortingpool *, p, buf, bufsize, parent,
 			  &bfc_sortingpool_class);
-	bfc_incr_refcount(parent);
+	bfc_incr_refcount((bfc_objptr_t)parent);
 	p->parent_pool = parent;
 	bfc_new_mutex(&p->lock, parent);
 	p->file = __FILE__;
 	p->line = __LINE__;
 	p->func = __FUNCTION__;
 	bfc_mempool_add_pool((struct mempool *)p, parent);
-	bfc_init_refcount(p, 1);
-	bfc_object_dump(p, 1, logger);
+	bfc_init_refcount((bfc_objptr_t)p, 1);
+	bfc_object_dump((bfc_objptr_t)p, 1, logger);
 	return (BFC_SUCCESS);
 }
 
@@ -162,7 +162,7 @@ destroy_pool(struct mempool *pool)
 		bfc_mempool_remove_pool((struct mempool *) obj, parent);
 		if ((lock = obj->lock) != NULL) {
 			obj->lock = NULL;
-			bfc_decr_refcount(lock);
+			bfc_mutex_decr_refcount(lock);
 			lock = NULL;
 		}
 		BFC_DESTROY_EPILOGUE(obj, cls);

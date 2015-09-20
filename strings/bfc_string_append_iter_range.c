@@ -56,7 +56,7 @@ bfc_string_append_iter_range(bfc_strptr_t s, bfc_iterptr_t it,
 			MAKESPACE(40);
 		}
 		bfc_iterator_setlong(&di, c);
-		bfc_object_dump(&di, 1, logger);
+		bfc_iterator_dump(&di, 1, logger);
 		bfc_object_dump(s, 1, logger);
 		bfc_iterator_advance(&di, 1);
 	}

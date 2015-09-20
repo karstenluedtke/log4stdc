@@ -52,9 +52,9 @@ int main()
 	bfc_number_t key30 = BFC_SIGNED_NUMBER(30);
         std::pair<I, I> r = c.equal_range(key30);
         assert(r.first.distance(r.second) == 1);
-	P *p = (P *)bfc_container_first(r.first.bfciter());
-	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first(p);
-	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index(p,1);
+	P *p = (P *)bfc_iterator_index(r.first.bfciter());
+	bfc_cnumptr_t num = (bfc_cnumptr_t)bfc_container_first((bfc_contptr_t)p);
+	bfc_cstrptr_t str = (bfc_cstrptr_t)bfc_container_index((bfc_contptr_t)p,1);
         assert(bfc_object_getlong(num) == 30);
         assert(bfc_string_compare_c_str(str, "thirty") == 0);
 

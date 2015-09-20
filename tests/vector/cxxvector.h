@@ -197,7 +197,7 @@ namespace barefootc {
 #endif
 		~vector()
 		{
-			bfc_destroy(&bfcvec);
+			bfc_destroy((bfc_objptr_t) &bfcvec);
 		}
 
 		bfc_contptr_t contptr() const
@@ -275,7 +275,7 @@ namespace barefootc {
 		// 23.3.6.3, capacity:
 		size_type size() const
 		{
-			return (bfc_object_length(&bfcvec));
+			return (bfc_object_length((bfc_cobjptr_t)&bfcvec));
 		}
 
 		size_type max_size() const

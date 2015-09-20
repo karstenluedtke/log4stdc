@@ -6,14 +6,14 @@
 #include "barefootc/treenode.h"
 #include "barefootc/number.h"
 
-bfc_nodeptr_t
-bfc_node_new_integer_element(bfc_cnodeptr_t ancestor,const char *name,long val)
+bfc_objptr_t
+bfc_node_new_integer_element(bfc_cobjptr_t ancestor, const char *name, long val)
 {
-	struct mempool *pool = ancestor->vec.pool;
-	bfc_numptr_t number = NULL;
-	bfc_nodeptr_t node = NULL;
+	struct mempool *pool = ((bfc_cnodeptr_t)ancestor)->vec.pool;
+	bfc_objptr_t number = NULL;
+	bfc_objptr_t node = NULL;
 
-	if ((bfc_new((void **) &number, &bfc_number_class, pool) >= 0)
+	if ((bfc_new(&number, &bfc_number_class, pool) >= 0)
 	 && (number != NULL)) {
 		bfc_object_setlong(number, val);
 		node = bfc_node_new_element(ancestor, "nO", name, number);

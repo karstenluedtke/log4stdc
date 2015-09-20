@@ -138,7 +138,7 @@ bfc_init_vector_class(void *buf, size_t bufsize, struct mempool *pool)
 	BFC_INIT_PROLOGUE(const struct bfc_vector_class *,
 			  bfc_objptr_t, obj, buf, bufsize, pool,
 			  (bfc_classptr_t) &bfc_vector_class);
-	if (bufsize < bfc_object_size(vec)) {
+	if (bufsize < bfc_object_size((bfc_cobjptr_t) vec)) {
 		return (-ENOSPC);
 	}
 	vec->pool = pool;
@@ -168,7 +168,7 @@ bfc_init_vector_by_element_size(void *buf, size_t bufsize,
 	bfc_new_mutex(&vec->lock, pool);
 	vec->elem_size = elem_size;
 	vec->elem_direct = 0;
-	if (bufsize >= bfc_object_size(vec)) {
+	if (bufsize >= bfc_object_size((bfc_cobjptr_t) vec)) {
 		if (spare > 0) {
 			vec->elem_direct = spare / elem_size;
 			memset(vec->direct, 0, spare);
@@ -221,12 +221,12 @@ bfc_init_vector_copy(void *buf, size_t bufsize, struct mempool *pool,
 }
 
 int
-bfc_init_vector_move(void *buf, size_t bufsize, bfc_objptr_t tmpvec)
+bfc_init_vector_move(void *buf, size_t bufsize, bfc_objptr_t srcvec)
 {
 	int rc = BFC_SUCCESS;
 	basic_vecptr_t vec = (basic_vecptr_t) buf;
-	basic_vecptr_t src = (basic_vecptr_t) tmpvec;
-	size_t clonesize = bfc_object_size(src);
+	basic_vecptr_t src = (basic_vecptr_t) srcvec;
+	size_t clonesize = bfc_object_size(srcvec);
 	bfc_mutex_ptr_t locked;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -246,7 +246,7 @@ bfc_init_vector_move(void *buf, size_t bufsize, bfc_objptr_t tmpvec)
 
 	if (src->lock && (locked = bfc_mutex_lock(src->lock))) {
 		memcpy(vec, src, clonesize);
-		bfc_incr_refcount(locked); /*another ref to lock in the copy*/
+		bfc_mutex_incr_refcount(locked); /*another ref in the copy*/
 		BFC_VECTOR_SET_SIZE(src, 0);
 		src->indirect = NULL;
 		src->double_indirect = NULL;
@@ -286,7 +286,7 @@ destroy_vector(bfc_contptr_t cntr)
 			vec->lock = NULL;
 			BFC_VECTOR_DESTROY(vec);
 			bfc_mutex_unlock(locked);
-			bfc_decr_refcount(lock);
+			bfc_mutex_decr_refcount(lock);
 		}
 		BFC_DESTROY_EPILOGUE(vec, cls);
 	}
@@ -903,8 +903,8 @@ vector_insert_fill(bfc_contptr_t cntr, bfc_iterptr_t position, size_t n,
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %ld, %p): pos %ld/%ld",
 		__FUNCTION__, vec, position, (long)n, p, (long)pos, (long)size);
-	bfc_object_dump(vec, 1, logger);
-	bfc_object_dump(position, 1, logger);
+	bfc_object_dump((bfc_cobjptr_t) vec, 1, logger);
+	bfc_iterator_dump(position, 1, logger);
 
 	if (n < 1) {
 		return (BFC_SUCCESS);
@@ -952,10 +952,10 @@ vector_insert_range(bfc_contptr_t cntr, bfc_iterptr_t position,
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %p, %p): pos %ld/%ld",
 		__FUNCTION__, vec, position, first, last,(long)pos,(long)size);
-	bfc_object_dump(vec, 1, logger);
-	bfc_object_dump(position, 1, logger);
-	bfc_object_dump(first, 1, logger);
-	bfc_object_dump(last, 1, logger);
+	bfc_object_dump((bfc_cobjptr_t) vec, 1, logger);
+	bfc_iterator_dump(position, 1, logger);
+	bfc_iterator_dump(first, 1, logger);
+	bfc_iterator_dump(last, 1, logger);
 
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);
@@ -1021,9 +1021,9 @@ vector_erase_range(bfc_contptr_t cntr, bfc_iterptr_t first, bfc_iterptr_t last)
 
 	L4SC_TRACE(logger, "%s(vec @%p, it @%p, %p): pos %ld+%ld/%ld",
 		__FUNCTION__, vec, first, last, (long)pos, (long)n, (long)size);
-	bfc_object_dump(vec, 1, logger);
-	bfc_object_dump(first, 1, logger);
-	bfc_object_dump(last, 1, logger);
+	bfc_object_dump((bfc_cobjptr_t) vec, 1, logger);
+	bfc_iterator_dump(first, 1, logger);
+	bfc_iterator_dump(last, 1, logger);
 
 	if (n < 1) {
 		return ((n == 0)? BFC_SUCCESS: -EINVAL);

@@ -286,8 +286,8 @@ bfc_shared_wstring_replace_range_buffer(bfc_strptr_t s, bfc_iterptr_t i1,
 		return (-EINVAL);
 	}
 	L4SC_DEBUG(logger,"%s: pos %ld, k %ld",__FUNCTION__,(long)pos,(long)k);
-	bfc_object_dump(i1, 1, logger);
-	bfc_object_dump(i2, 1, logger);
+	bfc_iterator_dump(i1, 1, logger);
+	bfc_iterator_dump(i2, 1, logger);
 	RETURN_METHCALL(bfc_string_classptr_t, s,
 			replace_buffer, (s, pos, k, s2, n),
 			bfc_shared_wstring_replace_buffer(s, pos, k, s2, n));

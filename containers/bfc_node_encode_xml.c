@@ -22,10 +22,10 @@
 #include "log4stdc.h"
 
 static int encode_xml_entities(char *dest, int size, const char *src, int len);
-static int tostring_with_entities(bfc_cnodeptr_t node, bfc_cobjptr_t child,
+static int tostring_with_entities(bfc_cobjptr_t node, bfc_cobjptr_t child,
 				char *buf, size_t bufsize);
 
-static int encode_xml_attributes(bfc_cnodeptr_t node,
+static int encode_xml_attributes(bfc_cobjptr_t node,
 				char *buf, size_t bufsize);
 static int encode_xml_attr_entities(char *dest, int size,
 				const char *src, int len);
@@ -35,7 +35,7 @@ static int tostring_with_attr_entities(bfc_cobjptr_t child,
 extern bfc_class_t bfc_treenode_class;
 
 int
-bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
+bfc_node_encode_xml(bfc_cobjptr_t node, char *buf, size_t bufsize, int level)
 {
 	static const char spaces[] = "                                ";
 	const char *indent = &spaces[32 - (2*level & 30)];
@@ -50,7 +50,8 @@ bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
 
 	len = strlen(indent) + 1;
 	spare = (bufsize > len)? bufsize - len: 0;
-	rc = bfc_object_tostring(&node->tagname, buf+len, spare, NULL);
+	rc = bfc_object_tostring(&((bfc_cnodeptr_t)node)->tagname,
+				 buf+len, spare, NULL);
 	if (rc > 0) {
 		if ((size_t)rc < spare) {
 			L4SC_TRACE(logger, "%s(node @%p): <%s>",
@@ -77,8 +78,8 @@ bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
 		}
 	}
 
-	bfc_container_begin_iterator(&node->vec, &iter, sizeof(iter));
-	bfc_container_end_iterator(&node->vec, &limit, sizeof(limit));
+	bfc_container_begin_iterator(node, &iter, sizeof(iter));
+	bfc_container_end_iterator(node, &limit, sizeof(limit));
 	if (bfc_iterator_distance(&iter, &limit) < 1) {
 		if (bufsize > len+2) {
 			memcpy(buf+len-1, "/>\0", 3);
@@ -157,7 +158,8 @@ bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
 	}
 
 	spare = (bufsize > len+3)? bufsize - len+2: 0;
-	rc = bfc_object_tostring(&node->tagname, buf+len+2, spare, NULL);
+	rc = bfc_object_tostring(&((bfc_cnodeptr_t)node)->tagname,
+				 buf+len+2, spare, NULL);
 	if (rc > 0) {
 		if ((size_t)rc < spare) {
 			buf[len] = '<';
@@ -186,13 +188,14 @@ bfc_node_encode_xml(bfc_cnodeptr_t node, char *buf, size_t bufsize, int level)
 	(memchr(buf,'<',len) || memchr(buf,'&',len) || memchr(buf,'>',len))
 
 static int
-tostring_with_entities(bfc_cnodeptr_t node,
+tostring_with_entities(bfc_cobjptr_t node,
 		       bfc_cobjptr_t child, char *buf, size_t bufsize)
 {
 	int rc;
 	int specials_in_buf = 0;
 	size_t tmpsize;
 	char *tmp;
+	struct mempool *pool;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	if ((rc = bfc_object_tostring(child, buf, bufsize, NULL)) <= 0) {
@@ -222,7 +225,8 @@ tostring_with_entities(bfc_cnodeptr_t node,
 		L4SC_DEBUG(logger, "%s: with entities in %s, rc = %d",
 						__FUNCTION__, tmp, rc);
 
-	} else if ((tmp = bfc_mempool_alloc(node->vec.pool, rc)) != NULL) {
+	} else if (((pool = ((bfc_cnodeptr_t)node)->vec.pool) != NULL)
+	        && ((tmp = bfc_mempool_alloc(pool, rc)) != NULL)) {
 		if (specials_in_buf) {
 			memcpy(tmp, buf, rc);
 			tmp[rc] = '\0';
@@ -237,7 +241,7 @@ tostring_with_entities(bfc_cnodeptr_t node,
 		rc = encode_xml_entities(buf, bufsize, tmp, rc);
 		L4SC_DEBUG(logger, "%s: with entities in %s, rc = %d",
 						__FUNCTION__, tmp, rc);
-		bfc_mempool_free(node->vec.pool, tmp);
+		bfc_mempool_free(pool, tmp);
 	}
 	return (rc);
 }
@@ -286,9 +290,10 @@ encode_xml_entities(char *dest, int size, const char *src, int len)
 }
 
 static int
-encode_xml_attributes(bfc_cnodeptr_t node, char *buf, size_t bufsize)
+encode_xml_attributes(bfc_cobjptr_t node, char *buf, size_t bufsize)
 {
 	size_t len = 0, spare;
+	bfc_contptr_t attrmap;
 	bfc_iterator_t iter, limit;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -297,14 +302,14 @@ encode_xml_attributes(bfc_cnodeptr_t node, char *buf, size_t bufsize)
 
 	if (node == NULL) {
 		return (-EFAULT);
-	} else if (node->attributes == NULL) {
+	} else if ((attrmap = ((bfc_cnodeptr_t)node)->attributes) == NULL) {
 		L4SC_DEBUG(logger, "%s(node %p): no attributes",
 						__FUNCTION__, node);
 		return (0);
 	}
 
-	bfc_container_begin_iterator(node->attributes, &iter, sizeof(iter));
-	bfc_container_end_iterator(node->attributes, &limit, sizeof(limit));
+	bfc_container_begin_iterator(attrmap, &iter, sizeof(iter));
+	bfc_container_end_iterator(attrmap, &limit, sizeof(limit));
 
 	while (bfc_iterator_distance(&iter, &limit) > 0) {
 		int rc1, rc2;

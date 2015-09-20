@@ -277,8 +277,8 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 			on_end_tag(&state, &curr);
 		}
 	}
-	bfc_destroy(&curr);
-	bfc_destroy(&doc);
+	bfc_destroy((bfc_objptr_t) &curr);
+	bfc_destroy((bfc_objptr_t) &doc);
 
 	LOGINFO(("%s: \"%s\" done, error %d", __FUNCTION__, path, err));
 
@@ -314,8 +314,8 @@ configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
 			on_end_tag(&state, &curr);
 		}
 	}
-	bfc_destroy(&curr);
-	bfc_destroy(&doc);
+	bfc_destroy((bfc_objptr_t) &curr);
+	bfc_destroy((bfc_objptr_t) &doc);
 
 	LOGINFO(("%s: done, error %d", __FUNCTION__, err));
 

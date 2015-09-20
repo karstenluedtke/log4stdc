@@ -210,7 +210,7 @@ int
 bfc_clone_iterator(bfc_citerptr_t obj, void *buf, size_t bufsize)
 {
 	bfc_iterptr_t iter = (bfc_iterptr_t) buf;
-	size_t size = bfc_object_size(obj);
+	size_t size = bfc_object_size((bfc_cobjptr_t) obj);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}
@@ -460,3 +460,8 @@ bfc_iterator_advance(bfc_iterptr_t it, ptrdiff_t n)
 			advance, (it, n), -ENOSYS);
 }
 
+void
+bfc_iterator_dump(bfc_citerptr_t it, int depth, struct l4sc_logger *log)
+{
+	VOID_METHCALL(bfc_iterator_classptr_t, it, dump, (it, depth, log));
+}

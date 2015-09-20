@@ -101,7 +101,7 @@ bfc_init_intarray_iterator(void *buf, size_t bufsize,
 			it->pos = pos;
 		}
 	}
-	bfc_object_dump(buf, 1, logger);
+	bfc_iterator_dump(buf, 1, logger);
 	return (rc);
 }
 
@@ -121,7 +121,7 @@ bfc_init_intarray_reverse_iterator(void *buf, size_t bufsize,
 		it->pos = pos; /* reverse end iterator */
 		rc = BFC_SUCCESS;
 	}
-	bfc_object_dump(buf, 1, logger);
+	bfc_iterator_dump(buf, 1, logger);
 	return (rc);
 }
 
@@ -211,7 +211,7 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 			it->pos = BFC_NPOS;
 		}
 	}
-	bfc_object_dump(it, 1, logger);
+	bfc_iterator_dump(it, 1, logger);
 	return (BFC_SUCCESS);
 }
 

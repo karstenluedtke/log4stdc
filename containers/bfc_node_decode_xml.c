@@ -17,17 +17,17 @@
 #include "log4stdc.h"
 
 struct bfc_node_xml_parse_state {
-	BFC_VECTOR(bfc_node_parse_stack, bfc_nodeptr_t, 4) stack;
+	BFC_VECTOR(bfc_node_parse_stack, bfc_objptr_t, 4) stack;
 	bfc_xmltag_t	prev;
 	bfc_xmltag_t	curr;
 };
 
 extern const struct bfc_xmltag_iterator_class bfc_xmltag_forward_iterator_class;
 
-static int set_node_attributes(bfc_nodeptr_t node, bfc_ctagptr_t tag);
-static int new_child_node(bfc_nodeptr_t parent, bfc_nodeptr_t *childpp,
+static int set_node_attributes(bfc_objptr_t node, bfc_ctagptr_t tag);
+static int new_child_node(bfc_objptr_t parent, bfc_objptr_t *childpp,
 			  bfc_ctagptr_t tag);
-static int new_text_node(bfc_nodeptr_t parent, bfc_strptr_t *strpp,
+static int new_text_node(bfc_objptr_t parent, bfc_strptr_t *strpp,
 			 bfc_cstrptr_t text);
 
 static int
@@ -51,20 +51,21 @@ static void
 destroy_parse_state(struct bfc_node_xml_parse_state *st)
 {
 	if (st->stack.vptr) {
-		bfc_destroy(&st->prev);
-		bfc_destroy(&st->curr);
-		bfc_destroy(&st->stack);
+		bfc_destroy((bfc_objptr_t) &st->prev);
+		bfc_destroy((bfc_objptr_t) &st->curr);
+		bfc_destroy((bfc_objptr_t) &st->stack);
 		st->stack.vptr = NULL;
 	}
 }
 
 int
-bfc_node_decode_xml(bfc_nodeptr_t node, bfc_cstrptr_t s, size_t offs)
+bfc_node_decode_xml(bfc_objptr_t node, bfc_cstrptr_t s, size_t offs)
 {
 	int rc;
 	struct bfc_node_xml_parse_state st;
 
-	if ((rc = init_parse_state(&st,sizeof(st),node->vec.pool,s,offs)) < 0) {
+	if ((rc = init_parse_state(&st,sizeof(st),
+				((bfc_nodeptr_t)node)->vec.pool,s,offs)) < 0) {
 		return (rc);
 	}
 	rc = bfc_node_parse_xmltags(node, s, &st);
@@ -76,24 +77,26 @@ bfc_node_decode_xml(bfc_nodeptr_t node, bfc_cstrptr_t s, size_t offs)
 }
 
 int
-bfc_node_parse_xmltags(bfc_nodeptr_t rootnode, bfc_cstrptr_t s,
+bfc_node_parse_xmltags(bfc_objptr_t rootnode, bfc_cstrptr_t s,
 			struct bfc_node_xml_parse_state *st)
 {
 	int rc, level, iterations = 0;
+	bfc_contptr_t tagstack = (bfc_contptr_t) &st->stack;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %p)", __FUNCTION__, s, st);
 
 	if (BFC_CLASS(&st->prev) != &bfc_xmltag_forward_iterator_class) {
-		init_parse_state(st, sizeof(*st), rootnode->vec.pool, s, 0);
+		init_parse_state(st, sizeof(*st),
+				 ((bfc_cnodeptr_t)rootnode)->vec.pool, s, 0);
 	}
 	level = st->prev.level;
 	st->curr = st->prev;
-	bfc_container_place(&st->stack, level, rootnode, st->stack.pool);
+	bfc_container_place(tagstack, level, rootnode, st->stack.pool);
 
 	while ((rc = bfc_iterator_advance((bfc_iterptr_t) &st->curr, 1)) >= 0) {
 		bfc_ctagptr_t tag = &st->curr;
-		bfc_nodeptr_t node = bfc_container_index(&st->stack, level);
+		bfc_objptr_t node = bfc_container_index(tagstack, level);
 		size_t offs = bfc_iterator_position((bfc_citerptr_t)tag);
 		size_t off1 = bfc_iterator_position((bfc_citerptr_t)&st->prev);
 		size_t text = off1 + st->prev.length;
@@ -125,21 +128,21 @@ bfc_node_parse_xmltags(bfc_nodeptr_t rootnode, bfc_cstrptr_t s,
 				if ((rc = set_node_attributes(node, tag)) < 0) {
 					return (rc);
 				}
-				bfc_container_place(&st->stack, nextlevel,
+				bfc_container_place(tagstack, nextlevel,
 						    rootnode, st->stack.pool);
 			} else {
-				bfc_nodeptr_t nn = NULL;
+				bfc_objptr_t nn = NULL;
 				if ((rc = new_child_node(node, &nn, tag)) < 0) {
 					return (rc);
 				}
-				bfc_container_place(&st->stack, nextlevel,
+				bfc_container_place(tagstack, nextlevel,
 						    nn, st->stack.pool);
 				bfc_decr_refcount(nn); /* ref'd by st->stack */
 			}
 			level = nextlevel;
 			L4SC_DEBUG(logger, "%s: nodestack[%d] = %p",
 				__FUNCTION__, level,
-				bfc_container_index(&st->stack,level));
+				bfc_container_index(tagstack, level));
 
 		} else if (tag->tagtype == BFC_XML_END_TAG) {
 			level = tag->level;
@@ -152,7 +155,7 @@ bfc_node_parse_xmltags(bfc_nodeptr_t rootnode, bfc_cstrptr_t s,
 					return (rc);
 				}
 			} else {
-				bfc_nodeptr_t nn = NULL;
+				bfc_objptr_t nn = NULL;
 				if ((rc = new_child_node(node, &nn, tag)) < 0) {
 					return(rc);
 				}
@@ -165,17 +168,16 @@ bfc_node_parse_xmltags(bfc_nodeptr_t rootnode, bfc_cstrptr_t s,
 }
 
 static int
-new_child_node(bfc_nodeptr_t parent, bfc_nodeptr_t *childpp, bfc_ctagptr_t tag)
+new_child_node(bfc_objptr_t parent, bfc_objptr_t *childpp, bfc_ctagptr_t tag)
 {
 	int rc;
-	bfc_nodeptr_t node;
+	bfc_objptr_t node;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %p, %p)",__FUNCTION__,parent, childpp, tag);
 
-	if ((rc = bfc_new((void **) childpp,
-			  BFC_CLASS((bfc_cobjptr_t)parent),
-			  parent->vec.pool)) < 0) {
+	if ((rc = bfc_new(childpp, BFC_CLASS((bfc_cobjptr_t)parent),
+			  ((bfc_cnodeptr_t)parent)->vec.pool)) < 0) {
 		return (rc);
 	}
 	node = *childpp;
@@ -187,7 +189,7 @@ new_child_node(bfc_nodeptr_t parent, bfc_nodeptr_t *childpp, bfc_ctagptr_t tag)
 }
 
 static int
-set_node_attributes(bfc_nodeptr_t node, bfc_ctagptr_t tag)
+set_node_attributes(bfc_objptr_t node, bfc_ctagptr_t tag)
 {
 	int i, nattrs;
 	void *buf;
@@ -222,11 +224,11 @@ set_node_attributes(bfc_nodeptr_t node, bfc_ctagptr_t tag)
 }
 
 static int
-new_text_node(bfc_nodeptr_t parent, bfc_strptr_t *strpp, bfc_cstrptr_t text)
+new_text_node(bfc_objptr_t parent, bfc_strptr_t *strpp, bfc_cstrptr_t text)
 {
 	int rc;
 	bfc_strptr_t s;
-	struct mempool *pool = parent->vec.pool;
+	struct mempool *pool = ((bfc_nodeptr_t)parent)->vec.pool;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
 	L4SC_TRACE(logger, "%s(%p, %p, %p)", __FUNCTION__, parent, strpp, text);

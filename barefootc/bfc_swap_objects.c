@@ -10,7 +10,7 @@
 #include "barefootc/object.h"
 
 int
-bfc_swap_objects(void *obj1, void *obj2)
+bfc_swap_objects(bfc_objptr_t obj1, bfc_objptr_t obj2)
 {
 	size_t size = bfc_object_size(obj1);
 

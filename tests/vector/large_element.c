@@ -41,7 +41,7 @@ test(void *initialized_vector, unsigned elem_size)
 	L4SC_DEBUG(logger, "%s(vec %p, elem_size %u) n=%u",
 		__FUNCTION__, vec, elem_size, n);
 
-	bfc_object_dump(vec, 1, logger);
+	bfc_object_dump((bfc_objptr_t)vec, 1, logger);
 
 	p0 = (char *) bfc_vector_have(vec, 0);
 	L4SC_DEBUG(logger, "%s: vec[%u] @%p", __FUNCTION__, 0, p0);
@@ -67,7 +67,7 @@ test(void *initialized_vector, unsigned elem_size)
 		p0 = p1;
 	}
 
-	bfc_object_dump(vec, 1, logger);
+	bfc_object_dump((bfc_objptr_t)vec, 1, logger);
 
 	for (k=0; k < n; k++) {
 		p1 = (char *) bfc_container_index((bfc_contptr_t) vec, k);
@@ -84,7 +84,7 @@ test(void *initialized_vector, unsigned elem_size)
 
 	rc = bfc_init_vector_copy(&v2, sizeof(v2), pool, (bfc_ccontptr_t) vec);
 	assert(rc >= 0);
-	bfc_object_dump(&v2, 1, logger);
+	bfc_object_dump((bfc_objptr_t)&v2, 1, logger);
 
 	for (k=0; k < n; k++) {
 		p1 = (char *) bfc_container_index((bfc_contptr_t) &v2, k);
@@ -131,7 +131,7 @@ main(int argc, char *argv[])
 		rc = bfc_init_vector_class(&v1, sizeof(v1), pool);
 		assert(rc >= 0);
 		test(&v1, 123);
-		bfc_destroy(&v1);
+		bfc_destroy((bfc_objptr_t) &v1);
 	} while (0 /*just once*/);
 
 	do {
@@ -141,7 +141,7 @@ main(int argc, char *argv[])
 		rc = bfc_init_vector_class(&v2, sizeof(v2), pool);
 		assert(rc >= 0);
 		test(&v2, 12345);
-		bfc_destroy(&v2);
+		bfc_destroy((bfc_objptr_t) &v2);
 	} while (0 /*just once*/);
 
 	do {
@@ -153,7 +153,7 @@ main(int argc, char *argv[])
 		rc = bfc_init_vector_class(&v3, sizeof(v3), pool);
 		assert(rc >= 0);
 		test(&v3, sizeof(e3t));
-		bfc_destroy(&v3);
+		bfc_destroy((bfc_objptr_t) &v3);
 	} while (0 /*just once*/);
 
 	do {
@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 		rc = bfc_init_vector_class(&v4, sizeof(v4), pool);
 		assert(rc >= 0);
 		test(&v4, sizeof(e4t));
-		bfc_destroy(&v4);
+		bfc_destroy((bfc_objptr_t) &v4);
 	} while (0 /*just once*/);
 
 	return (0);

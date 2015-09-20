@@ -44,11 +44,9 @@ create_test_object(const char *v, struct mempool *pool)
 {
 	bfc_objptr_t obj;
 	int vlen = strlen(v);
-	void *p;
 	char *nm;
 
-	bfc_new(&p, &test_object_class, pool);
-	obj = (bfc_objptr_t) p;
+	bfc_new(&obj, &test_object_class, pool);
 	nm = bfc_mempool_alloc(pool, vlen+1);
 	memcpy(nm, v, vlen);
 	nm[vlen] = '\0';
@@ -102,7 +100,7 @@ test(int n1, struct test_kv kv[])
 	bfc_objref_vector_t v1;
 	BFC_VECTOR(v2s, bfc_objptr_t, 1) v2;
 	const struct mempool_mark *poolmark = bfc_mempool_mark(pool);
-	const size_t initial_poolsize = bfc_object_length(pool);
+	const size_t initial_poolsize = bfc_object_length((bfc_objptr_t)pool);
 	char buf[200];
 
 	L4SC_DEBUG(logger, "%s(n1 %d, ...)", __FUNCTION__, n1);
@@ -119,30 +117,31 @@ test(int n1, struct test_kv kv[])
 		bfc_objptr_t obj = create_test_object(kv[i].val, pool);
 		bfc_objptr_t ret;
 		bfc_init_refcount(obj, 1);
-		ret = bfc_container_place(&v1, kv[i].pos, obj, NULL);
+		ret = bfc_container_place((bfc_contptr_t)&v1, kv[i].pos, obj, NULL);
 		assert(ret == obj);
 		assert(obj->refc == 2);
-		assert(bfc_container_index(&v1, kv[i].pos) == obj);
+		assert(bfc_container_index((bfc_contptr_t)&v1, kv[i].pos) == obj);
 		bfc_decr_refcount(obj);
 		assert(obj->refc == 1);
 	}
-	bfc_object_dump(&v1, 2, logger);
+	bfc_object_dump((bfc_objptr_t)&v1, 2, logger);
 
 	L4SC_DEBUG(logger, "%s: current pool size %ld",
-			__FUNCTION__, (long) bfc_object_length(pool));
+		__FUNCTION__, (long) bfc_object_length((bfc_objptr_t)pool));
 
-	// bfc_object_dump(pool, 1, logger);
+	// bfc_object_dump((bfc_objptr_t) pool, 1, logger);
 
 	bfc_container_assign_copy((bfc_contptr_t) &v2, (bfc_ccontptr_t) &v1);
-	bfc_object_dump(&v2, 2, logger);
+	bfc_object_dump((bfc_objptr_t)&v2, 2, logger);
 	L4SC_DEBUG(logger, "%s: v2 size is %ld, expect %ld", __FUNCTION__,
-		(long)bfc_object_length(&v2), (long)bfc_object_length(&v1));
-	assert(bfc_object_length(&v2) == bfc_object_length(&v1));
-	assert(bfc_equal_object(&v2, &v1));
+		(long)bfc_object_length((bfc_objptr_t)&v2),
+		(long)bfc_object_length((bfc_objptr_t)&v1));
+	assert(bfc_object_length((bfc_objptr_t)&v2) == bfc_object_length((bfc_objptr_t)&v1));
+	assert(bfc_object_equals((bfc_objptr_t)&v2, (bfc_objptr_t)&v1));
 
 	for (i=0; i < n1; i++) {
-		bfc_cobjptr_t o1 = bfc_container_cindex(&v1, kv[i].pos);
-		bfc_cobjptr_t o2 = bfc_container_cindex(&v2, kv[i].pos);
+		bfc_cobjptr_t o1 = bfc_container_cindex((bfc_objptr_t)&v1, kv[i].pos);
+		bfc_cobjptr_t o2 = bfc_container_cindex((bfc_objptr_t)&v2, kv[i].pos);
 		assert(o1 != NULL);
 		assert(o2 == o1);
 		assert(o1->refc == 2);
@@ -153,27 +152,27 @@ test(int n1, struct test_kv kv[])
 	}
 
 	L4SC_DEBUG(logger, "%s: current pool size %ld",
-			__FUNCTION__, (long) bfc_object_length(pool));
+		__FUNCTION__, (long) bfc_object_length((bfc_objptr_t)pool));
 	// bfc_mempool_dump_all(2, logger);
 
-	bfc_destroy(&v1);
+	bfc_destroy((bfc_objptr_t)&v1);
 
 	for (i=0; i < n1; i++) {
-		bfc_cobjptr_t obj = bfc_container_cindex(&v2, kv[i].pos);
+		bfc_cobjptr_t obj = bfc_container_cindex((bfc_objptr_t)&v2, kv[i].pos);
 		assert(obj != NULL);
 		assert(obj->refc == 1);
 		bfc_object_tostring(obj, buf, sizeof(buf), NULL);
 		assert(strcmp(buf, kv[i].val) == 0);
 	}
 
-	bfc_destroy(&v2);
+	bfc_destroy((bfc_objptr_t)&v2);
 
 	L4SC_DEBUG(logger, "%s: final pool size %ld",
-			__FUNCTION__, (long) bfc_object_length(pool));
-	assert(bfc_object_length(pool) == initial_poolsize);
+		__FUNCTION__, (long) bfc_object_length((bfc_objptr_t)pool));
+	assert(bfc_object_length((bfc_objptr_t)pool) == initial_poolsize);
 
 	bfc_mempool_reset(pool, poolmark);
-	// bfc_object_dump(pool, 99, logger);
+	// bfc_object_dump((bfc_objptr_t) pool, 99, logger);
 
 	L4SC_DEBUG(logger, "%s(n1 %d, ...)", "PASS", n1);
 
@@ -228,7 +227,7 @@ main(int argc, char *argv[])
 	} while (0 /*just once*/);
 
 	bfc_mempool_reset(pool, 0);
-	// bfc_object_dump(pool, 99, logger);
+	// bfc_object_dump((bfc_objptr_t) pool, 99, logger);
 
 	return (0);
 }

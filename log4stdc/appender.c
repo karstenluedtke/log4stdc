@@ -280,7 +280,7 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 
 	LOGINFO(("%s: appender %.*s not found, creating %.*s ...",
 			__FUNCTION__, nlen, name, klen, kind));
-	rc = bfc_new((void **) &appender, (bfc_classptr_t) clazz, pool);
+	rc = bfc_new((bfc_objptr_t *) &appender, (bfc_classptr_t) clazz, pool);
 	if ((rc >= 0) && appender) {
 		VOID_METHCALL(l4sc_appender_class_ptr_t, appender,
 			      set_name, (appender, name, nlen));

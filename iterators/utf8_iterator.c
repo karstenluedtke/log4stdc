@@ -81,7 +81,7 @@ bfc_init_utf8_iterator(void *buf, size_t bufsize, bfc_cobjptr_t s, size_t pos)
 			it->pos = pos;
 		}
 	}
-	bfc_object_dump(buf, 1, logger);
+	bfc_iterator_dump((bfc_citerptr_t) buf, 1, logger);
 	return (rc);
 }
 
@@ -270,7 +270,7 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 			it->pos = len;
 		}
 	}
-	bfc_object_dump(it, 1, logger);
+	bfc_iterator_dump(it, 1, logger);
 	return (BFC_SUCCESS);
 }
 
@@ -303,7 +303,7 @@ advance_reverse(bfc_iterptr_t it, ptrdiff_t n)
 			rc = bfc_string_get_char(s, it->pos);
 		} while ((it->pos > 0) && (rc >= 0x80) && (rc < 0xC0));
 	}
-	bfc_object_dump(it, 1, logger);
+	bfc_iterator_dump(it, 1, logger);
 	return (BFC_SUCCESS);
 }
 

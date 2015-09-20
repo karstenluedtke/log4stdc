@@ -67,6 +67,15 @@ int bfc_new_win32_mutex(struct bfc_mutex **, struct mempool *,
 #endif
 #endif
 
+#define bfc_mutex_init_refcount(mutex,n) \
+	(*BFC_CLASS(mutex)->incrrefc)(mutex,n)
+
+#define bfc_mutex_incr_refcount(mutex) \
+	(*BFC_CLASS(mutex)->incrrefc)(mutex)
+
+#define bfc_mutex_decr_refcount(mutex) \
+	(*BFC_CLASS(mutex)->decrrefc)(mutex)
+
 #ifdef __cplusplus
 }	/* C++ */
 #endif

@@ -185,7 +185,7 @@ namespace barefootc {
 		
 		size_type bucket_count() const noexcept
 		{
-			int rc = bfc_object_length(&bfcmap);
+			int rc = bfc_object_length((bfc_cobjptr_t)&bfcmap);
 			return ((rc > 0)? rc: 0);
 		}
 
@@ -300,7 +300,7 @@ map<Key,T,Compare,Allocator>& y);
 
 		~map()
 		{
-			bfc_destroy(&bfcmap);
+			bfc_destroy((bfc_objptr_t) &bfcmap);
 		}
 
 		bfc_contptr_t contptr() const

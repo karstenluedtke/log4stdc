@@ -230,7 +230,7 @@ advance_forward(bfc_iterptr_t it, ptrdiff_t n)
 			it->pos = BFC_NPOS;
 		}
 	}
-	bfc_object_dump(it, 1, logger);
+	bfc_iterator_dump(it, 1, logger);
 	return (BFC_SUCCESS);
 }
 

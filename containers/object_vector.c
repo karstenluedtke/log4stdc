@@ -18,6 +18,7 @@
 #include "barefootc/iterator.h"
 #include "barefootc/container.h"
 #include "barefootc/vector.h"
+#include "barefootc/string.h"
 #include "barefootc/synchronization.h"
 #include "barefootc/unconst.h"
 #include "log4stdc.h"
@@ -46,6 +47,8 @@ static int vector_insert_range(bfc_objptr_t vec, bfc_iterptr_t position,
 				bfc_iterptr_t first,bfc_iterptr_t last);
 static int vector_erase_range(bfc_objptr_t vec,
 				bfc_iterptr_t first,bfc_iterptr_t last);
+static int find_by_name(bfc_cobjptr_t vec,
+				bfc_cobjptr_t name,int depth,bfc_iterptr_t it);
 
 struct bfc_vector_class {
 	BFC_CONTAINER_CLASS_DEF(const struct bfc_vector_class *,
@@ -73,6 +76,8 @@ const struct bfc_vector_class bfc_object_vector_class = {
 	.insert_fill	= vector_insert_fill,
 	.insert_range	= vector_insert_range,
 	.erase_range	= vector_erase_range,
+	/* Operations */
+	.find_by_name	= find_by_name,
 };
 
 int
@@ -659,6 +664,70 @@ vector_erase_range(bfc_objptr_t cntr, bfc_iterptr_t first, bfc_iterptr_t last)
 				__FUNCTION__, vec, first, last);
 		rc = -EBUSY;
 	}
+	return (rc);
+}
+
+/**
+ * @brief  Find the position of a elemnt in the vector by means of the name.
+ *
+ * @param[in]	vec	The container.
+ * @param[in]	name	The name.
+ * @param[in]	depth	Ignored, there is only one level in the map.
+ * @param[out]	it	An iterator which is set to the position of the pair.
+ *			If no pair is found, -ENOENT is returend and the
+ *			iterator is set to the position where the pair shall be
+ *			placed.
+ * @return		Index of the pair in the map, or negative on error.
+ */
+static int
+find_by_name(bfc_cobjptr_t vec,bfc_cobjptr_t name,int depth,bfc_iterptr_t it)
+{
+	int rc = -ENOENT;
+	bfc_objptr_t elem = NULL;
+	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
+	bfc_mutex_ptr_t locked;
+	bfc_iterator_t iter, enditer;
+	char kbuf[200];
+
+	if ((vec == NULL) || (name == NULL)) {
+		L4SC_ERROR(logger, "%s(%p, name %p): null arg",
+						__FUNCTION__, vec, name);
+		return (-EFAULT);
+	} else if (BFC_CLASS((bfc_cobjptr_t)name) == NULL) {
+		L4SC_ERROR(logger, "%s(%p, name %p): no name class",
+						__FUNCTION__, vec, name);
+		return (-EINVAL);
+	}
+
+	if (vec->lock && (locked = bfc_mutex_lock(vec->lock))) {
+		bfc_container_begin_iterator(vec, &iter, sizeof(iter));
+		bfc_container_end_iterator(vec, &enditer, sizeof(enditer));
+		while (bfc_iterator_distance(&iter, &enditer) > 0) {
+			elem = bfc_iterator_index(&iter);
+			if (elem && BFC_CLASS(elem) && elem->name
+			 && (bfc_string_compare_c_str(name, elem->name) == 0)) {
+				rc = (int) bfc_iterator_position(&iter);
+				if (it != NULL) {
+					*it = iter;
+				}
+				break;
+			}
+			bfc_iterator_advance(&iter, 1);
+		}
+		if ((rc == -ENOENT) && (it != NULL)) {
+			*it = enditer;
+			/* rc remains -ENOENT */
+		}
+		bfc_mutex_unlock(locked);
+	} else {
+		L4SC_ERROR(logger, "%s(%p, name %p) cannot lock",
+						__FUNCTION__, vec, name);
+		rc = -EBUSY;
+	}
+
+	bfc_object_tostring(name, kbuf, sizeof(kbuf), NULL);
+	L4SC_DEBUG(logger, "%s(%p, name %p: %s) %s%d",
+		__FUNCTION__, vec, name, kbuf, (rc < 0)? "error ": "at #", rc);
 	return (rc);
 }
 

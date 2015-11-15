@@ -155,8 +155,8 @@ dump_cstring(bfc_cobjptr_t s, int depth, struct l4sc_logger *log)
 		const size_t len = bfc_strlen(s);
 		const char *data = bfc_strdata(s);
 		if (len < 200) {
-			L4SC_DEBUG(log, "%s @%p, len %ld: \"%s\"",
-				BFC_CLASS(s)->name, s, (long) len, data);
+			L4SC_DEBUG(log, "%s @%p, len %ld: \"%.*s\"",
+				BFC_CLASS(s)->name,s,(long)len,(int)len,data);
 		} else {
 			L4SC_DEBUG(log, "%s @%p, len %ld @%p",
 				BFC_CLASS(s)->name, s, (long) len, data);

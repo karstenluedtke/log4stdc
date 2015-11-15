@@ -80,7 +80,7 @@ int
 bfc_node_parse_xmltags(bfc_objptr_t rootnode, bfc_cobjptr_t s,
 			struct bfc_node_xml_parse_state *st)
 {
-	int rc, level, iterations = 0;
+	int rc, level, iterations = 0, done = 0;
 	bfc_objptr_t tagstack = (bfc_objptr_t) &st->stack;
 	l4sc_logger_ptr_t logger = l4sc_get_logger(BFC_CONTAINER_LOGGER);
 
@@ -149,6 +149,9 @@ bfc_node_parse_xmltags(bfc_objptr_t rootnode, bfc_cobjptr_t s,
 			bfc_container_resize((bfc_objptr_t)&st->stack,
 							     level+1, NULL);
 
+			if (level == 0) {
+				done = 1;
+			}
 		} else if (tag->tagtype == BFC_XML_EMPTY_TAG) {
 			if (level == 0) {
 				if ((rc = set_node_attributes(node, tag)) < 0) {
@@ -163,6 +166,9 @@ bfc_node_parse_xmltags(bfc_objptr_t rootnode, bfc_cobjptr_t s,
 			}
 		}
 		st->prev = st->curr;
+		if (done) {
+			break;
+		}
 	}
 	return (st->prev.level);
 }

@@ -26,6 +26,7 @@ noinst_PROGRAMS = testlink
 noinst_PROGRAMS+= vector_test
 noinst_PROGRAMS+= string_test
 noinst_PROGRAMS+= cxxwrapper_test
+noinst_PROGRAMS+= clitypes2c
 
 check_PROGRAMS =
 
@@ -445,7 +446,11 @@ vector_test_SOURCES = containers/vector_test.c
 vector_test_LDADD = libbarefootc.a
 vector_test_DEPENDENCIES = libbarefootc.a
 
-TESTS = testlink vector_test string_test cxxwrapper_test
+clitypes2c_SOURCES = clitypes2c.c
+clitypes2c_LDADD = libbarefootc.a liblog4stdc.a
+clitypes2c_DEPENDENCIES = libbarefootc.a liblog4stdc.a
+
+TESTS = testlink vector_test string_test cxxwrapper_test clitypes2c
 
 noinst_PROGRAMS += examples/barefootc_log_redirect
 examples_barefootc_log_redirect_SOURCES = examples/barefootc_log_redirect.c

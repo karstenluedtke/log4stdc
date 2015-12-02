@@ -18,6 +18,7 @@
 
 struct bfc_node_xml_parse_state {
 	BFC_VECTOR(bfc_node_parse_stack, bfc_objptr_t, 4) stack;
+	int		flags;
 	bfc_xmltag_t	prev;
 	bfc_xmltag_t	curr;
 };
@@ -32,7 +33,7 @@ static int new_text_node(bfc_objptr_t parent, bfc_objptr_t *strpp,
 
 static int
 init_parse_state(void *buf, size_t bufsize, bfc_mempool_t pool,
-		 bfc_cobjptr_t s, size_t offs)
+		 bfc_cobjptr_t s, size_t offs, int flags)
 {
 	struct bfc_node_xml_parse_state *st;
 	int rc;
@@ -43,6 +44,7 @@ init_parse_state(void *buf, size_t bufsize, bfc_mempool_t pool,
 	rc = bfc_init_objref_vector_class(&st->stack, sizeof(st->stack), pool);
 	bfc_init_xmltag(&st->prev, sizeof(st->prev), s, offs);
 	st->curr = st->prev;
+	st->flags = flags;
 
 	return (rc);
 }
@@ -59,13 +61,13 @@ destroy_parse_state(struct bfc_node_xml_parse_state *st)
 }
 
 int
-bfc_node_decode_xml(bfc_objptr_t node, bfc_cobjptr_t s, size_t offs)
+bfc_node_decode_xml(bfc_objptr_t node, bfc_cobjptr_t s, size_t offs, int flags)
 {
 	int rc;
 	bfc_mempool_t pool = bfc_container_pool(node);
 	struct bfc_node_xml_parse_state st;
 
-	if ((rc = init_parse_state(&st, sizeof(st), pool, s, offs)) < 0) {
+	if ((rc = init_parse_state(&st,sizeof(st), pool, s, offs, flags)) < 0) {
 		return (rc);
 	}
 	rc = bfc_node_parse_xmltags(node, s, &st);
@@ -88,7 +90,7 @@ bfc_node_parse_xmltags(bfc_objptr_t rootnode, bfc_cobjptr_t s,
 
 	if (BFC_CLASS(&st->prev) != &bfc_xmltag_forward_iterator_class) {
 		bfc_mempool_t pool = bfc_container_pool(rootnode);
-		init_parse_state(st, sizeof(*st), pool, s, 0);
+		init_parse_state(st, sizeof(*st), pool, s, 0, 0);
 	}
 	level = st->prev.level;
 	st->curr = st->prev;
@@ -112,10 +114,21 @@ bfc_node_parse_xmltags(bfc_objptr_t rootnode, bfc_cobjptr_t s,
 			bfc_objptr_t newnode;
 			bfc_string_shared_substr(s, text, offs-text,
 						 &str, sizeof(str));
-			if ((rc = new_text_node(node, &newnode, &str)) < 0) {
-				return(rc);
+			if (st->flags & BFC_PRESERVE_WHITESPACE) {
+				rc = new_text_node(node, &newnode, &str);
+				if (rc < 0) {
+					return(rc);
+				}
+				bfc_decr_refcount(newnode); /*ref'd by parent*/
+
+			} else if ((bfc_string_trim(&str) >= 0)
+				&& (bfc_string_length(&str) > 0)) {
+				rc = new_text_node(node, &newnode, &str);
+				if (rc < 0) {
+					return(rc);
+				}
+				bfc_decr_refcount(newnode); /*ref'd by parent*/
 			}
-			bfc_decr_refcount(newnode); /* ref'd by parent */
 		}
 
 		L4SC_DEBUG(logger, "%s: iteration #%d, tag %.*s",

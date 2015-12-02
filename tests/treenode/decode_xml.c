@@ -47,7 +47,7 @@ main(int argc, char *argv[])
 		int rc;
 		
 		bfc_init_treenode(&root, sizeof(root), pool);
-		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0);
+		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0, 0);
 		bfc_object_tostring((bfc_objptr_t)&root,buf,sizeof(buf),"xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);
@@ -71,7 +71,7 @@ main(int argc, char *argv[])
 		int rc;
 		
 		bfc_init_treenode(&root, sizeof(root), pool);
-		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0);
+		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0, 0);
 		bfc_object_tostring((bfc_objptr_t)&root,buf,sizeof(buf),"xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);
@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 		int rc;
 		
 		bfc_init_treenode(&root, sizeof(root), pool);
-		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0);
+		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0, 0);
 		bfc_object_tostring((bfc_objptr_t)&root,buf,sizeof(buf),"xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);
@@ -112,7 +112,8 @@ main(int argc, char *argv[])
 		int rc;
 		
 		bfc_init_treenode(&root, sizeof(root), pool);
-		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0);
+		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0,
+					 BFC_PRESERVE_WHITESPACE);
 		bfc_object_tostring((bfc_objptr_t)&root,buf,sizeof(buf),"xml");
 		L4SC_DEBUG(logger, "%s", buf);
 		assert(rc >= 0);

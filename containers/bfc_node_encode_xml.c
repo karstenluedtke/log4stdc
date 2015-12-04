@@ -81,10 +81,13 @@ bfc_node_encode_xml(bfc_cobjptr_t node, char *buf, size_t bufsize, int level)
 	bfc_container_begin_iterator(node, &iter, sizeof(iter));
 	bfc_container_end_iterator(node, &limit, sizeof(limit));
 	if (bfc_iterator_distance(&iter, &limit) < 1) {
-		if (bufsize > len+2) {
+		if (bufsize > len+4) {
+			memcpy(buf+len-1, "/>\r\n\0", 5);
+		} else if (bufsize > len+2) {
 			memcpy(buf+len-1, "/>\0", 3);
 		}
-		return (++len);
+		len += 3;
+		return (len);
 	} else {
 		bfc_cobjptr_t first = bfc_iterator_index(&iter);
 		if (bfc_instance_of_class(first, &bfc_treenode_class)) {

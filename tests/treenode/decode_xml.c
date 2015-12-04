@@ -120,5 +120,32 @@ main(int argc, char *argv[])
 		assert(strcmp(buf, bfc_string_data(&input)) == 0);
 	} while (0 /*just once*/);
 
+	do {
+		bfc_node_t root;
+		static const bfc_string_t input = BFCSTR(
+			"<Member MemberName=\"System.IDisposable.Dispose\">" CRLF
+			"  <MemberSignature Language=\"ILAsm\" Value=\".method private final hidebysig virtual void System.IDisposable.Dispose()\"/>" CRLF
+			"  <MemberSignature Language=\"C#\" Value=\"void IDisposable.Dispose();\"/>" CRLF
+			"  <MemberType>Method</MemberType>" CRLF
+			"  <ReturnValue>" CRLF
+			"    <ReturnType>System.Void</ReturnType>" CRLF
+			"  </ReturnValue>" CRLF
+			"  <Parameters/>" CRLF
+			"  <Docs>" CRLF
+			"    <summary>Implemented to support the<see cref=\"T:System.IDisposable\"/>interface. [Note: For more information, see<see cref=\"M:System.IDisposable.Dispose\"/>.]</summary>" CRLF
+			"  </Docs>" CRLF
+			"  <Excluded>0</Excluded>" CRLF
+			"</Member>" CRLF);
+		char buf[4000];
+		int rc;
+		
+		bfc_init_treenode(&root, sizeof(root), pool);
+		rc = bfc_node_decode_xml((bfc_objptr_t)&root, &input, 0, 0);
+		bfc_object_tostring((bfc_objptr_t)&root,buf,sizeof(buf),"xml");
+		L4SC_DEBUG(logger, "%s", buf);
+		assert(rc >= 0);
+		assert(strcmp(buf, bfc_string_data(&input)) == 0);
+	} while (0 /*just once*/);
+
 	return (0);
 }

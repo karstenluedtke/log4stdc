@@ -32,7 +32,7 @@ struct mempool;
 struct l4sc_logger;
 
 struct bfc_mutex_class {
-	BFC_CLASSHDR(bfc_mutex_class_ptr_t,
+	BFC_OBJECT_CLASSHDR(bfc_mutex_class_ptr_t,
 			bfc_mutex_ptr_t, bfc_mutex_ptr_t)
 
 	bfc_mutex_ptr_t	(*lock)   (bfc_mutex_ptr_t,

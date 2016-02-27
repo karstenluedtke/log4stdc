@@ -21,7 +21,8 @@ int main (int argc, char *argv[])
 {
 	l4sc_logger_ptr_t logger;
 
-	l4sc_configure_from_xml_file("log4j.xml");
+	//l4sc_configure_from_xml_file("log4j.xml");
+	l4sc_configure_from_property_file("log4j.properties");
 	l4sc_get_root_logger();
 
 	logger = l4sc_get_logger("pal", 3);

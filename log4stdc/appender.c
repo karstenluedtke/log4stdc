@@ -90,8 +90,9 @@ init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 			  &l4sc_sysout_appender_class);
 
 	appender->name = "sysout appender";
-	bfc_init_object((bfc_classptr_t) &l4sc_patternlayout_class,
-			&appender->layout, sizeof(appender->layout), pool);
+	appender->layout.vptr = &l4sc_patternlayout_class;
+	VOID_METHCALL(l4sc_layout_class_ptr_t, &appender->layout,
+		init, (&appender->layout, sizeof(appender->layout), pool));
 	BFC_SLIST_INSERT_FIRST(&l4sc_appenders, appender, next);
 	return (BFC_SUCCESS);
 }
@@ -231,6 +232,7 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 	l4sc_appender_ptr_t appender = NULL;
 	l4sc_appender_class_ptr_t cl, clazz = NULL;
 	bfc_mempool_t pool = get_default_mempool();
+	size_t size;
 
 	if (kind && (klen >= 5)) {
 		clazz = &l4sc_sysout_appender_class;
@@ -280,16 +282,25 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 
 	LOGINFO(("%s: appender %.*s not found, creating %.*s ...",
 			__FUNCTION__, nlen, name, klen, kind));
-	rc = bfc_new((bfc_objptr_t *) &appender, (bfc_classptr_t) clazz, pool);
-	if ((rc >= 0) && appender) {
-		VOID_METHCALL(l4sc_appender_class_ptr_t, appender,
-			      set_name, (appender, name, nlen));
-		LOGINFO(("%s: created %s (class %s).",
-			__FUNCTION__, appender->name, clazz->name));
-	} else {
-		LOGERROR(("%s: error %d creating %s (class %s).",
-			__FUNCTION__, rc, appender->name, clazz->name));
-		appender = NULL;
+	RETVAR_CMETHCALL(size, l4sc_appender_class_ptr_t, clazz,
+			 clonesize, (NULL), get_appender_size(NULL));
+	appender = mempool_alloc(pool, size);
+	if (appender != NULL) {
+		RETVAR_CMETHCALL(rc, l4sc_appender_class_ptr_t, clazz,
+				 init, (appender, size, pool), -1);
+		if (rc >= 0) {
+			appender->parent_pool = pool;
+			VOID_METHCALL(l4sc_appender_class_ptr_t, appender,
+				initrefc, (appender, 1));
+			VOID_METHCALL(l4sc_appender_class_ptr_t, appender,
+			      	set_name, (appender, name, nlen));
+			LOGINFO(("%s: created %s (class %s).",
+				__FUNCTION__, appender->name, clazz->name));
+		} else {
+			LOGERROR(("%s: error %d creating %s (class %s).",
+				__FUNCTION__, rc, appender->name, clazz->name));
+			appender = NULL;
+		}
 	}
 
 	return (appender);

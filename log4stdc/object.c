@@ -13,6 +13,8 @@
 #endif
 
 #include "logobjects.h"
+#include "barefootc/atomic.h"
+#include "barefootc/mempool.h"
 
 struct l4sc_object {
 	BFC_OBJHDR(const struct l4sc_object_class *, struct l4sc_object *)
@@ -22,6 +24,9 @@ const struct l4sc_object_class l4sc_object_class = {
 	.super = NULL,
 	.name = "object",
 	.init = l4sc_default_init_object,
+	.initrefc = l4sc_default_init_refcount,
+	.incrrefc = l4sc_default_incr_refcount,
+	.decrrefc = l4sc_default_decr_refcount,
 	.destroy = l4sc_default_destroy_object,
 	.clone = l4sc_default_clone_object,
 	.clonesize = l4sc_default_get_object_size,
@@ -46,6 +51,35 @@ l4sc_default_init_object(void *buf, size_t bufsize, bfc_mempool_t pool)
 	return (BFC_SUCCESS);
 }
 
+int
+l4sc_default_init_refcount(l4sc_objptr_t obj, int n)
+{
+	bfc_init_atomic_counter(obj->refc, n);
+	return (n);
+}
+
+int
+l4sc_default_incr_refcount(l4sc_objptr_t obj)
+{
+	int incremented_refcount = bfc_incr_atomic_counter(obj->refc);
+	return (incremented_refcount);
+}
+
+int
+l4sc_default_decr_refcount(l4sc_objptr_t obj)
+{
+	int decremented_refcount = bfc_decr_atomic_counter(obj->refc);
+	if (decremented_refcount == 0) {
+		struct mempool *pool = obj->parent_pool;
+		VOID_METHCALL(const struct l4sc_object_class *, obj,
+			destroy, (obj));
+		if (pool != NULL) {
+			mempool_free(pool, obj);
+		}
+	}
+	return (decremented_refcount);
+}
+
 void
 l4sc_default_destroy_object(l4sc_objptr_t obj)
 {
@@ -61,7 +95,9 @@ l4sc_default_clone_object(l4sc_objcptr_t obj,
 			  void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	l4sc_objptr_t object = (l4sc_objptr_t) buf;
-	size_t size = bfc_object_size((bfc_cobjptr_t)obj);
+	size_t size;
+	RETVAR_METHCALL(size, bfc_classptr_t, obj,
+			clonesize, ((bfc_cobjptr_t) obj), 10000);
 	if (bufsize < size) {
 		return (-ENOSPC);
 	}

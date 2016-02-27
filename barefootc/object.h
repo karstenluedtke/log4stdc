@@ -65,7 +65,7 @@ struct bfc_basic_object {
 	(bfc_classptr_t) &cls, name, 30000,      \
 	(struct bfc_mutex *)0, (bfc_mempool_t)0
 
-#define BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,elemT) \
+#define BFC_OBJECT_CLASSHDR(classptrT,objptrT,cobjptrT) \
 	classptrT	super;	  /**< possible super class */		     \
 	const char *	name;	  /**< class name */			     \
 	void *		spare2;						     \
@@ -81,7 +81,10 @@ struct bfc_basic_object {
 	int	      (*equals)   (cobjptrT, cobjptrT);			     \
 	size_t	      (*length)   (cobjptrT);				     \
 	int	      (*tostring) (cobjptrT, char *, size_t, const char *);  \
-	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);     \
+	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);
+
+#define BFC_CONTAINER_CLASSHDR(classptrT,objptrT,cobjptrT,elemT) \
+	BFC_OBJECT_CLASSHDR(classptrT,objptrT,cobjptrT)			     \
 	const elemT * (*first)    (cobjptrT);				     \
 	elemT *	      (*index)    (objptrT, size_t);			     \
 	long	      (*getl)     (cobjptrT, size_t);			     \
@@ -209,17 +212,19 @@ struct bfc_classhdr {
 	} else {							\
 		memset(obj, 0, sizeof(*obj));				\
 		if (super) {						\
-			bfc_init_object(super, obj, size, pool);	\
+			VOID_CMETHCALL(bfc_classptr_t, super,		\
+					init,(obj, size, pool));	\
 		}							\
 		obj->vptr = (void *) (cls);				\
 		obj->name = #obj;					\
-		bfc_init_refcount((bfc_objptr_t) obj, 1);		\
+		VOID_METHCALL(classptrT,obj,initrefc,((void*)(obj),1));	\
 	}
 
 #define BFC_DESTROY_EPILOGUE(obj,cls)					\
 	if ((cls)->super && ((cls)->super != (cls))) {			\
 		obj->vptr = (void *) (cls)->super;			\
-		bfc_destroy((bfc_objptr_t) obj);			\
+		VOID_CMETHCALL(bfc_classptr_t, (cls)->super,		\
+				destroy,((bfc_objptr_t)(obj)));		\
 	} else {							\
 		obj->vptr = NULL;					\
 	}

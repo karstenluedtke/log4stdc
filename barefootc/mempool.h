@@ -23,7 +23,7 @@ struct l4sc_logger;
 #define MEMPOOL_LOGGER	"barefootc.memory",16
 
 struct bfc_mempool_class {
-	BFC_CLASSHDR(bfc_mempool_class_ptr_t,
+	BFC_OBJECT_CLASSHDR(bfc_mempool_class_ptr_t,
 			bfc_mempool_t , bfc_cmempool_t )
 
 	void *		(*alloc)  (bfc_mempool_t , size_t,

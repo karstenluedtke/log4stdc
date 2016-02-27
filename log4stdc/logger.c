@@ -383,6 +383,7 @@ l4sc_get_logger(const char *name, int namelen)
 	l4sc_logger_ptr_t logger = NULL;
 	int rc, nlen = (namelen > 0)? namelen: strlen(name);
 	bfc_mempool_t pool = get_default_mempool();
+	size_t size;
 
 	BFC_LIST_FOREACH(logger, &l4sc_loggers, next) {
 		if ((strncasecmp(logger->name, name, nlen) == 0)
@@ -393,12 +394,18 @@ l4sc_get_logger(const char *name, int namelen)
 
 	LOGINFO(("%s: logger %.*s not found, creating ...",
 				__FUNCTION__, nlen, name));
-	logger = NULL;
-	rc = bfc_new((bfc_objptr_t *)&logger, (bfc_classptr_t)&loggercls, pool);
-	if ((rc >= 0) && logger) {
-		CMETHCALL(&loggercls, set_name, (logger, name, nlen), (void)0);
-		LOGINFO(("%s: created %s (class %s).",
+	size = get_logger_size(NULL);
+	logger = mempool_alloc(pool, size);
+	if (logger != NULL) {
+		rc = init_logger(logger, size, pool);
+		if (rc >= 0) {
+			logger->parent_pool = pool;
+			VOID_METHCALL(l4sc_logger_class_ptr_t, logger,
+				initrefc, (logger, 1));
+			set_logger_name(logger, name, nlen);
+			LOGINFO(("%s: created %s (class %s).",
 				__FUNCTION__, logger->name, loggercls.name));
+		}
 	}
 	return (logger);
 }

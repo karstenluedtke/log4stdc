@@ -185,7 +185,20 @@ struct l4sc_configurator {
 	BFC_OBJHDR(l4sc_configurator_class_ptr_t,l4sc_configurator_ptr_t)
 };
 
+#undef get_default_mempool
+#define get_default_mempool() \
+	l4sc_get_default_mempool(__FILE__,__LINE__,__FUNCTION__)
+bfc_mempool_t l4sc_get_default_mempool(const char *, int, const char *);
+
+int l4sc_new_posix_mutex(struct bfc_mutex **objpp, bfc_mempool_t pool,
+		         const char *file, int line, const char *func);
+int l4sc_new_win32_mutex(struct bfc_mutex **objpp, bfc_mempool_t pool,
+		         const char *file, int line, const char *func);
+
 int  l4sc_default_init_object(void *buf, size_t bufsize, bfc_mempool_t pool);
+int  l4sc_default_init_refcount(l4sc_objptr_t obj, int n);
+int  l4sc_default_incr_refcount(l4sc_objptr_t obj);
+int  l4sc_default_decr_refcount(l4sc_objptr_t obj);
 void l4sc_default_destroy_object(l4sc_objptr_t obj);
 int  l4sc_default_clone_object(l4sc_objcptr_t obj, void *buf, size_t bufsize,
 							bfc_mempool_t pool);

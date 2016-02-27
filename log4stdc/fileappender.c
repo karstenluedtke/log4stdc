@@ -91,10 +91,10 @@ init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 
 	appender->name = "file appender";
 #ifdef L4SC_WINDOWS_LOCKS
-	bfc_new_win32_mutex(&appender->lock, pool,
+	l4sc_new_win32_mutex(&appender->lock, pool,
 			__FILE__, __LINE__, __FUNCTION__);
 #else
-	bfc_new_posix_mutex(&appender->lock, pool,
+	l4sc_new_posix_mutex(&appender->lock, pool,
 			__FILE__, __LINE__, __FUNCTION__);
 #endif
 	if (initial_working_directory[0] == 0) {
@@ -113,8 +113,12 @@ destroy_appender(l4sc_appender_ptr_t appender)
 	bfc_mutex_ptr_t lock = appender->lock;
 	close_appender(appender);
 	if (lock) {
+		bfc_mempool_t pool = lock->parent_pool;
 		appender->lock = NULL;
-		bfc_delete((bfc_objptr_t) lock);
+		VOID_METHCALL(bfc_mutex_class_ptr_t, lock, destroy, (lock));
+		if (pool != NULL) {
+			mempool_free(pool, lock);
+		}
 	}
 	BFC_DESTROY_EPILOGUE(appender, &l4sc_file_appender_class);
 }

@@ -42,7 +42,7 @@ static void dump_mutex(bfc_mutex_ptr_t, int, struct l4sc_logger *);
 static bfc_mutex_ptr_t mutex_lock(bfc_mutex_ptr_t,const char*,int,const char*);
 static void mutex_unlock(bfc_mutex_ptr_t, const char *, int, const char *);
 
-const struct bfc_mutex_class bfc_win32_mutex_class = {
+const struct bfc_mutex_class l4sc_win32_mutex_class = {
 	.super = (bfc_mutex_class_ptr_t) &l4sc_object_class,
 	.name = "win32 mutex",
 	.init = init_mutex,
@@ -69,7 +69,7 @@ init_mutex(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(bfc_mutex_class_ptr_t,
 			  struct win32_mutex *, object, buf, bufsize, pool,
-			  &bfc_win32_mutex_class);
+			  &l4sc_win32_mutex_class);
 	if (object) {
 		InitializeCriticalSection(&object->u.win32.critsection);
 	}
@@ -81,7 +81,7 @@ destroy_mutex(bfc_mutex_ptr_t obj)
 {
 	bfc_mutex_class_ptr_t cls;
 
-	if (obj && ((cls = BFC_CLASS(obj)) == &bfc_win32_mutex_class)) {
+	if (obj && ((cls = BFC_CLASS(obj)) == &l4sc_win32_mutex_class)) {
 		DeleteCriticalSection(&obj->u.win32.critsection);
 		BFC_DESTROY_EPILOGUE(obj, cls);
 	}

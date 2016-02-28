@@ -34,7 +34,7 @@ liblog4stdc_a_SOURCES+= log4stdc/object.c
 liblog4stdc_a_SOURCES+= log4stdc/l4stdcpool.c
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_posix_mutex.c
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_win32_mutex.c
-#liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
+liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
 
 if BFCLOG4CXX
 liblog4stdc_a_SOURCES+= log4cxx/repository.h

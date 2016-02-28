@@ -17,6 +17,7 @@ liblog4stdc_a_SOURCES+= barefootc/mempool.h
 liblog4stdc_a_SOURCES+= barefootc/synchronization.h
 liblog4stdc_a_SOURCES+= barefootc/atomic.h
 liblog4stdc_a_SOURCES+= barefootc/linkedlist.h
+liblog4stdc_a_SOURCES+= barefootc/utf8.h
 
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c
@@ -36,35 +37,40 @@ liblog4stdc_a_SOURCES+= log4stdc/l4sc_posix_mutex.c
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_win32_mutex.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
 
-if BFCLOG4CXX
-liblog4stdc_a_SOURCES+= log4cxx/repository.h
-liblog4stdc_a_SOURCES+= log4cxx/repository.cpp
-liblog4stdc_a_SOURCES+= log4cxx/logger.cpp
-liblog4stdc_a_SOURCES+= log4cxx/level.cpp
-liblog4stdc_a_SOURCES+= log4cxx/objectptr.cpp
-liblog4stdc_a_SOURCES+= log4cxx/objectimpl.cpp
-liblog4stdc_a_SOURCES+= log4cxx/class.cpp
-liblog4stdc_a_SOURCES+= log4cxx/classregistration.cpp
-liblog4stdc_a_SOURCES+= log4cxx/configurator.cpp
-liblog4stdc_a_SOURCES+= log4cxx/basicconfigurator.cpp
-liblog4stdc_a_SOURCES+= log4cxx/domconfigurator.cpp
-liblog4stdc_a_SOURCES+= log4cxx/propertyconfigurator.cpp
-liblog4stdc_a_SOURCES+= log4cxx/messagebuffer.cpp
-liblog4stdc_a_SOURCES+= log4cxx/locationinfo.cpp
-liblog4stdc_a_SOURCES+= log4cxx/transcoder.cpp
-liblog4stdc_a_SOURCES+= log4cxx/exception.cpp
-liblog4stdc_a_SOURCES+= log4cxx/file.cpp
-liblog4stdc_a_SOURCES+= log4cxx/pool.cpp
-liblog4stdc_a_SOURCES+= log4cxx/mutex.cpp
-liblog4stdc_a_SOURCES+= log4cxx/properties.cpp
-liblog4stdc_a_SOURCES+= log4cxx/loader.cpp
-endif BFCLOG4CXX
-
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a
 testlink_DEPENDENCIES = liblog4stdc.a
 
 TESTS = testlink
+
+if BFCLOG4CXX
+lib_LIBRARIES += liblog4cxx2stdc.a
+
+liblog4cxx2stdc_a_SOURCES = log4cxx/repository.h
+liblog4cxx2stdc_a_SOURCES+= log4cxx/repository.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/logger.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/level.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/objectptr.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/objectimpl.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/class.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/classregistration.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/configurator.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/basicconfigurator.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/domconfigurator.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/propertyconfigurator.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/messagebuffer.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/locationinfo.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/transcoder.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/exception.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/file.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/pool.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/mutex.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/properties.cpp
+liblog4cxx2stdc_a_SOURCES+= log4cxx/loader.cpp
+
+testlink_LDADD += liblog4cxx2stdc.a
+testlink_DEPENDENCIES += liblog4cxx2stdc.a
+endif BFCLOG4CXX
 
 noinst_PROGRAMS += examples/barefootc_log_redirect
 examples_barefootc_log_redirect_SOURCES = examples/barefootc_log_redirect.c

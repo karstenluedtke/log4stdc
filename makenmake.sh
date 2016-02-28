@@ -3,11 +3,10 @@
 M="Nmakefile"
 
 HEADERS=`grep 'HEADERS.*=' Makefile.am | sed -e'1,$s/^.*= *//g'`
-SOURCES=`grep 'barefootc_a_SOURCES.*=.*c$' Makefile.am | sed -e'1,$s/^.*= *//g'`
-LOG4STDC=`grep 'log4stdc_a_SOURCES.*=.*c$' Makefile.am | sed -e'1,$s/^.*= *//g'`
+SOURCES=`grep 'log4stdc_a_SOURCES.*=.*c$' Makefile.am | sed -e'1,$s/^.*= *//g'`
 TESTS=`grep '^TESTS.*=' Makefile.am | sed -e'1,$s/^.*= *//g'`
 
-V=`grep AC_INIT configure.ac | sed -e'1,$s/^.*footc.,..//' -e'1,$s/.,..bug.*//'`
+V=`grep AC_INIT configure.ac | sed -e'1,$s/^.*4stdc.,..//' -e'1,$s/.,..bug.*//'`
 
 echo ""	> $M
 echo 'CC=cl'							>> $M
@@ -26,11 +25,11 @@ echo '	-DHAVE_STRING_H=1' "\\"					>> $M
 echo '	-DHAVE__BOOL=1' "\\"					>> $M
 echo '	-DHAVE__LOCALTIME64=1' "\\"				>> $M
 echo '	-DHAVE__LOCALTIME64_S=1' "\\"				>> $M
-echo '	-DPACKAGE="barefootc"' "\\"				>> $M
-echo '	-DPACKAGE_BUGREPORT="bug-barefootc@example.org"' "\\"	>> $M
-echo '	-DPACKAGE_NAME="barefootc"' "\\"			>> $M
-echo '	-DPACKAGE_STRING="barefootc '"$V"'"' "\\"		>> $M
-echo '	-DPACKAGE_TARNAME="barefootc"' "\\"			>> $M
+echo '	-DPACKAGE="log4stdc"' "\\"				>> $M
+echo '	-DPACKAGE_BUGREPORT="bug-log4stdc@example.org"' "\\"	>> $M
+echo '	-DPACKAGE_NAME="log4stdc"' "\\"				>> $M
+echo '	-DPACKAGE_STRING="log4stdc '"$V"'"' "\\"		>> $M
+echo '	-DPACKAGE_TARNAME="log4stdc"' "\\"			>> $M
 echo '	-DPACKAGE_URL=""' "\\"					>> $M
 echo '	-DPACKAGE_VERSION="'"$V"'"' "\\"			>> $M
 echo '	-DVERSION="'"$V"'"'					>> $M
@@ -54,14 +53,6 @@ done
 echo "" >> $M
 echo "" >> $M
 
-echo "OFL4SC= \\" >> $M
-for i in $LOG4STDC ; do
-	o=`echo $i | sed -e'1,$s/.cp*$/.obj/g'`
-	echo "	$o \\" >> $M
-done
-echo "" >> $M
-echo "" >> $M
-
 echo "TESTS= \\" >> $M
 for i in $TESTS ; do
 	x=$i.exe
@@ -70,16 +61,12 @@ done
 echo "" >> $M
 echo "" >> $M
 
-echo 'all: barefootc.lib log4stdc.lib'		 >> $M
+echo 'all: log4stdc.lib'			 >> $M
 echo '	echo "all is made"'			 >> $M
 echo "" >> $M
 
-echo 'barefootc.lib: $(OFILES) $(HEADERS)'	 >> $M
+echo 'log4stdc.lib: $(OFILES) $(HEADERS)'	 >> $M
 echo '	lib $(OFILES) /OUT:$@'			 >> $M
-echo "" >> $M
-
-echo 'log4stdc.lib: $(OFL4SC) $(HEADERS)'	 >> $M
-echo '	lib $(OFL4SC) /OUT:$@'			 >> $M
 echo "" >> $M
 
 echo 'check: $(OFILES) $(HEADERS) $(TESTS)'	 >> $M
@@ -89,7 +76,7 @@ done
 echo '	echo "check done"'			 >> $M
 echo "" >> $M
 
-for i in $SOURCES $LOG4STDC ; do
+for i in $SOURCES ; do
 	c=`echo $i`
 	o=`echo $i | sed -e'1,$s/.cp*$/.obj/g'`
 	echo "$o: $c" '$(HEADERS)'		>> $M
@@ -107,8 +94,8 @@ for i in $TESTS ; do
 		o=`echo $c | sed -e'1,$s/.cp*$/.obj/g'`
 		echo "		$o \\"			>> $M
 	done
-	echo '		barefootc.lib log4stdc.lib' 	>> $M
-	echo '	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@' "$o barefootc.lib log4stdc.lib" >> $M
+	echo '		log4stdc.lib'		 	>> $M
+	echo '	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@' "$o log4stdc.lib log4stdc.lib" >> $M
 	echo "" >> $M
 	for c in $s ; do
 		o=`echo $c | sed -e'1,$s/.cp*$/.obj/g'`

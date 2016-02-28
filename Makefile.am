@@ -72,11 +72,17 @@ examples_barefootc_log_redirect_LDADD = liblog4stdc.a
 examples_barefootc_log_redirect_DEPENDENCIES = liblog4stdc.a
 TESTS += examples/barefootc_log_redirect
 
-#check_PROGRAMS += tests/log4stdc/configure.xml/level
-#tests_log4stdc_configure_xml_level_SOURCES = tests/log4stdc/configure.xml/level.c
-#tests_log4stdc_configure_xml_level_LDADD = liblog4stdc.a
-#tests_log4stdc_configure_xml_level_DEPENDENCIES = liblog4stdc.a
-#TESTS += tests/log4stdc/configure.xml/level
+check_PROGRAMS += tests/log4stdc/configure.xml/level
+tests_log4stdc_configure_xml_level_SOURCES = tests/log4stdc/configure.xml/level.c
+tests_log4stdc_configure_xml_level_LDADD = liblog4stdc.a
+tests_log4stdc_configure_xml_level_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/configure.xml/level
+
+check_PROGRAMS += tests/log4stdc/configure.xml/largefile
+tests_log4stdc_configure_xml_largefile_SOURCES = tests/log4stdc/configure.xml/largefile.c
+tests_log4stdc_configure_xml_largefile_LDADD = liblog4stdc.a
+tests_log4stdc_configure_xml_largefile_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/configure.xml/largefile
 
 check_PROGRAMS += tests/log4stdc/configure.prop/level
 tests_log4stdc_configure_prop_level_SOURCES = tests/log4stdc/configure.prop/level.c

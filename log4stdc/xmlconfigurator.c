@@ -253,33 +253,48 @@ on_end_tag(struct parsing_state *ps, const struct xml_tag *endtag)
 static int
 configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 {
-	int err = 0, bytes_read = 0;
 	FILE *fp;
 	char *buff;
-	size_t bufsize = 32000;
+	int rc = 0;
+	size_t bufsize = 8000, length = 0;
 	struct mempool *pool = get_default_mempool();
 
 	LOGINFO(("%s: \"%s\"", __FUNCTION__, path));
 
 	fp = fopen(path, "r");
 	if (fp == NULL) {
-		err = errno;
+		rc = -errno;
 		LOGERROR(("%s: opening file \"%s\" failed, error %d: %s",
-			__FUNCTION__, path, err, strerror(err)));
-		return (-err);
+			__FUNCTION__, path, rc, strerror(-rc)));
+		return (rc);
 	}
 
 	buff = mempool_alloc(pool, bufsize);
-	bytes_read = fread(buff, 1, bufsize, fp);
+	while ((rc = fread(buff+length, 1, bufsize-length, fp)) > 0) {
+		length += rc;
+		if (length >= bufsize) {
+			bufsize = (3 * bufsize / 2) + 4000;
+			LOGDEBUG(("%s: have %ld, realloc(%ld)...",
+				__FUNCTION__, (long)length, (long)bufsize));
+			buff = mempool_realloc(pool, buff, bufsize);
+			if (buff == NULL) {
+				rc = -ENOMEM;
+				LOGERROR(("%s: realloc(%ld) failed.",
+					__FUNCTION__, (long)bufsize));
+				fclose(fp);
+				return (rc);
+			}
+		}
+	}
 	fclose(fp);
 
-	err = configure_from_string(cfgtr, buff, bytes_read);
+	rc = configure_from_string(cfgtr, buff, length);
 
 	mempool_free(pool, buff);
 
-	LOGINFO(("%s: \"%s\" done, error %d", __FUNCTION__, path, err));
+	LOGINFO(("%s: \"%s\" done, error %d", __FUNCTION__, path, rc));
 
-	return ((err == 0)? 0: (err > 0)? -err: err);
+	return ((rc == 0)? 0: (rc > 0)? -rc: rc);
 }
 
 static int

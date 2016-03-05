@@ -47,7 +47,7 @@ struct l4sc_object_class;
 typedef const struct l4sc_object_class *l4sc_class_ptr_t;
 
 struct l4sc_object_class {
-	BFC_CLASSHDR(l4sc_class_ptr_t,l4sc_objptr_t,l4sc_objcptr_t)
+	BFC_OBJECT_CLASSHDR(l4sc_class_ptr_t,l4sc_objptr_t,l4sc_objcptr_t)
 	LOGOBJ_METHODS(l4sc_objptr_t,l4sc_objcptr_t)
 	void *spare[10];
 };
@@ -58,8 +58,8 @@ struct l4sc_logger_class;
 typedef const struct l4sc_logger_class *l4sc_logger_class_ptr_t;
 
 struct l4sc_logger_class {
-	BFC_CLASSHDR(l4sc_logger_class_ptr_t,
-		     l4sc_logger_ptr_t,l4sc_logger_cptr_t)
+	BFC_OBJECT_CLASSHDR(l4sc_logger_class_ptr_t,
+			    l4sc_logger_ptr_t,l4sc_logger_cptr_t)
 	LOGOBJ_METHODS(l4sc_logger_ptr_t,l4sc_logger_cptr_t)
 	void	(*log)(l4sc_logger_ptr_t logger,
 		       int level, const char *msg, size_t msglen,
@@ -69,6 +69,7 @@ struct l4sc_logger_class {
 			      l4sc_logger_ptr_t parent);
 	int	(*set_appender)(l4sc_logger_ptr_t logger,
 				l4sc_appender_ptr_t appender);
+	void *spare[10];
 };
 
 struct l4sc_logmessage;
@@ -80,14 +81,15 @@ struct l4sc_appender_class;
 typedef const struct l4sc_appender_class *l4sc_appender_class_ptr_t;
 
 struct l4sc_appender_class {
-	BFC_CLASSHDR(l4sc_appender_class_ptr_t,
-		   l4sc_appender_ptr_t,l4sc_appender_cptr_t)
+	BFC_OBJECT_CLASSHDR(l4sc_appender_class_ptr_t,
+			    l4sc_appender_ptr_t,l4sc_appender_cptr_t)
 	LOGOBJ_METHODS(l4sc_appender_ptr_t,l4sc_appender_cptr_t)
 	void	(*append)(l4sc_appender_ptr_t appender,
 			  l4sc_logmessage_cptr_t msg);
 	int	(*set_layout)(l4sc_appender_ptr_t appender,
 			      l4sc_layout_ptr_t layout);
 	l4sc_layout_ptr_t (*ref_layout)(l4sc_appender_ptr_t appender);
+	void *spare[10];
 };
 
 extern const struct l4sc_appender_class l4sc_file_appender_class;
@@ -97,12 +99,13 @@ struct l4sc_layout_class;
 typedef const struct l4sc_layout_class *l4sc_layout_class_ptr_t;
 
 struct l4sc_layout_class {
-	BFC_CLASSHDR(l4sc_layout_class_ptr_t,
-		   l4sc_layout_ptr_t,l4sc_layout_cptr_t)
+	BFC_OBJECT_CLASSHDR(l4sc_layout_class_ptr_t,
+			    l4sc_layout_ptr_t,l4sc_layout_cptr_t)
 	LOGOBJ_METHODS(l4sc_layout_ptr_t,l4sc_layout_cptr_t)
 	size_t	(*format)(l4sc_layout_cptr_t layout,
 			  l4sc_logmessage_cptr_t msg,
 			  char *buf, size_t bufsize);
+	void *spare[10];
 };
 
 extern const struct l4sc_layout_class l4sc_patternlayout_class;
@@ -148,8 +151,9 @@ struct l4sc_logmessage_class;
 typedef const struct l4sc_logmessage_class *l4sc_logmessage_class_ptr_t;
 
 struct l4sc_logmessage_class {
-	BFC_CLASSHDR(l4sc_logmessage_class_ptr_t,
-		   l4sc_logmessage_ptr_t, l4sc_logmessage_cptr_t)
+	BFC_OBJECT_CLASSHDR(l4sc_logmessage_class_ptr_t,
+			    l4sc_logmessage_ptr_t, l4sc_logmessage_cptr_t)
+	void *spare[10];
 };
 
 struct l4sc_logmessage {
@@ -172,13 +176,14 @@ struct l4sc_configurator_class;
 typedef const struct l4sc_configurator_class *l4sc_configurator_class_ptr_t;
 
 struct l4sc_configurator_class {
-	BFC_CLASSHDR(l4sc_configurator_class_ptr_t,
-		   l4sc_configurator_ptr_t,l4sc_configurator_cptr_t)
+	BFC_OBJECT_CLASSHDR(l4sc_configurator_class_ptr_t,
+			    l4sc_configurator_ptr_t,l4sc_configurator_cptr_t)
 	LOGOBJ_METHODS(l4sc_configurator_ptr_t,l4sc_configurator_cptr_t)
 	int	(*configure)(l4sc_configurator_ptr_t configurator,
 			     const char *buf, size_t len);
 	int	(*configure_from_file)(l4sc_configurator_ptr_t configurator,
 			     const char *path);
+	void *spare[10];
 };
 
 struct l4sc_configurator {

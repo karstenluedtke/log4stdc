@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([log4stdc], [0.8.0], [bug-log4stdc@example.org])
+AC_INIT([log4stdc], [0.8.1], [bug-log4stdc@example.org])
 AC_ARG_ENABLE([bfclog4cxx],
 [  --enable-bfclog4cxx    Build replacement library for log4cxx],
 [case "${enableval}" in

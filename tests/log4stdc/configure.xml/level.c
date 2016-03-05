@@ -63,7 +63,7 @@ main (int argc, char *argv[])
 	assert (l4sc_debug_enabled(logger));
 	assert (!l4sc_trace_enabled(logger));
 
-	logger = l4sc_get_logger("barefootc.vector.set", 0); // explicit INHERIT
+	logger = l4sc_get_logger("barefootc.vector.set",0);/*explicit INHERIT*/
 	assert (logger != NULL);
 	assert (l4sc_error_enabled(logger));
 	assert (l4sc_warn_enabled(logger));
@@ -71,7 +71,7 @@ main (int argc, char *argv[])
 	assert (l4sc_debug_enabled(logger));
 	assert (!l4sc_trace_enabled(logger));
 
-	logger = l4sc_get_logger("barefootc.vector.get", 0); // implicit INHERIT
+	logger = l4sc_get_logger("barefootc.vector.get",0);/*implicit INHERIT*/
 	assert (logger != NULL);
 	assert (l4sc_error_enabled(logger));
 	assert (l4sc_warn_enabled(logger));

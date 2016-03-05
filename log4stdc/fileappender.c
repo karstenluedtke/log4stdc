@@ -19,6 +19,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <pthread.h>
+#if defined(HAVE_ALLOCA_H)
+#include <alloca.h>
+#endif
 #endif
 
 #ifdef HAVE_UNISTD_H

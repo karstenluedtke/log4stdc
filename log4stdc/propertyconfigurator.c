@@ -15,6 +15,8 @@
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <malloc.h>  /* for alloca */
+#elif defined(HAVE_ALLOCA_H)
+#include <alloca.h>
 #endif
 
 #if defined(_MSC_VER)
@@ -34,13 +36,29 @@ static int config_from_property_line(const char *buf, const char *limit,
 
 
 const struct l4sc_configurator_class l4sc_property_configurator_class = {
-	.super = (l4sc_configurator_class_ptr_t) &l4sc_object_class,
-	.name = "property configurator",
-	.init = init_property_configurator,
-	.clonesize = get_property_configurator_size,
-
-	.configure = configure_from_string,
-	.configure_from_file = configure_from_file,
+	/* .super 	*/ (l4sc_configurator_class_ptr_t) &l4sc_object_class,
+	/* .name 	*/ "property configurator",
+	/* .spare2 	*/ NULL,
+	/* .spare3 	*/ NULL,
+	/* .init 	*/ init_property_configurator,
+	/* .initrefc 	*/ NULL, /* inherit */
+	/* .incrrefc 	*/ NULL, /* inherit */
+	/* .decrrefc 	*/ NULL, /* inherit */
+	/* .destroy 	*/ NULL, /* inherit */
+	/* .clone 	*/ NULL, /* inherit */
+	/* .clonesize 	*/ get_property_configurator_size,
+	/* .hashcode 	*/ NULL, /* inherit */
+	/* .equals 	*/ NULL, /* inherit */
+	/* .length 	*/ NULL, /* inherit */
+	/* .tostring 	*/ NULL, /* inherit */
+	/* .dump 	*/ NULL, /* inherit */
+	/* .set_name	*/ NULL,
+	/* .set_opt	*/ NULL,
+	/* .get_opt	*/ NULL,
+	/* .apply	*/ NULL,
+	/* .close	*/ NULL,
+	/* .configure	*/ configure_from_string,
+	/* .configure_from_file */ configure_from_file
 };
 
 static int

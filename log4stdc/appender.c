@@ -13,6 +13,8 @@
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <malloc.h>  /* for alloca */
+#elif defined(HAVE_ALLOCA_H)
+#include <alloca.h>
 #endif
 
 #if defined(_MSC_VER)

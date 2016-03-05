@@ -202,7 +202,7 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 	char c;
 	size_t len;
 	int level = msg? msg->level: 0;
-	char fmt[12]; // , tmp[40];
+	char fmt[12];
 
 	while ((c = *(cp++)) && (dp < limit)) {
 		if (c == '%') {

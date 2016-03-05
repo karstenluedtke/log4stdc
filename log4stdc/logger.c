@@ -134,7 +134,6 @@ static struct l4sc_logger predefined_loggers[] = {
     {
 	.vptr = &rootloggercls,
 	.name = "l4sclog",
-	//.prev = &rootlogger,
 	.refc = 10000,
 	.level = ERROR_LEVEL,
 	.parent = &rootlogger,

@@ -68,11 +68,17 @@ const struct bfc_mempool_class l4sc_stdc_mempool_class = {
 };
 
 struct stdc_mempool l4sc_stdc_mempool = {
-	.vptr = &l4sc_stdc_mempool_class,
-	.name = "stdc_mempool",
-	.refc = 20000, 
-	.file = "libc",
-	.func = "malloc",
+	/* .vptr	*/ &l4sc_stdc_mempool_class,
+	/* .name	*/ "stdc_mempool",
+	/* .refc	*/ 20000, 
+	/* .lock	*/ NULL,
+	/* .parent_pool	*/ NULL,
+	/* .next	*/ NULL,
+	/* .prev	*/ NULL,
+	/* .line	*/ 0,
+	/* .file	*/ "libc",
+	/* .func	*/ "malloc",
+	/* .subpools	*/ { NULL, NULL }
 };
 
 struct mempool *l4sc_default_mempool = (struct mempool *) &l4sc_stdc_mempool;

@@ -14,6 +14,7 @@
 #define L4SC_WINDOWS_LOCKS 1
 #include <windows.h>
 #include <malloc.h>  /* for alloca */
+#define getcwd _getcwd
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -313,13 +314,14 @@ open_appender(l4sc_appender_ptr_t appender)
 {
 #if defined(L4SC_WINDOWS_FILES)
 	if (appender->filename != NULL) {
+		HANDLE fh;
 		wchar_t *wbuf;
 		size_t wlen, clen = strlen(appender->filename);
 		wbuf = (wchar_t *) alloca((clen+1)*sizeof(wchar_t));
 		wlen = MultiByteToWideChar(CP_UTF8, 0,
 			appender->filename, clen, wbuf, clen+1);
 		wbuf[(wlen < clen)? wlen: clen] = 0;
-		HANDLE fh = CreateFileW(wbuf, FILE_APPEND_DATA,
+		fh = CreateFileW(wbuf, FILE_APPEND_DATA,
 			FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL /* FILE_FLAG_WRITE_THROUGH */,
 			NULL);

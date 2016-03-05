@@ -53,18 +53,24 @@ static bfc_mutex_ptr_t mutex_lock(bfc_mutex_ptr_t,const char*,int,const char*);
 static void mutex_unlock(bfc_mutex_ptr_t, const char *, int, const char *);
 
 const struct bfc_mutex_class l4sc_posix_mutex_class = {
-	.super = (bfc_mutex_class_ptr_t) &l4sc_object_class,
-	.name = "posix mutex",
-	.init = init_mutex,
-	.initrefc = (void *) l4sc_default_init_refcount,
-	.incrrefc = (void *) l4sc_default_incr_refcount,
-	.decrrefc = (void *) l4sc_default_decr_refcount,
-	.destroy = destroy_mutex,
-	.clone = clone_mutex,
-	.clonesize = mutex_size,
-	.dump = dump_mutex,
-	.lock = mutex_lock,
-	.unlock = mutex_unlock,
+	/* .super 	*/ (bfc_mutex_class_ptr_t) &l4sc_object_class,
+	/* .name 	*/ "posix mutex",
+	/* .spare2 	*/ NULL,
+	/* .spare3 	*/ NULL,
+	/* .init 	*/ init_mutex,
+	/* .initrefc 	*/ (void *) l4sc_default_init_refcount,
+	/* .incrrefc 	*/ (void *) l4sc_default_incr_refcount,
+	/* .decrrefc 	*/ (void *) l4sc_default_decr_refcount,
+	/* .destroy 	*/ destroy_mutex,
+	/* .clone 	*/ clone_mutex,
+	/* .clonesize 	*/ mutex_size,
+	/* .hashcode 	*/ (void *) l4sc_default_get_object_hashcode,
+	/* .equals 	*/ (void *) l4sc_default_is_equal_object,
+	/* .length 	*/ (void *) l4sc_default_get_object_length,
+	/* .tostring 	*/ (void *) l4sc_default_object_tostring,
+	/* .dump 	*/ dump_mutex,
+	/* .lock	*/ mutex_lock,
+	/* .unlock	*/ mutex_unlock
 };
 
 #ifndef HAVE_PTHREAD_MUTEX_INIT

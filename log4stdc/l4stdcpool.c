@@ -45,21 +45,26 @@ struct stdc_mempool {
 };
 
 const struct bfc_mempool_class l4sc_stdc_mempool_class = {
-	.super = NULL,
-	.name = "stdc_mempool",
-	.init = init_pool,
-	.destroy = destroy_pool,
-	.clone = clone_pool,
-	.clonesize = get_pool_object_size,
-	.hashcode = get_pool_hashcode,
-	.equals = is_equal_pool,
-	.length = get_pool_size,
-	.tostring = pool_tostring,
-	.dump = stdc_pool_dump,
-	.alloc = stdc_pool_malloc,
-	.calloc = stdc_pool_calloc,
-	.realloc = stdc_pool_realloc,
-	.free = stdc_pool_free,
+	/* .super 	*/ NULL,
+	/* .name 	*/ "stdc_mempool",
+	/* .spare2 	*/ NULL,
+	/* .spare3 	*/ NULL,
+	/* .init 	*/ init_pool,
+	/* .initrefc 	*/ NULL,
+	/* .incrrefc 	*/ NULL,
+	/* .decrrefc 	*/ NULL,
+	/* .destroy 	*/ destroy_pool,
+	/* .clone 	*/ clone_pool,
+	/* .clonesize 	*/ get_pool_object_size,
+	/* .hashcode 	*/ get_pool_hashcode,
+	/* .equals 	*/ is_equal_pool,
+	/* .length 	*/ get_pool_size,
+	/* .tostring 	*/ pool_tostring,
+	/* .dump 	*/ stdc_pool_dump,
+	/* .alloc	*/ stdc_pool_malloc,
+	/* .calloc	*/ stdc_pool_calloc,
+	/* .realloc	*/ stdc_pool_realloc,
+	/* .free	*/ stdc_pool_free
 };
 
 struct stdc_mempool l4sc_stdc_mempool = {

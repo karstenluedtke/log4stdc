@@ -58,21 +58,28 @@ static int format_logtime(char *buf, size_t bufsize, const char *fmt,
 		const char *datefmtspec, l4sc_logmessage_cptr_t msg);
 
 const struct l4sc_layout_class l4sc_patternlayout_class = {
-	.super = (l4sc_layout_class_ptr_t) &l4sc_object_class,
-	.name = "layout",
-	.init = init_patternlayout,
-	.clonesize = get_layout_size,
-	.hashcode = get_layout_hashcode,
-	.equals = is_equal_layout,
-	.length = get_layout_length,
-	.tostring = layout_tostring,
-
-	.set_name = set_layout_name,
-	.set_opt = set_layout_option,
-	.get_opt = get_layout_option,
-	.apply = apply_layout_options,
-
-	.format = format_by_pattern,
+	/* .super 	*/ (l4sc_layout_class_ptr_t) &l4sc_object_class,
+	/* .name 	*/ "layout",
+	/* .spare2 	*/ NULL,
+	/* .spare3 	*/ NULL,
+	/* .init 	*/ init_patternlayout,
+	/* .initrefc 	*/ (void *) l4sc_default_init_refcount,
+	/* .incrrefc 	*/ (void *) l4sc_default_incr_refcount,
+	/* .decrrefc 	*/ (void *) l4sc_default_decr_refcount,
+	/* .destroy 	*/ NULL, /* inherit */
+	/* .clone 	*/ (void *) l4sc_default_clone_object,
+	/* .clonesize 	*/ get_layout_size,
+	/* .hashcode 	*/ get_layout_hashcode,
+	/* .equals 	*/ is_equal_layout,
+	/* .length 	*/ get_layout_length,
+	/* .tostring 	*/ layout_tostring,
+	/* .dump 	*/ NULL, /* inherit */
+	/* .set_name	*/ set_layout_name,
+	/* .set_opt	*/ set_layout_option,
+	/* .get_opt	*/ get_layout_option,
+	/* .apply	*/ apply_layout_options,
+	/* .close	*/ NULL,
+	/* .format	*/ format_by_pattern
 };
 
 static int

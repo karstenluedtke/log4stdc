@@ -16,30 +16,36 @@
 #include "barefootc/atomic.h"
 #include "barefootc/mempool.h"
 
+static void l4sc_destroy_base_object(l4sc_objptr_t obj);
+
 struct l4sc_object {
 	BFC_OBJHDR(const struct l4sc_object_class *, struct l4sc_object *)
 };
 
 const struct l4sc_object_class l4sc_object_class = {
-	.super = NULL,
-	.name = "object",
-	.init = l4sc_default_init_object,
-	.initrefc = l4sc_default_init_refcount,
-	.incrrefc = l4sc_default_incr_refcount,
-	.decrrefc = l4sc_default_decr_refcount,
-	.destroy = l4sc_default_destroy_object,
-	.clone = l4sc_default_clone_object,
-	.clonesize = l4sc_default_get_object_size,
-	.hashcode = l4sc_default_get_object_hashcode,
-	.equals = l4sc_default_is_equal_object,
-	.length = l4sc_default_get_object_length,
-	.tostring = l4sc_default_object_tostring,
-
-	.set_name = l4sc_default_set_object_name,
-	.set_opt = l4sc_default_set_object_option,
-	.get_opt = l4sc_default_get_object_option,
-	.apply = l4sc_default_apply_object_options,
-	.close = l4sc_default_close_object,
+	/* intentionally not using selective initialization for base class: */
+	/* I want the compiler to complain if something is missing.         */
+	/* .super 	*/ NULL,
+	/* .name 	*/ "object",
+	/* .spare2 	*/ NULL,
+	/* .spare3 	*/ NULL,
+	/* .init 	*/ l4sc_default_init_object,
+	/* .initrefc 	*/ l4sc_default_init_refcount,
+	/* .incrrefc 	*/ l4sc_default_incr_refcount,
+	/* .decrrefc 	*/ l4sc_default_decr_refcount,
+	/* .destroy 	*/ l4sc_destroy_base_object,
+	/* .clone 	*/ l4sc_default_clone_object,
+	/* .clonesize 	*/ l4sc_default_get_object_size,
+	/* .hashcode 	*/ l4sc_default_get_object_hashcode,
+	/* .equals 	*/ l4sc_default_is_equal_object,
+	/* .length 	*/ l4sc_default_get_object_length,
+	/* .tostring 	*/ l4sc_default_object_tostring,
+	/* .dump 	*/ l4sc_default_dump_object,
+	/* .set_name	*/ l4sc_default_set_object_name,
+	/* .set_opt	*/ l4sc_default_set_object_option,
+	/* .get_opt	*/ l4sc_default_get_object_option,
+	/* .apply	*/ l4sc_default_apply_object_options,
+	/* .close	*/ l4sc_default_close_object
 };
 
 int
@@ -88,6 +94,12 @@ l4sc_default_destroy_object(l4sc_objptr_t obj)
 	if (obj && ((cls = BFC_CLASS(obj)) != NULL)) {
 		BFC_DESTROY_EPILOGUE(obj, cls);
 	}
+}
+
+static void
+l4sc_destroy_base_object(l4sc_objptr_t obj)
+{
+	obj->vptr = 0;
 }
 
 int
@@ -164,6 +176,26 @@ l4sc_default_object_tostring(l4sc_objcptr_t obj,
 	return (0);
 }
 
+void
+l4sc_default_dump_object(l4sc_objcptr_t obj, int depth, struct l4sc_logger *log)
+{
+	size_t size;
+	const unsigned char *p, *lim;
+
+	if (obj && obj->name && BFC_CLASS(obj)) {
+		LOGDEBUG(("object \"%s\" @%p", obj->name, obj));
+		LOGDEBUG((" class \"%s\", pool %p, lock %p, refc %d",
+		 BFC_CLASS(obj)->name, obj->parent_pool, obj->lock, obj->refc));
+		RETVAR_METHCALL(size, bfc_classptr_t, obj,
+				clonesize, ((bfc_cobjptr_t) obj), 10000);
+		lim  = ((const unsigned char *) obj) + size;
+		for (p = (const unsigned char *) obj; p < lim; p += 8) {
+			LOGDEBUG((
+			  " %p: %02x %02x %02x %02x %02x %02x %02x %02x",
+			  p, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]));
+		}
+	}
+}
 
 void
 l4sc_default_set_object_name(l4sc_objptr_t obj, const char *name, int len)

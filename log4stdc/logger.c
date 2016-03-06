@@ -23,10 +23,14 @@
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
-#include "barefootc/object.h"
-#include "barefootc/mempool.h"
-#include "barefootc/linkedlist.h"
+#ifndef ENOSYS
+#define ENOSYS EINVAL
+#endif
+
+#include "logobjs.h"
+#include "bareftc/object.h"
+#include "bareftc/mempool.h"
+#include "bareftc/lnkdlist.h"
 
 #define MAX_APPENDERS_PER_LOGGER 4
 
@@ -637,3 +641,19 @@ l4sc_set_configured(int newval)
 	l4sc_configured = newval;
 }
 
+int vsnprintf(char *buf, size_t size, const char *fmt, va_list ap)
+{
+	vsprintf(buf, fmt, ap);
+	return (strlen(buf));
+}
+
+int _snprintf(char *buf, size_t size, const char *fmt, ...)
+{
+	int rc;
+
+	va_list ap;
+	va_start(ap, fmt);
+	rc = vsnprintf(buf, size, fmt, ap);
+	va_end(ap);
+	return rc;
+}

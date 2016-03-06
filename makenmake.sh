@@ -66,7 +66,10 @@ echo '	echo "all is made"'			 >> $M
 echo "" >> $M
 
 echo 'log4stdc.lib: $(OFILES) $(HEADERS)'	 >> $M
-echo '	lib $(OFILES) /OUT:$@'			 >> $M
+for i in $SOURCES ; do
+	o=`echo $i | sed -e'1,$s/.cp*$/.obj/g' -e'1,$s@/@\\\\@g'`
+	echo '	lib $@ -+ '"$o"', nul,' >> $M
+done
 echo "" >> $M
 
 echo 'check: $(OFILES) $(HEADERS) $(TESTS)'	 >> $M
@@ -91,18 +94,16 @@ for i in $TESTS ; do
 	o=`echo $s | sed -e'1,$s/.cp*$/.obj/g'`
 	echo "$x: \\" 					>> $M
 	for c in $s ; do
-		o=`echo $c | sed -e'1,$s/.cp*$/.obj/g'`
-		echo "		$o \\"			>> $M
+		echo "		$c \\"			>> $M
 	done
 	echo '		log4stdc.lib'		 	>> $M
-	echo '	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@' "$o log4stdc.lib log4stdc.lib" >> $M
-	echo "" >> $M
+	echo -n '	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) ' >> $M
+	echo -n "-Fe$x " | sed -e'1,$s@/@\\@g'		>> $M
 	for c in $s ; do
-		o=`echo $c | sed -e'1,$s/.cp*$/.obj/g'`
-		echo "$o: $c" '$(HEADERS)'		>> $M
-		echo '	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@' "$c" >> $M
-		echo "" >> $M
+		echo -n "$c "				>> $M
 	done
+	echo 'log4stdc.lib' >> $M
+	echo "" >> $M
 	echo "$x"
 done
 

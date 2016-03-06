@@ -10,32 +10,32 @@ noinst_PROGRAMS = testlink
 check_PROGRAMS =
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h
-liblog4stdc_a_SOURCES+= log4stdc/logobjects.h
+liblog4stdc_a_SOURCES+= log4stdc/logobjs.h
 
-liblog4stdc_a_SOURCES+= barefootc/object.h
-liblog4stdc_a_SOURCES+= barefootc/mempool.h
-liblog4stdc_a_SOURCES+= barefootc/synchronization.h
-liblog4stdc_a_SOURCES+= barefootc/atomic.h
-liblog4stdc_a_SOURCES+= barefootc/linkedlist.h
-liblog4stdc_a_SOURCES+= barefootc/utf8.h
+liblog4stdc_a_SOURCES+= bareftc/object.h
+liblog4stdc_a_SOURCES+= bareftc/mempool.h
+liblog4stdc_a_SOURCES+= bareftc/mutex.h
+liblog4stdc_a_SOURCES+= bareftc/atomic.h
+liblog4stdc_a_SOURCES+= bareftc/lnkdlist.h
+liblog4stdc_a_SOURCES+= bareftc/utf8.h
 
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_logprintf.c
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlog.c
+liblog4stdc_a_SOURCES+= log4stdc/logprf.c
+liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlg.c
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_log.c
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_logger_enabled.c
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_formatmsg.c
+liblog4stdc_a_SOURCES+= log4stdc/enabled.c
+liblog4stdc_a_SOURCES+= log4stdc/fmtmsg.c
 
 liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c
-liblog4stdc_a_SOURCES+= log4stdc/fileappender.c
+liblog4stdc_a_SOURCES+= log4stdc/fileappd.c
 liblog4stdc_a_SOURCES+= log4stdc/layout.c
-liblog4stdc_a_SOURCES+= log4stdc/logmessage.c
-liblog4stdc_a_SOURCES+= log4stdc/propertyconfigurator.c
+liblog4stdc_a_SOURCES+= log4stdc/logmsg.c
+liblog4stdc_a_SOURCES+= log4stdc/propcfg.c
 liblog4stdc_a_SOURCES+= log4stdc/object.c
-liblog4stdc_a_SOURCES+= log4stdc/l4stdcpool.c
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_posix_mutex.c
-liblog4stdc_a_SOURCES+= log4stdc/l4sc_win32_mutex.c
-liblog4stdc_a_SOURCES+= log4stdc/xmlconfigurator.c
+liblog4stdc_a_SOURCES+= log4stdc/l4scpool.c
+liblog4stdc_a_SOURCES+= log4stdc/pmutex.c
+liblog4stdc_a_SOURCES+= log4stdc/wmutex.c
+liblog4stdc_a_SOURCES+= log4stdc/xmlcfg.c
 
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a
@@ -72,27 +72,27 @@ testlink_LDADD += liblog4cxx2stdc.a
 testlink_DEPENDENCIES += liblog4cxx2stdc.a
 endif BFCLOG4CXX
 
-noinst_PROGRAMS += examples/barefootc_log_redirect
-examples_barefootc_log_redirect_SOURCES = examples/barefootc_log_redirect.c
-examples_barefootc_log_redirect_LDADD = liblog4stdc.a
-examples_barefootc_log_redirect_DEPENDENCIES = liblog4stdc.a
-TESTS += examples/barefootc_log_redirect
+noinst_PROGRAMS += examples/redirect
+examples_redirect_SOURCES = examples/redirect.c
+examples_redirect_LDADD = liblog4stdc.a
+examples_redirect_DEPENDENCIES = liblog4stdc.a
+TESTS += examples/redirect
 
-check_PROGRAMS += tests/log4stdc/configure.xml/level
-tests_log4stdc_configure_xml_level_SOURCES = tests/log4stdc/configure.xml/level.c
-tests_log4stdc_configure_xml_level_LDADD = liblog4stdc.a
-tests_log4stdc_configure_xml_level_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/configure.xml/level
+check_PROGRAMS += tests/log4stdc/xmlcfg/level
+tests_log4stdc_xmlcfg_level_SOURCES = tests/log4stdc/xmlcfg/level.c
+tests_log4stdc_xmlcfg_level_LDADD = liblog4stdc.a
+tests_log4stdc_xmlcfg_level_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/xmlcfg/level
 
-check_PROGRAMS += tests/log4stdc/configure.xml/largefile
-tests_log4stdc_configure_xml_largefile_SOURCES = tests/log4stdc/configure.xml/largefile.c
-tests_log4stdc_configure_xml_largefile_LDADD = liblog4stdc.a
-tests_log4stdc_configure_xml_largefile_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/configure.xml/largefile
+check_PROGRAMS += tests/log4stdc/xmlcfg/largefile
+tests_log4stdc_xmlcfg_largefile_SOURCES = tests/log4stdc/xmlcfg/largefile.c
+tests_log4stdc_xmlcfg_largefile_LDADD = liblog4stdc.a
+tests_log4stdc_xmlcfg_largefile_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/xmlcfg/largefile
 
-check_PROGRAMS += tests/log4stdc/configure.prop/level
-tests_log4stdc_configure_prop_level_SOURCES = tests/log4stdc/configure.prop/level.c
-tests_log4stdc_configure_prop_level_LDADD = liblog4stdc.a
-tests_log4stdc_configure_prop_level_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/configure.prop/level
+check_PROGRAMS += tests/log4stdc/propcfg/level
+tests_log4stdc_propcfg_level_SOURCES = tests/log4stdc/propcfg/level.c
+tests_log4stdc_propcfg_level_LDADD = liblog4stdc.a
+tests_log4stdc_propcfg_level_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/propcfg/level
 

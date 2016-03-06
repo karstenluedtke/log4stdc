@@ -12,9 +12,9 @@
 #include <unistd.h>
 #endif
 
-#include "logobjects.h"
-#include "barefootc/atomic.h"
-#include "barefootc/mempool.h"
+#include "logobjs.h"
+#include "bareftc/atomic.h"
+#include "bareftc/mempool.h"
 
 static void l4sc_destroy_base_object(l4sc_objptr_t obj);
 

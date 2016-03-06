@@ -22,10 +22,10 @@
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
-#include "barefootc/object.h"
-#include "barefootc/mempool.h"
-#include "barefootc/linkedlist.h"
+#include "logobjs.h"
+#include "bareftc/object.h"
+#include "bareftc/mempool.h"
+#include "bareftc/lnkdlist.h"
 
 #if defined(__ANDROID__)
 #include <android/log.h>

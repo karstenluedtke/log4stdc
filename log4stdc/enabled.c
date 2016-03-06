@@ -2,7 +2,7 @@
 #include <stddef.h>
 
 #include "log4stdc.h"
-#include "logobjects.h"
+#include "logobjs.h"
 
 int
 l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level)

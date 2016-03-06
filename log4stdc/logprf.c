@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "logobjects.h"
+#include "logobjs.h"
 
 int
 l4sc_logprintf(l4sc_logger_ptr_t logger, int level,

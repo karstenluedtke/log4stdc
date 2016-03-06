@@ -113,6 +113,10 @@ static inline int bfc_decr_i386_atomic(bfc_atomic_counter_t *cp)
 }
 
 #else
+#define bfc_init_atomic_counter(ctr,v)	ctr = (v)
+#define bfc_incr_atomic_counter(ctr)	++(ctr)
+#define bfc_decr_atomic_counter(ctr)	--(ctr)
+#define bfc_add_atomic_counter(ctr,v)	ctr += (v)
 
 #endif
 

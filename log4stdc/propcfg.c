@@ -23,7 +23,11 @@
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
+#ifndef ENOSYS
+#define ENOSYS EINVAL
+#endif
+
+#include "logobjs.h"
 
 static int init_property_configurator(void *, size_t, bfc_mempool_t );
 static size_t get_property_configurator_size(l4sc_configurator_cptr_t obj);

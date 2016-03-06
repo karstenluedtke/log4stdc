@@ -11,12 +11,12 @@
 #endif
 
 #include "log4stdc.h"
-#include "log4stdc/logobjects.h"
+#include "logobjs.h"
 
 #define  bfc_mutex  win32_mutex
-#include "barefootc/synchronization.h"
-#include "barefootc/object.h"
-#include "barefootc/mempool.h"
+#include "bareftc/mutex.h"
+#include "bareftc/object.h"
+#include "bareftc/mempool.h"
 
 struct win32_mutex {
 	BFC_OBJHDR(bfc_mutex_class_ptr_t,bfc_mutex_ptr_t)

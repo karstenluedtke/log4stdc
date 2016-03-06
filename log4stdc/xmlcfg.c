@@ -23,11 +23,14 @@
 #define strncasecmp strnicmp
 #endif
 
-#include "barefootc/object.h"
-#include "barefootc/mempool.h"
-#include "barefootc/utf8.h"
+#ifndef ENOSYS
+#define ENOSYS EINVAL
+#endif
 
-#include "log4stdc/logobjects.h"
+#include "bareftc/object.h"
+#include "bareftc/mempool.h"
+
+#include "logobjs.h"
 
 struct xml_tag {
 	unsigned short	tagtype;
@@ -517,6 +520,56 @@ l4sc_configure_from_xml_string(const char *buf, size_t len)
 
 	return (rc);
 }
+
+#define BFC_PUT_UTF8(cp,limit,unicode)					    \
+do {									    \
+	if ((unicode) <= 0x7FuL) {					    \
+		if (cp < limit) {					    \
+			cp[0] = (char) (unicode);			    \
+		}							    \
+		cp += 1;						    \
+	} else if ((unicode) <= 0x7FFuL) {				    \
+		if (cp+1 < limit) {					    \
+			cp[0] = (char) (0xC0 | ((unicode) >> 6));	    \
+			cp[1] = (char) (0x80 | ((unicode)        & 0x3F));  \
+		}							    \
+		cp += 2;						    \
+	} else if ((unicode) <= 0xFFFFuL) {				    \
+		if (cp+2 < limit) {					    \
+			cp[0] = (char) (0xE0 | ((unicode) >> 12));	    \
+			cp[1] = (char) (0x80 |(((unicode) >>  6) & 0x3F));  \
+			cp[2] = (char) (0x80 | ((unicode)        & 0x3F));  \
+		}							    \
+		cp += 3;						    \
+	} else if ((unicode) <= 0x1FFFFFuL) {				    \
+		if (cp+3 < limit) {					    \
+			cp[0] = (char) (0xF0 | ((unicode) >> 18));	    \
+			cp[1] = (char) (0x80 |(((unicode) >> 12) & 0x3F));  \
+			cp[2] = (char) (0x80 |(((unicode) >>  6) & 0x3F));  \
+			cp[3] = (char) (0x80 | ((unicode)        & 0x3F));  \
+		}							    \
+		cp += 4;						    \
+	} else if ((unicode) <= 0x3FFFFFFuL) {				    \
+		if (cp+4 < limit) {					    \
+			cp[0] = (char) (0xF8 | ((unicode) >> 24));	    \
+			cp[1] = (char) (0x80 |(((unicode) >> 18) & 0x3F));  \
+			cp[2] = (char) (0x80 |(((unicode) >> 12) & 0x3F));  \
+			cp[3] = (char) (0x80 |(((unicode) >>  6) & 0x3F));  \
+			cp[4] = (char) (0x80 | ((unicode)        & 0x3F));  \
+		}							    \
+		cp += 5;						    \
+	} else {							    \
+		if (cp+5 < limit) {					    \
+			cp[0] = (char) (0xFC |(((unicode) >> 30) & 0x01));  \
+			cp[1] = (char) (0x80 |(((unicode) >> 24) & 0x3F));  \
+			cp[2] = (char) (0x80 |(((unicode) >> 18) & 0x3F));  \
+			cp[3] = (char) (0x80 |(((unicode) >> 12) & 0x3F));  \
+			cp[4] = (char) (0x80 |(((unicode) >>  6) & 0x3F));  \
+			cp[5] = (char) (0x80 | ((unicode)        & 0x3F));  \
+		}							    \
+		cp += 6;						    \
+	}								    \
+} while (0 /*just once*/)
 
 struct entity_table {
 	const char *ent;

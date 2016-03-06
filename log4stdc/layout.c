@@ -18,7 +18,7 @@
 #define strncasecmp strnicmp
 #endif
 
-#if defined(_MSC_VER) || defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_USE_WINDOWS_LOCALTIME 1
 #endif
 
@@ -31,7 +31,7 @@ struct tm *_localtime64(const __time64_t *);
 #endif
 #endif
 
-#include "logobjects.h"
+#include "logobjs.h"
 
 static int init_patternlayout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
@@ -361,7 +361,11 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 #else /* not L4SC_USE_WINDOWS_LOCALTIME */
 	do {
 		time_t t = (time_t) msg->time.tv_sec;
+#ifdef HAVE_LOCALTIME_R
 		localtime_r(&t, &tmbuf);
+#else
+		memcpy(&tmbuf, localtime(&t), sizeof(tmbuf));
+#endif
 	} while (0 /* just once */);
 #endif
 	n = strftime(dp, limit - dp, "%H:%M:%S", &tmbuf);

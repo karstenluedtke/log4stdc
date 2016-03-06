@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "logobjects.h"
+#include "logobjs.h"
 
 void
 l4sc_log(l4sc_logger_ptr_t logger, int level, const char *msg,

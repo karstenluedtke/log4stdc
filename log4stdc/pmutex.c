@@ -7,12 +7,12 @@
 #include <assert.h>
 
 #include "log4stdc.h"
-#include "log4stdc/logobjects.h"
+#include "logobjs.h"
 
 #define  bfc_mutex  posix_mutex
-#include "barefootc/synchronization.h"
-#include "barefootc/object.h"
-#include "barefootc/mempool.h"
+#include "bareftc/mutex.h"
+#include "bareftc/object.h"
+#include "bareftc/mempool.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -143,11 +143,11 @@ static void
 dump_mutex(bfc_mutex_ptr_t obj, int depth, struct l4sc_logger *log)
 {
 	if (obj && obj->name && BFC_CLASS(obj)) {
-		L4SC_DEBUG(log, "object \"%s\" @%p", obj->name, obj);
-		L4SC_DEBUG(log, " class \"%s\", pool %p, lock %p, refc %d",
+		l4sc_log(log, INFO_LEVEL, "object \"%s\" @%p", obj->name, obj);
+		l4sc_log(log, INFO_LEVEL, " class \"%s\", pool %p, lock %p, refc %d",
 			BFC_CLASS(obj)->name, obj->parent_pool,
 			obj->lock, obj->refc);
-		L4SC_DEBUG(log, " last access from %s in %s:%d",
+		l4sc_log(log, INFO_LEVEL, " last access from %s in %s:%d",
 			obj->func, obj->file, obj->line);
 	}
 }

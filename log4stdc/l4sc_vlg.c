@@ -15,8 +15,8 @@
 #include <alloca.h>
 #endif
 
-#include "logobjects.h"
-#include "barefootc/mempool.h"
+#include "logobjs.h"
+#include "bareftc/mempool.h"
 
 int
 l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,

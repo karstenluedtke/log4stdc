@@ -107,6 +107,8 @@ void l4sc_close_appenders(void);
 
 int l4sc_to_level(const char *value, int vallen, int defaultlevel);
 
+#ifdef __STDC__
+#if (__STDC_VERSION__ >= 199901)
 #define L4SC_FATAL(logger,...) \
  l4sc_logprintf(logger,FATAL_LEVEL,__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__)
 
@@ -127,6 +129,9 @@ int l4sc_to_level(const char *value, int vallen, int defaultlevel);
 
 #define L4SC_TRACE(logger,...) \
  l4sc_logprintf(logger,TRACE_LEVEL,__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__)
+
+#endif /* __STDC_VERSION__ >= 199901 */
+#endif /* __STDC__ */
 
 #ifdef __cplusplus
 }	/* C++ */

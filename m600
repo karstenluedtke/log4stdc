@@ -1,0 +1,5 @@
+#!/bin/sh
+PATH=/c/old/masm611/bin:/c/old/c600/bin:/c/old/c600/binb:$PATH \
+INCLUDE="C:\\old\\C600\\INCLUDE;C:\\old\SDK31\INC" \
+LIB="C:\\old\\C600\\LIB;C:\\old\SDK31\LIB" \
+/c/old/C600/BIN/NMAKE.EXE -f nmake.mak check

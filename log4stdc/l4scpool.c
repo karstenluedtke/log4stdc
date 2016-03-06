@@ -4,8 +4,8 @@
 #include <string.h>
 #include <errno.h>
 
-#include "barefootc/object.h"
-#include "barefootc/mempool.h"
+#include "bareftc/object.h"
+#include "bareftc/mempool.h"
 
 #include "log4stdc.h"
 
@@ -93,7 +93,7 @@ init_pool(void *buf, size_t bufsize, struct mempool *pool)
 	p->refc = 20000;
 	p->file = __FILE__;
 	p->line = __LINE__;
-	p->func = __FUNCTION__;
+	p->func = "init_pool";
 	return (BFC_SUCCESS);
 }
 
@@ -170,7 +170,7 @@ pool_tostring(const struct mempool *pool,
 static void
 stdc_pool_dump (const struct mempool *pool, int depth, struct l4sc_logger *log)
 {
-	L4SC_INFO(log, "Cannot dump standard \"C\" mempool");
+	l4sc_log(log, INFO_LEVEL, "Cannot dump standard \"C\" mempool");
 }
 
 /*

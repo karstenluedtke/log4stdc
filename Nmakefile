@@ -18,11 +18,11 @@ CPPFLAGS=-I. -Ilog4stdc \
 	-DPACKAGE="log4stdc" \
 	-DPACKAGE_BUGREPORT="bug-log4stdc@example.org" \
 	-DPACKAGE_NAME="log4stdc" \
-	-DPACKAGE_STRING="log4stdc 0.8.0" \
+	-DPACKAGE_STRING="log4stdc 0.8.1" \
 	-DPACKAGE_TARNAME="log4stdc" \
 	-DPACKAGE_URL="" \
-	-DPACKAGE_VERSION="0.8.0" \
-	-DVERSION="0.8.0"
+	-DPACKAGE_VERSION="0.8.1" \
+	-DVERSION="0.8.1"
 CFLAGS=
 CXXFLAGS=-EHsc
 
@@ -31,60 +31,75 @@ HEADERS= \
 
 
 OFILES= \
-	log4stdc/l4sc_logprintf.obj \
-	log4stdc/l4sc_vlog.obj \
+	log4stdc/logprf.obj \
+	log4stdc/l4sc_vlg.obj \
 	log4stdc/l4sc_log.obj \
-	log4stdc/l4sc_logger_enabled.obj \
-	log4stdc/l4sc_formatmsg.obj \
+	log4stdc/enabled.obj \
+	log4stdc/fmtmsg.obj \
 	log4stdc/logger.obj \
 	log4stdc/appender.obj \
-	log4stdc/fileappender.obj \
+	log4stdc/fileappd.obj \
 	log4stdc/layout.obj \
-	log4stdc/logmessage.obj \
-	log4stdc/propertyconfigurator.obj \
+	log4stdc/logmsg.obj \
+	log4stdc/propcfg.obj \
 	log4stdc/object.obj \
-	log4stdc/l4stdcpool.obj \
-	log4stdc/l4sc_posix_mutex.obj \
-	log4stdc/l4sc_win32_mutex.obj \
-	log4stdc/xmlconfigurator.obj \
+	log4stdc/l4scpool.obj \
+	log4stdc/pmutex.obj \
+	log4stdc/wmutex.obj \
+	log4stdc/xmlcfg.obj \
 
 
 TESTS= \
 	testlink.exe \
-	examples/barefootc_log_redirect.exe \
-	tests/log4stdc/configure.xml/level.exe \
-	tests/log4stdc/configure.xml/largefile.exe \
-	tests/log4stdc/configure.prop/level.exe \
+	examples/redirect.exe \
+	tests/log4stdc/xmlcfg/level.exe \
+	tests/log4stdc/xmlcfg/largefile.exe \
+	tests/log4stdc/propcfg/level.exe \
 
 
 all: log4stdc.lib
 	echo "all is made"
 
 log4stdc.lib: $(OFILES) $(HEADERS)
-	lib $(OFILES) /OUT:$@
+	lib $@ -+ log4stdc\logprf.obj, nul,
+	lib $@ -+ log4stdc\l4sc_vlg.obj, nul,
+	lib $@ -+ log4stdc\l4sc_log.obj, nul,
+	lib $@ -+ log4stdc\enabled.obj, nul,
+	lib $@ -+ log4stdc\fmtmsg.obj, nul,
+	lib $@ -+ log4stdc\logger.obj, nul,
+	lib $@ -+ log4stdc\appender.obj, nul,
+	lib $@ -+ log4stdc\fileappd.obj, nul,
+	lib $@ -+ log4stdc\layout.obj, nul,
+	lib $@ -+ log4stdc\logmsg.obj, nul,
+	lib $@ -+ log4stdc\propcfg.obj, nul,
+	lib $@ -+ log4stdc\object.obj, nul,
+	lib $@ -+ log4stdc\l4scpool.obj, nul,
+	lib $@ -+ log4stdc\pmutex.obj, nul,
+	lib $@ -+ log4stdc\wmutex.obj, nul,
+	lib $@ -+ log4stdc\xmlcfg.obj, nul,
 
 check: $(OFILES) $(HEADERS) $(TESTS)
 	testlink.exe
-	examples\barefootc_log_redirect.exe
-	tests\log4stdc\configure.xml\level.exe
-	tests\log4stdc\configure.xml\largefile.exe
-	tests\log4stdc\configure.prop\level.exe
+	examples\redirect.exe
+	tests\log4stdc\xmlcfg\level.exe
+	tests\log4stdc\xmlcfg\largefile.exe
+	tests\log4stdc\propcfg\level.exe
 	echo "check done"
 
-log4stdc/l4sc_logprintf.obj: log4stdc/l4sc_logprintf.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_logprintf.c
+log4stdc/logprf.obj: log4stdc/logprf.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/logprf.c
 
-log4stdc/l4sc_vlog.obj: log4stdc/l4sc_vlog.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_vlog.c
+log4stdc/l4sc_vlg.obj: log4stdc/l4sc_vlg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_vlg.c
 
 log4stdc/l4sc_log.obj: log4stdc/l4sc_log.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_log.c
 
-log4stdc/l4sc_logger_enabled.obj: log4stdc/l4sc_logger_enabled.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_logger_enabled.c
+log4stdc/enabled.obj: log4stdc/enabled.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/enabled.c
 
-log4stdc/l4sc_formatmsg.obj: log4stdc/l4sc_formatmsg.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_formatmsg.c
+log4stdc/fmtmsg.obj: log4stdc/fmtmsg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/fmtmsg.c
 
 log4stdc/logger.obj: log4stdc/logger.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/logger.c
@@ -92,70 +107,55 @@ log4stdc/logger.obj: log4stdc/logger.c $(HEADERS)
 log4stdc/appender.obj: log4stdc/appender.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/appender.c
 
-log4stdc/fileappender.obj: log4stdc/fileappender.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/fileappender.c
+log4stdc/fileappd.obj: log4stdc/fileappd.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/fileappd.c
 
 log4stdc/layout.obj: log4stdc/layout.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/layout.c
 
-log4stdc/logmessage.obj: log4stdc/logmessage.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/logmessage.c
+log4stdc/logmsg.obj: log4stdc/logmsg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/logmsg.c
 
-log4stdc/propertyconfigurator.obj: log4stdc/propertyconfigurator.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/propertyconfigurator.c
+log4stdc/propcfg.obj: log4stdc/propcfg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/propcfg.c
 
 log4stdc/object.obj: log4stdc/object.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/object.c
 
-log4stdc/l4stdcpool.obj: log4stdc/l4stdcpool.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4stdcpool.c
+log4stdc/l4scpool.obj: log4stdc/l4scpool.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4scpool.c
 
-log4stdc/l4sc_posix_mutex.obj: log4stdc/l4sc_posix_mutex.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_posix_mutex.c
+log4stdc/pmutex.obj: log4stdc/pmutex.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/pmutex.c
 
-log4stdc/l4sc_win32_mutex.obj: log4stdc/l4sc_win32_mutex.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4sc_win32_mutex.c
+log4stdc/wmutex.obj: log4stdc/wmutex.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/wmutex.c
 
-log4stdc/xmlconfigurator.obj: log4stdc/xmlconfigurator.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/xmlconfigurator.c
+log4stdc/xmlcfg.obj: log4stdc/xmlcfg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/xmlcfg.c
 
 testlink.exe: \
-		testlink.obj \
+		testlink.cpp \
 		log4stdc.lib
-	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ testlink.obj log4stdc.lib log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetestlink.exe testlink.cpp log4stdc.lib
 
-testlink.obj: testlink.cpp $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ testlink.cpp
-
-examples/barefootc_log_redirect.exe: \
-		examples/barefootc_log_redirect.obj \
+examples/redirect.exe: \
+		examples/redirect.c \
 		log4stdc.lib
-	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ examples/barefootc_log_redirect.obj log4stdc.lib log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Feexamples\redirect.exe examples/redirect.c log4stdc.lib
 
-examples/barefootc_log_redirect.obj: examples/barefootc_log_redirect.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ examples/barefootc_log_redirect.c
-
-tests/log4stdc/configure.xml/level.exe: \
-		tests/log4stdc/configure.xml/level.obj \
+tests/log4stdc/xmlcfg/level.exe: \
+		tests/log4stdc/xmlcfg/level.c \
 		log4stdc.lib
-	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/log4stdc/configure.xml/level.obj log4stdc.lib log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetests\log4stdc\xmlcfg\level.exe tests/log4stdc/xmlcfg/level.c log4stdc.lib
 
-tests/log4stdc/configure.xml/level.obj: tests/log4stdc/configure.xml/level.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/log4stdc/configure.xml/level.c
-
-tests/log4stdc/configure.xml/largefile.exe: \
-		tests/log4stdc/configure.xml/largefile.obj \
+tests/log4stdc/xmlcfg/largefile.exe: \
+		tests/log4stdc/xmlcfg/largefile.c \
 		log4stdc.lib
-	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/log4stdc/configure.xml/largefile.obj log4stdc.lib log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetests\log4stdc\xmlcfg\largefile.exe tests/log4stdc/xmlcfg/largefile.c log4stdc.lib
 
-tests/log4stdc/configure.xml/largefile.obj: tests/log4stdc/configure.xml/largefile.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/log4stdc/configure.xml/largefile.c
-
-tests/log4stdc/configure.prop/level.exe: \
-		tests/log4stdc/configure.prop/level.obj \
+tests/log4stdc/propcfg/level.exe: \
+		tests/log4stdc/propcfg/level.c \
 		log4stdc.lib
-	$(CC) $(CFLAGS) $(CXXFLAGS) -Fe$@ tests/log4stdc/configure.prop/level.obj log4stdc.lib log4stdc.lib
-
-tests/log4stdc/configure.prop/level.obj: tests/log4stdc/configure.prop/level.c $(HEADERS)
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fo$@ tests/log4stdc/configure.prop/level.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetests\log4stdc\propcfg\level.exe tests/log4stdc/propcfg/level.c log4stdc.lib
 

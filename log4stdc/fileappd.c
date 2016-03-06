@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#if defined(HAVE_WCHAR_H)
 #include <wchar.h>
+#endif
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_WINDOWS_FILES 1
 #define L4SC_WINDOWS_LOCKS 1
@@ -19,7 +21,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#if defined(HAVE_PTHREAD_H)
 #include <pthread.h>
+#endif
 #if defined(HAVE_ALLOCA_H)
 #include <alloca.h>
 #endif
@@ -34,9 +38,9 @@
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
-#include "barefootc/mempool.h"
-#include "barefootc/synchronization.h"
+#include "logobjs.h"
+#include "bareftc/mempool.h"
+#include "bareftc/mutex.h"
 
 static int init_appender(void *, size_t, bfc_mempool_t );
 static void destroy_appender(l4sc_appender_ptr_t appender);

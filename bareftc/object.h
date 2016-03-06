@@ -245,8 +245,8 @@ int  bfc_instance_of_classname(bfc_cobjptr_t, const char *);
 bfc_classptr_t bfc_baseclass_by_name(bfc_cobjptr_t, const char *);
 
 size_t bfc_object_size(bfc_cobjptr_t);
-unsigned bfc_object_hashcode(bfc_cobjptr_t, int hashlen);
-unsigned bfc_reduce_hashcode(size_t origval, int origbits, int hashlen);
+unsigned bfc_object_hashcode(bfc_cobjptr_t, int);
+unsigned bfc_reduce_hashcode(size_t, int, int);
 #define  bfc_equal_object bfc_object_equals
 int  bfc_object_equals(bfc_cobjptr_t, bfc_cobjptr_t);
 int  bfc_object_length(bfc_cobjptr_t);

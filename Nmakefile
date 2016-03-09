@@ -18,11 +18,11 @@ CPPFLAGS=-I. -Ilog4stdc \
 	-DPACKAGE="log4stdc" \
 	-DPACKAGE_BUGREPORT="bug-log4stdc@example.org" \
 	-DPACKAGE_NAME="log4stdc" \
-	-DPACKAGE_STRING="log4stdc 0.8.0" \
+	-DPACKAGE_STRING="log4stdc 0.8.1" \
 	-DPACKAGE_TARNAME="log4stdc" \
 	-DPACKAGE_URL="" \
-	-DPACKAGE_VERSION="0.8.0" \
-	-DVERSION="0.8.0"
+	-DPACKAGE_VERSION="0.8.1" \
+	-DVERSION="0.8.1"
 CFLAGS=
 CXXFLAGS=-EHsc
 

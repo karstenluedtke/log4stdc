@@ -129,7 +129,7 @@ struct l4sc_appender {
 struct l4sc_logger {
 	BFC_OBJHDR(l4sc_logger_class_ptr_t,l4sc_logger_ptr_t)
 	struct l4sc_logger *next;
-	int level;
+	unsigned level;
 	int additivity;
 	l4sc_logger_ptr_t parent;
 	l4sc_appender_ptr_t appenders[4];

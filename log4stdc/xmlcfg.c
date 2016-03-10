@@ -142,6 +142,9 @@ on_start_tag(struct parsing_state *ps, const struct xml_tag *tag)
 	struct element_values values;
 	char name[MAX_ATTR_LEN];
 	struct xml_attr attrs[MAX_ATTRS];
+	static const char thisfunction[] = "on_start_tag";
+
+	LOGDEBUG(("%s: stack %p", thisfunction, &values));
 
 	xml_tag_name_tostring(tag, name, sizeof(name));
 	nattrs = xml_tag_get_attrs(tag, attrs, MAX_ATTRS, MAX_ATTR_LEN);
@@ -158,12 +161,12 @@ on_start_tag(struct parsing_state *ps, const struct xml_tag *tag)
 		}
 	}
 
-	LOGDEBUG(("%s: <%s>", __FUNCTION__, name));
+	LOGDEBUG(("%s: <%s>", thisfunction, name));
 
 	memset(&values, 0, sizeof(values));
 	for (i=0; i < nattrs; i++) {
 		LOGDEBUG(("%s: attr #%d \"%s\" = \"%s\"",
-			__FUNCTION__, i, attrs[i].name, attrs[i].value));
+			thisfunction, i, attrs[i].name, attrs[i].value));
 		if (strncasecmp(attrs[i].name, "name", 4) == 0) {
 			values.name = attrs[i].value;
 			values.namelen = attrs[i].vallen;
@@ -256,9 +259,10 @@ static int
 on_end_tag(struct parsing_state *ps, const struct xml_tag *endtag)
 {
 	char name[MAX_ATTR_LEN];
+	static const char thisfunction[] = "on_end_tag";
 
 	xml_tag_name_tostring(endtag, name, sizeof(name));
-	LOGDEBUG(("%s: </%s>", __FUNCTION__, name));
+	LOGDEBUG(("%s: </%s>", thisfunction, name));
 
 	ps->depth = endtag->level;
 	if (strncasecmp(name, "logger", 6) == 0) {
@@ -279,14 +283,15 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 	int rc = 0;
 	size_t bufsize = 8000, length = 0;
 	struct mempool *pool = get_default_mempool();
+	static const char thisfunction[] = "configure_from_file";
 
-	LOGINFO(("%s: \"%s\"", __FUNCTION__, path));
+	LOGINFO(("%s: \"%s\"", thisfunction, path));
 
 	fp = fopen(path, "r");
 	if (fp == NULL) {
 		rc = -errno;
 		LOGERROR(("%s: opening file \"%s\" failed, error %d: %s",
-			__FUNCTION__, path, rc, strerror(-rc)));
+			thisfunction, path, rc, strerror(-rc)));
 		return (rc);
 	}
 
@@ -296,12 +301,12 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 		if (length >= bufsize) {
 			bufsize = (3 * bufsize / 2) + 4000;
 			LOGDEBUG(("%s: have %ld, realloc(%ld)...",
-				__FUNCTION__, (long)length, (long)bufsize));
+				thisfunction, (long)length, (long)bufsize));
 			buff = mempool_realloc(pool, buff, bufsize);
 			if (buff == NULL) {
 				rc = -ENOMEM;
 				LOGERROR(("%s: realloc(%ld) failed.",
-					__FUNCTION__, (long)bufsize));
+					thisfunction, (long)bufsize));
 				fclose(fp);
 				return (rc);
 			}
@@ -313,7 +318,7 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 
 	mempool_free(pool, buff);
 
-	LOGINFO(("%s: \"%s\" done, error %d", __FUNCTION__, path, rc));
+	LOGINFO(("%s: \"%s\" done, error %d", thisfunction, path, rc));
 
 	return ((rc == 0)? 0: (rc > 0)? -rc: rc);
 }
@@ -327,8 +332,9 @@ configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
 	const char *limit = s + len;
 	struct parsing_state state;
 	struct xml_tag tag;
+	static const char thisfunction[] = "configure_from_string";
 
-	LOGINFO(("%s: %ld bytes", __FUNCTION__, (long) len));
+	LOGINFO(("%s: %ld bytes", thisfunction, (long) len));
 
 	memset(&tag, 0, sizeof(tag));
 	memset(&state, 0, sizeof(state));
@@ -336,8 +342,8 @@ configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
 
 	while ((rc = xml_find_next_tag(&tag, cp, limit)) >= 0) {
 		iterations++;
-		LOGDEBUG(("%s: iteration #%d, found %d",
-				__FUNCTION__, iterations, rc));
+		LOGDEBUG(("%s: iteration #%d, found %d, stack %p",
+				thisfunction, iterations, rc, &state));
 		if ((rc == XML_START_TAG) || (rc == XML_EMPTY_TAG)) {
 			on_start_tag(&state, &tag);
 		}
@@ -347,7 +353,7 @@ configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
 		cp = tag.rawtag + tag.taglen;
 	}
 
-	LOGINFO(("%s: done, error %d", __FUNCTION__, err));
+	LOGINFO(("%s: done, error %d", thisfunction, err));
 
 	return ((err == 0)? 0: (err > 0)? -err: err);
 }
@@ -411,10 +417,11 @@ xml_tag_get_attrs(const struct xml_tag *tag, struct xml_attr *attrs,
 	unsigned start, assign, quote, endquote;
 	unsigned n=0;
 	long c;
+	static const char thisfunction[] = "xml_tag_get_attrs";
 
 	for (; (pos < limit) && (n < maxattrs); pos++) {
 		LOGDEBUG(("%s: pos %u/%u, have %u/%u",
-			__FUNCTION__, pos, limit, n, maxattrs));
+			thisfunction, pos, limit, n, maxattrs));
 		while ((pos < limit) && (s[pos] > ' ')) {
 			pos++;
 		}
@@ -428,7 +435,7 @@ xml_tag_get_attrs(const struct xml_tag *tag, struct xml_attr *attrs,
 		assign = quote = endquote = 0;
 		c = s[pos];
 		LOGDEBUG(("%s: pos %ld, char %c",
-				__FUNCTION__, (long) pos, (char)c));
+				thisfunction, (long) pos, (char)c));
 		if (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'))) {
 			while (!endquote && (++pos < limit)) {
 				c = s[pos];
@@ -446,7 +453,7 @@ xml_tag_get_attrs(const struct xml_tag *tag, struct xml_attr *attrs,
 				}
 				LOGDEBUG(("%s: pos %u, char %c, "
 					"assign %u, quote %u, endquote %u",
-					__FUNCTION__, pos, (char)c,
+					thisfunction, pos, (char)c,
 					assign, quote, endquote));
 			}
 		}
@@ -474,7 +481,7 @@ xml_tag_get_attrs(const struct xml_tag *tag, struct xml_attr *attrs,
 			}
 			attrs[n].value[len] = '\0';
 			attrs[n].vallen = len;
-			LOGDEBUG(("%s(xmltag) #%d: %s=\"%s\"", __FUNCTION__,
+			LOGDEBUG(("%s(xmltag) #%d: %s=\"%s\"", thisfunction,
 					n, attrs[n].name, attrs[n].value));
 			n++;
 		}

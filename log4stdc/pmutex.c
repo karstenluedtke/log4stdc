@@ -142,12 +142,17 @@ mutex_unlock(bfc_mutex_ptr_t obj, const char *file, int line, const char *func)
 static void
 dump_mutex(bfc_mutex_ptr_t obj, int depth, struct l4sc_logger *log)
 {
+	const char thisfunction[] = "dump_mutex";
+
 	if (obj && obj->name && BFC_CLASS(obj)) {
-		l4sc_log(log, INFO_LEVEL, "object \"%s\" @%p", obj->name, obj);
-		l4sc_log(log, INFO_LEVEL, " class \"%s\", pool %p, lock %p, refc %d",
+		l4sc_logprintf(log, INFO_LEVEL,__FILE__,__LINE__,thisfunction,
+			"object \"%s\" @%p", obj->name, obj);
+		l4sc_logprintf(log, INFO_LEVEL,__FILE__,__LINE__,thisfunction,
+			" class \"%s\", pool %p, lock %p, refc %d",
 			BFC_CLASS(obj)->name, obj->parent_pool,
 			obj->lock, obj->refc);
-		l4sc_log(log, INFO_LEVEL, " last access from %s in %s:%d",
+		l4sc_logprintf(log, INFO_LEVEL,__FILE__,__LINE__,thisfunction,
+			" last access from %s in %s:%d",
 			obj->func, obj->file, obj->line);
 	}
 }

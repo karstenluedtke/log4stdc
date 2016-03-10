@@ -170,7 +170,10 @@ pool_tostring(const struct mempool *pool,
 static void
 stdc_pool_dump (const struct mempool *pool, int depth, struct l4sc_logger *log)
 {
-	l4sc_log(log, INFO_LEVEL, "Cannot dump standard \"C\" mempool");
+	const char thisfunction[] = "stdc_pool_dump";
+
+	l4sc_logprintf(log, INFO_LEVEL, __FILE__, __LINE__, thisfunction,
+			"Cannot dump standard \"C\" mempool");
 }
 
 /*

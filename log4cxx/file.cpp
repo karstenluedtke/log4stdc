@@ -5,7 +5,7 @@
 #include <log4cxx/helpers/pool.h>
 
 #include "log4stdc.h"
-#include "barefootc/utf8.h"
+#include "bareftc/utf8.h"
 
 using namespace log4cxx;
 using namespace log4cxx::helpers;

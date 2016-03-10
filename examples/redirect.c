@@ -29,7 +29,8 @@ main(int argc, char *argv[])
 	l4sc_insert_custom_logger("barefootc", &some_state, enatest, logfunc);
 
 	logger = l4sc_get_logger("barefootc.some.subclass", 0);
-	l4sc_log(logger,INFO_LEVEL,"this to be output through custom logfunc");
+	l4sc_logprintf(logger, INFO_LEVEL, __FILE__, __LINE__, "main",
+			"this to be output through custom logfunc");
 
 	exit(0);
 }

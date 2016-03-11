@@ -84,15 +84,21 @@ tests_log4stdc_xmlcfg_level_LDADD = liblog4stdc.a
 tests_log4stdc_xmlcfg_level_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/log4stdc/xmlcfg/level
 
-check_PROGRAMS += tests/log4stdc/xmlcfg/largefile
-tests_log4stdc_xmlcfg_largefile_SOURCES = tests/log4stdc/xmlcfg/largefile.c
-tests_log4stdc_xmlcfg_largefile_LDADD = liblog4stdc.a
-tests_log4stdc_xmlcfg_largefile_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/xmlcfg/largefile
+check_PROGRAMS += tests/log4stdc/xmlcfg/bigfile
+tests_log4stdc_xmlcfg_bigfile_SOURCES = tests/log4stdc/xmlcfg/bigfile.c
+tests_log4stdc_xmlcfg_bigfile_LDADD = liblog4stdc.a
+tests_log4stdc_xmlcfg_bigfile_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/xmlcfg/bigfile
 
 check_PROGRAMS += tests/log4stdc/propcfg/level
 tests_log4stdc_propcfg_level_SOURCES = tests/log4stdc/propcfg/level.c
 tests_log4stdc_propcfg_level_LDADD = liblog4stdc.a
 tests_log4stdc_propcfg_level_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/log4stdc/propcfg/level
+
+check_PROGRAMS += tests/log4stdc/format/currtime
+tests_log4stdc_format_currtime_SOURCES = tests/log4stdc/format/currtime.c
+tests_log4stdc_format_currtime_LDADD = liblog4stdc.a
+tests_log4stdc_format_currtime_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/format/currtime
 

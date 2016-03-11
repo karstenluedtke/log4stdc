@@ -1,4 +1,8 @@
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -155,6 +159,12 @@ l4sc_init_logmessage(void *buf, size_t bufsize,
 		m->time.tv_day  = tv.tv_sec / 86400uL;
 		m->time.tv_sec  = tv.tv_sec - (m->time.tv_day * 86400uL);
 		m->time.tv_usec = tv.tv_usec;
+#elif defined(HAVE_STRUCT_TIMESPEC)
+		struct timespec tv;
+		gettimeofday(&tv, NULL);
+		m->time.tv_day  = tv.tv_sec / 86400uL;
+		m->time.tv_sec  = tv.tv_sec - (m->time.tv_day * 86400uL);
+		m->time.tv_usec = tv.tv_nsec / 1000;
 #else
 		time_t secs;
 		time(&secs);

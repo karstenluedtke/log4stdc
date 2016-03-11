@@ -44,12 +44,13 @@ main (int argc, char *argv[])
 	FILE *fp;
 	int i, j, rc;
 	l4sc_logger_ptr_t logger;
+	int emptylines = (sizeof(void *) == 2)? 10: 100;
 
 	fp = fopen("test.xml", "w");
 	assert (fp != NULL);
 
 	for (i=0; configlines[i] != NULL; i++) {
-		for (j=0; j < 100; j++) {
+		for (j=0; j < emptylines; j++) {
 			fprintf(fp, "%s\n", emptyline);
 		}
 		fprintf(fp, "%s\n", configlines[i]);

@@ -345,7 +345,9 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 	}
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 	do {
-		__time64_t t = msg->time.tv_sec;
+		__time64_t t;
+		t = msg->time.tv_day;
+		t = (t * 86400L) + msg->time.tv_sec;
 #if defined(HAVE__LOCALTIME64_S)
 		_localtime64_s(&tmbuf, &t);
 #else
@@ -360,7 +362,14 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 
 #else /* not L4SC_USE_WINDOWS_LOCALTIME */
 	do {
-		time_t t = (time_t) msg->time.tv_sec;
+		time_t t;
+		t = (time_t) msg->time.tv_day;
+		if ((t > 24000 /* after 2035 */) && (sizeof(t) == 4)) {
+			do {
+				t -= (20 * 365 + 5); /* subtract 20 years */
+			} while (t > 24000);
+		}
+		t = (t * 86400L) + msg->time.tv_sec;
 #ifdef HAVE_LOCALTIME_R
 		localtime_r(&t, &tmbuf);
 #else

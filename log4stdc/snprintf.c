@@ -102,6 +102,99 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
              const char *prefix, int pfxlen, unsigned v)
 {
 	char *dp = buf;
+#define PUT_UNSIGNED(ptr,width,prec,flags,limit,prefix,pfxlen,T,val)	\
+	do {								\
+		T _v = val;						\
+		T _divisor = 10;					\
+		int _digits = 1;					\
+		int _i, _n, _w = width;					\
+		char _c = ' ';						\
+		if ((_v == 0) && (prec == 0)) {				\
+			_digits = 0;					\
+		} else {						\
+			while (_v >= _divisor) {			\
+				_digits++;				\
+				_divisor *= 10;				\
+			}						\
+			while (_digits < prec) {			\
+				_digits++;				\
+				_divisor *= 10;				\
+			}						\
+		}							\
+		_n = pfxlen + _digits					\
+		   + (((flags) & (CONV_FLAG_INCLUDE_SIGN		\
+				| CONV_FLAG_SPACE_SIGN))? 1: 0);	\
+		if ((flags) & CONV_FLAG_LEADING_ZEROES) {		\
+			for (_i = 0; _i < pfxlen; _i++) {		\
+				PUTNEXTCHAR(ptr, prefix[_i], limit);	\
+				_w--;					\
+			}						\
+			if ((flags) & CONV_FLAG_INCLUDE_SIGN) {		\
+				PUTNEXTCHAR(ptr, '+', limit);		\
+				_w--;					\
+			} else if ((flags) & CONV_FLAG_SPACE_SIGN) {	\
+				PUTNEXTCHAR(ptr, ' ', limit);		\
+				_w--;					\
+			}						\
+			_n = _digits;					\
+			_c = '0';					\
+		}							\
+		while ((_w > _n) && !((flags) & CONV_FLAG_LEFT_ALIGN)) {\
+			PUTNEXTCHAR(ptr, _c, limit);			\
+			_w--;						\
+		}							\
+		if (!((flags) & CONV_FLAG_LEADING_ZEROES)) {		\
+			for (_i = 0; _i < pfxlen; _i++) {		\
+				PUTNEXTCHAR(ptr, prefix[_i], limit);	\
+				_w--;					\
+			}						\
+			if ((flags) & CONV_FLAG_INCLUDE_SIGN) {		\
+				PUTNEXTCHAR(ptr, '+', limit);		\
+				_w--;					\
+			} else if ((flags) & CONV_FLAG_SPACE_SIGN) {	\
+				PUTNEXTCHAR(ptr, ' ', limit);		\
+				_w--;					\
+			}						\
+		}							\
+		while (_digits > 0) {					\
+			_divisor /= 10;					\
+			_c = (char)((_divisor > 0)? _v/_divisor: _v);	\
+			_v -= _c * _divisor;				\
+			_c += '0';					\
+			PUTNEXTCHAR(ptr, _c, limit);			\
+			_digits--;					\
+			_w--;						\
+		}							\
+		while (_w > 0) {					\
+			PUTNEXTCHAR(ptr, ' ', limit);			\
+			_w--;						\
+		}							\
+	} while (0 /*just once */)
+
+	PUT_UNSIGNED(dp,width,precision,flags,limit,
+			prefix, pfxlen, unsigned, v);
+	return (dp - buf);
+}
+
+static int
+put_ulong(char *buf, int width, int precision, int flags, const char *limit,
+             const char *prefix, int pfxlen, unsigned long v)
+{
+	char *dp = buf;
+
+	PUT_UNSIGNED(dp,width,precision,flags,limit,
+			prefix, pfxlen, unsigned long, v);
+	return (dp - buf);
+}
+
+static int
+put_ullong(char *buf, int width, int precision, int flags, const char *limit,
+             const char *prefix, int pfxlen, unsigned long long v)
+{
+	char *dp = buf;
+
+	PUT_UNSIGNED(dp,width,precision,flags,limit,
+			prefix, pfxlen, unsigned long long, v);
 	return (dp - buf);
 }
 
@@ -217,8 +310,24 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 			n = 0;
 			if (modifier == CONV_ARG_MODIFIER_LONG) {
 				long v = va_arg(ap, long);
+				if (v < 0) {
+					n = put_ulong(dp, width, precision,
+					      flags & ~CONV_FLAG_INCLUDE_SIGN,
+					      limit, "-", 1, -v);
+				} else {
+					n = put_ulong(dp, width, precision,
+                                              flags, limit, "", 0, v);
+				}
 			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
 				long long v = va_arg(ap, long long);
+				if (v < 0) {
+					n = put_ullong(dp, width, precision,
+					      flags & ~CONV_FLAG_INCLUDE_SIGN,
+					      limit, "-", 1, -v);
+				} else {
+					n = put_ullong(dp, width, precision,
+                                              flags, limit, "", 0, v);
+				}
 			} else {
 				int v = va_arg(ap, int);
 				if (v < 0) {
@@ -235,6 +344,24 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 			}
 			break;
 		case CONV_SPEC_UNSIGNED:
+			n = 0;
+			if (modifier == CONV_ARG_MODIFIER_LONG) {
+				unsigned long v = va_arg(ap, unsigned long);
+				n = put_ulong(dp, width, precision,
+                                              flags, limit, "", 0, v);
+			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
+				unsigned long long v =
+					va_arg(ap, unsigned long long);
+				n = put_ullong(dp, width, precision,
+                                              flags, limit, "", 0, v);
+			} else {
+				unsigned v = va_arg(ap, unsigned);
+				n = put_unsigned(dp, width, precision,
+                                              flags, limit, "", 0, v);
+			}
+			if (n > 0) {
+				dp += n;
+			}
 			break;
 		case CONV_SPEC_OCTAL:
 			break;
@@ -254,6 +381,7 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 		case CONV_SPEC_STORE_BYTES_WRITTEN:
 		default: /* just copy the spec */
 			f = va_arg(ap, double);
+			f = f;
 			while (spec < cp) {
 				PUTNEXTCHAR(dp, *spec, limit);
 				spec++;

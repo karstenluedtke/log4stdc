@@ -97,6 +97,8 @@ int l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,
 int l4sc_logprintf(l4sc_logger_ptr_t logger, int level,
 	      const char *file, int line, const char *func,
 	      const char *fmt, ...) L4SC_LOGPRINTF_ATTR;
+int l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
+int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
 l4sc_appender_ptr_t l4sc_get_appender(const char *name, int nlen,
 				      const char *kind, int klen);

@@ -36,6 +36,7 @@ liblog4stdc_a_SOURCES+= log4stdc/l4scpool.c
 liblog4stdc_a_SOURCES+= log4stdc/pmutex.c
 liblog4stdc_a_SOURCES+= log4stdc/wmutex.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlcfg.c
+liblog4stdc_a_SOURCES+= log4stdc/snprintf.c
 
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a
@@ -101,4 +102,10 @@ tests_log4stdc_format_currtime_SOURCES = tests/log4stdc/format/currtime.c
 tests_log4stdc_format_currtime_LDADD = liblog4stdc.a
 tests_log4stdc_format_currtime_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/log4stdc/format/currtime
+
+check_PROGRAMS += tests/log4stdc/format/snprintf
+tests_log4stdc_format_snprintf_SOURCES = tests/log4stdc/format/snprintf.c
+tests_log4stdc_format_snprintf_LDADD = liblog4stdc.a
+tests_log4stdc_format_snprintf_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/format/snprintf
 

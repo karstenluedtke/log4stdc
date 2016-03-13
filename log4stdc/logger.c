@@ -175,7 +175,7 @@ static struct l4sc_logger predefined_loggers[] = {
 	/* .lock	*/ NULL,
 	/* .parent_pool	*/ NULL,
 	/* .next	*/ NULL,
-	/* .level	*/ ERROR_LEVEL,
+	/* .level	*/ WARN_LEVEL,
 	/* .additivity	*/ 0,
 	/* .parent	*/ &rootlogger,
 	/* .appenders	*/ { NULL, NULL, NULL, NULL }
@@ -543,7 +543,7 @@ l4sc_set_internal_logging(const char *value, int vallen)
 			l4sclogger.level = DEBUG_LEVEL;
 			break;
 		case 'F': case 'f': case '0': /* FALSE */
-			l4sclogger.level = ERROR_LEVEL;
+			l4sclogger.level = WARN_LEVEL;
 			break;
 		default:
 			l4sclogger.level = l4sc_to_level(value, vallen,

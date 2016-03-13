@@ -22,7 +22,7 @@
 static const char configstring[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" LF
 "<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
-							" debug=\"1\">" LF
+							" debug=\"0\">" LF
 "	<appender class=\"org.apache.log4j.FileAppender\" name=\"testlog\">" LF
 "		<param name=\"File\" value=\"test.log\"/>" LF
 "		<layout class=\"org.apache.log4j.PatternLayout\">" LF

@@ -1,29 +1,6 @@
 
 CC=cl
-CPPFLAGS=-I. -Ilog4stdc \
-	-DWIN32=1 -D_WIN32=1 \
-	-DSTDC_HEADERS=1 \
-	-DHAVE_ALLOCA_H=1 \
-	-DHAVE_FCNTL_H=1 \
-	-DHAVE_INTTYPES_H=1 \
-	-DHAVE_MALLOC_H=1 \
-	-DHAVE_MEMORY_H=1 \
-	-DHAVE_STDDEF_H=1 \
-	-DHAVE_STDINT_H=1 \
-	-DHAVE_STDLIB_H=1 \
-	-DHAVE_STRING_H=1 \
-	-DHAVE__BOOL=1 \
-	-DHAVE__LOCALTIME64=1 \
-	-DHAVE__LOCALTIME64_S=1 \
-	-DPACKAGE="log4stdc" \
-	-DPACKAGE_BUGREPORT="bug-log4stdc@example.org" \
-	-DPACKAGE_NAME="log4stdc" \
-	-DPACKAGE_STRING="log4stdc 0.8.1" \
-	-DPACKAGE_TARNAME="log4stdc" \
-	-DPACKAGE_URL="" \
-	-DPACKAGE_VERSION="0.8.1" \
-	-DVERSION="0.8.1"
-CFLAGS=
+CPPFLAGS=-I. -Ilog4stdc -DHAVE_CONFIG_H=1
 CXXFLAGS=-EHsc
 
 HEADERS= \
@@ -47,14 +24,17 @@ OFILES= \
 	log4stdc/pmutex.obj \
 	log4stdc/wmutex.obj \
 	log4stdc/xmlcfg.obj \
+	log4stdc/snprintf.obj \
+	log4stdc/vsnprntf.obj \
 
 
 TESTS= \
-	testlink.exe \
 	examples/redirect.exe \
 	tests/log4stdc/xmlcfg/level.exe \
-	tests/log4stdc/xmlcfg/largefile.exe \
+	tests/log4stdc/xmlcfg/bigfile.exe \
 	tests/log4stdc/propcfg/level.exe \
+	tests/log4stdc/format/currtime.exe \
+	tests/log4stdc/format/snprintf.exe \
 
 
 all: log4stdc.lib
@@ -77,14 +57,37 @@ log4stdc.lib: $(OFILES) $(HEADERS)
 	lib $@ -+ log4stdc\pmutex.obj, nul,
 	lib $@ -+ log4stdc\wmutex.obj, nul,
 	lib $@ -+ log4stdc\xmlcfg.obj, nul,
+	lib $@ -+ log4stdc\snprintf.obj, nul,
+	lib $@ -+ log4stdc\vsnprntf.obj, nul,
 
 check: $(OFILES) $(HEADERS) $(TESTS)
-	testlink.exe
 	examples\redirect.exe
 	tests\log4stdc\xmlcfg\level.exe
-	tests\log4stdc\xmlcfg\largefile.exe
+	tests\log4stdc\xmlcfg\bigfile.exe
 	tests\log4stdc\propcfg\level.exe
+	tests\log4stdc\format\currtime.exe
+	tests\log4stdc\format\snprintf.exe
 	echo "check done"
+
+config.h: win32.mak
+	echo "#ifndef _L4SC_CONFIG_H_" >  $@
+	echo "#define _L4SC_CONFIG_H_" >> $@
+	echo "#define WIN32 1" >> $@
+	echo "#define _WIN32 1" >> $@
+	echo "#define STDC_HEADERS 1" >> $@
+	echo "#define HAVE_ALLOCA_H 1" >> $@
+	echo "#define HAVE_FCNTL_H 1" >> $@
+	echo "#define HAVE_INTTYPES_H 1" >> $@
+	echo "#define HAVE_MALLOC_H 1" >> $@
+	echo "#define HAVE_MEMORY_H 1" >> $@
+	echo "#define HAVE_STDDEF_H 1" >> $@
+	echo "#define HAVE_STDINT_H 1" >> $@
+	echo "#define HAVE_STDLIB_H 1" >> $@
+	echo "#define HAVE_STRING_H 1" >> $@
+	echo "#define HAVE__BOOL 1" >> $@
+	echo "#define HAVE__LOCALTIME64 1" >> $@
+	echo "#define HAVE__LOCALTIME64_S 1" >> $@
+	echo "#endif /* _L4SC_CONFIG_H_ */" >> $@
 
 log4stdc/logprf.obj: log4stdc/logprf.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/logprf.c
@@ -134,28 +137,39 @@ log4stdc/wmutex.obj: log4stdc/wmutex.c $(HEADERS)
 log4stdc/xmlcfg.obj: log4stdc/xmlcfg.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/xmlcfg.c
 
-testlink.exe: \
-		testlink.cpp \
-		log4stdc.lib
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetestlink.exe testlink.cpp log4stdc.lib
+log4stdc/snprintf.obj: log4stdc/snprintf.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/snprintf.c
+
+log4stdc/vsnprntf.obj: log4stdc/vsnprntf.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/vsnprntf.c
 
 examples/redirect.exe: \
 		examples/redirect.c \
 		log4stdc.lib
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Feexamples\redirect.exe examples/redirect.c log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Feexamples\redirect.exe examples/redirect.c log4stdc.lib
 
 tests/log4stdc/xmlcfg/level.exe: \
 		tests/log4stdc/xmlcfg/level.c \
 		log4stdc.lib
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetests\log4stdc\xmlcfg\level.exe tests/log4stdc/xmlcfg/level.c log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Fetests\log4stdc\xmlcfg\level.exe tests/log4stdc/xmlcfg/level.c log4stdc.lib
 
-tests/log4stdc/xmlcfg/largefile.exe: \
-		tests/log4stdc/xmlcfg/largefile.c \
+tests/log4stdc/xmlcfg/bigfile.exe: \
+		tests/log4stdc/xmlcfg/bigfile.c \
 		log4stdc.lib
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetests\log4stdc\xmlcfg\largefile.exe tests/log4stdc/xmlcfg/largefile.c log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Fetests\log4stdc\xmlcfg\bigfile.exe tests/log4stdc/xmlcfg/bigfile.c log4stdc.lib
 
 tests/log4stdc/propcfg/level.exe: \
 		tests/log4stdc/propcfg/level.c \
 		log4stdc.lib
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) -Fetests\log4stdc\propcfg\level.exe tests/log4stdc/propcfg/level.c log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Fetests\log4stdc\propcfg\level.exe tests/log4stdc/propcfg/level.c log4stdc.lib
+
+tests/log4stdc/format/currtime.exe: \
+		tests/log4stdc/format/currtime.c \
+		log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Fetests\log4stdc\format\currtime.exe tests/log4stdc/format/currtime.c log4stdc.lib
+
+tests/log4stdc/format/snprintf.exe: \
+		tests/log4stdc/format/snprintf.c \
+		log4stdc.lib
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Fetests\log4stdc\format\snprintf.exe tests/log4stdc/format/snprintf.c log4stdc.lib
 

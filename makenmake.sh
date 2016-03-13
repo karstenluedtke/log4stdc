@@ -1,40 +1,39 @@
 #!/bin/sh
 
-M="Nmakefile"
+if [ "x$1" != "x" ] ; then
+	M="$1"
+else
+	M="win32.mak"
+fi
 
 HEADERS=`grep 'HEADERS.*=' Makefile.am | sed -e'1,$s/^.*= *//g'`
 SOURCES=`grep 'log4stdc_a_SOURCES.*=.*c$' Makefile.am | sed -e'1,$s/^.*= *//g'`
-TESTS=`grep '^TESTS.*=' Makefile.am | sed -e'1,$s/^.*= *//g'`
+TESTS=`grep '^TESTS.*=' Makefile.am | grep -v testlink | sed -e'1,$s/^.*= *//g'`
 
 V=`grep AC_INIT configure.ac | sed -e'1,$s/^.*4stdc.,..//' -e'1,$s/.,..bug.*//'`
 
+case "$M" in
+*win32*)
+	CONFIGFLAGS="WIN32 _WIN32 STDC_HEADERS"
+	CONFIGFLAGS="$CONFIGFLAGS HAVE_ALLOCA_H HAVE_FCNTL_H HAVE_INTTYPES_H"
+	CONFIGFLAGS="$CONFIGFLAGS HAVE_MALLOC_H HAVE_MEMORY_H HAVE_STDDEF_H"
+	CONFIGFLAGS="$CONFIGFLAGS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STRING_H"
+	CONFIGFLAGS="$CONFIGFLAGS HAVE__BOOL"
+	CONFIGFLAGS="$CONFIGFLAGS HAVE__LOCALTIME64 HAVE__LOCALTIME64_S"
+	;;
+*)
+	CONFIGFLAGS=""
+	;;
+esac
+
 echo ""	> $M
 echo 'CC=cl'							>> $M
-echo 'CPPFLAGS=-I. -Ilog4stdc' "\\"				>> $M
-echo '	-DWIN32=1 -D_WIN32=1' "\\"				>> $M
-echo '	-DSTDC_HEADERS=1' "\\"					>> $M
-echo '	-DHAVE_ALLOCA_H=1' "\\"					>> $M
-echo '	-DHAVE_FCNTL_H=1' "\\"					>> $M
-echo '	-DHAVE_INTTYPES_H=1' "\\"				>> $M
-echo '	-DHAVE_MALLOC_H=1' "\\"					>> $M
-echo '	-DHAVE_MEMORY_H=1' "\\"					>> $M
-echo '	-DHAVE_STDDEF_H=1' "\\"					>> $M
-echo '	-DHAVE_STDINT_H=1' "\\"					>> $M
-echo '	-DHAVE_STDLIB_H=1' "\\"					>> $M
-echo '	-DHAVE_STRING_H=1' "\\"					>> $M
-echo '	-DHAVE__BOOL=1' "\\"					>> $M
-echo '	-DHAVE__LOCALTIME64=1' "\\"				>> $M
-echo '	-DHAVE__LOCALTIME64_S=1' "\\"				>> $M
-echo '	-DPACKAGE="log4stdc"' "\\"				>> $M
-echo '	-DPACKAGE_BUGREPORT="bug-log4stdc@example.org"' "\\"	>> $M
-echo '	-DPACKAGE_NAME="log4stdc"' "\\"				>> $M
-echo '	-DPACKAGE_STRING="log4stdc '"$V"'"' "\\"		>> $M
-echo '	-DPACKAGE_TARNAME="log4stdc"' "\\"			>> $M
-echo '	-DPACKAGE_URL=""' "\\"					>> $M
-echo '	-DPACKAGE_VERSION="'"$V"'"' "\\"			>> $M
-echo '	-DVERSION="'"$V"'"'					>> $M
-echo 'CFLAGS='							>> $M
-echo 'CXXFLAGS=-EHsc'						>> $M
+echo 'CPPFLAGS=-I. -Ilog4stdc' -DHAVE_CONFIG_H=1		>> $M
+case "$M" in
+*win32*)
+	echo 'CXXFLAGS=-EHsc'					>> $M
+	;;
+esac
 echo "" >> $M
 
 echo "HEADERS= \\" >> $M
@@ -67,8 +66,9 @@ echo "" >> $M
 
 echo 'log4stdc.lib: $(OFILES) $(HEADERS)'	 >> $M
 for i in $SOURCES ; do
-	o=`echo $i | sed -e'1,$s/.cp*$/.obj/g' -e'1,$s@/@\\\\@g'`
-	echo '	lib $@ -+ '"$o"', nul,' >> $M
+	echo -n '	lib $@ -+ '		 >> $M
+	echo -n "$i" | sed -e'1,$s/.cp*$/.obj/g' -e'1,$s@/@\\@g' >> $M
+	echo    ', nul,'			 >> $M
 done
 echo "" >> $M
 
@@ -77,6 +77,15 @@ for i in $TESTS ; do
 	echo "	${i}.exe" | sed -e'1,$s@/@\\@'g  >> $M
 done
 echo '	echo "check done"'			 >> $M
+echo "" >> $M
+
+echo "config.h: $M"						>> $M
+echo '	echo "#ifndef _L4SC_CONFIG_H_" >  $@'			>> $M
+echo '	echo "#define _L4SC_CONFIG_H_" >> $@'			>> $M
+for flag in $CONFIGFLAGS ; do
+	echo '	echo "#define '"$flag"' 1" >> $@'		>> $M
+done
+echo '	echo "#endif /* _L4SC_CONFIG_H_ */" >> $@'		>> $M
 echo "" >> $M
 
 for i in $SOURCES ; do
@@ -97,7 +106,12 @@ for i in $TESTS ; do
 		echo "		$c \\"			>> $M
 	done
 	echo '		log4stdc.lib'		 	>> $M
-	echo -n '	$(CC) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS) ' >> $M
+	echo -n '	$(CC) $(CPPFLAGS) $(CFLAGS) '	>> $M
+	case "$s" in
+	*.cpp)
+		echo -n '$(CXXFLAGS) '			>> $M
+		;;
+	esac
 	echo -n "-Fe$x " | sed -e'1,$s@/@\\@g'		>> $M
 	for c in $s ; do
 		echo -n "$c "				>> $M

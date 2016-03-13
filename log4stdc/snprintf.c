@@ -3,6 +3,9 @@
 #include <stdarg.h>
 #include <string.h>
 
+int l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
+int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
+
 int
 l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...)
 {
@@ -70,14 +73,26 @@ put_string(char *buf, int width, int precision, int flags, const char *limit,
            const char *s)
 {
 	char *dp = buf;
+
+#define PUT_LEFT_FILL(ptr,width,need,flags,limit,c)			\
+	if ((width > need) && !((flags) & CONV_FLAG_LEFT_ALIGN)) {	\
+		do {							\
+			PUTNEXTCHAR(ptr, c, limit);			\
+			width--;					\
+		} while (width > need);					\
+	}
+
+#define PUT_RIGHT_FILL(ptr,width,need,flags,limit,c)			\
+	while (width > 0) {						\
+		PUTNEXTCHAR(ptr, c, limit);				\
+		width--;						\
+	}
+
 #define PUT_STRING(ptr,width,precision,flags,limit,s)			\
 	do {								\
 		int _w = width;						\
 		int _n = ((precision) >= 0)? (precision): strlen(s);	\
-		while ((_w > _n) && !((flags) & CONV_FLAG_LEFT_ALIGN)) {\
-			PUTNEXTCHAR(ptr, ' ', limit);			\
-			_w--;						\
-		}							\
+		PUT_LEFT_FILL(ptr, _w, _n, flags, limit, ' ');		\
 		if (_n > 0) {						\
 			if (ptr + _n < limit) {				\
 				memcpy(ptr, s, _n);			\
@@ -87,10 +102,7 @@ put_string(char *buf, int width, int precision, int flags, const char *limit,
 			ptr += _n;					\
 			_w -= _n;					\
 		}							\
-		while (_w > 0) {					\
-			PUTNEXTCHAR(ptr, ' ', limit);			\
-			_w--;						\
-		}							\
+		PUT_RIGHT_FILL(ptr, _w, _n, flags, limit, ' ');		\
 	} while (0 /*just once */)
 
 	PUT_STRING(dp,width,precision,flags,limit,s);
@@ -102,12 +114,32 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
              const char *prefix, int pfxlen, unsigned v)
 {
 	char *dp = buf;
+
+#define POSITIVE_SIGN_BYTES(flags)					\
+	(((flags) & (CONV_FLAG_INCLUDE_SIGN | CONV_FLAG_SPACE_SIGN))? 1: 0)
+
+#define PUT_PREFIX_AND_SIGN(ptr,width,need,flags,limit,prefix,pfxlen)	\
+	do {								\
+		int _k;							\
+		for (_k = 0; _k < pfxlen; _k++) {			\
+			PUTNEXTCHAR(ptr, prefix[_k], limit);		\
+			width--;					\
+		}							\
+		if ((flags) & CONV_FLAG_INCLUDE_SIGN) {			\
+			PUTNEXTCHAR(ptr, '+', limit);			\
+			width--;					\
+		} else if ((flags) & CONV_FLAG_SPACE_SIGN) {		\
+			PUTNEXTCHAR(ptr, ' ', limit);			\
+			width--;					\
+		}							\
+	} while (0 /*just once */)
+
 #define PUT_UNSIGNED(ptr,width,prec,flags,limit,prefix,pfxlen,T,val)	\
 	do {								\
 		T _v = val;						\
 		T _divisor = 10;					\
 		int _digits = 1;					\
-		int _i, _n, _w = width;					\
+		int _need, _w = width;					\
 		char _c = ' ';						\
 		if ((_v == 0) && (prec == 0)) {				\
 			_digits = 0;					\
@@ -121,40 +153,16 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 				_divisor *= 10;				\
 			}						\
 		}							\
-		_n = pfxlen + _digits					\
-		   + (((flags) & (CONV_FLAG_INCLUDE_SIGN		\
-				| CONV_FLAG_SPACE_SIGN))? 1: 0);	\
+		_need = _digits;					\
 		if ((flags) & CONV_FLAG_LEADING_ZEROES) {		\
-			for (_i = 0; _i < pfxlen; _i++) {		\
-				PUTNEXTCHAR(ptr, prefix[_i], limit);	\
-				_w--;					\
-			}						\
-			if ((flags) & CONV_FLAG_INCLUDE_SIGN) {		\
-				PUTNEXTCHAR(ptr, '+', limit);		\
-				_w--;					\
-			} else if ((flags) & CONV_FLAG_SPACE_SIGN) {	\
-				PUTNEXTCHAR(ptr, ' ', limit);		\
-				_w--;					\
-			}						\
-			_n = _digits;					\
-			_c = '0';					\
-		}							\
-		while ((_w > _n) && !((flags) & CONV_FLAG_LEFT_ALIGN)) {\
-			PUTNEXTCHAR(ptr, _c, limit);			\
-			_w--;						\
-		}							\
-		if (!((flags) & CONV_FLAG_LEADING_ZEROES)) {		\
-			for (_i = 0; _i < pfxlen; _i++) {		\
-				PUTNEXTCHAR(ptr, prefix[_i], limit);	\
-				_w--;					\
-			}						\
-			if ((flags) & CONV_FLAG_INCLUDE_SIGN) {		\
-				PUTNEXTCHAR(ptr, '+', limit);		\
-				_w--;					\
-			} else if ((flags) & CONV_FLAG_SPACE_SIGN) {	\
-				PUTNEXTCHAR(ptr, ' ', limit);		\
-				_w--;					\
-			}						\
+			PUT_PREFIX_AND_SIGN(ptr, _w, _need, flags,	\
+						limit, prefix, pfxlen);	\
+			PUT_LEFT_FILL(ptr,_w,_need,flags,limit, '0');	\
+		} else {						\
+			_need += pfxlen + POSITIVE_SIGN_BYTES(flags);	\
+			PUT_LEFT_FILL(ptr, _w, _need,flags,limit, ' ');	\
+			PUT_PREFIX_AND_SIGN(ptr, _w, _need, flags,	\
+						limit, prefix, pfxlen);	\
 		}							\
 		while (_digits > 0) {					\
 			_divisor /= 10;					\
@@ -165,10 +173,7 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 			_digits--;					\
 			_w--;						\
 		}							\
-		while (_w > 0) {					\
-			PUTNEXTCHAR(ptr, ' ', limit);			\
-			_w--;						\
-		}							\
+		PUT_RIGHT_FILL(ptr, _w, _need, flags, limit, ' ');	\
 	} while (0 /*just once */)
 
 	PUT_UNSIGNED(dp,width,precision,flags,limit,
@@ -249,6 +254,7 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 			}
 		}
 		if (c == '.') {
+			precision = 0;
 			c = *(++cp);
 			if (c == '*') {
 				flags |= CONV_PRECISION_AS_INT_ARG;
@@ -304,7 +310,8 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 			break;
 		case CONV_SPEC_STRING:
 			s = va_arg(ap, char *);
-			PUT_STRING(dp, width, precision, flags, limit, s);
+			n = put_string(dp, width, precision, flags, limit, s);
+			dp += (n > 0)? n: 0;
 			break;
 		case CONV_SPEC_INTEGER:
 			n = 0;
@@ -339,9 +346,7 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
                                               flags, limit, "", 0, v);
 				}
 			}
-			if (n > 0) {
-				dp += n;
-			}
+			dp += (n > 0)? n: 0;
 			break;
 		case CONV_SPEC_UNSIGNED:
 			n = 0;

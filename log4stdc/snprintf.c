@@ -3,6 +3,13 @@
 #include <stdarg.h>
 #include <string.h>
 
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <windows.h>
+#define unsigned_long_long	UINT64
+#elif defined(__STDC__)
+#define unsigned_long_long	unsigned long long
+#endif
+
 int l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
 int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
@@ -26,6 +33,7 @@ l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...)
 #define CONV_FLAG_ALT_FORMAT		0x0080	/* # */
 #define CONV_FLAG_SPECIFIERS		"-+ 0#"
 
+#define CONV_FLAG_CAPITALS		0x0100
 #define CONV_PRECISION_AS_INT_ARG	0x1000
 #define CONV_WIDTH_AS_INT_ARG		0x2000
 #define CONV_DEFAULT_WIDTH		-1
@@ -134,10 +142,10 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 		}							\
 	} while (0 /*just once */)
 
-#define PUT_UNSIGNED(ptr,width,prec,flags,limit,prefix,pfxlen,T,val)	\
+#define PUT_UNSIGNED(ptr,width,prec,flags,limit,prefix,pfxlen,T,base,val)\
 	do {								\
 		T _v = val;						\
-		T _divisor = 10;					\
+		T _divisor = base;					\
 		int _digits = 1;					\
 		int _need, _w = width;					\
 		char _c = ' ';						\
@@ -146,11 +154,11 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 		} else {						\
 			while (_v >= _divisor) {			\
 				_digits++;				\
-				_divisor *= 10;				\
+				_divisor *= base;			\
 			}						\
 			while (_digits < prec) {			\
 				_digits++;				\
-				_divisor *= 10;				\
+				_divisor *= base;			\
 			}						\
 		}							\
 		_need = _digits;					\
@@ -165,8 +173,8 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 						limit, prefix, pfxlen);	\
 		}							\
 		while (_digits > 0) {					\
-			_divisor /= 10;					\
-			_c = (char)((_divisor > 0)? _v/_divisor: _v);	\
+			_divisor /= base;				\
+			_c = (char)((_divisor > 1)? _v/_divisor: _v);	\
 			_v -= _c * _divisor;				\
 			_c += '0';					\
 			PUTNEXTCHAR(ptr, _c, limit);			\
@@ -177,7 +185,7 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 	} while (0 /*just once */)
 
 	PUT_UNSIGNED(dp,width,precision,flags,limit,
-			prefix, pfxlen, unsigned, v);
+			prefix, pfxlen, unsigned, 10, v);
 	return (dp - buf);
 }
 
@@ -188,20 +196,156 @@ put_ulong(char *buf, int width, int precision, int flags, const char *limit,
 	char *dp = buf;
 
 	PUT_UNSIGNED(dp,width,precision,flags,limit,
-			prefix, pfxlen, unsigned long, v);
+			prefix, pfxlen, unsigned long, 10, v);
 	return (dp - buf);
 }
 
+#ifdef unsigned_long_long
 static int
 put_ullong(char *buf, int width, int precision, int flags, const char *limit,
-             const char *prefix, int pfxlen, unsigned long long v)
+             const char *prefix, int pfxlen, unsigned_long_long v)
 {
 	char *dp = buf;
 
 	PUT_UNSIGNED(dp,width,precision,flags,limit,
-			prefix, pfxlen, unsigned long long, v);
+			prefix, pfxlen, unsigned_long_long, 10, v);
 	return (dp - buf);
 }
+#endif
+
+static int
+put_hex(char *buf, int width, int precision, int flags, const char *limit,
+        const char *prefix, int pfxlen, unsigned v)
+{
+	char *dp = buf;
+
+#define PUT_SIGN_AND_PREFIX(ptr,width,need,flags,limit,prefix,pfxlen)	\
+	do {								\
+		int _k;							\
+		if ((flags) & CONV_FLAG_INCLUDE_SIGN) {			\
+			PUTNEXTCHAR(ptr, '+', limit);			\
+			width--;					\
+		} else if ((flags) & CONV_FLAG_SPACE_SIGN) {		\
+			PUTNEXTCHAR(ptr, ' ', limit);			\
+			width--;					\
+		}							\
+		for (_k = 0; _k < pfxlen; _k++) {			\
+			PUTNEXTCHAR(ptr, prefix[_k], limit);		\
+			width--;					\
+		}							\
+	} while (0 /*just once */)
+
+#define PUT_HEX(ptr,width,prec,flags,limit,prefix,pfxlen,T,digbits,val)	\
+	do {								\
+		T _v = val;						\
+		int _digits = 1;					\
+		int _digshift = digbits;				\
+		int _need, _w = width;					\
+		char _c = ' ';						\
+		if ((_v == 0) && (prec == 0)) {				\
+			_digits = 0;					\
+		} else {						\
+			while (_v >= (((T)1u) << _digshift)) {		\
+				_digits++;				\
+				_digshift += digbits;			\
+			}						\
+			while (_digits < prec) {			\
+				_digits++;				\
+				_digshift += digbits;			\
+			}						\
+		}							\
+		_need = _digits;					\
+		if ((flags) & CONV_FLAG_LEADING_ZEROES) {		\
+			PUT_SIGN_AND_PREFIX(ptr, _w, _need, flags,	\
+						limit, prefix, pfxlen);	\
+			PUT_LEFT_FILL(ptr,_w,_need,flags,limit, '0');	\
+		} else {						\
+			_need += pfxlen + POSITIVE_SIGN_BYTES(flags);	\
+			PUT_LEFT_FILL(ptr, _w, _need,flags,limit, ' ');	\
+			PUT_SIGN_AND_PREFIX(ptr, _w, _need, flags,	\
+						limit, prefix, pfxlen);	\
+		}							\
+		while (_digits > 0) {					\
+			_digshift -= digbits;				\
+			_c = (char) (_v >> _digshift);			\
+			_v -= (((T) _c) << _digshift);			\
+			if (_c < 10) {					\
+				_c += '0';				\
+			} else if ((flags) & CONV_FLAG_CAPITALS) {	\
+				_c += ('A' - 10);			\
+			} else {					\
+				_c += ('a' - 10);			\
+			}						\
+			PUTNEXTCHAR(ptr, _c, limit);			\
+			_digits--;					\
+			_w--;						\
+		}							\
+		PUT_RIGHT_FILL(ptr, _w, _need, flags, limit, ' ');	\
+	} while (0 /*just once */)
+
+	PUT_HEX(dp,width,precision,flags,limit,
+		prefix, pfxlen, unsigned, 4, v);
+	return (dp - buf);
+}
+
+static int
+put_lhex(char *buf, int width, int precision, int flags, const char *limit,
+         const char *prefix, int pfxlen, unsigned long v)
+{
+	char *dp = buf;
+
+	PUT_HEX(dp,width,precision,flags,limit,
+		prefix, pfxlen, unsigned long, 4, v);
+	return (dp - buf);
+}
+
+#ifdef unsigned_long_long
+static int
+put_llhex(char *buf, int width, int precision, int flags, const char *limit,
+          const char *prefix, int pfxlen, unsigned_long_long v)
+{
+	char *dp = buf;
+
+	PUT_HEX(dp,width,precision,flags,limit,
+		prefix, pfxlen, unsigned_long_long, 4, v);
+	return (dp - buf);
+}
+#endif
+
+static int
+put_octal(char *buf, int width, int precision, int flags, const char *limit,
+          const char *prefix, int pfxlen, unsigned v)
+{
+	char *dp = buf;
+
+	PUT_HEX(dp,width,precision,flags,limit,
+		prefix, pfxlen, unsigned, 3, v);
+	return (dp - buf);
+}
+
+static int
+put_loctal(char *buf, int width, int precision, int flags, const char *limit,
+           const char *prefix, int pfxlen, unsigned long v)
+{
+	char *dp = buf;
+
+	PUT_HEX(dp,width,precision,flags,limit,
+		prefix, pfxlen, unsigned long, 3, v);
+	return (dp - buf);
+}
+
+#ifdef unsigned_long_long
+static int
+put_lloctal(char *buf, int width, int precision, int flags, const char *limit,
+           const char *prefix, int pfxlen, unsigned_long_long v)
+{
+	char *dp = buf;
+
+	PUT_HEX(dp,width,precision,flags,limit,
+		prefix, pfxlen, unsigned_long_long, 3, v);
+	return (dp - buf);
+}
+#endif
 
 int
 l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
@@ -354,26 +498,88 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 				unsigned long v = va_arg(ap, unsigned long);
 				n = put_ulong(dp, width, precision,
                                               flags, limit, "", 0, v);
+#ifdef unsigned_long_long
 			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
-				unsigned long long v =
-					va_arg(ap, unsigned long long);
+				unsigned_long_long v =
+					va_arg(ap, unsigned_long_long);
 				n = put_ullong(dp, width, precision,
                                               flags, limit, "", 0, v);
+#endif
 			} else {
 				unsigned v = va_arg(ap, unsigned);
 				n = put_unsigned(dp, width, precision,
                                               flags, limit, "", 0, v);
 			}
-			if (n > 0) {
-				dp += n;
-			}
+			dp += (n > 0)? n: 0;
 			break;
 		case CONV_SPEC_OCTAL:
+			n = 0;
+			if (modifier == CONV_ARG_MODIFIER_LONG) {
+				unsigned long v = va_arg(ap, unsigned long);
+				n = put_loctal(dp, width, precision,
+                                              flags, limit, "", 0, v);
+#ifdef unsigned_long_long
+			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
+				unsigned_long_long v =
+					va_arg(ap, unsigned_long_long);
+				n = put_lloctal(dp, width, precision,
+                                              flags, limit, "", 0, v);
+#endif
+			} else {
+				unsigned v = va_arg(ap, unsigned);
+				n = put_octal(dp, width, precision,
+                                              flags, limit, "", 0, v);
+			}
+			dp += (n > 0)? n: 0;
 			break;
-		case CONV_SPEC_HEX:
 		case CONV_SPEC_HEX_CAPITALS:
+			flags |= CONV_FLAG_CAPITALS;
+			/* and fall */
+		case CONV_SPEC_HEX:
+			n = 0;
+			if (modifier == CONV_ARG_MODIFIER_LONG) {
+				unsigned long v = va_arg(ap, unsigned long);
+				n = put_lhex(dp, width, precision,
+                                             flags, limit, "", 0, v);
+#ifdef unsigned_long_long
+			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
+				unsigned_long_long v =
+					va_arg(ap, unsigned_long_long);
+				n = put_llhex(dp, width, precision,
+                                              flags, limit, "", 0, v);
+#endif
+			} else {
+				unsigned v = va_arg(ap, unsigned);
+				n = put_hex(dp, width, precision,
+                                            flags, limit, "", 0, v);
+			}
+			dp += (n > 0)? n: 0;
 			break;
 		case CONV_SPEC_POINTER:
+			n = 0;
+			if (sizeof(void *) <= sizeof(unsigned)) {
+				unsigned v = (unsigned) va_arg(ap, void *);
+				n = put_hex(dp, width, precision,
+                                            flags, limit, "0x", 2, v);
+			} else if (sizeof(void *) <= sizeof(unsigned long)) {
+				unsigned long v =
+					(unsigned long) va_arg(ap, void *);
+				n = put_lhex(dp, width, precision,
+                                             flags, limit, "0x", 2, v);
+#ifdef unsigned_long_long
+			} else if (sizeof(void*)<=sizeof(unsigned_long_long)) {
+				unsigned_long_long v =
+					(unsigned_long_long) va_arg(ap, void *);
+				n = put_llhex(dp, width, precision,
+                                              flags, limit, "0x", 2, v);
+#endif
+			} else {
+				unsigned long v =
+					(unsigned long) va_arg(ap, void *);
+				n = put_lhex(dp, width, precision,
+                                             flags, limit, "0x", 2, v);
+			}
+			dp += (n > 0)? n: 0;
 			break;
 		case CONV_SPEC_DECIMAL:
 		case CONV_SPEC_DECIMAL_CAPITALS:

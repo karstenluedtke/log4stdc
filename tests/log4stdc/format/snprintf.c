@@ -85,6 +85,19 @@ main (int argc, char *argv[])
 	test3("abc",    "%.*s",   3, "abcdef");
 	test3("  abc",  "%*.*s",  5, 3, "abcdef");
 
+	test3("1456",   "%o",     01456);
+	test3("001456", "%06o",   01456);
+	test3("001456", "%.6o",   01456);
+
+	test3("14ab",   "%x",     0x14ab);
+	test3("0014ab", "%06x",   0x14ab);
+	test3("14abcd", "%06lx",  0x14abcdL);
+	test3("0x14ab", "0x%lx",  0x14ab);
+	test3("0x14ab", "%p",     (void *)0x14ab);
+	if (sizeof(void *) >= 4) {
+		test3("0x14abcdef", "%p",     (void *)0x14abcdef);
+	}
+
 	return (0);
 }
 

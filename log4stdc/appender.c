@@ -18,7 +18,6 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 

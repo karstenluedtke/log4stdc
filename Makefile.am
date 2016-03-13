@@ -37,6 +37,7 @@ liblog4stdc_a_SOURCES+= log4stdc/pmutex.c
 liblog4stdc_a_SOURCES+= log4stdc/wmutex.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlcfg.c
 liblog4stdc_a_SOURCES+= log4stdc/snprintf.c
+liblog4stdc_a_SOURCES+= log4stdc/vsnprntf.c
 
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a

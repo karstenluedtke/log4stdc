@@ -34,7 +34,6 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
@@ -428,7 +427,7 @@ complete_rollover(l4sc_appender_ptr_t appender)
 	/*
 	 * Remove last backup file
 	 */
-	snprintf(from+fnlen, 6, ".%u", appender->maxbackupindex);
+	l4sc_snprintf(from+fnlen, 6, ".%u", appender->maxbackupindex);
 #if defined(L4SC_WINDOWS_FILES)
 	DeleteFileA(from);
 #else
@@ -441,8 +440,8 @@ complete_rollover(l4sc_appender_ptr_t appender)
 	 * test.log.0 -> test.log.1
 	 */
 	for (i = appender->maxbackupindex; i > 0; i--) {
-		snprintf(to+fnlen, 6,   ".%d", i);
-		snprintf(from+fnlen, 6, ".%d", i-1);
+		l4sc_snprintf(to+fnlen, 6,   ".%d", i);
+		l4sc_snprintf(from+fnlen, 6, ".%d", i-1);
 #if defined(L4SC_WINDOWS_FILES)
 		MoveFileExA(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
 #else
@@ -468,7 +467,7 @@ merge_path(char *buf, int bufsize,
 	 || ((rellen > 2) && ( relpath[1] == ':')		/* "C:/" */
 			  && ((relpath[2] == '/') || (relpath[2] == '\\')))) {
 		if (buf && (bufsize > 0)) {
-			snprintf(buf, bufsize, "%.*s", rellen, relpath);
+			l4sc_snprintf(buf, bufsize, "%.*s", rellen, relpath);
 		}
 		return (rellen);
 	} else {
@@ -479,7 +478,7 @@ merge_path(char *buf, int bufsize,
 			}
 		}
 		if (buf && (bufsize > 0)) {
-			snprintf(buf, bufsize, "%.*s%c%.*s",
+			l4sc_snprintf(buf, bufsize, "%.*s%c%.*s",
 				dirlen, dirpath, sep, rellen, relpath);
 		}
 	}

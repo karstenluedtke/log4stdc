@@ -34,7 +34,6 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
@@ -180,16 +179,16 @@ l4sc_init_logmessage(void *buf, size_t bufsize,
 		m->file = file;
 		m->line = line;
 #if defined(L4SC_USE_WINDOWS_THREADID)
-		snprintf(m->threadid, sizeof(m->threadid), "%lu",
-   			(unsigned long) GetCurrentThreadId());
+		l4sc_snprintf(m->threadid, sizeof(m->threadid), "%lu",
+   				(unsigned long) GetCurrentThreadId());
 #elif defined(L4SC_USE_PTHREAD_THREADID)
-		snprintf(m->threadid, sizeof(m->threadid), "%p",
-   			(void *) pthread_self());
+		l4sc_snprintf(m->threadid, sizeof(m->threadid), "%p",
+   				(void *) pthread_self());
 #else
 		do {
 			unsigned stack[4];
-			snprintf(m->threadid, sizeof(m->threadid),
-						"%p", (void*)stack);
+			l4sc_snprintf(m->threadid, sizeof(m->threadid),
+							"%p", (void*)stack);
 		} while (0 /*just once*/);
 #endif
 	}

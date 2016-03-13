@@ -19,7 +19,6 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
@@ -553,6 +552,10 @@ l4sc_set_internal_logging(const char *value, int vallen)
 	}
 }
 
+#if !defined(__STDC__) && !defined(_WIN32) && !defined(HAVE_VSNPRINTF)
+#define vsnprintf l4sc_vsnprintf
+#endif
+
 void
 l4sc_logerror(const char *fmt, ...)
 {
@@ -651,19 +654,3 @@ l4sc_set_configured(int newval)
 	l4sc_configured = newval;
 }
 
-int vsnprintf(char *buf, size_t size, const char *fmt, va_list ap)
-{
-	vsprintf(buf, fmt, ap);
-	return (strlen(buf));
-}
-
-int _snprintf(char *buf, size_t size, const char *fmt, ...)
-{
-	int rc;
-
-	va_list ap;
-	va_start(ap, fmt);
-	rc = vsnprintf(buf, size, fmt, ap);
-	va_end(ap);
-	return rc;
-}

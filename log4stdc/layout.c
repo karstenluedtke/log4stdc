@@ -14,7 +14,6 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
@@ -228,8 +227,8 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 			      * optionally followed by precision specifier,
 			      * that is a decimal constant in brackets.
 			      */
-				len = snprintf(dp, limit-dp, fmt,
-						msg->logger->name);
+				len = l4sc_snprintf(dp, limit-dp, fmt,
+						    msg->logger->name);
 				if (*cp == '{') {
 					const char *sep = strchr(cp, '}');
 					if (sep) {
@@ -251,14 +250,14 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 				}
 				break;
 			case 'F':
-				len = snprintf(dp, limit-dp, fmt, msg->file);
+				len = l4sc_snprintf(dp,limit-dp,fmt,msg->file);
 				break;
 			case 'l':
-				len = snprintf(dp, limit-dp, "%s(%s:%d)",
+				len = l4sc_snprintf(dp,limit-dp,"%s(%s:%d)",
 					msg->func, msg->file, msg->line);
 				break;
 			case 'L':
-				len = snprintf(dp, limit-dp, "%d", msg->line);
+				len = l4sc_snprintf(dp,limit-dp,"%d",msg->line);
 				break;
 			case 'm':
 				if (msg && ((len = msg->msglen) > 0)) {
@@ -284,7 +283,7 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 				}
 				break;
 			case 'p':
-				len = snprintf(dp, limit-dp, fmt,
+				len = l4sc_snprintf(dp, limit-dp, fmt,
 					IS_AT_LEAST_FATAL_LEVEL(level)?"FATAL":
 					IS_AT_LEAST_ERROR_LEVEL(level)?"ERROR":
 					IS_AT_LEAST_WARN_LEVEL(level)? "WARN":
@@ -293,12 +292,13 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 					"TRACE");
 				break;
 			case 'r':
-				len = snprintf(dp, limit-dp, "%lu",
+				len = l4sc_snprintf(dp, limit-dp, "%lu",
 					1000 * (unsigned long) msg->time.tv_sec
 					+ msg->time.tv_usec / 1000);
 				break;
 			case 't':
-				len = snprintf(dp,limit-dp, fmt,msg->threadid);
+				len = l4sc_snprintf(dp, limit-dp,
+						    fmt, msg->threadid);
 				break;
 			default:
 				*dp = c; len = 1;
@@ -382,7 +382,7 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 		dp += n;
 	}
 	if (dp+4 < limit) {
-		int n = snprintf(dp, limit-dp, ".%03u",
+		int n = l4sc_snprintf(dp, limit-dp, ".%03u",
 				(unsigned) (msg->time.tv_usec / 1000));
 		if ((n > 0) && (dp+n < limit)) {
 			dp += n;
@@ -391,7 +391,7 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 		dp += 4;
 	}
 	if (limit == tmp + sizeof(tmp)) {
-		return (snprintf(buf, bufsize, fmt, tmp));
+		return (l4sc_snprintf(buf, bufsize, fmt, tmp));
 	}
 	return ((int) (dp - buf));
 }

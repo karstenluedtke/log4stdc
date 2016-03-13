@@ -33,10 +33,13 @@ case "$M" in
 *win32*)
 	echo 'CXXFLAGS=-EHsc'					>> $M
 	;;
+*c600*)
+	echo 'LFLAGS=-link /STACK:4000'				>> $M
+	;;
 esac
 echo "" >> $M
 
-echo "HEADERS= \\" >> $M
+echo "HEADERS=config.h \\" >> $M
 for i in $HEADERS ; do
 	h=`echo $i`
 	echo "	$h \\" >> $M
@@ -80,12 +83,12 @@ echo '	echo "check done"'			 >> $M
 echo "" >> $M
 
 echo "config.h: $M"						>> $M
-echo '	echo "#ifndef _L4SC_CONFIG_H_" >  $@'			>> $M
-echo '	echo "#define _L4SC_CONFIG_H_" >> $@'			>> $M
+echo '	echo #ifndef _L4SC_CONFIG_H_ >  $@'			>> $M
+echo '	echo #define _L4SC_CONFIG_H_ >> $@'			>> $M
 for flag in $CONFIGFLAGS ; do
-	echo '	echo "#define '"$flag"' 1" >> $@'		>> $M
+	echo '	echo #define '"$flag"' 1 >> $@'			>> $M
 done
-echo '	echo "#endif /* _L4SC_CONFIG_H_ */" >> $@'		>> $M
+echo '	echo #endif /* _L4SC_CONFIG_H_ */ >> $@'		>> $M
 echo "" >> $M
 
 for i in $SOURCES ; do
@@ -100,23 +103,32 @@ for i in $TESTS ; do
 	x=$i.exe
 	t=`echo $i | sed -e'1,$s/[^a-zA-Z0-9_]/_/g'`
 	s=`grep "^${t}_SOURCES.*=.*cp*$" Makefile.am | sed -e'1,$s/^.*= *//g'`
-	o=`echo $s | sed -e'1,$s/.cp*$/.obj/g'`
+	o=$i.obj
 	echo "$x: \\" 					>> $M
 	for c in $s ; do
 		echo "		$c \\"			>> $M
 	done
 	echo '		log4stdc.lib'		 	>> $M
-	echo -n '	$(CC) $(CPPFLAGS) $(CFLAGS) '	>> $M
+	echo -n '	$(CC) -c $(CPPFLAGS) $(CFLAGS) ' >> $M
+	case "$s" in
+	*.cpp)
+		echo -n '$(CXXFLAGS) '			>> $M
+		;;
+	esac
+	echo -n "-Fo$o " | sed -e'1,$s@/@\\@g'		>> $M
+	for c in $s ; do
+		echo -n "$c "				>> $M
+	done
+	echo '' >> $M
+	echo -n '	$(CC) $(CFLAGS) '		>> $M
 	case "$s" in
 	*.cpp)
 		echo -n '$(CXXFLAGS) '			>> $M
 		;;
 	esac
 	echo -n "-Fe$x " | sed -e'1,$s@/@\\@g'		>> $M
-	for c in $s ; do
-		echo -n "$c "				>> $M
-	done
-	echo 'log4stdc.lib' >> $M
+	echo -n "$o " | sed -e'1,$s@/@\\@g'		>> $M
+	echo 'log4stdc.lib $(LFLAGS)' 			>> $M
 	echo "" >> $M
 	echo "$x"
 done

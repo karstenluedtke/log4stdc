@@ -98,15 +98,15 @@ tests_log4stdc_propcfg_level_LDADD = liblog4stdc.a
 tests_log4stdc_propcfg_level_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/log4stdc/propcfg/level
 
-check_PROGRAMS += tests/log4stdc/format/currtime
-tests_log4stdc_format_currtime_SOURCES = tests/log4stdc/format/currtime.c
-tests_log4stdc_format_currtime_LDADD = liblog4stdc.a
-tests_log4stdc_format_currtime_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/format/currtime
-
 check_PROGRAMS += tests/log4stdc/format/snprintf
 tests_log4stdc_format_snprintf_SOURCES = tests/log4stdc/format/snprintf.c
 tests_log4stdc_format_snprintf_LDADD = liblog4stdc.a
 tests_log4stdc_format_snprintf_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/log4stdc/format/snprintf
+
+check_PROGRAMS += tests/log4stdc/format/currtime
+tests_log4stdc_format_currtime_SOURCES = tests/log4stdc/format/currtime.c
+tests_log4stdc_format_currtime_LDADD = liblog4stdc.a
+tests_log4stdc_format_currtime_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/format/currtime
 

@@ -28,7 +28,7 @@ test2(const char *expectation, const char *fmt, int val)
 	char buf[200];
 
 	rc = l4sc_snprintf(buf, sizeof(buf), fmt, val);
-	printf("test1: rc %d: \"%s\", expect \"%s\"\n", rc, buf, expectation);
+	printf("test2: rc %d: \"%s\", expect \"%s\"\n", rc, buf, expectation);
 	assert (rc == strlen(expectation));
 	assert (strcmp(buf, expectation) == 0);
 	assert (rc == strlen(buf));
@@ -44,7 +44,7 @@ test3(const char *expectation, const char *fmt, ...)
 	va_start(ap, fmt);
 	rc = l4sc_vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
-	printf("test1: rc %d: \"%s\", expect \"%s\"\n", rc, buf, expectation);
+	printf("test3: rc %d: \"%s\", expect \"%s\"\n", rc, buf, expectation);
 	assert (rc == strlen(expectation));
 	assert (strcmp(buf, expectation) == 0);
 	assert (rc == strlen(buf));
@@ -63,7 +63,9 @@ main (int argc, char *argv[])
 	test2("abc12k", "abc%dk", 12);
 	test2("abc123k","abc%dk", 123);
 	test2("   123", "%6d",    123);
+	test2("   123", "%6u",    123);
 	test2("  0123", "%6.4d",  123);
+	test2("  0123", "%6.4u",  123);
 	test2("0123  ", "%-6.4d", 123);
 	test2("  +123", "%+6.3d", 123);
 	test2("+00123", "%+6.5d", 123);
@@ -87,7 +89,9 @@ main (int argc, char *argv[])
 	test3("abc12k", "abc%dk", 12);
 	test3("abc123k","abc%dk", 123);
 	test3("   123", "%6d",    123);
+	test3("   123", "%6u",    123);
 	test3("  0123", "%6.4d",  123);
+	test3("  0123", "%6.4u",  123);
 	test3("0123  ", "%-6.4d", 123);
 	test3("  +123", "%+6.3d", 123);
 	test3("+00123", "%+6.5d", 123);
@@ -117,7 +121,7 @@ main (int argc, char *argv[])
 	test3("14ab",   "%x",     0x14ab);
 	test3("0014ab", "%06x",   0x14ab);
 	test3("14abcd", "%06lx",  0x14abcdL);
-	test3("0x14ab", "0x%lx",  0x14ab);
+	test3("0x14ab", "0x%lx",  0x14abL);
 	test3("0x14ab", "%p",     (void *)0x14ab);
 	if (sizeof(void *) >= 4) {
 		test3("0x14abcdef", "%p",     (void *)0x14abcdef);

@@ -1,4 +1,8 @@
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +10,10 @@
 #include <assert.h>
 #include <errno.h>
 #include <time.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #include "log4stdc.h"
 

@@ -9,8 +9,10 @@
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <windows.h>
+#define signed_long_long	INT64
 #define unsigned_long_long	UINT64
 #elif defined(__STDC__)
+#define signed_long_long	long long
 #define unsigned_long_long	unsigned long long
 #endif
 
@@ -116,6 +118,30 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 #define POSITIVE_SIGN_BYTES(flags)					\
 	(((flags) & (CONV_FLAG_INCLUDE_SIGN | CONV_FLAG_SPACE_SIGN))? 1: 0)
 
+#define UNSIGNED_MUL(T,result,overflow,factor)				\
+	do {								\
+		const T _boundary = ((T)-1) / factor;			\
+		if (result <= _boundary) {				\
+			result *= factor;				\
+		} else {						\
+			overflow = 1;					\
+		}							\
+	} while (0 /*just once */)
+
+#define UNSIGNED_EXP(T,result,overflow,base,e)				\
+	do {								\
+		int _pending = e;					\
+		const T _boundary = ((T)-1) / base;			\
+		for (result=1,overflow=0; _pending > 0; _pending--) {	\
+			if (result <= _boundary) {			\
+				result *= base;				\
+			} else {					\
+				overflow = 1;				\
+				break;					\
+			}						\
+		}							\
+	} while (0 /*just once */)
+
 #define PUT_PREFIX_AND_SIGN(ptr,width,need,flags,limit,prefix,pfxlen)	\
 	do {								\
 		int _k;							\
@@ -137,18 +163,17 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 		T _v = val;						\
 		T _divisor = base;					\
 		int _digits = 1;					\
-		int _need, _w = width;					\
+		int _need, _w = width, _ovfl = 0;			\
 		char _c = ' ';						\
 		if ((_v == 0) && (prec == 0)) {				\
 			_digits = 0;					\
 		} else {						\
-			while (_v >= _divisor) {			\
+			while (!_ovfl && (_v >= _divisor)) {		\
 				_digits++;				\
-				_divisor *= base;			\
+				UNSIGNED_MUL(T,_divisor,_ovfl,base);	\
 			}						\
-			while (_digits < prec) {			\
-				_digits++;				\
-				_divisor *= base;			\
+			if (_digits < prec) {				\
+				_digits = prec;				\
 			}						\
 		}							\
 		_need = _digits;					\
@@ -163,8 +188,9 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 						limit, prefix, pfxlen);	\
 		}							\
 		while (_digits > 0) {					\
-			_divisor /= base;				\
-			_c = (char)((_divisor > 1)? _v/_divisor: _v);	\
+			UNSIGNED_EXP(T,_divisor,_ovfl,base,_digits-1);	\
+			_c = (char)(_ovfl? 0:				\
+				    (_divisor > 1)? _v/_divisor: _v);	\
 			_v -= _c * _divisor;				\
 			_c += '0';					\
 			PUTNEXTCHAR(ptr, _c, limit);			\
@@ -235,7 +261,7 @@ put_hex(char *buf, int width, int precision, int flags, const char *limit,
 		if ((_v == 0) && (prec == 0)) {				\
 			_digits = 0;					\
 		} else {						\
-			while (_v >= (((T)1u) << _digshift)) {		\
+			while ((_v >> _digshift) >= (T) 1) {		\
 				_digits++;				\
 				_digshift += digbits;			\
 			}						\
@@ -459,8 +485,9 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 					n = put_ulong(dp, width, precision,
                                               flags, limit, "", 0, v);
 				}
+#ifdef signed_long_long
 			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
-				long long v = va_arg(ap, long long);
+				signed_long_long v=va_arg(ap,signed_long_long);
 				if (v < 0) {
 					n = put_ullong(dp, width, precision,
 					      flags & ~CONV_FLAG_INCLUDE_SIGN,
@@ -469,6 +496,7 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 					n = put_ullong(dp, width, precision,
                                               flags, limit, "", 0, v);
 				}
+#endif
 			} else {
 				int v = va_arg(ap, int);
 				if (v < 0) {

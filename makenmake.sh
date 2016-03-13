@@ -68,11 +68,18 @@ echo '	echo "all is made"'			 >> $M
 echo "" >> $M
 
 echo 'log4stdc.lib: $(OFILES) $(HEADERS)'	 >> $M
-for i in $SOURCES ; do
+case "$M" in
+*c600*)
+	for i in $SOURCES ; do
 	echo -n '	lib $@ -+ '		 >> $M
 	echo -n "$i" | sed -e'1,$s/.cp*$/.obj/g' -e'1,$s@/@\\@g' >> $M
 	echo    ', nul,'			 >> $M
-done
+	done
+	;;
+*)
+	echo '	lib $(OFILES) /OUT:$@'		 >> $M
+	;;
+esac
 echo "" >> $M
 
 echo 'check: $(OFILES) $(HEADERS) $(TESTS)'	 >> $M

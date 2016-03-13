@@ -264,6 +264,9 @@ put_hex(char *buf, int width, int precision, int flags, const char *limit,
 			while ((_v >> _digshift) >= (T) 1) {		\
 				_digits++;				\
 				_digshift += digbits;			\
+				if (_digshift >= 8*sizeof(T)) {		\
+					break;				\
+				}					\
 			}						\
 			while (_digits < prec) {			\
 				_digits++;				\
@@ -283,7 +286,8 @@ put_hex(char *buf, int width, int precision, int flags, const char *limit,
 		}							\
 		while (_digits > 0) {					\
 			_digshift -= digbits;				\
-			_c = (char) (_v >> _digshift);			\
+			_c = (_digshift >= 8*sizeof(T))? (char) 0:	\
+					  (char) (_v >> _digshift);	\
 			_v -= (((T) _c) << _digshift);			\
 			if (_c < 10) {					\
 				_c += '0';				\

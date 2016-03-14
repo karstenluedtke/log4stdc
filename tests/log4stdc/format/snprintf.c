@@ -122,10 +122,26 @@ main (int argc, char *argv[])
 	test3("0014ab", "%06x",   0x14ab);
 	test3("14abcd", "%06lx",  0x14abcdL);
 	test3("0x14ab", "0x%lx",  0x14abL);
+	test3("0x0004", "0x%.4x", '\004');
 	test3("0x14ab", "%p",     (void *)0x14ab);
 	if (sizeof(void *) >= 4) {
 		test3("0x14abcdef", "%p",     (void *)0x14abcdef);
+		test3("0xffffffff", "%p",     (void *)0xffffffff);
 	}
+
+	test3("0000FFFF",  "%08X", 0xffffu);
+	test3("   65535",  "%8u",  0xffffu);
+	test3("00032767",  "%08d", 0x7fff);
+	test3("-0032767",  "%08d", -0x7fff);
+	test3("  -32768",  "%8d",  -0x8000);
+	test3("00177777",  "%08o", 0xffffu);
+
+	test3("FFFFFFFF",    "%08lX", 0xffffffffuL);
+	test3("4294967295",  "%8lu",  0xffffffffuL);
+	test3("2147483647",  "%08ld", 0x7fffffffL);
+	test3("-2147483647", "%08ld", -0x7fffffffL);
+	test3("-2147483648", "%08ld", -0x80000000L);
+	test3("37777777777", "%08lo", 0xffffffffuL);
 
 	return (0);
 }

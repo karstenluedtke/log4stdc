@@ -205,16 +205,34 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 	return (dp - buf);
 }
 
+#if defined(INT_MAX) && defined(LONG_MAX)
+#if (INT_MAX == LONG_MAX)
+#define put_ulong(b,w,prc,flg,lim,pfx,pfl,v) \
+	put_unsigned(b,w,prc,flg,lim,pfx,pfl,(unsigned)(v))
+#define put_lhex(b,w,prc,flg,lim,pfx,pfl,v) \
+	put_hex(b,w,prc,flg,lim,pfx,pfl,(unsigned)(v))
+#define put_loctal(b,w,prc,flg,lim,pfx,pfl,v) \
+	put_octal(b,w,prc,flg,lim,pfx,pfl,(unsigned)(v))
+#endif
+#endif
+
+#ifndef put_ulong
 static int
 put_ulong(char *buf, int width, int precision, int flags, const char *limit,
              const char *prefix, int pfxlen, unsigned long v)
 {
 	char *dp = buf;
 
-	PUT_UNSIGNED(dp,width,precision,flags,limit,
-			prefix, pfxlen, unsigned long, 10, v);
+	if ((v >> (8*sizeof(unsigned))) == 0) {
+		return (put_unsigned(buf, width, precision, flags, limit,
+					prefix, pfxlen, (unsigned) v));
+	} else {
+		PUT_UNSIGNED(dp,width,precision,flags,limit,
+				prefix, pfxlen, unsigned long, 10, v);
+	}
 	return (dp - buf);
 }
+#endif
 
 #ifdef unsigned_long_long
 static int
@@ -223,8 +241,16 @@ put_ullong(char *buf, int width, int precision, int flags, const char *limit,
 {
 	char *dp = buf;
 
-	PUT_UNSIGNED(dp,width,precision,flags,limit,
-			prefix, pfxlen, unsigned_long_long, 10, v);
+	if ((v >> (8*sizeof(unsigned))) == 0) {
+		return (put_unsigned(buf, width, precision, flags, limit,
+					prefix, pfxlen, (unsigned) v));
+	} else if ((v >> (8*sizeof(unsigned long))) == 0) {
+		return (put_ulong(buf, width, precision, flags, limit,
+					prefix, pfxlen, (unsigned long) v));
+	} else {
+		PUT_UNSIGNED(dp,width,precision,flags,limit,
+				prefix, pfxlen, unsigned_long_long, 10, v);
+	}
 	return (dp - buf);
 }
 #endif
@@ -308,6 +334,7 @@ put_hex(char *buf, int width, int precision, int flags, const char *limit,
 	return (dp - buf);
 }
 
+#ifndef put_lhex
 static int
 put_lhex(char *buf, int width, int precision, int flags, const char *limit,
          const char *prefix, int pfxlen, unsigned long v)
@@ -318,6 +345,7 @@ put_lhex(char *buf, int width, int precision, int flags, const char *limit,
 		prefix, pfxlen, unsigned long, 4, v);
 	return (dp - buf);
 }
+#endif
 
 #ifdef unsigned_long_long
 static int
@@ -343,6 +371,7 @@ put_octal(char *buf, int width, int precision, int flags, const char *limit,
 	return (dp - buf);
 }
 
+#ifndef put_loctal
 static int
 put_loctal(char *buf, int width, int precision, int flags, const char *limit,
            const char *prefix, int pfxlen, unsigned long v)
@@ -353,6 +382,7 @@ put_loctal(char *buf, int width, int precision, int flags, const char *limit,
 		prefix, pfxlen, unsigned long, 3, v);
 	return (dp - buf);
 }
+#endif
 
 #ifdef unsigned_long_long
 static int

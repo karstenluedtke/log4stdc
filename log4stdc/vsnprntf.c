@@ -256,6 +256,22 @@ put_ullong(char *buf, int width, int precision, int flags, const char *limit,
 #endif
 
 static int
+put_size(char *buf, int width, int precision, int flags, const char *limit,
+             const char *prefix, int pfxlen, size_t v)
+{
+	char *dp = buf;
+
+	if ((v >> (8*sizeof(unsigned))) == 0) {
+		return (put_unsigned(buf, width, precision, flags, limit,
+					prefix, pfxlen, (unsigned) v));
+	} else {
+		PUT_UNSIGNED(dp,width,precision,flags,limit,
+				prefix, pfxlen, size_t, 10, v);
+	}
+	return (dp - buf);
+}
+
+static int
 put_hex(char *buf, int width, int precision, int flags, const char *limit,
         const char *prefix, int pfxlen, unsigned v)
 {
@@ -359,6 +375,16 @@ put_llhex(char *buf, int width, int precision, int flags, const char *limit,
 	return (dp - buf);
 }
 #endif
+
+static int
+put_sizehex(char *buf, int width, int precision, int flags, const char *limit,
+         const char *prefix, int pfxlen, size_t v)
+{
+	char *dp = buf;
+
+	PUT_HEX(dp,width,precision,flags,limit, prefix, pfxlen, size_t, 4, v);
+	return (dp - buf);
+}
 
 static int
 put_octal(char *buf, int width, int precision, int flags, const char *limit,
@@ -519,6 +545,17 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 					n = put_ulong(dp, width, precision,
                                               flags, limit, "", 0, v);
 				}
+			} else if ((modifier == CONV_ARG_MODIFIER_SIZE_T)
+			        || (modifier == CONV_ARG_MODIFIER_PTRDIFF_T)) {
+				ptrdiff_t v = va_arg(ap, ptrdiff_t);
+				if (v < 0) {
+					n = put_size(dp, width, precision,
+					      flags & ~CONV_FLAG_INCLUDE_SIGN,
+					      limit, "-", 1, -v);
+				} else {
+					n = put_size(dp, width, precision,
+                                              flags, limit, "", 0, v);
+				}
 #ifdef signed_long_long
 			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
 				signed_long_long v=va_arg(ap,signed_long_long);
@@ -549,6 +586,11 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 			if (modifier == CONV_ARG_MODIFIER_LONG) {
 				unsigned long v = va_arg(ap, unsigned long);
 				n = put_ulong(dp, width, precision,
+                                              flags, limit, "", 0, v);
+			} else if ((modifier == CONV_ARG_MODIFIER_SIZE_T)
+			        || (modifier == CONV_ARG_MODIFIER_PTRDIFF_T)) {
+				size_t v = va_arg(ap, size_t);
+				n = put_size(dp, width, precision,
                                               flags, limit, "", 0, v);
 #ifdef unsigned_long_long
 			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
@@ -593,6 +635,11 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 				unsigned long v = va_arg(ap, unsigned long);
 				n = put_lhex(dp, width, precision,
                                              flags, limit, "", 0, v);
+			} else if ((modifier == CONV_ARG_MODIFIER_SIZE_T)
+			        || (modifier == CONV_ARG_MODIFIER_PTRDIFF_T)) {
+				size_t v = va_arg(ap, size_t);
+				n = put_size(dp, width, precision,
+                                              flags, limit, "", 0, v);
 #ifdef unsigned_long_long
 			} else if (modifier == CONV_ARG_MODIFIER_LLONG) {
 				unsigned_long_long v =
@@ -626,9 +673,8 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
                                               flags, limit, "0x", 2, v);
 #endif
 			} else {
-				unsigned long v =
-					(unsigned long) va_arg(ap, void *);
-				n = put_lhex(dp, width, precision,
+				size_t v = (size_t) va_arg(ap, void *);
+				n = put_sizehex(dp, width, precision,
                                              flags, limit, "0x", 2, v);
 			}
 			dp += (n > 0)? n: 0;

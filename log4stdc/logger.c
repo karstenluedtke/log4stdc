@@ -19,14 +19,17 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
-#include "barefootc/object.h"
-#include "barefootc/mempool.h"
-#include "barefootc/linkedlist.h"
+#ifndef ENOSYS
+#define ENOSYS EINVAL
+#endif
+
+#include "logobjs.h"
+#include "bareftc/object.h"
+#include "bareftc/mempool.h"
+#include "bareftc/lnkdlist.h"
 
 #define MAX_APPENDERS_PER_LOGGER 4
 
@@ -172,7 +175,7 @@ static struct l4sc_logger predefined_loggers[] = {
 	/* .lock	*/ NULL,
 	/* .parent_pool	*/ NULL,
 	/* .next	*/ NULL,
-	/* .level	*/ ERROR_LEVEL,
+	/* .level	*/ WARN_LEVEL,
 	/* .additivity	*/ 0,
 	/* .parent	*/ &rootlogger,
 	/* .appenders	*/ { NULL, NULL, NULL, NULL }
@@ -253,16 +256,18 @@ static int
 set_logger_option(l4sc_logger_ptr_t obj, const char *name, size_t namelen,
 				     const char *value, size_t vallen)
 {
-	LOGINFO(("%s: %.*s=\"%.*s\"",__FUNCTION__,
+	static const char thisfunction[] = "set_logger_option";
+
+	LOGINFO(("%s: %.*s=\"%.*s\"",thisfunction,
 		(int) namelen, name, (int) vallen, value));
 	if ((namelen == 5) && (strncasecmp(name, "level", 5) == 0)) {
 		obj->level = l4sc_to_level(value, vallen, ERROR_LEVEL);
-		LOGINFO(("%s: %s level set to %d",
-				__FUNCTION__, obj->name, obj->level));
+		LOGINFO(("%s: %s level set to %u",
+				thisfunction, obj->name, obj->level));
 	} else if ((namelen == 10) && (strncasecmp(name,"additivity",10)==0)) {
 		obj->additivity = (strchr("0FfNn", value[0]) == NULL);
 		LOGINFO(("%s: %s additivity set to %d",
-				__FUNCTION__, obj->name, obj->additivity));
+				thisfunction, obj->name, obj->additivity));
 	}
 	return (0);
 }
@@ -304,6 +309,8 @@ logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
 static int
 is_logger_enabled(l4sc_logger_cptr_t logger, int level)
 {
+	unsigned loglevel = (unsigned) level;
+
 	if (!logger) {
 		return (0);
 	}
@@ -317,12 +324,12 @@ is_logger_enabled(l4sc_logger_cptr_t logger, int level)
 			if (rc != -ENOSYS) {
 				return (rc);
 			} else if (p->level != INHERIT_LEVEL) {
-				return (IS_LEVEL_ENABLED(level, p->level));
+				return (IS_LEVEL_ENABLED(loglevel, p->level));
 			}
 			p = p->parent;
 		}
 	}
-	return (IS_LEVEL_ENABLED(level, logger->level));
+	return (IS_LEVEL_ENABLED(loglevel, logger->level));
 }
 
 static int
@@ -335,6 +342,7 @@ static int
 set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
 {
 	int i;
+	static const char thisfunction[] = "set_logger_appender";
 	extern const char obsolete_appender_name[]; /* in appender.c */
 
 	for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
@@ -342,7 +350,7 @@ set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
 		 && ((logger->appenders[i]->name == NULL)
 		  || (logger->appenders[i]->name == obsolete_appender_name))) {
 			LOGINFO(("%s: %s clearing %p (class %s) at #%d",
-				__FUNCTION__,logger->name,logger->appenders[i],
+				thisfunction,logger->name,logger->appenders[i],
 				BFC_CLASS(logger->appenders[i])->name, i));
 			logger->appenders[i]->refc--;
 			logger->appenders[i] = NULL;
@@ -351,7 +359,7 @@ set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
 	for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
 		if (logger->appenders[i] == appender) {
 			LOGDEBUG(("%s: %s already appending to %s (class %s)",
-				__FUNCTION__, logger->name, appender->name,
+				thisfunction, logger->name, appender->name,
 				BFC_CLASS(appender)->name));
 			return (0);
 		}
@@ -361,13 +369,13 @@ set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
 			logger->appenders[i] = appender;
 			appender->refc++;
 			LOGINFO(("%s: %s appending to %s (class %s) as #%d",
-				__FUNCTION__, logger->name, appender->name,
+				thisfunction, logger->name, appender->name,
 				BFC_CLASS(appender)->name, i));
 			return (1);
 		}
 	}
 	LOGINFO(("%s: %s has no free slot for appender %s (class %s)",
-		__FUNCTION__, logger->name, appender->name,
+		thisfunction, logger->name, appender->name,
 		BFC_CLASS(appender)->name));
 	return (-ENOSPC);
 }
@@ -421,6 +429,7 @@ l4sc_get_logger(const char *name, int namelen)
 	int rc, nlen = (namelen > 0)? namelen: strlen(name);
 	bfc_mempool_t pool = get_default_mempool();
 	size_t size;
+	static const char thisfunction[] = "l4sc_get_logger";
 
 	BFC_LIST_FOREACH(logger, &l4sc_loggers, next) {
 		if ((strncasecmp(logger->name, name, nlen) == 0)
@@ -430,7 +439,7 @@ l4sc_get_logger(const char *name, int namelen)
 	}
 
 	LOGINFO(("%s: logger %.*s not found, creating ...",
-				__FUNCTION__, nlen, name));
+				thisfunction, nlen, name));
 	size = get_logger_size(NULL);
 	logger = mempool_alloc(pool, size);
 	if (logger != NULL) {
@@ -441,7 +450,7 @@ l4sc_get_logger(const char *name, int namelen)
 				initrefc, (logger, 1));
 			set_logger_name(logger, name, nlen);
 			LOGINFO(("%s: created %s (class %s).",
-				__FUNCTION__, logger->name, loggercls.name));
+				thisfunction, logger->name, loggercls.name));
 		}
 	}
 	return (logger);
@@ -534,7 +543,7 @@ l4sc_set_internal_logging(const char *value, int vallen)
 			l4sclogger.level = DEBUG_LEVEL;
 			break;
 		case 'F': case 'f': case '0': /* FALSE */
-			l4sclogger.level = ERROR_LEVEL;
+			l4sclogger.level = WARN_LEVEL;
 			break;
 		default:
 			l4sclogger.level = l4sc_to_level(value, vallen,
@@ -543,12 +552,17 @@ l4sc_set_internal_logging(const char *value, int vallen)
 	}
 }
 
+#if !defined(__STDC__) && !defined(_WIN32) && !defined(HAVE_VSNPRINTF)
+#define vsnprintf l4sc_vsnprintf
+#endif
+
 void
 l4sc_logerror(const char *fmt, ...)
 {
 	int len;
 	va_list ap;
 	char buf[200];
+	static const char thisfunction[] = "l4sc_logerror";
 
 	va_start(ap, fmt);
 	memcpy (buf, "ERROR> ", 8);
@@ -559,7 +573,7 @@ l4sc_logerror(const char *fmt, ...)
 	va_end(ap);
 
 	(*l4sclogger.vptr->log)(&l4sclogger, ERROR_LEVEL,
-				buf, len, __FILE__, __LINE__, __FUNCTION__);
+				buf, len, __FILE__, __LINE__, thisfunction);
 }
 
 void
@@ -568,6 +582,7 @@ l4sc_logwarn(const char *fmt, ...)
 	int len;
 	va_list ap;
 	char buf[200];
+	static const char thisfunction[] = "l4sc_logwarn";
 
 	if (IS_LEVEL_ENABLED(WARN_LEVEL, l4sclogger.level)) {
 		va_start(ap, fmt);
@@ -579,7 +594,7 @@ l4sc_logwarn(const char *fmt, ...)
 		va_end(ap);
 
 		(*l4sclogger.vptr->log)(&l4sclogger, WARN_LEVEL,
-				buf, len, __FILE__, __LINE__, __FUNCTION__);
+				buf, len, __FILE__, __LINE__, thisfunction);
 	}
 }
 
@@ -589,6 +604,7 @@ l4sc_loginfo(const char *fmt, ...)
 	int len;
 	va_list ap;
 	char buf[200];
+	static const char thisfunction[] = "l4sc_loginfo";
 
 	if (IS_LEVEL_ENABLED(INFO_LEVEL, l4sclogger.level)) {
 		va_start(ap, fmt);
@@ -600,7 +616,7 @@ l4sc_loginfo(const char *fmt, ...)
 		va_end(ap);
 
 		(*l4sclogger.vptr->log)(&l4sclogger, INFO_LEVEL,
-				buf, len, __FILE__, __LINE__, __FUNCTION__);
+				buf, len, __FILE__, __LINE__, thisfunction);
 	}
 }
 
@@ -610,6 +626,7 @@ l4sc_logdebug(const char *fmt, ...)
 	int len;
 	va_list ap;
 	char buf[200];
+	static const char thisfunction[] = "l4sc_logdebug";
 
 	if (IS_LEVEL_ENABLED(DEBUG_LEVEL, l4sclogger.level)) {
 		va_start(ap, fmt);
@@ -621,7 +638,7 @@ l4sc_logdebug(const char *fmt, ...)
 		va_end(ap);
 
 		(*l4sclogger.vptr->log)(&l4sclogger, DEBUG_LEVEL,
-				buf, len, __FILE__, __LINE__, __FUNCTION__);
+				buf, len, __FILE__, __LINE__, thisfunction);
 	}
 }
 

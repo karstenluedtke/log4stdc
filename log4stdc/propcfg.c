@@ -23,7 +23,11 @@
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
+#ifndef ENOSYS
+#define ENOSYS EINVAL
+#endif
+
+#include "logobjs.h"
 
 static int init_property_configurator(void *, size_t, bfc_mempool_t );
 static size_t get_property_configurator_size(l4sc_configurator_cptr_t obj);
@@ -99,8 +103,9 @@ configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
 	const char *line, *eol;
 	const char *limit = (n > 0)? s + n: s + strlen(s);
 	int loop, err = 0;
+	static const char thisfunction[] = "configure_from_string";
 
-	LOGINFO(("%s: len %ld", __FUNCTION__, (long)(limit - s)));
+	LOGINFO(("%s: len %ld", thisfunction, (long)(limit - s)));
 
 	for (loop = 0; loop < 2; loop++) {
 		for (line = s; (line >= s) && (line < limit); line = eol+1) {
@@ -114,7 +119,7 @@ configure_from_string(l4sc_configurator_ptr_t cfgtr, const char *s, size_t n)
 		}
 	}
 
-	LOGINFO(("%s: done, error %d", __FUNCTION__, err));
+	LOGINFO(("%s: done, error %d", thisfunction, err));
 
 	return ((err == 0)? 0: (err > 0)? -err: err);
 }
@@ -125,14 +130,15 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 	FILE *fp;
 	char buf[256];
 	int err = 0;
+	static const char thisfunction[] = "configure_from_file";
 
-	LOGINFO(("%s: \"%s\"", __FUNCTION__, path));
+	LOGINFO(("%s: \"%s\"", thisfunction, path));
 
 	fp = fopen(path, "r");
 	if (fp == NULL) {
 		err = errno;
 		LOGERROR(("%s: opening file \"%s\" failed, error %d: %s",
-			__FUNCTION__, path, err, strerror(err)));
+			thisfunction, path, err, strerror(err)));
 		return (-err);
 	}
 
@@ -145,7 +151,7 @@ configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 	}
 	fclose(fp);
 
-	LOGINFO(("%s: \"%s\" done, error %d", __FUNCTION__, path, err));
+	LOGINFO(("%s: \"%s\" done, error %d", thisfunction, path, err));
 
 	return ((err == 0)? 0: (err > 0)? -err: err);
 }
@@ -160,6 +166,7 @@ config_from_property_line(const char *buf, const char *limit, int loop)
 	const char *cp, *ep, *v;
 	const char *nodetype = NULL, *nodename = NULL, *optname = NULL;
 	int nodelen = 0, optlen = 0, vallen = 0;
+	static const char thisfunction[] = "config_from_property_line";
 
 	cp = trim_front(buf, limit);
 	ep = memchr(cp, '=', limit-cp);
@@ -199,16 +206,16 @@ config_from_property_line(const char *buf, const char *limit, int loop)
 								 appender);
 				} else if (loop == 0) {
 					LOGINFO(("%s: no appender %.*s",
-						__FUNCTION__, vallen, v));
+						thisfunction, vallen, v));
 				} else {
 					LOGERROR(("%s: no appender %.*s",
-						__FUNCTION__, vallen, v));
+						thisfunction, vallen, v));
 				}
 			}
 			return (1);
 		} else {
 			LOGERROR(("%s: no logger %.*s",
-				__FUNCTION__, nodelen, nodename));
+				thisfunction, nodelen, nodename));
 		}
 		return (0);
 	} else if (strncasecmp(nodetype, "additivity.", 11) == 0) {
@@ -224,7 +231,7 @@ config_from_property_line(const char *buf, const char *limit, int loop)
 								v, vallen);
 			if (appender == NULL) {
 				LOGERROR(("%s: could not create appender"
-					" %.*s, type %.*s", __FUNCTION__,
+					" %.*s, type %.*s", thisfunction,
 					nodelen, nodename, vallen, v));
 			}
 			return (1);

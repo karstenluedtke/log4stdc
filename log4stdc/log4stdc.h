@@ -36,23 +36,23 @@ struct l4sc_configurator;
 typedef struct l4sc_configurator *l4sc_configurator_ptr_t;
 typedef const struct l4sc_configurator *l4sc_configurator_cptr_t;
 
-#define OFF_LEVEL	 60000
-#define FATAL_LEVEL	 50000
-#define ERROR_LEVEL	 40000
-#define INHERIT_LEVEL	 33010
-#define WARN_LEVEL	 30000
-#define INFO_LEVEL	 20000
-#define DEBUG_LEVEL	 10000
-#define TRACE_LEVEL	  5000
+#define OFF_LEVEL	 60000u
+#define FATAL_LEVEL	 50000u
+#define ERROR_LEVEL	 40000u
+#define INHERIT_LEVEL	 33010u
+#define WARN_LEVEL	 30000u
+#define INFO_LEVEL	 20000u
+#define DEBUG_LEVEL	 10000u
+#define TRACE_LEVEL	  5000u
 #define ALL_LEVEL	     0
 
-#define IS_AT_LEAST_FATAL_LEVEL(lvl)	((lvl) >= FATAL_LEVEL)
-#define IS_AT_LEAST_ERROR_LEVEL(lvl)	((lvl) >= ERROR_LEVEL)
-#define IS_AT_LEAST_WARN_LEVEL(lvl)	((lvl) >= WARN_LEVEL)
-#define IS_AT_LEAST_INFO_LEVEL(lvl)	((lvl) >= INFO_LEVEL)
-#define IS_AT_LEAST_DEBUG_LEVEL(lvl)	((lvl) >= DEBUG_LEVEL)
-#define IS_AT_LEAST_TRACE_LEVEL(lvl)	((lvl) >= TRACE_LEVEL)
-#define IS_LEVEL_ENABLED(lvl,threshold)	((lvl) >= (threshold))
+#define IS_AT_LEAST_FATAL_LEVEL(lvl)	((unsigned)(lvl) >= FATAL_LEVEL)
+#define IS_AT_LEAST_ERROR_LEVEL(lvl)	((unsigned)(lvl) >= ERROR_LEVEL)
+#define IS_AT_LEAST_WARN_LEVEL(lvl)	((unsigned)(lvl) >= WARN_LEVEL)
+#define IS_AT_LEAST_INFO_LEVEL(lvl)	((unsigned)(lvl) >= INFO_LEVEL)
+#define IS_AT_LEAST_DEBUG_LEVEL(lvl)	((unsigned)(lvl) >= DEBUG_LEVEL)
+#define IS_AT_LEAST_TRACE_LEVEL(lvl)	((unsigned)(lvl) >= TRACE_LEVEL)
+#define IS_LEVEL_ENABLED(lvl,threshold)	((unsigned)(lvl) >= (unsigned)(threshold))
 
 int l4sc_configure_from_xml_file(const char *path);
 int l4sc_configure_from_xml_string(const char *buf, size_t len);
@@ -97,6 +97,8 @@ int l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,
 int l4sc_logprintf(l4sc_logger_ptr_t logger, int level,
 	      const char *file, int line, const char *func,
 	      const char *fmt, ...) L4SC_LOGPRINTF_ATTR;
+int l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
+int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
 l4sc_appender_ptr_t l4sc_get_appender(const char *name, int nlen,
 				      const char *kind, int klen);
@@ -107,6 +109,7 @@ void l4sc_close_appenders(void);
 
 int l4sc_to_level(const char *value, int vallen, int defaultlevel);
 
+#ifdef __STDC__
 #define L4SC_FATAL(logger,...) \
  l4sc_logprintf(logger,FATAL_LEVEL,__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__)
 
@@ -127,6 +130,8 @@ int l4sc_to_level(const char *value, int vallen, int defaultlevel);
 
 #define L4SC_TRACE(logger,...) \
  l4sc_logprintf(logger,TRACE_LEVEL,__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__)
+
+#endif /* __STDC__ */
 
 #ifdef __cplusplus
 }	/* C++ */

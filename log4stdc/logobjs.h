@@ -1,5 +1,5 @@
 /**
- * @file      logobjects.h
+ * @file      logobjs.h
  *
  * @brief     Private log4stdc definitions.
  *
@@ -20,13 +20,7 @@ extern "C" {
 #include <stddef.h>
 
 #include "log4stdc.h"
-#include "barefootc/object.h"
-
-#if defined(_MSC_VER)
-#include <stdint.h>
-#else
-#include <inttypes.h>
-#endif
+#include "bareftc/object.h"
 
 struct l4sc_object;
 typedef struct l4sc_object *l4sc_objptr_t;
@@ -135,7 +129,7 @@ struct l4sc_appender {
 struct l4sc_logger {
 	BFC_OBJHDR(l4sc_logger_class_ptr_t,l4sc_logger_ptr_t)
 	struct l4sc_logger *next;
-	int level;
+	unsigned level;
 	int additivity;
 	l4sc_logger_ptr_t parent;
 	l4sc_appender_ptr_t appenders[4];
@@ -166,8 +160,9 @@ struct l4sc_logmessage {
 	const char *file;
 	int line;
 	struct l4sc_timeval {
-		int64_t  tv_sec; /* seconds since Jan 1st, 1970 UTC */
-		uint32_t tv_usec;
+		unsigned long tv_day; /* days since Jan 1st, 1970 UTC */
+		unsigned long tv_sec; /* seconds since   00:00:00 UTC */
+		unsigned long tv_usec;
 	} time;
 	char threadid[32];
 };
@@ -189,6 +184,12 @@ struct l4sc_configurator_class {
 struct l4sc_configurator {
 	BFC_OBJHDR(l4sc_configurator_class_ptr_t,l4sc_configurator_ptr_t)
 };
+
+#ifndef __STDC__
+#ifndef __FUNCTION__
+#define __FUNCTION__ "unknown function"
+#endif
+#endif
 
 #undef get_default_mempool
 #define get_default_mempool() \
@@ -235,8 +236,8 @@ int l4sc_set_logger_appender(l4sc_logger_ptr_t logger,
 			     l4sc_appender_ptr_t appender);
 
 int l4sc_init_logmessage(void *buf, size_t bufsize,
-		l4sc_logger_cptr_t, int level, const char *msg, size_t msglen,
-		const char *file, int line, const char *func);
+	l4sc_logger_cptr_t logger, int level, const char *msg, size_t msglen,
+	const char *file, int line, const char *func);
 int l4sc_formatmsg(l4sc_layout_cptr_t layout,
 	  	l4sc_logmessage_cptr_t msg, char *buf, size_t bufsize);
 

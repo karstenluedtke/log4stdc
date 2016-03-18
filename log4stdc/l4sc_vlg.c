@@ -15,8 +15,12 @@
 #include <alloca.h>
 #endif
 
-#include "logobjects.h"
-#include "barefootc/mempool.h"
+#include "logobjs.h"
+#include "bareftc/mempool.h"
+
+#if !defined(__STDC__) && !defined(_WIN32) && !defined(HAVE_VSNPRINTF)
+#define vsnprintf l4sc_vsnprintf
+#endif
 
 int
 l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,

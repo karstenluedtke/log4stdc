@@ -8,7 +8,7 @@ extern "C" {
 
 #include <stddef.h>
 
-#include "barefootc/object.h"
+#include "bareftc/object.h"
 
 struct bfc_mutex;
 typedef struct bfc_mutex *bfc_mutex_ptr_t;

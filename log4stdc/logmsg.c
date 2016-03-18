@@ -1,22 +1,28 @@
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined(_MSC_VER)
-#include <stdint.h>
-#define L4SC_USE_WINDOWS_SYSTEMTIME 1
-#define L4SC_USE_WINDOWS_THREADID 1
-#else
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_MSC_VER)
+#define L4SC_USE_WINDOWS_SYSTEMTIME 1
+#endif
 #define L4SC_USE_WINDOWS_THREADID 1
 #else
+#if defined(HAVE_PTHREAD_H)
 #define L4SC_USE_PTHREAD_THREADID 1
 #endif
-#include <inttypes.h>
+#if defined(HAVE_UNISTD_H)
 #include <unistd.h>
+#endif
 #include <time.h>
+#if defined(HAVE_SYS_TIME_H)
 #include <sys/time.h>
+#endif
 #endif
 
 #if defined(L4SC_USE_WINDOWS_SYSTEMTIME) || defined(L4SC_USE_WINDOWS_THREADID)
@@ -28,11 +34,10 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
+#include "logobjs.h"
 
 static int init_logmessage(void *, size_t, bfc_mempool_t );
 static size_t get_logmessage_size(l4sc_logmessage_cptr_t obj);
@@ -124,7 +129,6 @@ logmessage_tostring(l4sc_logmessage_cptr_t obj,
 	return (0);
 }
 
-
 int
 l4sc_init_logmessage(void *buf, size_t bufsize,
 	l4sc_logger_cptr_t logger, int level, const char *msg, size_t msglen,
@@ -136,20 +140,36 @@ l4sc_init_logmessage(void *buf, size_t bufsize,
 	if ((rc = init_logmessage(buf, bufsize, NULL)) >= 0) {
 #if defined(L4SC_USE_WINDOWS_SYSTEMTIME)
 		FILETIME ft;
-		uint64_t tmp, secs;
+		UINT64 tmp, secs;
+		INT32 day;
 		GetSystemTimeAsFileTime(&ft);
 		tmp = ft.dwHighDateTime;
 		tmp <<= 32;
 		tmp |= ft.dwLowDateTime;
 		tmp /= 10; /* microseconds */
 		tmp -= 11644473600000000Ui64; /* based on Jan 1st, 1970 */
-		m->time.tv_sec  = secs = tmp / 1000000;
-		m->time.tv_usec = (uint32_t) (tmp - 1000000 * secs);
-#else
+		secs = tmp / 1000000;
+		m->time.tv_day  = day = (INT32) (secs / 86400Ui32);
+		m->time.tv_sec  = (UINT32) (secs - ((UINT64)day * 86400Ui32));
+		m->time.tv_usec = (UINT32) (tmp - 1000000 * secs);
+#elif defined(HAVE_STRUCT_TIMEVAL)
 		struct timeval tv;
 		gettimeofday(&tv, NULL);
-		m->time.tv_sec  = tv.tv_sec;
+		m->time.tv_day  = tv.tv_sec / 86400uL;
+		m->time.tv_sec  = tv.tv_sec - (m->time.tv_day * 86400uL);
 		m->time.tv_usec = tv.tv_usec;
+#elif defined(HAVE_STRUCT_TIMESPEC)
+		struct timespec tv;
+		gettimeofday(&tv, NULL);
+		m->time.tv_day  = tv.tv_sec / 86400uL;
+		m->time.tv_sec  = tv.tv_sec - (m->time.tv_day * 86400uL);
+		m->time.tv_usec = tv.tv_nsec / 1000;
+#else
+		time_t secs;
+		time(&secs);
+		m->time.tv_day  = secs / 86400uL;
+		m->time.tv_sec  = secs - (m->time.tv_day * 86400uL);
+		m->time.tv_usec = 0;
 #endif
 		m->logger = logger;
 		m->level = level;
@@ -159,16 +179,16 @@ l4sc_init_logmessage(void *buf, size_t bufsize,
 		m->file = file;
 		m->line = line;
 #if defined(L4SC_USE_WINDOWS_THREADID)
-		snprintf(m->threadid, sizeof(m->threadid), "%lu",
-   			(unsigned long) GetCurrentThreadId());
+		l4sc_snprintf(m->threadid, sizeof(m->threadid), "%lu",
+   				(unsigned long) GetCurrentThreadId());
 #elif defined(L4SC_USE_PTHREAD_THREADID)
-		snprintf(m->threadid, sizeof(m->threadid), "%p",
-   			(void *) pthread_self());
+		l4sc_snprintf(m->threadid, sizeof(m->threadid), "%p",
+   				(void *) pthread_self());
 #else
 		do {
 			unsigned stack[4];
-			snprintf(m->threadid, sizeof(m->threadid),
-						"%p", (void*)stack);
+			l4sc_snprintf(m->threadid, sizeof(m->threadid),
+							"%p", (void*)stack);
 		} while (0 /*just once*/);
 #endif
 	}

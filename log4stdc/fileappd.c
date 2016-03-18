@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#if defined(HAVE_WCHAR_H)
 #include <wchar.h>
+#endif
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_WINDOWS_FILES 1
 #define L4SC_WINDOWS_LOCKS 1
@@ -19,7 +21,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#if defined(HAVE_PTHREAD_H)
 #include <pthread.h>
+#endif
 #if defined(HAVE_ALLOCA_H)
 #include <alloca.h>
 #endif
@@ -30,13 +34,12 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
-#include "logobjects.h"
-#include "barefootc/mempool.h"
-#include "barefootc/synchronization.h"
+#include "logobjs.h"
+#include "bareftc/mempool.h"
+#include "bareftc/mutex.h"
 
 static int init_appender(void *, size_t, bfc_mempool_t );
 static void destroy_appender(l4sc_appender_ptr_t appender);
@@ -101,23 +104,27 @@ static char initial_working_directory[256] = { 0 };
 static int
 init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
+	static const char thisfunction[] = "init_appender";
+
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_file_appender_class);
 
 	appender->name = "file appender";
-#ifdef L4SC_WINDOWS_LOCKS
+#if defined(L4SC_WINDOWS_LOCKS)
 	l4sc_new_win32_mutex(&appender->lock, pool,
-			__FILE__, __LINE__, __FUNCTION__);
-#else
+			__FILE__, __LINE__, thisfunction);
+#elif defined(HAVE_PTHREAD_MUTEX_INIT) || defined(__STDC__)
 	l4sc_new_posix_mutex(&appender->lock, pool,
-			__FILE__, __LINE__, __FUNCTION__);
+			__FILE__, __LINE__, thisfunction);
+#else
+	LOGWARN(("%s: no mutex for fileappender", thisfunction));
 #endif
 	if (initial_working_directory[0] == 0) {
 		if (getcwd(initial_working_directory,
 				sizeof(initial_working_directory)) == NULL) {
 			LOGERROR(("%s: cannot store initial working dir: %d",
-				__FUNCTION__, (int) errno));
+				thisfunction, (int) errno));
 		}
 	}
 	return (BFC_SUCCESS);
@@ -149,7 +156,9 @@ static int
 set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 				     const char *value, size_t vallen)
 {
-	LOGINFO(("%s: %.*s=\"%.*s\"",__FUNCTION__,
+	static const char thisfunction[] = "set_appender_option";
+
+	LOGINFO(("%s: %.*s=\"%.*s\"",thisfunction,
 		(int) namelen, name, (int) vallen, value));
 
 	if ((namelen == 4) && (strncasecmp(name, "File", 4) == 0)) {
@@ -158,7 +167,7 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 		if ((n > 0) && (n < sizeof(obj->pathbuf))) {
 			obj->filename = obj->pathbuf;
 			LOGINFO(("%s: File set to \"%s\"",
-				__FUNCTION__, obj->filename));
+				thisfunction, obj->filename));
 		} else {
 			bfc_mempool_t pool = obj->parent_pool?
 							obj->parent_pool:
@@ -169,10 +178,10 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 								value, vallen);
 				obj->filename = p;
 				LOGINFO(("%s: File set to \"%s\" (malloc)",
-					__FUNCTION__, obj->filename));
+					thisfunction, obj->filename));
 			} else {
 				LOGERROR(("%s: no memory for File \"%.*s\"",
-					__FUNCTION__, (int) vallen, value));
+					thisfunction, (int) vallen, value));
 			}
 		}
 	} else if ((namelen == 11)
@@ -196,7 +205,7 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 					  break;
 				default:
 					LOGERROR(("%s: unknown unit in"
-						" %.*s=\"%.*s\"",__FUNCTION__,
+						" %.*s=\"%.*s\"",thisfunction,
 						(int) namelen, name,
 						(int) vallen, value));
 				}
@@ -209,13 +218,13 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 		}
 		obj->maxfilesize = maxsize;
 		LOGINFO(("%s: MaxFileSize set to %lu",
-			__FUNCTION__, obj->maxfilesize));
+			thisfunction, obj->maxfilesize));
 		
 	} else if ((namelen == 14)
 		&& (strncasecmp(name, "MaxBackupIndex", 14) == 0)) {
 		obj->maxbackupindex = strtoul(value, NULL, 10);
 		LOGINFO(("%s: MaxBackupIndex set to %u",
-			__FUNCTION__, obj->maxbackupindex));
+			thisfunction, obj->maxbackupindex));
 	}
 	return (0);
 }
@@ -424,7 +433,7 @@ complete_rollover(l4sc_appender_ptr_t appender)
 	/*
 	 * Remove last backup file
 	 */
-	snprintf(from+fnlen, 6, ".%u", appender->maxbackupindex);
+	l4sc_snprintf(from+fnlen, 6, ".%u", appender->maxbackupindex);
 #if defined(L4SC_WINDOWS_FILES)
 	DeleteFileA(from);
 #else
@@ -437,8 +446,8 @@ complete_rollover(l4sc_appender_ptr_t appender)
 	 * test.log.0 -> test.log.1
 	 */
 	for (i = appender->maxbackupindex; i > 0; i--) {
-		snprintf(to+fnlen, 6,   ".%d", i);
-		snprintf(from+fnlen, 6, ".%d", i-1);
+		l4sc_snprintf(to+fnlen, 6,   ".%d", i);
+		l4sc_snprintf(from+fnlen, 6, ".%d", i-1);
 #if defined(L4SC_WINDOWS_FILES)
 		MoveFileExA(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
 #else
@@ -454,9 +463,10 @@ merge_path(char *buf, int bufsize,
 	char sep = '/';
 	const int dirlen = strlen(dirpath);
 	int i;
+	static const char thisfunction[] = "merge_path";
 
 	if ((relpath == NULL) || (rellen <= 0)) {
-		LOGERROR(("%s: no relative path", __FUNCTION__));
+		LOGERROR(("%s: no relative path", thisfunction));
 		return (-EFAULT);
 	}
 	if ((dirlen == 0)
@@ -464,7 +474,7 @@ merge_path(char *buf, int bufsize,
 	 || ((rellen > 2) && ( relpath[1] == ':')		/* "C:/" */
 			  && ((relpath[2] == '/') || (relpath[2] == '\\')))) {
 		if (buf && (bufsize > 0)) {
-			snprintf(buf, bufsize, "%.*s", rellen, relpath);
+			l4sc_snprintf(buf, bufsize, "%.*s", rellen, relpath);
 		}
 		return (rellen);
 	} else {
@@ -475,7 +485,7 @@ merge_path(char *buf, int bufsize,
 			}
 		}
 		if (buf && (bufsize > 0)) {
-			snprintf(buf, bufsize, "%.*s%c%.*s",
+			l4sc_snprintf(buf, bufsize, "%.*s%c%.*s",
 				dirlen, dirpath, sep, rellen, relpath);
 		}
 	}
@@ -486,11 +496,13 @@ int
 l4sc_merge_base_directory_path (char *buf, int bufsize,
 	  			const char *relpath, int rellen)
 {
+	static const char thisfunction[] = "l4sc_merge_base_directory_path";
+
 	if (initial_working_directory[0] == 0) {
 		if (getcwd(initial_working_directory,
 				sizeof(initial_working_directory)) == NULL) {
 			LOGERROR(("%s: cannot store initial working dir: %d",
-				__FUNCTION__, (int) errno));
+				thisfunction, (int) errno));
 		}
 	}
 	return (merge_path(buf, bufsize,
@@ -501,13 +513,14 @@ int
 l4sc_set_base_directory_name(const char *path)
 {
 	const int len = strlen(path);
+	static const char thisfunction[] = "l4sc_set_base_directory_name";
 
 	if (len < (int) sizeof(initial_working_directory)) {
 		memcpy(initial_working_directory, path, len);
 		initial_working_directory[len] = 0;
 	} else {
 		LOGERROR(("%s: cannot store base directory %s: too long %d",
-						__FUNCTION__, path, len));
+						thisfunction, path, len));
 		return (-ENOSPC);
 	}
 	return (BFC_SUCCESS);

@@ -14,11 +14,10 @@
 #endif
 
 #if defined(_MSC_VER)
-#define snprintf _snprintf
 #define strncasecmp strnicmp
 #endif
 
-#if defined(_MSC_VER) || defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_USE_WINDOWS_LOCALTIME 1
 #endif
 
@@ -31,7 +30,7 @@ struct tm *_localtime64(const __time64_t *);
 #endif
 #endif
 
-#include "logobjects.h"
+#include "logobjs.h"
 
 static int init_patternlayout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
@@ -228,8 +227,8 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 			      * optionally followed by precision specifier,
 			      * that is a decimal constant in brackets.
 			      */
-				len = snprintf(dp, limit-dp, fmt,
-						msg->logger->name);
+				len = l4sc_snprintf(dp, limit-dp, fmt,
+						    msg->logger->name);
 				if (*cp == '{') {
 					const char *sep = strchr(cp, '}');
 					if (sep) {
@@ -251,14 +250,14 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 				}
 				break;
 			case 'F':
-				len = snprintf(dp, limit-dp, fmt, msg->file);
+				len = l4sc_snprintf(dp,limit-dp,fmt,msg->file);
 				break;
 			case 'l':
-				len = snprintf(dp, limit-dp, "%s(%s:%d)",
+				len = l4sc_snprintf(dp,limit-dp,"%s(%s:%d)",
 					msg->func, msg->file, msg->line);
 				break;
 			case 'L':
-				len = snprintf(dp, limit-dp, "%d", msg->line);
+				len = l4sc_snprintf(dp,limit-dp,"%d",msg->line);
 				break;
 			case 'm':
 				if (msg && ((len = msg->msglen) > 0)) {
@@ -284,7 +283,7 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 				}
 				break;
 			case 'p':
-				len = snprintf(dp, limit-dp, fmt,
+				len = l4sc_snprintf(dp, limit-dp, fmt,
 					IS_AT_LEAST_FATAL_LEVEL(level)?"FATAL":
 					IS_AT_LEAST_ERROR_LEVEL(level)?"ERROR":
 					IS_AT_LEAST_WARN_LEVEL(level)? "WARN":
@@ -293,12 +292,13 @@ format_by_pattern(l4sc_layout_cptr_t layout,
 					"TRACE");
 				break;
 			case 'r':
-				len = snprintf(dp, limit-dp, "%lu",
+				len = l4sc_snprintf(dp, limit-dp, "%lu",
 					1000 * (unsigned long) msg->time.tv_sec
 					+ msg->time.tv_usec / 1000);
 				break;
 			case 't':
-				len = snprintf(dp,limit-dp, fmt,msg->threadid);
+				len = l4sc_snprintf(dp, limit-dp,
+						    fmt, msg->threadid);
 				break;
 			default:
 				*dp = c; len = 1;
@@ -345,7 +345,9 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 	}
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 	do {
-		__time64_t t = msg->time.tv_sec;
+		__time64_t t;
+		t = msg->time.tv_day;
+		t = (t * 86400L) + msg->time.tv_sec;
 #if defined(HAVE__LOCALTIME64_S)
 		_localtime64_s(&tmbuf, &t);
 #else
@@ -360,8 +362,19 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 
 #else /* not L4SC_USE_WINDOWS_LOCALTIME */
 	do {
-		time_t t = (time_t) msg->time.tv_sec;
+		time_t t;
+		t = (time_t) msg->time.tv_day;
+		if ((t > 24000 /* after 2035 */) && (sizeof(t) == 4)) {
+			do {
+				t -= (20 * 365 + 5); /* subtract 20 years */
+			} while (t > 24000);
+		}
+		t = (t * 86400L) + msg->time.tv_sec;
+#ifdef HAVE_LOCALTIME_R
 		localtime_r(&t, &tmbuf);
+#else
+		memcpy(&tmbuf, localtime(&t), sizeof(tmbuf));
+#endif
 	} while (0 /* just once */);
 #endif
 	n = strftime(dp, limit - dp, "%H:%M:%S", &tmbuf);
@@ -369,7 +382,7 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 		dp += n;
 	}
 	if (dp+4 < limit) {
-		int n = snprintf(dp, limit-dp, ".%03u",
+		int n = l4sc_snprintf(dp, limit-dp, ".%03u",
 				(unsigned) (msg->time.tv_usec / 1000));
 		if ((n > 0) && (dp+n < limit)) {
 			dp += n;
@@ -378,7 +391,7 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 		dp += 4;
 	}
 	if (limit == tmp + sizeof(tmp)) {
-		return (snprintf(buf, bufsize, fmt, tmp));
+		return (l4sc_snprintf(buf, bufsize, fmt, tmp));
 	}
 	return ((int) (dp - buf));
 }

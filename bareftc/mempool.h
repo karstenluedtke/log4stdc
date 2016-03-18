@@ -8,7 +8,7 @@ extern "C" {
 
 #include <stddef.h>
 
-#include "barefootc/object.h"
+#include "bareftc/object.h"
 
 struct bfc_mempool_class;
 typedef const struct bfc_mempool_class *bfc_mempool_class_ptr_t;

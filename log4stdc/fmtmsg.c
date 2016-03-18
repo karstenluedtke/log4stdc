@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "logobjects.h"
+#include "logobjs.h"
 
 int
 l4sc_formatmsg(l4sc_layout_cptr_t layout,

@@ -50,7 +50,8 @@ int main (int argc, char *argv[])
 	}
 #endif
 
-	L4SC_DEBUG(logger, "logger(\"pal\") = %p, %d, %d", logger, 1, 2);
+	l4sc_logprintf(logger, DEBUG_LEVEL, __FILE__, __LINE__, "main",
+		"logger(\"pal\") = %p, %d, %d", logger, 1, 2);
 
 	return (0);
 }

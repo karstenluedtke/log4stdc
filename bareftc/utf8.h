@@ -13,15 +13,6 @@
 #ifndef _BFC_UTF8_H_
 #define _BFC_UTF8_H_
 
-#if defined(_MSC_VER)
-#include <stdint.h>
-#else
-#include <inttypes.h>
-#endif
-
-#include <wchar.h>
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -86,36 +77,36 @@ do {									    \
 			cp += 1;					    \
 		} else if ((unicode < 0xF0) && (cp+1 < (limit))) {	    \
 			unicode = ((unicode & 0x0F) << 12)		    \
-				| (((uint32_t) cp[0] & 0x3F) <<  6)	    \
-				| (((uint32_t) cp[1] & 0x3F)      );	    \
+				| (((unsigned) cp[0] & 0x3F) <<  6)	    \
+				| (((unsigned) cp[1] & 0x3F)      );	    \
 			cp += 2;					    \
 			if ((unicode >= 0xD800) && (unicode < 0xDC00)	    \
 			    && (cp+2 < (limit)) && (cp[0] == 0xED)) {	    \
 				unicode = (((unicode & 0x3FF)+ 0x40) << 10) \
-					| (((uint32_t) cp[1] & 0x0F) <<  6) \
-					| (((uint32_t) cp[2] & 0x3F)      );\
+					| (((unsigned) cp[1] & 0x0F) <<  6) \
+					| (((unsigned) cp[2] & 0x3F)      );\
 				cp += 3;				    \
 			}						    \
 		} else if ((unicode < 0xF8) && (cp+2 < (limit))) {	    \
-			unicode = ((unicode & 0x07) << 18)		    \
-				| (((uint32_t) cp[0] & 0x3F) << 12)	    \
-				| (((uint32_t) cp[1] & 0x3F) <<  6)	    \
-				| (((uint32_t) cp[2] & 0x3F)      );	    \
+			unicode = ((unicode & 0x07) << 12)		    \
+				| (((unsigned) cp[0] & 0x3F) <<  6)	    \
+				| (((unsigned) cp[1] & 0x3F)      );	    \
+			unicode = ((unicode << 6) | (cp[2] & 0x3F));	    \
 			cp += 3;					    \
 		} else if ((unicode < 0xFC) && (cp+3 < (limit))) {	    \
-			unicode = ((unicode & 0x03) << 24)		    \
-				| (((uint32_t) cp[0] & 0x3F) << 18)	    \
-				| (((uint32_t) cp[1] & 0x3F) << 12)	    \
-				| (((uint32_t) cp[2] & 0x3F) <<  6)	    \
-				| (((uint32_t) cp[3] & 0x3F)      );	    \
+			unicode = ((unicode & 0x03) << 12)		    \
+				| (((unsigned) cp[0] & 0x3F) <<  6)	    \
+				| (((unsigned) cp[1] & 0x3F)      );	    \
+			unicode = ((unicode << 6) | (cp[2] & 0x3F));	    \
+			unicode = ((unicode << 6) | (cp[3] & 0x3F));	    \
 			cp += 4;					    \
 		} else if (cp+4 < (limit)) {				    \
-			unicode = ((unicode & 0x01) << 30)		    \
-				| (((uint32_t) cp[0] & 0x3F) << 24)	    \
-				| (((uint32_t) cp[1] & 0x3F) << 18)	    \
-				| (((uint32_t) cp[2] & 0x3F) << 12)	    \
-				| (((uint32_t) cp[3] & 0x3F) <<  6)	    \
-				| (((uint32_t) cp[4] & 0x3F)      );	    \
+			unicode = ((unicode & 0x01) << 12)		    \
+				| (((unsigned) cp[0] & 0x3F) <<  6)	    \
+				| (((unsigned) cp[1] & 0x3F)      );	    \
+			unicode = ((unicode << 6) | (cp[2] & 0x3F));	    \
+			unicode = ((unicode << 6) | (cp[3] & 0x3F));	    \
+			unicode = ((unicode << 6) | (cp[4] & 0x3F));	    \
 			cp += 5;					    \
 		}							    \
 	}								    \
@@ -142,20 +133,14 @@ do {									    \
 		}							    \
 		wp += 1;						    \
 	} else {							    \
-		uint32_t u = unicode - 10000uL;				    \
+		unsigned long u = unicode - 0x10000uL;			    \
 		if (wp+1 < limit) {					    \
-			wp[0] = (uint16_t) (0xD800|(((u) >> 10) & 0x3FF));  \
-			wp[1] = (uint16_t) (0xDC00|( (u)        & 0x3FF));  \
+			wp[0] = (unsigned short)(0xD800|(((u)>>10)& 0x3FF));\
+			wp[1] = (unsigned short)(0xDC00|( (u)     & 0x3FF));\
 		}							    \
 		wp += 2;						    \
 	}								    \
 } while (0 /*just once*/)
-
-size_t bfc_utf8_from_wchar(char *buf,size_t max,const wchar_t *src,size_t len);
-size_t bfc_utf8_from_utf16(char *buf,size_t max,const uint16_t*src,size_t len);
-
-size_t bfc_wchar_from_utf8(wchar_t *buf,size_t max,const char *src,size_t len);
-size_t bfc_utf16_from_utf8(uint16_t*buf,size_t max,const char *src,size_t len);
 
 #ifdef __cplusplus
 }	/* C++ */

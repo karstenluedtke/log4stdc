@@ -4,14 +4,7 @@
 #include <string.h>
 #include <errno.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
+#include "compat.h"
 #include "logobjs.h"
 #include "bareftc/atomic.h"
 #include "bareftc/mempool.h"

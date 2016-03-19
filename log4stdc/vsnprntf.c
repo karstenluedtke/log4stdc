@@ -3,9 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "compat.h"
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <windows.h>
@@ -15,8 +13,6 @@
 #define signed_long_long	long long
 #define unsigned_long_long	unsigned long long
 #endif
-
-int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
 #define CONV_FLAG_LEFT_ALIGN		0x0001	/* - */
 #define CONV_FLAG_INCLUDE_SIGN		0x0010	/* + */

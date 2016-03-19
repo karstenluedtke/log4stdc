@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "compat.h"
 #include "log4stdc.h"
 #include "logobjs.h"
 
@@ -14,17 +15,9 @@
 #include "bareftc/object.h"
 #include "bareftc/mempool.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #ifdef HAVE_PTHREAD_H
 #define __USE_UNIX98 1
 #include <pthread.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
 #endif
 
 struct posix_mutex {

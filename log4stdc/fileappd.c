@@ -1,21 +1,15 @@
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "compat.h"
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#if defined(HAVE_WCHAR_H)
-#include <wchar.h>
-#endif
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_WINDOWS_FILES 1
 #define L4SC_WINDOWS_LOCKS 1
 #include <windows.h>
-#include <malloc.h>  /* for alloca */
 #define getcwd _getcwd
 #else
 #include <sys/types.h>
@@ -24,17 +18,6 @@
 #if defined(HAVE_PTHREAD_H)
 #include <pthread.h>
 #endif
-#if defined(HAVE_ALLOCA_H)
-#include <alloca.h>
-#endif
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#if defined(_MSC_VER)
-#define strncasecmp strnicmp
 #endif
 
 #include "logobjs.h"

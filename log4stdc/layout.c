@@ -1,21 +1,12 @@
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#if defined(_MSC_VER)
-#define strncasecmp strnicmp
-#endif
+#include "compat.h"
+#include "logobjs.h"
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_USE_WINDOWS_LOCALTIME 1
@@ -29,8 +20,6 @@ errno_t _localtime64_s(struct tm *, const __time64_t *);
 struct tm *_localtime64(const __time64_t *);
 #endif
 #endif
-
-#include "logobjs.h"
 
 static int init_patternlayout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);

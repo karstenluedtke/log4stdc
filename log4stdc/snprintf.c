@@ -3,12 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-int l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
-int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
+#include "compat.h"
 
 int
 l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...)

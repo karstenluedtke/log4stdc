@@ -6,30 +6,15 @@
 #include <stdio.h>
 #include <errno.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#if defined(__ANDROID__)
-#include <android/log.h>
-#endif
-
-#if defined(_MSC_VER)
-#define strncasecmp strnicmp
-#endif
-
-#ifndef ENOSYS
-#define ENOSYS EINVAL
-#endif
-
+#include "compat.h"
 #include "logobjs.h"
 #include "bareftc/object.h"
 #include "bareftc/mempool.h"
 #include "bareftc/lnkdlist.h"
+
+#if defined(__ANDROID__)
+#include <android/log.h>
+#endif
 
 #define MAX_APPENDERS_PER_LOGGER 4
 

@@ -11,6 +11,7 @@ check_PROGRAMS =
 
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h
 liblog4stdc_a_SOURCES+= log4stdc/logobjs.h
+liblog4stdc_a_SOURCES+= log4stdc/compat.h
 
 liblog4stdc_a_SOURCES+= bareftc/object.h
 liblog4stdc_a_SOURCES+= bareftc/mempool.h

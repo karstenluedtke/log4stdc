@@ -5,27 +5,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
-#include <malloc.h>  /* for alloca */
-#elif defined(HAVE_ALLOCA_H)
-#include <alloca.h>
-#endif
-
-#if defined(_MSC_VER)
-#define strncasecmp strnicmp
-#endif
-
-#ifndef ENOSYS
-#define ENOSYS EINVAL
-#endif
+#include "compat.h"
 
 #include "bareftc/object.h"
 #include "bareftc/mempool.h"

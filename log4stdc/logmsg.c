@@ -1,12 +1,11 @@
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "compat.h"
+
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #if defined(_MSC_VER)
 #define L4SC_USE_WINDOWS_SYSTEMTIME 1
@@ -16,13 +15,6 @@
 #if defined(HAVE_PTHREAD_H)
 #define L4SC_USE_PTHREAD_THREADID 1
 #endif
-#if defined(HAVE_UNISTD_H)
-#include <unistd.h>
-#endif
-#include <time.h>
-#if defined(HAVE_SYS_TIME_H)
-#include <sys/time.h>
-#endif
 #endif
 
 #if defined(L4SC_USE_WINDOWS_SYSTEMTIME) || defined(L4SC_USE_WINDOWS_THREADID)
@@ -31,10 +23,6 @@
 
 #if defined(L4SC_USE_PTHREAD_THREADID)
 #include <pthread.h>
-#endif
-
-#if defined(_MSC_VER)
-#define strncasecmp strnicmp
 #endif
 
 #include "logobjs.h"

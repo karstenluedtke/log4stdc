@@ -1,0 +1,231 @@
+
+#include "compat.h"
+
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#define L4SC_WINDOWS_SOCKETS 1
+#define L4SC_WINDOWS_LOCKS 1
+#include <windows.h>
+#include <winsock2.h>
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/fcntl.h>
+#endif
+
+#include "logobjs.h"
+#include "bareftc/mempool.h"
+#include "bareftc/mutex.h"
+
+static int init_appender(void *, size_t, bfc_mempool_t );
+static void destroy_appender(l4sc_appender_ptr_t appender);
+static size_t get_appender_size(l4sc_appender_cptr_t obj);
+
+static int  set_appender_option(l4sc_appender_ptr_t obj,
+				const char *name,size_t namelen,
+				const char *value, size_t vallen);
+static int  get_appender_option(l4sc_appender_cptr_t obj,
+				const char *name,size_t namelen,
+				char *valbuf, size_t bufsize);
+static void apply_appender_options(l4sc_appender_ptr_t obj);
+static void append_to_output(l4sc_appender_ptr_t appender,
+			     l4sc_logmessage_cptr_t msg);
+static void open_appender(l4sc_appender_ptr_t appender);
+static void close_appender(l4sc_appender_ptr_t appender);
+
+#define is_open(appender) ((appender)->fu.fh != NULL)
+
+extern const struct l4sc_appender_class l4sc_sysout_appender_class;
+
+const struct l4sc_appender_class l4sc_socket_appender_class = {
+	/* .super 	*/ &l4sc_sysout_appender_class,
+	/* .name 	*/ "fileappender",
+	/* .spare2 	*/ NULL,
+	/* .spare3 	*/ NULL,
+	/* .init 	*/ init_appender,
+	/* .initrefc 	*/ (void *) l4sc_default_init_refcount,
+	/* .incrrefc 	*/ (void *) l4sc_default_incr_refcount,
+	/* .decrrefc 	*/ (void *) l4sc_default_decr_refcount,
+	/* .destroy 	*/ destroy_appender,
+	/* .clone 	*/ (void *) l4sc_default_clone_object,
+	/* .clonesize 	*/ get_appender_size,
+	/* .hashcode 	*/ (void *) l4sc_default_get_object_hashcode,
+	/* .equals 	*/ (void *) l4sc_default_is_equal_object,
+	/* .length 	*/ (void *) l4sc_default_get_object_length,
+	/* .tostring 	*/ (void *) l4sc_default_object_tostring,
+	/* .dump 	*/ (void *) l4sc_default_dump_object,
+	/* .set_name	*/ NULL, /* inherit */
+	/* .set_opt	*/ set_appender_option,
+	/* .get_opt	*/ get_appender_option,
+	/* .apply	*/ apply_appender_options,
+	/* .close	*/ close_appender,
+	/* .append	*/ append_to_output,
+	/* .set_layout	*/ NULL, /* inherit */
+	/* .ref_layout	*/ NULL  /* inherit */
+};
+
+static int
+init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
+{
+	static const char thisfunction[] = "init_appender";
+
+	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
+			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
+			  &l4sc_socket_appender_class);
+
+	appender->name = "socket appender";
+	return (BFC_SUCCESS);
+}
+
+static void
+destroy_appender(l4sc_appender_ptr_t appender)
+{
+	bfc_mutex_ptr_t lock = appender->lock;
+	close_appender(appender);
+	if (lock) {
+		bfc_mempool_t pool = lock->parent_pool;
+		appender->lock = NULL;
+		VOID_METHCALL(bfc_mutex_class_ptr_t, lock, destroy, (lock));
+		if (pool != NULL) {
+			mempool_free(pool, lock);
+		}
+	}
+	BFC_DESTROY_EPILOGUE(appender, &l4sc_file_appender_class);
+}
+
+static size_t
+get_appender_size(l4sc_appender_cptr_t obj)
+{
+	return (sizeof(struct l4sc_appender));
+}
+
+/* re-use properties of fileappender */
+#define remotehost filename
+#define remoteport maxbackupindex
+
+static int
+set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
+				     const char *value, size_t vallen)
+{
+	static const char thisfunction[] = "set_appender_option";
+
+	LOGINFO(("%s: %.*s=\"%.*s\"",thisfunction,
+		(int) namelen, name, (int) vallen, value));
+
+	if ((namelen == 10) && (strncasecmp(name, "RemoteHost", 10) == 0)) {
+		const int n = vallen;
+		if ((n > 0) && (n < sizeof(obj->pathbuf))) {
+			memcpy(obj->pathbuf, value, n);
+			obj->pathbuf[n] = '\0';
+			obj->remotehost = obj->pathbuf;
+			LOGINFO(("%s: Host set to \"%s\"",
+				thisfunction, obj->remotehost));
+		} else {
+			bfc_mempool_t pool = obj->parent_pool? obj->parent_pool:
+							  get_default_mempool();
+			char *p = mempool_alloc(pool, n+20);
+			if (p != NULL) {
+				memcpy(p, value, n);
+				p[n] = '\0';
+				obj->remotehost = p;
+				LOGINFO(("%s: Host set to \"%s\" (malloc)",
+					thisfunction, obj->remotehost));
+			} else {
+				LOGERROR(("%s: no memory for Host \"%.*s\"",
+					thisfunction, (int) vallen, value));
+			}
+		}
+	} else if ((namelen == 4) && (strncasecmp(name, "Port", 4) == 0)) {
+		obj->remoteport = strtoul(value, NULL, 10);
+		LOGINFO(("%s: Port set to %u",
+			thisfunction, obj->remoteport));
+	}
+
+	return (0);
+}
+
+static int
+get_appender_option(l4sc_appender_cptr_t obj, const char *name, size_t namelen,
+				     char *valbuf, size_t bufsize)
+{
+	return (0);
+}
+
+static void
+append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
+{
+	if (msg && (msg->msglen > 0)) {
+		l4sc_layout_ptr_t layout = &appender->layout;
+		bfc_mempool_t pool = appender->parent_pool;
+		const size_t bufsize = msg->msglen + 200
+				+ strlen(msg->logger->name)
+				+ strlen(msg->file) + strlen(msg->func);
+		char *poolmem = ((bufsize > 2000) && pool)?
+				bfc_mempool_alloc(pool, bufsize):
+				NULL;
+		char *buf = poolmem? poolmem: alloca(bufsize);
+		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
+		if (len > 0) {
+			if (!is_open(appender)) {
+				open_appender(appender);
+			}
+			if (is_open(appender)) {
+#if defined(L4SC_WINDOWS_SOCKETS)
+				send(*(SOCKET*)&appender->fu, buf, len, 0);
+#else
+				send(appender->fu.fd, buf, len, MSG_NOSIGNAL);
+#endif
+			}
+		}
+		if (poolmem) {
+			bfc_mempool_free(pool, poolmem);
+			poolmem = NULL;
+		}
+	}
+}
+
+static void
+apply_appender_options(l4sc_appender_ptr_t obj)
+{
+}
+
+static void
+open_appender(l4sc_appender_ptr_t appender)
+{
+#if defined(L4SC_WINDOWS_SOCKETS)
+#else
+	if (appender->remotehost != NULL) {
+		int fd = open(appender->remotehost,
+			      O_WRONLY | O_APPEND | O_CREAT, 0644);
+		if (fd != -1) {
+			appender->fu.fd = fd;
+		}
+	}
+#endif
+}
+
+static void
+close_appender(l4sc_appender_ptr_t appender)
+{
+#if defined(L4SC_WINDOWS_SOCKETS)
+	SOCKET sock = *(SOCKET*)&appender->fu;
+	appender->fu.fh = NULL;
+	appender->fu.fd = 0;
+	if (sock) {
+		closesocket(sock);
+	}
+#else
+	int fd = appender->fu.fd;
+	appender->fu.fh = NULL;
+	appender->fu.fd = 0;
+	if (fd && (fd != -1)) {
+		close(fd);
+	}
+#endif
+}
+

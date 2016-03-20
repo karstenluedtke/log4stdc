@@ -29,6 +29,7 @@ liblog4stdc_a_SOURCES+= log4stdc/fmtmsg.c
 liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c
 liblog4stdc_a_SOURCES+= log4stdc/fileappd.c
+liblog4stdc_a_SOURCES+= log4stdc/sockappd.c
 liblog4stdc_a_SOURCES+= log4stdc/layout.c
 liblog4stdc_a_SOURCES+= log4stdc/logmsg.c
 liblog4stdc_a_SOURCES+= log4stdc/propcfg.c
@@ -39,6 +40,8 @@ liblog4stdc_a_SOURCES+= log4stdc/wmutex.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlcfg.c
 liblog4stdc_a_SOURCES+= log4stdc/snprintf.c
 liblog4stdc_a_SOURCES+= log4stdc/vsnprntf.c
+liblog4stdc_a_SOURCES+= log4stdc/sockappd.c
+liblog4stdc_a_SOURCES+= log4stdc/l4jstrm.c
 
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a

@@ -233,6 +233,10 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 		 && (strncasecmp(kind+klen-12, "FileAppender", 12) == 0)) {
 			clazz = &l4sc_file_appender_class;
 		}
+		if ((klen >= 12)
+		 && (strncasecmp(kind+klen-12, "SocketAppender", 12) == 0)) {
+			clazz = &l4sc_socket_appender_class;
+		}
 		BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
 			cl = BFC_CLASS(appender);
 			if (cl && cl->name

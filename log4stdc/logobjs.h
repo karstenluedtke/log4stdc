@@ -88,6 +88,7 @@ struct l4sc_appender_class {
 
 extern const struct l4sc_appender_class l4sc_file_appender_class;
 extern const struct l4sc_appender_class l4sc_sysout_appender_class;
+extern const struct l4sc_appender_class l4sc_socket_appender_class;
 
 struct l4sc_layout_class;
 typedef const struct l4sc_layout_class *l4sc_layout_class_ptr_t;
@@ -96,7 +97,7 @@ struct l4sc_layout_class {
 	BFC_OBJECT_CLASSHDR(l4sc_layout_class_ptr_t,
 			    l4sc_layout_ptr_t,l4sc_layout_cptr_t)
 	LOGOBJ_METHODS(l4sc_layout_ptr_t,l4sc_layout_cptr_t)
-	size_t	(*format)(l4sc_layout_cptr_t layout,
+	size_t	(*format)(l4sc_layout_ptr_t layout,
 			  l4sc_logmessage_cptr_t msg,
 			  char *buf, size_t bufsize);
 	void *spare[10];
@@ -107,7 +108,14 @@ extern const struct l4sc_layout_class l4sc_patternlayout_class;
 struct l4sc_layout {
 	BFC_OBJHDR(l4sc_layout_class_ptr_t,l4sc_layout_ptr_t)
 	char namebuf[40];
-	char pattern[80];
+	union {
+		struct log4jstream {
+			unsigned long object_handle;
+			char loggingevent_reference[8];
+			char locationinfo_reference[8];
+		} jstrm;
+		char pattern[80];
+	} u;
 };
 
 struct l4sc_appender {

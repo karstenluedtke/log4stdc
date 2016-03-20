@@ -38,7 +38,7 @@ static int  get_layout_option(l4sc_layout_cptr_t obj,
 				char *valbuf, size_t bufsize);
 static void apply_layout_options(l4sc_layout_ptr_t obj);
 
-static size_t format_by_pattern(l4sc_layout_cptr_t layout,
+static size_t format_by_pattern(l4sc_layout_ptr_t layout,
 				l4sc_logmessage_cptr_t msg,
 				char *buf, size_t bufsize);
 
@@ -77,7 +77,7 @@ init_patternlayout(void *buf, size_t bufsize, bfc_mempool_t pool)
 			  l4sc_layout_ptr_t, layout, buf, bufsize, pool,
 			  &l4sc_patternlayout_class);
 	layout->name = "pattern layout";
-	strncpy(layout->pattern, "%m%n", sizeof(layout->pattern));
+	strncpy(layout->u.pattern, "%m%n", sizeof(layout->u.pattern));
 	return (BFC_SUCCESS);
 }
 
@@ -92,7 +92,7 @@ get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen)
 {
 	unsigned x = 0;
 	const unsigned char *cp;
-	for (cp = (unsigned char *) obj->pattern; *cp; cp++) {
+	for (cp = (unsigned char *) obj->u.pattern; *cp; cp++) {
 		x = (x << 7) ^ ((x >> (8*sizeof(x)-7)) & 0x7f) ^ *cp;
 	}
 	return (l4sc_reduce_hashcode(x, 8*sizeof(x), hashlen));
@@ -104,7 +104,7 @@ is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other)
 	if (other == obj) {
 		return (1);
 	} else if (BFC_CLASS(other) == BFC_CLASS(obj)) {
-		return (strcmp(other->pattern, obj->pattern) == 0);
+		return (strcmp(other->u.pattern, obj->u.pattern) == 0);
 	}
 	return (0);
 }
@@ -119,10 +119,10 @@ static int
 layout_tostring(l4sc_layout_cptr_t obj,
 	        char *buf, size_t bufsize, const char *fmt)
 {
-	if (obj && obj->pattern && buf) {
-		size_t patlen = strlen(obj->pattern);
+	if (obj && obj->u.pattern && buf) {
+		size_t patlen = strlen(obj->u.pattern);
 		if (bufsize > patlen) {
-			memcpy(buf, obj->pattern, patlen);
+			memcpy(buf, obj->u.pattern, patlen);
 			buf[patlen] = 0;
 			return((int) patlen);
 		}
@@ -155,12 +155,12 @@ set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
 		(int) namelen, name, (int) vallen, value));
 
 	if ((namelen == 17) && (strncasecmp(name,"ConversionPattern",17)==0)) {
-		if (vallen < sizeof(obj->pattern)) {
-			memcpy(obj->pattern, value, vallen);
-			obj->pattern[vallen] = 0;
+		if (vallen < sizeof(obj->u.pattern)) {
+			memcpy(obj->u.pattern, value, vallen);
+			obj->u.pattern[vallen] = 0;
 		} else {
-			memcpy(obj->pattern, value, sizeof(obj->pattern)-1);
-			obj->pattern[sizeof(obj->pattern)-1] = 0;
+			memcpy(obj->u.pattern, value, sizeof(obj->u.pattern)-1);
+			obj->u.pattern[sizeof(obj->u.pattern)-1] = 0;
 		}
 	}
 	return (0);
@@ -179,13 +179,13 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 }
 
 static size_t
-format_by_pattern(l4sc_layout_cptr_t layout,
+format_by_pattern(l4sc_layout_ptr_t layout,
 		  l4sc_logmessage_cptr_t msg,
 		  char *buf, size_t bufsize)
 {
 	char *dp = buf;
 	const char *limit = buf + bufsize;
-	const char *cp = layout->pattern;
+	const char *cp = layout->u.pattern;
 	const char *percent;
 	char c;
 	size_t len;

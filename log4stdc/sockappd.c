@@ -74,16 +74,12 @@ const struct l4sc_appender_class l4sc_socket_appender_class = {
 static int
 init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
-	l4sc_class_ptr_t layout_class = &l4sc_log4j_stream_layout_class;
-
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_socket_appender_class);
 
 	appender->name = "socket appender";
-
-	VOID_CMETHCALL(l4sc_class_ptr_t, layout_class,
-		init, (&appender->layout, sizeof(appender->layout), pool));
+	appender->layout.vptr = &l4sc_log4j_stream_layout_class;
 
 	return (BFC_SUCCESS);
 }
@@ -175,11 +171,11 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 				bfc_mempool_alloc(pool, bufsize):
 				NULL;
 		char *buf = poolmem? poolmem: alloca(bufsize);
-		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
-		if (len > 0) {
-			if (!is_open(appender)) {
-				open_appender(appender);
-			}
+		int len;
+		if (!is_open(appender)) {
+			open_appender(appender);
+		}
+		if ((len = l4sc_formatmsg(layout, msg, buf, bufsize)) > 0) {
 			if (is_open(appender)) {
 #if defined(L4SC_WINDOWS_SOCKETS)
 				SOCKET sock = *(SOCKET*)&appender->fu;
@@ -287,6 +283,9 @@ open_appender(l4sc_appender_ptr_t appender)
 #else
 		appender->fu.fd = sock;
 #endif
+		VOID_METHCALL(l4sc_class_ptr_t, &appender->layout,
+			init, (&appender->layout, sizeof(appender->layout),
+				appender->parent_pool));
 	}
 }
 

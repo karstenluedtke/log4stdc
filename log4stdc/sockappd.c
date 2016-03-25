@@ -1,22 +1,26 @@
 
-#include "compat.h"
-
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
+#include "compat.h"
+
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_WINDOWS_SOCKETS 1
 #define L4SC_WINDOWS_LOCKS 1
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #elif defined(HAVE_SYS_SOCKET_H) 
 #define L4SC_BSD_SOCKETS 1
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#endif
+
+#if defined(HAVE_SIGNAL_H)
+#include <signal.h>
 #endif
 
 #include "logobjs.h"
@@ -90,6 +94,10 @@ init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 		WORD wVersionRequested = MAKEWORD(2, 2);
 		WSAStartup(wVersionRequested, &wsaData);
 	} while (0 /*just once*/);
+#endif
+#if !defined(MSG_NOSIGNAL) && defined(SIGPIPE) && defined(SIG_IGN)
+	signal(SIGPIPE, SIG_IGN);
+#define MSG_NOSIGNAL 0
 #endif
 	return (BFC_SUCCESS);
 #else
@@ -297,10 +305,11 @@ open_appender(l4sc_appender_ptr_t appender)
 				thisfunction, err, strerror(err)));
 			return;
 		}
-		send(sock, start, sizeof(start), MSG_NOSIGNAL);
 #if defined(L4SC_WINDOWS_SOCKETS)
+		send(sock, start, sizeof(start), 0);
 		*(SOCKET*)&appender->fu = sock;
 #else
+		send(sock, start, sizeof(start), MSG_NOSIGNAL);
 		appender->fu.fd = sock;
 #endif
 		VOID_METHCALL(l4sc_class_ptr_t, &appender->layout,

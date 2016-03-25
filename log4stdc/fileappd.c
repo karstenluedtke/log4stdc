@@ -1,11 +1,12 @@
 
-#include "compat.h"
-
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+
+#include "compat.h"
+
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_WINDOWS_FILES 1
 #define L4SC_WINDOWS_LOCKS 1

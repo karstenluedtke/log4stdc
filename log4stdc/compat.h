@@ -1,6 +1,7 @@
 #ifndef _L4SC_COMPAT_H_
 #define _L4SC_COMPAT_H_
 
+#include <stddef.h>
 #include <stdarg.h>
 
 #ifdef HAVE_CONFIG_H

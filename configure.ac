@@ -21,10 +21,14 @@ AC_PROG_INSTALL
 AC_CHECK_LIB([rt], [clock_gettime])
 AC_CHECK_LIB([pthread], [pthread_mutexattr_settype])
 AC_CHECK_LIB([log], [__android_log_print])
-AC_CHECK_LIB([ws2_32], [WSAStartup])
+
+AC_CHECK_HEADER([winsock2.h],
+    [AC_DEFINE([HAVE_LIBWS2_32], [1], [Define if libws2_32 exists.]) LIBS="-lws2_32 $LIBS"],
+    [],
+    [#include <windows.h>])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h inttypes.h malloc.h stddef.h stdint.h stdlib.h string.h sys/time.h sys/socket.h unistd.h pthread.h wchar.h log4cxx/log4cxx.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h malloc.h stddef.h stdint.h stdlib.h string.h sys/time.h sys/socket.h unistd.h signal.h pthread.h wchar.h log4cxx/log4cxx.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

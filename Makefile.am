@@ -84,39 +84,39 @@ examples_redirect_LDADD = liblog4stdc.a
 examples_redirect_DEPENDENCIES = liblog4stdc.a
 TESTS += examples/redirect
 
-check_PROGRAMS += tests/log4stdc/xmlcfg/level
-tests_log4stdc_xmlcfg_level_SOURCES = tests/log4stdc/xmlcfg/level.c
-tests_log4stdc_xmlcfg_level_LDADD = liblog4stdc.a
-tests_log4stdc_xmlcfg_level_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/xmlcfg/level
+check_PROGRAMS += tests/xmlcfg/level
+tests_xmlcfg_level_SOURCES = tests/xmlcfg/level.c
+tests_xmlcfg_level_LDADD = liblog4stdc.a
+tests_xmlcfg_level_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/xmlcfg/level
 
-check_PROGRAMS += tests/log4stdc/xmlcfg/bigfile
-tests_log4stdc_xmlcfg_bigfile_SOURCES = tests/log4stdc/xmlcfg/bigfile.c
-tests_log4stdc_xmlcfg_bigfile_LDADD = liblog4stdc.a
-tests_log4stdc_xmlcfg_bigfile_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/xmlcfg/bigfile
+check_PROGRAMS += tests/xmlcfg/bigfile
+tests_xmlcfg_bigfile_SOURCES = tests/xmlcfg/bigfile.c
+tests_xmlcfg_bigfile_LDADD = liblog4stdc.a
+tests_xmlcfg_bigfile_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/xmlcfg/bigfile
 
-check_PROGRAMS += tests/log4stdc/propcfg/level
-tests_log4stdc_propcfg_level_SOURCES = tests/log4stdc/propcfg/level.c
-tests_log4stdc_propcfg_level_LDADD = liblog4stdc.a
-tests_log4stdc_propcfg_level_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/propcfg/level
+check_PROGRAMS += tests/propcfg/level
+tests_propcfg_level_SOURCES = tests/propcfg/level.c
+tests_propcfg_level_LDADD = liblog4stdc.a
+tests_propcfg_level_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/propcfg/level
 
-check_PROGRAMS += tests/log4stdc/format/snprintf
-tests_log4stdc_format_snprintf_SOURCES = tests/log4stdc/format/snprintf.c
-tests_log4stdc_format_snprintf_LDADD = liblog4stdc.a
-tests_log4stdc_format_snprintf_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/format/snprintf
+check_PROGRAMS += tests/format/snprintf
+tests_format_snprintf_SOURCES = tests/format/snprintf.c
+tests_format_snprintf_LDADD = liblog4stdc.a
+tests_format_snprintf_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/format/snprintf
 
-check_PROGRAMS += tests/log4stdc/format/currtime
-tests_log4stdc_format_currtime_SOURCES = tests/log4stdc/format/currtime.c
-tests_log4stdc_format_currtime_LDADD = liblog4stdc.a
-tests_log4stdc_format_currtime_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/format/currtime
+check_PROGRAMS += tests/format/currtime
+tests_format_currtime_SOURCES = tests/format/currtime.c
+tests_format_currtime_LDADD = liblog4stdc.a
+tests_format_currtime_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/format/currtime
 
-check_PROGRAMS += tests/log4stdc/appender/l4jsock
-tests_log4stdc_appender_l4jsock_SOURCES = tests/log4stdc/appender/l4jsock.c
-tests_log4stdc_appender_l4jsock_LDADD = liblog4stdc.a
-tests_log4stdc_appender_l4jsock_DEPENDENCIES = liblog4stdc.a
-TESTS += tests/log4stdc/appender/l4jsock
+check_PROGRAMS += tests/appender/l4jsock
+tests_appender_l4jsock_SOURCES = tests/appender/l4jsock.c
+tests_appender_l4jsock_LDADD = liblog4stdc.a
+tests_appender_l4jsock_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/appender/l4jsock
 

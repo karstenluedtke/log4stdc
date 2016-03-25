@@ -66,7 +66,6 @@ config.h: win32.mak
 	echo #define STDC_HEADERS 1 >> $@
 	echo #define HAVE_ALLOCA_H 1 >> $@
 	echo #define HAVE_FCNTL_H 1 >> $@
-	echo #define HAVE_INTTYPES_H 1 >> $@
 	echo #define HAVE_MALLOC_H 1 >> $@
 	echo #define HAVE_MEMORY_H 1 >> $@
 	echo #define HAVE_STDDEF_H 1 >> $@

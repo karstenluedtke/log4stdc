@@ -8,6 +8,12 @@
 #include "compat.h"
 #include "logobjs.h"
 
+#if defined(__STDC__) || defined(HAVE_INTTYPES_H)
+#include <inttypes.h>
+#elif defined(HAVE_STDINT_H)
+#include <stdint.h>
+#endif
+
 static int init_log4j_stream_layout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
 
@@ -328,13 +334,11 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 {
 	char *dp = buf;
 	const char *limit = buf + bufsize;
-	char c;
-	size_t len;
 	int rc;
-#ifdef _MSC_VER
-	UINT64 timestamp;
+#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
+	uint64_t timestamp;
 #else
-	unsigned long long timestamp;
+	unsigned long timestamp;
 #endif
 
 	if ((rc = write_logevent_prolog(layout, dp, limit)) > 0) {

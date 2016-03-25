@@ -16,6 +16,7 @@ OFILES= \
 	log4stdc/logger.obj \
 	log4stdc/appender.obj \
 	log4stdc/fileappd.obj \
+	log4stdc/sockappd.obj \
 	log4stdc/layout.obj \
 	log4stdc/logmsg.obj \
 	log4stdc/propcfg.obj \
@@ -26,15 +27,18 @@ OFILES= \
 	log4stdc/xmlcfg.obj \
 	log4stdc/snprintf.obj \
 	log4stdc/vsnprntf.obj \
+	log4stdc/sockappd.obj \
+	log4stdc/l4jstrm.obj \
 
 
 TESTS= \
 	examples/redirect.exe \
-	tests/log4stdc/xmlcfg/level.exe \
-	tests/log4stdc/xmlcfg/bigfile.exe \
-	tests/log4stdc/propcfg/level.exe \
-	tests/log4stdc/format/snprintf.exe \
-	tests/log4stdc/format/currtime.exe \
+	tests/xmlcfg/level.exe \
+	tests/xmlcfg/bigfile.exe \
+	tests/propcfg/level.exe \
+	tests/format/snprintf.exe \
+	tests/format/currtime.exe \
+	tests/appender/l4jsock.exe \
 
 
 all: log4stdc.lib
@@ -49,6 +53,7 @@ log4stdc.lib: $(OFILES) $(HEADERS)
 	lib $@ -+ log4stdc\logger.obj, nul,
 	lib $@ -+ log4stdc\appender.obj, nul,
 	lib $@ -+ log4stdc\fileappd.obj, nul,
+	lib $@ -+ log4stdc\sockappd.obj, nul,
 	lib $@ -+ log4stdc\layout.obj, nul,
 	lib $@ -+ log4stdc\logmsg.obj, nul,
 	lib $@ -+ log4stdc\propcfg.obj, nul,
@@ -59,14 +64,17 @@ log4stdc.lib: $(OFILES) $(HEADERS)
 	lib $@ -+ log4stdc\xmlcfg.obj, nul,
 	lib $@ -+ log4stdc\snprintf.obj, nul,
 	lib $@ -+ log4stdc\vsnprntf.obj, nul,
+	lib $@ -+ log4stdc\sockappd.obj, nul,
+	lib $@ -+ log4stdc\l4jstrm.obj, nul,
 
 check: $(OFILES) $(HEADERS) $(TESTS)
 	examples\redirect.exe
-	tests\log4stdc\xmlcfg\level.exe
-	tests\log4stdc\xmlcfg\bigfile.exe
-	tests\log4stdc\propcfg\level.exe
-	tests\log4stdc\format\snprintf.exe
-	tests\log4stdc\format\currtime.exe
+	tests\xmlcfg\level.exe
+	tests\xmlcfg\bigfile.exe
+	tests\propcfg\level.exe
+	tests\format\snprintf.exe
+	tests\format\currtime.exe
+	tests\appender\l4jsock.exe
 	echo "check done"
 
 config.h: c600.mak
@@ -98,6 +106,9 @@ log4stdc/appender.obj: log4stdc/appender.c $(HEADERS)
 log4stdc/fileappd.obj: log4stdc/fileappd.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/fileappd.c
 
+log4stdc/sockappd.obj: log4stdc/sockappd.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/sockappd.c
+
 log4stdc/layout.obj: log4stdc/layout.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/layout.c
 
@@ -128,39 +139,51 @@ log4stdc/snprintf.obj: log4stdc/snprintf.c $(HEADERS)
 log4stdc/vsnprntf.obj: log4stdc/vsnprntf.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/vsnprntf.c
 
+log4stdc/sockappd.obj: log4stdc/sockappd.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/sockappd.c
+
+log4stdc/l4jstrm.obj: log4stdc/l4jstrm.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4jstrm.c
+
 examples/redirect.exe: \
 		examples/redirect.c \
 		log4stdc.lib
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Foexamples\redirect.obj examples/redirect.c 
 	$(CC) $(CFLAGS) -Feexamples\redirect.exe examples\redirect.obj log4stdc.lib $(LFLAGS)
 
-tests/log4stdc/xmlcfg/level.exe: \
-		tests/log4stdc/xmlcfg/level.c \
+tests/xmlcfg/level.exe: \
+		tests/xmlcfg/level.c \
 		log4stdc.lib
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\log4stdc\xmlcfg\level.obj tests/log4stdc/xmlcfg/level.c 
-	$(CC) $(CFLAGS) -Fetests\log4stdc\xmlcfg\level.exe tests\log4stdc\xmlcfg\level.obj log4stdc.lib $(LFLAGS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\xmlcfg\level.obj tests/xmlcfg/level.c 
+	$(CC) $(CFLAGS) -Fetests\xmlcfg\level.exe tests\xmlcfg\level.obj log4stdc.lib $(LFLAGS)
 
-tests/log4stdc/xmlcfg/bigfile.exe: \
-		tests/log4stdc/xmlcfg/bigfile.c \
+tests/xmlcfg/bigfile.exe: \
+		tests/xmlcfg/bigfile.c \
 		log4stdc.lib
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\log4stdc\xmlcfg\bigfile.obj tests/log4stdc/xmlcfg/bigfile.c 
-	$(CC) $(CFLAGS) -Fetests\log4stdc\xmlcfg\bigfile.exe tests\log4stdc\xmlcfg\bigfile.obj log4stdc.lib $(LFLAGS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\xmlcfg\bigfile.obj tests/xmlcfg/bigfile.c 
+	$(CC) $(CFLAGS) -Fetests\xmlcfg\bigfile.exe tests\xmlcfg\bigfile.obj log4stdc.lib $(LFLAGS)
 
-tests/log4stdc/propcfg/level.exe: \
-		tests/log4stdc/propcfg/level.c \
+tests/propcfg/level.exe: \
+		tests/propcfg/level.c \
 		log4stdc.lib
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\log4stdc\propcfg\level.obj tests/log4stdc/propcfg/level.c 
-	$(CC) $(CFLAGS) -Fetests\log4stdc\propcfg\level.exe tests\log4stdc\propcfg\level.obj log4stdc.lib $(LFLAGS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\propcfg\level.obj tests/propcfg/level.c 
+	$(CC) $(CFLAGS) -Fetests\propcfg\level.exe tests\propcfg\level.obj log4stdc.lib $(LFLAGS)
 
-tests/log4stdc/format/snprintf.exe: \
-		tests/log4stdc/format/snprintf.c \
+tests/format/snprintf.exe: \
+		tests/format/snprintf.c \
 		log4stdc.lib
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\log4stdc\format\snprintf.obj tests/log4stdc/format/snprintf.c 
-	$(CC) $(CFLAGS) -Fetests\log4stdc\format\snprintf.exe tests\log4stdc\format\snprintf.obj log4stdc.lib $(LFLAGS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\format\snprintf.obj tests/format/snprintf.c 
+	$(CC) $(CFLAGS) -Fetests\format\snprintf.exe tests\format\snprintf.obj log4stdc.lib $(LFLAGS)
 
-tests/log4stdc/format/currtime.exe: \
-		tests/log4stdc/format/currtime.c \
+tests/format/currtime.exe: \
+		tests/format/currtime.c \
 		log4stdc.lib
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\log4stdc\format\currtime.obj tests/log4stdc/format/currtime.c 
-	$(CC) $(CFLAGS) -Fetests\log4stdc\format\currtime.exe tests\log4stdc\format\currtime.obj log4stdc.lib $(LFLAGS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\format\currtime.obj tests/format/currtime.c 
+	$(CC) $(CFLAGS) -Fetests\format\currtime.exe tests\format\currtime.obj log4stdc.lib $(LFLAGS)
+
+tests/appender/l4jsock.exe: \
+		tests/appender/l4jsock.c \
+		log4stdc.lib
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\appender\l4jsock.obj tests/appender/l4jsock.c 
+	$(CC) $(CFLAGS) -Fetests\appender\l4jsock.exe tests\appender\l4jsock.obj log4stdc.lib $(LFLAGS)
 

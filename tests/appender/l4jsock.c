@@ -9,10 +9,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#endif
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -106,6 +108,7 @@ static const char refstream[] = {
 int
 main (int argc, char *argv[])
 {
+#ifdef HAVE_SYS_SOCKET_H
 	l4sc_logger_ptr_t logger;
 	int rc, sock;
 	socklen_t alen;
@@ -208,6 +211,7 @@ main (int argc, char *argv[])
 	}
 
 	close(sock);
+#endif /* HAVE_SYS_SOCKET_H */
 	return (0);
 }
 

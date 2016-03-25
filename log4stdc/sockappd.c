@@ -12,7 +12,8 @@
 #define L4SC_WINDOWS_LOCKS 1
 #include <windows.h>
 #include <winsock2.h>
-#else
+#elif defined(HAVE_SYS_SOCKET_H) 
+#define L4SC_BSD_SOCKETS 1
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -61,6 +62,7 @@ const struct l4sc_appender_class l4sc_socket_appender_class = {
 	/* .tostring 	*/ (void *) l4sc_default_object_tostring,
 	/* .dump 	*/ (void *) l4sc_default_dump_object,
 	/* .set_name	*/ NULL, /* inherit */
+#if defined(L4SC_WINDOWS_SOCKETS) || defined(L4SC_BSD_SOCKETS)
 	/* .set_opt	*/ set_appender_option,
 	/* .get_opt	*/ get_appender_option,
 	/* .apply	*/ apply_appender_options,
@@ -68,27 +70,40 @@ const struct l4sc_appender_class l4sc_socket_appender_class = {
 	/* .append	*/ append_to_output,
 	/* .set_layout	*/ NULL, /* inherit */
 	/* .ref_layout	*/ NULL  /* inherit */
+#endif
 };
 
 
 static int
 init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
+#if defined(L4SC_WINDOWS_SOCKETS) || defined(L4SC_BSD_SOCKETS)
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_socket_appender_class);
 
 	appender->name = "socket appender";
 	appender->layout.vptr = &l4sc_log4j_stream_layout_class;
-
+#if defined(L4SC_WINDOWS_SOCKETS)
+	do {
+		WSADATA wsaData;
+		WORD wVersionRequested = MAKEWORD(2, 2);
+		WSAStartup(wVersionRequested, &wsaData);
+	} while (0 /*just once*/);
+#endif
 	return (BFC_SUCCESS);
+#else
+	return ((*l4sc_sysout_appender_class.init)(buf, bufsize, pool));
+#endif
 }
 
 static void
 destroy_appender(l4sc_appender_ptr_t appender)
 {
 	bfc_mutex_ptr_t lock = appender->lock;
+#if defined(L4SC_WINDOWS_SOCKETS) || defined(L4SC_BSD_SOCKETS)
 	close_appender(appender);
+#endif
 	if (lock) {
 		bfc_mempool_t pool = lock->parent_pool;
 		appender->lock = NULL;
@@ -97,6 +112,9 @@ destroy_appender(l4sc_appender_ptr_t appender)
 			mempool_free(pool, lock);
 		}
 	}
+#if defined(L4SC_WINDOWS_SOCKETS)
+	WSACleanup();
+#endif
 	BFC_DESTROY_EPILOGUE(appender, &l4sc_file_appender_class);
 }
 
@@ -105,6 +123,8 @@ get_appender_size(l4sc_appender_cptr_t obj)
 {
 	return (sizeof(struct l4sc_appender));
 }
+
+#if defined(L4SC_WINDOWS_SOCKETS) || defined(L4SC_BSD_SOCKETS)
 
 /* re-use properties of fileappender */
 #define remotehost filename
@@ -304,3 +324,4 @@ close_appender(l4sc_appender_ptr_t appender)
 	}
 }
 
+#endif /* defined(L4SC_WINDOWS_SOCKETS) || defined(L4SC_BSD_SOCKETS) */

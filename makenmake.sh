@@ -32,6 +32,7 @@ echo 'CPPFLAGS=-I. -Ilog4stdc' -DHAVE_CONFIG_H=1		>> $M
 case "$M" in
 *win32*)
 	echo 'CXXFLAGS=-EHsc'					>> $M
+	echo 'LFLAGS=ws2_32.lib wsock32.lib iphlpapi.lib'	>> $M
 	;;
 *c600*)
 	echo 'LFLAGS=-link /STACK:4000'				>> $M

@@ -2,6 +2,7 @@
 CC=cl
 CPPFLAGS=-I. -Ilog4stdc -DHAVE_CONFIG_H=1
 CXXFLAGS=-EHsc
+LFLAGS=ws2_32.lib wsock32.lib iphlpapi.lib
 
 HEADERS=config.h \
 	log4stdc/log4stdc.h \

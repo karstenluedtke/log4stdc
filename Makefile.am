@@ -114,3 +114,9 @@ tests_log4stdc_format_currtime_LDADD = liblog4stdc.a
 tests_log4stdc_format_currtime_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/log4stdc/format/currtime
 
+check_PROGRAMS += tests/log4stdc/appender/l4jsock
+tests_log4stdc_appender_l4jsock_SOURCES = tests/log4stdc/appender/l4jsock.c
+tests_log4stdc_appender_l4jsock_LDADD = liblog4stdc.a
+tests_log4stdc_appender_l4jsock_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/log4stdc/appender/l4jsock
+

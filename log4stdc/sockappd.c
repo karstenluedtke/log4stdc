@@ -15,7 +15,7 @@
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/fcntl.h>
+#include <netinet/in.h>
 #endif
 
 #include "logobjs.h"
@@ -41,6 +41,7 @@ static void close_appender(l4sc_appender_ptr_t appender);
 #define is_open(appender) ((appender)->fu.fh != NULL)
 
 extern const struct l4sc_appender_class l4sc_sysout_appender_class;
+extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
 
 const struct l4sc_appender_class l4sc_socket_appender_class = {
 	/* .super 	*/ &l4sc_sysout_appender_class,
@@ -69,16 +70,19 @@ const struct l4sc_appender_class l4sc_socket_appender_class = {
 	/* .ref_layout	*/ NULL  /* inherit */
 };
 
+
 static int
 init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
-	static const char thisfunction[] = "init_appender";
-
 	BFC_INIT_PROLOGUE(l4sc_appender_class_ptr_t,
 			  l4sc_appender_ptr_t, appender, buf, bufsize, pool,
 			  &l4sc_socket_appender_class);
 
 	appender->name = "socket appender";
+
+	VOID_CMETHCALL(l4sc_class_ptr_t, &l4sc_log4j_stream_layout_class,
+		init, (&appender->layout, sizeof(appender->layout), pool));
+
 	return (BFC_SUCCESS);
 }
 
@@ -170,6 +174,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 				NULL;
 		char *buf = poolmem? poolmem: alloca(bufsize);
 		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
+		LOGDEBUG(("formatted %d bytes: %d", (int) msg->msglen, len));
 		if (len > 0) {
 			if (!is_open(appender)) {
 				open_appender(appender);
@@ -178,6 +183,8 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 #if defined(L4SC_WINDOWS_SOCKETS)
 				send(*(SOCKET*)&appender->fu, buf, len, 0);
 #else
+				LOGDEBUG(("sending %d bytes to fd %d",
+						len, appender->fu.fd));
 				send(appender->fu.fd, buf, len, MSG_NOSIGNAL);
 #endif
 			}
@@ -194,19 +201,88 @@ apply_appender_options(l4sc_appender_ptr_t obj)
 {
 }
 
+union anyaddr {
+	struct sockaddr sa;
+	struct sockaddr_in sin;
+	unsigned long space[8];
+} addrbuf;
+
+static int set_address(union anyaddr *addr, size_t bufsize,
+			int family, const char *host, unsigned port)
+{
+	static const char thisfunction[] = "set_address";
+
+	memset(addr, 0, bufsize);
+	addr->sin.sin_family = AF_INET;
+	((unsigned char *)&addr->sin.sin_addr)[0] = 127;
+	((unsigned char *)&addr->sin.sin_addr)[3] =   1;
+
+	if ((host != NULL) && (strlen(host) > 0)
+		&& (strcmp(host, "localhost") != 0)
+		&& (strcmp(host, "127.0.0.1") != 0)) {
+		LOGERROR(("%s: TODO: address lookup!", thisfunction));
+	}
+
+	((unsigned char *)&addr->sin.sin_port)[0] = (unsigned char)(port >> 8);
+	((unsigned char *)&addr->sin.sin_port)[1] = (unsigned char)(port);
+
+	return (sizeof(struct sockaddr_in));
+}
+
 static void
 open_appender(l4sc_appender_ptr_t appender)
 {
+	static const char start[] = { 0xAC, 0xED, 0x00, 0x05 };
+	static const char thisfunction[] = "open_appender";
+
+	if (appender->remoteport > 0) {
+		int addrsize;
+		union anyaddr addrbuf;
 #if defined(L4SC_WINDOWS_SOCKETS)
+		SOCKET sock;
+		int err;
+#define		INVALSOCK  INVALID_SOCKET
+#define		CLOSESOCK  closesocket
+#define		SOCKERROR  WSAGetLastError()
 #else
-	if (appender->remotehost != NULL) {
-		int fd = open(appender->remotehost,
-			      O_WRONLY | O_APPEND | O_CREAT, 0644);
-		if (fd != -1) {
-			appender->fu.fd = fd;
-		}
-	}
+		int sock, err;
+#define		INVALSOCK  -1
+#define		CLOSESOCK  close
+#define		SOCKERROR  errno
 #endif
+		if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALSOCK) {
+			err = SOCKERROR;
+			LOGERROR(("%s: no socket, err %d %s",
+				thisfunction, err, strerror(err)));
+			return;
+		}
+
+		memset(&addrbuf, 0, sizeof(addrbuf));
+		addrbuf.sin.sin_family = AF_INET;
+		if (bind(sock, &addrbuf.sa, sizeof(addrbuf.sin)) == -1) {
+			err = SOCKERROR;
+			CLOSESOCK(sock);
+			LOGERROR(("%s: connect failed, err %d %s",
+				thisfunction, err, strerror(err)));
+			return;
+		}
+
+		addrsize = set_address(&addrbuf, sizeof(addrbuf), AF_INET,
+				appender->remotehost, appender->remoteport);
+		if (connect(sock, &addrbuf.sa, addrsize) == -1) {
+			err = SOCKERROR;
+			CLOSESOCK(sock);
+			LOGERROR(("%s: connect failed, err %d %s",
+				thisfunction, err, strerror(err)));
+			return;
+		}
+		send(sock, start, sizeof(start), MSG_NOSIGNAL);
+#if defined(L4SC_WINDOWS_SOCKETS)
+		*(SOCKET*)&appender->fu = sock;
+#else
+		appender->fu.fd = sock;
+#endif
+	}
 }
 
 static void
@@ -214,18 +290,13 @@ close_appender(l4sc_appender_ptr_t appender)
 {
 #if defined(L4SC_WINDOWS_SOCKETS)
 	SOCKET sock = *(SOCKET*)&appender->fu;
+#else
+	int sock = appender->fu.fd;
+#endif
 	appender->fu.fh = NULL;
 	appender->fu.fd = 0;
 	if (sock) {
-		closesocket(sock);
+		CLOSESOCK(sock);
 	}
-#else
-	int fd = appender->fu.fd;
-	appender->fu.fh = NULL;
-	appender->fu.fd = 0;
-	if (fd && (fd != -1)) {
-		close(fd);
-	}
-#endif
 }
 

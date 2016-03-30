@@ -42,13 +42,13 @@ static void append_to_output(l4sc_appender_ptr_t appender,
 			     l4sc_logmessage_cptr_t msg);
 static void open_appender(l4sc_appender_ptr_t appender);
 static void close_appender(l4sc_appender_ptr_t appender);
-static int  init_appender_layout(l4sc_appender_ptr_t appender);
-static int  set_log4j_stream_layout(l4sc_appender_ptr_t appender,
-					l4sc_layout_ptr_t layout);
+static int init_layout(l4sc_appender_ptr_t appender,
+			l4sc_layout_class_ptr_t cls);
 
 #define is_open(appender) ((appender)->fu.fh != NULL)
 
 extern const struct l4sc_appender_class l4sc_sysout_appender_class;
+extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
 
 const struct l4sc_appender_class l4sc_socket_appender_class = {
 	/* .super 	*/ &l4sc_sysout_appender_class,
@@ -74,10 +74,11 @@ const struct l4sc_appender_class l4sc_socket_appender_class = {
 	/* .apply	*/ apply_appender_options,
 	/* .close	*/ close_appender,
 	/* .append	*/ append_to_output,
-	/* .set_layout	*/ set_log4j_stream_layout,
+	/* .set_layout	*/ NULL, /* inherit */
 	/* .ref_layout	*/ NULL  /* inherit */
 #endif
 };
+
 
 static int
 init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
@@ -88,7 +89,7 @@ init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 			  &l4sc_socket_appender_class);
 
 	appender->name = "socket appender";
-	init_appender_layout(appender);
+	init_layout(appender, &l4sc_log4j_stream_layout_class);
 #if defined(L4SC_WINDOWS_SOCKETS)
 	do {
 		WSADATA wsaData;
@@ -313,7 +314,7 @@ open_appender(l4sc_appender_ptr_t appender)
 		send(sock, start, sizeof(start), MSG_NOSIGNAL);
 		appender->fu.fd = sock;
 #endif
-		init_appender_layout(appender);
+		init_layout(appender, BFC_CLASS(&appender->layout));
 	}
 }
 
@@ -338,24 +339,6 @@ init_layout(l4sc_appender_ptr_t appender, l4sc_layout_class_ptr_t cls)
 	RETURN_CMETHCALL(l4sc_layout_class_ptr_t, cls,
 			init, (&appender->layout, sizeof(appender->layout),
 				appender->parent_pool),
-			-ENOSYS);
-}
-
-static int
-set_log4j_stream_layout(l4sc_appender_ptr_t appender, l4sc_layout_ptr_t layout)
-{
-	extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
-
-	return (init_layout(appender, &l4sc_log4j_stream_layout_class));
-}
-
-static int
-init_appender_layout(l4sc_appender_ptr_t appender)
-{
-	/* Assuming the set_layout method overrides the layout  */
-	/* given by the second parameter (like in method above).*/
-	RETURN_METHCALL(l4sc_appender_class_ptr_t, appender,
-			set_layout, (appender, &appender->layout),
 			-ENOSYS);
 }
 

@@ -169,17 +169,32 @@ set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
 			obj->u.pattern[sizeof(obj->u.pattern)-1] = 0;
 		}
 	} else if ((namelen == 5) && (strncasecmp(name, "class", 5) == 0)) {
-		if ((vallen >= 13)
-		 && (strncasecmp(value+vallen-13, "PatternLayout", 13) == 0)) {
-			obj->vptr = &l4sc_patternlayout_class;
-		} else if ((vallen >= 16)
-		 && (strncasecmp(value+vallen-16,"SerializedLayout",16) == 0)) {
-			obj->vptr = &l4sc_log4j_stream_layout_class;
-		} else if ((vallen >= 10)
-		 && (strncasecmp(value+vallen-10, "JsonLayout", 10) == 0)) {
-			obj->vptr = &l4sc_json_stream_layout_class;
-		}
+		l4sc_set_layout_class_by_name(obj, value, vallen);
 	}
+	return (0);
+}
+
+int
+l4sc_set_layout_class_by_name(l4sc_layout_ptr_t obj,
+				const char *value, size_t vallen)
+{
+	static const char thisfunction[] = "set_layout_class_by_name";
+
+	if ((vallen >= 13)
+	 && (strncasecmp(value+vallen-13, "PatternLayout", 13) == 0)) {
+		obj->vptr = &l4sc_patternlayout_class;
+	} else if ((vallen >= 16)
+	 && (strncasecmp(value+vallen-16, "SerializedLayout", 16) == 0)) {
+		obj->vptr = &l4sc_log4j_stream_layout_class;
+	} else if ((vallen >= 10)
+	 && (strncasecmp(value+vallen-10, "JsonLayout", 10) == 0)) {
+		obj->vptr = &l4sc_json_stream_layout_class;
+	} else {
+		LOGERROR(("%s: unknown layout class %.*s",
+				thisfunction, (int)vallen, value));
+		return (-ENOENT);
+	}
+	LOGINFO(("%s: set layout class %s", thisfunction, obj->vptr->name));
 	return (0);
 }
 

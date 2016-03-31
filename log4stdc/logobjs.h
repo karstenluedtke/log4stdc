@@ -243,6 +243,9 @@ int l4sc_set_object_option(l4sc_objptr_t obj,
 int l4sc_set_logger_appender(l4sc_logger_ptr_t logger,
 			     l4sc_appender_ptr_t appender);
 
+int l4sc_set_layout_class_by_name(l4sc_layout_ptr_t obj,
+				  const char *value, size_t vallen);
+
 int l4sc_init_logmessage(void *buf, size_t bufsize,
 	l4sc_logger_cptr_t logger, int level, const char *msg, size_t msglen,
 	const char *file, int line, const char *func);

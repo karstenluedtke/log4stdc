@@ -308,10 +308,14 @@ open_appender(l4sc_appender_ptr_t appender)
 			return;
 		}
 #if defined(L4SC_WINDOWS_SOCKETS)
-		send(sock, start, sizeof(start), 0);
+		if (BFC_CLASS(&appender->layout) == &l4sc_log4j_stream_layout_class) {
+			send(sock, start, sizeof(start), 0);
+		}
 		*(SOCKET*)&appender->fu = sock;
 #else
-		send(sock, start, sizeof(start), MSG_NOSIGNAL);
+		if (BFC_CLASS(&appender->layout) == &l4sc_log4j_stream_layout_class) {
+			send(sock, start, sizeof(start), MSG_NOSIGNAL);
+		}
 		appender->fu.fd = sock;
 #endif
 		init_layout(appender, BFC_CLASS(&appender->layout));

@@ -121,3 +121,9 @@ tests_appender_l4jsock_LDADD = liblog4stdc.a
 tests_appender_l4jsock_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/appender/l4jsock
 
+check_PROGRAMS += tests/appender/jsonsock
+tests_appender_jsonsock_SOURCES = tests/appender/jsonsock.c
+tests_appender_jsonsock_LDADD = liblog4stdc.a
+tests_appender_jsonsock_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/appender/jsonsock
+

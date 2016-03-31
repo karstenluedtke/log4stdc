@@ -97,6 +97,9 @@ set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
 	LOGINFO(("%s: %.*s=\"%.*s\"",__FUNCTION__,
 		(int) namelen, name, (int) vallen, value));
 
+	if ((namelen == 5) && (strncasecmp(name, "class", 5) == 0)) {
+		l4sc_set_layout_class_by_name(obj, value, vallen);
+	}
 	return (0);
 }
 

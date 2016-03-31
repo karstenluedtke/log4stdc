@@ -70,14 +70,20 @@ const struct l4sc_layout_class l4sc_patternlayout_class = {
 	/* .format	*/ format_by_pattern
 };
 
+extern const struct l4sc_layout_class l4sc_json_stream_layout_class;
+extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
+
 static int
 init_patternlayout(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
-	BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t,
-			  l4sc_layout_ptr_t, layout, buf, bufsize, pool,
-			  &l4sc_patternlayout_class);
-	layout->name = "pattern layout";
-	strncpy(layout->u.pattern, "%m%n", sizeof(layout->u.pattern));
+	l4sc_layout_ptr_t existing = (l4sc_layout_ptr_t) buf;
+	if (BFC_CLASS(existing) != &l4sc_patternlayout_class) {
+		BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t,
+				  l4sc_layout_ptr_t, layout, buf, bufsize, pool,
+				  &l4sc_patternlayout_class);
+		layout->name = "pattern layout";
+		strncpy(layout->u.pattern, "%m%n", sizeof(layout->u.pattern));
+	}
 	return (BFC_SUCCESS);
 }
 
@@ -161,6 +167,17 @@ set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
 		} else {
 			memcpy(obj->u.pattern, value, sizeof(obj->u.pattern)-1);
 			obj->u.pattern[sizeof(obj->u.pattern)-1] = 0;
+		}
+	} else if ((namelen == 5) && (strncasecmp(name, "class", 5) == 0)) {
+		if ((vallen >= 13)
+		 && (strncasecmp(value+vallen-13, "PatternLayout", 13) == 0)) {
+			obj->vptr = &l4sc_patternlayout_class;
+		} else if ((vallen >= 16)
+		 && (strncasecmp(value+vallen-16,"SerializedLayout",16) == 0)) {
+			obj->vptr = &l4sc_log4j_stream_layout_class;
+		} else if ((vallen >= 10)
+		 && (strncasecmp(value+vallen-10, "JsonLayout", 10) == 0)) {
+			obj->vptr = &l4sc_json_stream_layout_class;
 		}
 	}
 	return (0);

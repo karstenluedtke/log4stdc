@@ -112,7 +112,24 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 {
 }
 
-		
+/*
+ * {
+ *   "timeMillis" : 1459374920444,
+ *   "thread" : "Thread-2",
+ *   "level" : "DEBUG",
+ *   "loggerName" : "MapiSession",
+ *   "message" : "writing <transaction transid=\"1\" userid=\"1\">\r\n\t<method>getAddressBookEntries</method>\r\n</transaction>\r\n",
+ *   "endOfBatch" : false,
+ *   "loggerFqcn" : "org.apache.logging.log4j.spi.AbstractLogger",
+ *   "source" : {
+ *     "class" : "MapiSession$Communicator",
+ *     "method" : "run",
+ *     "file" : "MapiSession.java",
+ *     "line" : 99
+ *   }
+ * }
+ */
+
 static size_t
 format_json_message(l4sc_layout_ptr_t layout,
 		  l4sc_logmessage_cptr_t msg,
@@ -120,7 +137,7 @@ format_json_message(l4sc_layout_ptr_t layout,
 {
 	char *dp = buf;
 	const char *limit = buf + bufsize;
-	int rc;
+	int i, rc;
 #if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
 	uint64_t timestamp;
 #else
@@ -131,6 +148,65 @@ format_json_message(l4sc_layout_ptr_t layout,
 	timestamp = timestamp * 86400uL + msg->time.tv_sec;
 	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
 
+	rc = l4sc_snprintf(dp, limit-dp,
+	  "{ \"timeMillis\" : %lld, \"thread\" : \"%s\", \"level\" : \"%s\",\n",
+          timestamp, msg->threadid, 
+	  IS_AT_LEAST_FATAL_LEVEL(msg->level)? "FATAL":
+	  IS_AT_LEAST_ERROR_LEVEL(msg->level)? "ERROR":
+	  IS_AT_LEAST_WARN_LEVEL(msg->level)?  "WARN":
+	  IS_AT_LEAST_INFO_LEVEL(msg->level)?  "INFO":
+	  IS_AT_LEAST_DEBUG_LEVEL(msg->level)? "DEBUG": "TRACE");
+	if ((rc > 0) && (dp+rc < limit)) {
+		dp += rc;
+	}
+	rc = l4sc_snprintf(dp, limit-dp, "  \"message\" : \"");
+	if ((rc > 0) && (dp+rc < limit)) {
+		dp += rc;
+	}
+	for (i = 0; (i < msg->msglen) && (dp+8 < limit); i++) {
+		unsigned char c = (unsigned char) msg->msg[i];
+		if ((c < ' ') || (c == '\"') || (c == '\\')) {
+			*(dp++) = '\\';
+			if ((c == '"') || (c == '\\')) {
+				*(dp++) = c;
+			} else if (c == '\n') {
+				*(dp++) = 'n';
+			} else if (c == '\r') {
+				*(dp++) = 'r';
+			} else if (c == '\t') {
+				*(dp++) = 't';
+			} else if (c == 8) {
+				*(dp++) = 'b';
+			} else if (c == 12) {
+				*(dp++) = 'f';
+			} else {
+				dp += l4sc_snprintf (dp, limit-dp, "u%04lx", c);
+			}
+		} else {
+			*(dp++) = c;
+		}
+	}
+	rc = l4sc_snprintf(dp, limit-dp, "\",\n");
+	if ((rc > 0) && (dp+rc < limit)) {
+		dp += rc;
+	}
+	rc = l4sc_snprintf(dp, limit-dp, 
+	  "  \"endOfBatch\" : false, \"loggerFqcn\" : \"%s\",\n",
+	  BFC_CLASS(msg->logger)->name);
+	if ((rc > 0) && (dp+rc < limit)) {
+		dp += rc;
+	}
+	rc = l4sc_snprintf(dp, limit-dp, 
+	  "  \"source\" : { \"class\" : \"%s\", \"method\" : \"%s\","
+			   " \"file\" : \"%s\", \"line\" : %u }\n",
+	  "", msg->func, msg->file, msg->line);
+	if ((rc > 0) && (dp+rc < limit)) {
+		dp += rc;
+	}
+	rc = l4sc_snprintf(dp, limit-dp, "}\n");
+	if ((rc > 0) && (dp+rc < limit)) {
+		dp += rc;
+	}
 	return (dp - buf);
 }
 

@@ -195,7 +195,7 @@ format_json_message(l4sc_layout_ptr_t layout,
 	}
 	rc = l4sc_snprintf(dp, limit-dp, 
 	  "  \"endOfBatch\" : false, \"loggerFqcn\" : \"%s\",\n",
-	  BFC_CLASS(msg->logger)->name);
+	  "org.apache.logging.log4j.spi.AbstractLogger");
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}

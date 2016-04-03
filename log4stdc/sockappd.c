@@ -260,10 +260,19 @@ static int set_address(union anyaddr *addr, size_t bufsize,
 	return (sizeof(struct sockaddr_in));
 }
 
+static int
+format_header(l4sc_appender_ptr_t appender, int kind, char *buf, size_t bufsize)
+{
+	l4sc_layout_ptr_t layout = &appender->layout;
+	RETURN_METHCALL(l4sc_layout_class_ptr_t, layout,
+			header, (layout, kind, buf, bufsize), 0);
+}
+
 static void
 open_appender(l4sc_appender_ptr_t appender)
 {
-	static const char start[] = { 0xAC, 0xED, 0x00, 0x05 };
+	int hdrlen = 0;
+	char header[200];
 	static const char thisfunction[] = "open_appender";
 
 	if (appender->remoteport > 0) {
@@ -307,14 +316,16 @@ open_appender(l4sc_appender_ptr_t appender)
 				thisfunction, err, strerror(err)));
 			return;
 		}
+		hdrlen = format_header(appender,
+				L4SC_FIRST_HEADER, header, sizeof(header));
 #if defined(L4SC_WINDOWS_SOCKETS)
-		if (BFC_CLASS(&appender->layout) == &l4sc_log4j_stream_layout_class) {
-			send(sock, start, sizeof(start), 0);
+		if (hdrlen > 0) {
+			send(sock, header, hdrlen, 0);
 		}
 		*(SOCKET*)&appender->fu = sock;
 #else
-		if (BFC_CLASS(&appender->layout) == &l4sc_log4j_stream_layout_class) {
-			send(sock, start, sizeof(start), MSG_NOSIGNAL);
+		if (hdrlen > 0) {
+			send(sock, header, hdrlen, MSG_NOSIGNAL);
 		}
 		appender->fu.fd = sock;
 #endif

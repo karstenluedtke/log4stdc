@@ -31,6 +31,9 @@ static size_t format_json_message(l4sc_layout_ptr_t layout,
 				l4sc_logmessage_cptr_t msg,
 				char *buf, size_t bufsize);
 
+static size_t format_header(l4sc_layout_ptr_t layout, int kind,
+				char *buf, size_t bufsize);
+
 const struct l4sc_layout_class l4sc_json_stream_layout_class = {
 	/* .super 	*/ (l4sc_layout_class_ptr_t) &l4sc_object_class,
 	/* .name 	*/ "json_stream_layout",
@@ -53,7 +56,8 @@ const struct l4sc_layout_class l4sc_json_stream_layout_class = {
 	/* .get_opt	*/ get_layout_option,
 	/* .apply	*/ apply_layout_options,
 	/* .close	*/ NULL,
-	/* .format	*/ format_json_message
+	/* .format	*/ format_json_message,
+	/* .header	*/ format_header
 };
 
 static int
@@ -113,6 +117,13 @@ get_layout_option(l4sc_layout_cptr_t obj, const char *name, size_t namelen,
 static void
 apply_layout_options(l4sc_layout_ptr_t obj)
 {
+}
+
+static size_t
+format_header(l4sc_layout_ptr_t layout, int kind,
+		  char *buf, size_t bufsize)
+{
+	return (0);
 }
 
 /*

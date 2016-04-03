@@ -42,6 +42,9 @@ static size_t format_by_pattern(l4sc_layout_ptr_t layout,
 				l4sc_logmessage_cptr_t msg,
 				char *buf, size_t bufsize);
 
+static size_t format_header(l4sc_layout_ptr_t layout, int kind,
+				char *buf, size_t bufsize);
+
 static int format_logtime(char *buf, size_t bufsize, const char *fmt,
 		const char *datefmtspec, l4sc_logmessage_cptr_t msg);
 
@@ -67,11 +70,13 @@ const struct l4sc_layout_class l4sc_patternlayout_class = {
 	/* .get_opt	*/ get_layout_option,
 	/* .apply	*/ apply_layout_options,
 	/* .close	*/ NULL,
-	/* .format	*/ format_by_pattern
+	/* .format	*/ format_by_pattern,
+	/* .format	*/ format_header
 };
 
 extern const struct l4sc_layout_class l4sc_json_stream_layout_class;
 extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
+extern const struct l4sc_layout_class l4sc_log4j2_stream_layout_class;
 
 static int
 init_patternlayout(void *buf, size_t bufsize, bfc_mempool_t pool)
@@ -185,7 +190,7 @@ l4sc_set_layout_class_by_name(l4sc_layout_ptr_t obj,
 		obj->vptr = &l4sc_patternlayout_class;
 	} else if ((vallen >= 16)
 	 && (strncasecmp(value+vallen-16, "SerializedLayout", 16) == 0)) {
-		obj->vptr = &l4sc_log4j_stream_layout_class;
+		obj->vptr = &l4sc_log4j2_stream_layout_class;
 	} else if ((vallen >= 10)
 	 && (strncasecmp(value+vallen-10, "JsonLayout", 10) == 0)) {
 		obj->vptr = &l4sc_json_stream_layout_class;
@@ -208,6 +213,13 @@ get_layout_option(l4sc_layout_cptr_t obj, const char *name, size_t namelen,
 static void
 apply_layout_options(l4sc_layout_ptr_t obj)
 {
+}
+
+static size_t
+format_header(l4sc_layout_ptr_t layout, int kind,
+		  char *buf, size_t bufsize)
+{
+	return (0);
 }
 
 static size_t

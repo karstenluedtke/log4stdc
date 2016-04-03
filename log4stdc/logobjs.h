@@ -100,8 +100,13 @@ struct l4sc_layout_class {
 	size_t	(*format)(l4sc_layout_ptr_t layout,
 			  l4sc_logmessage_cptr_t msg,
 			  char *buf, size_t bufsize);
+	size_t	(*header)(l4sc_layout_ptr_t layout, int kind,
+			  char *buf, size_t bufsize);
 	void *spare[10];
 };
+
+#define L4SC_FIRST_HEADER	1
+#define L4SC_PAGE_HEADER	2
 
 extern const struct l4sc_layout_class l4sc_patternlayout_class;
 
@@ -113,6 +118,13 @@ struct l4sc_layout {
 			unsigned long object_handle;
 			char loggingevent_reference[8];
 			char locationinfo_reference[8];
+			char javastring_reference[8];
+			char context_map_reference[8];
+			char context_stack_reference[8];
+			char level_reference[8];
+			char standardlevel_reference[8];
+			char simple_message_reference[8];
+			char stack_trace_element_reference[8];
 		} jstrm;
 		char pattern[80];
 	} u;

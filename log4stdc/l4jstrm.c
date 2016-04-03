@@ -252,6 +252,13 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 		(ptr) += (len);			\
 	}
 
+static void
+reset_l4j_stream(l4sc_layout_ptr_t layout)
+{
+	memset(&layout->u, 0, sizeof(layout->u));
+	layout->u.jstrm.object_handle = baseWireHandle;
+}
+
 static size_t
 format_log4j_header(l4sc_layout_ptr_t layout, int kind,
 				char *buf, size_t bufsize)
@@ -259,8 +266,7 @@ format_log4j_header(l4sc_layout_ptr_t layout, int kind,
 	char *dp = buf;
 	const char *limit = dp + bufsize;
 	if (kind == L4SC_FIRST_HEADER) {
-		memset(&layout->u, 0, sizeof(layout->u));
-		layout->u.jstrm.object_handle = baseWireHandle;
+		reset_l4j_stream(layout);
 		PUTNEXTSHORT(dp, STREAM_MAGIC ,limit);
 		PUTNEXTSHORT(dp, STREAM_VERSION ,limit);
 	}
@@ -481,6 +487,13 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 	PUTNEXTBYTE(dp, TC_NULL, limit);
 	PUTNEXTBYTE(dp, TC_ENDBLOCKDATA, limit);
 
+	if (layout->u.jstrm.object_handle > baseWireHandle + 500) {
+		if (dp < limit) {
+			PUTNEXTBYTE(dp, TC_RESET, limit);
+			reset_l4j_stream(layout);
+		}
+	}
+
 	return (dp - buf);
 }
 
@@ -494,7 +507,7 @@ estimate_log4j2_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
 	return (msg->msglen
 	  + strlen(msg->logger->name)
 	  + strlen(msg->file) + strlen(msg->func)
-	  + ((layout->u.jstrm.loggingevent_reference[0]==TC_OBJECT)? 400:1600));
+	  + ((layout->u.jstrm.loggingevent_reference[0]==TC_OBJECT)? 400:1400));
 }
 
 static int
@@ -779,6 +792,13 @@ format_log4j2_message(l4sc_layout_ptr_t layout,
 		dp += rc;
 	}
 	PUTNEXTBYTE(dp, TC_NULL, limit); /* thrownProxy */
+
+	if (layout->u.jstrm.object_handle > baseWireHandle + 500) {
+		if (dp < limit) {
+			PUTNEXTBYTE(dp, TC_RESET, limit);
+			reset_l4j_stream(layout);
+		}
+	}
 
 	return (dp - buf);
 }

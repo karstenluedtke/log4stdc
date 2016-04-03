@@ -202,7 +202,7 @@ main (int argc, char *argv[])
 	l4sc_logger_ptr_t logger;
 	int rc, sock;
 	socklen_t alen;
-	char buf[2000];
+	char buf[3000];
 	struct sockaddr_in addr;
 
 	sock = socket(AF_INET, SOCK_STREAM, 0);

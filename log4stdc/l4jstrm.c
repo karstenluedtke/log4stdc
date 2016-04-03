@@ -274,12 +274,23 @@ format_log4j_header(l4sc_layout_ptr_t layout, int kind,
 }
 
 static size_t
-estimate_log4j_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+raw_message_len(l4sc_logmessage_cptr_t msg)
 {
 	return (msg->msglen
 	  + strlen(msg->logger->name)
-	  + strlen(msg->file) + strlen(msg->func)
-	  + ((layout->u.jstrm.loggingevent_reference[0]==TC_OBJECT)? 200: 600));
+	  + strlen(msg->file) + strlen(msg->func));
+}
+
+static size_t
+estimate_log4j_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+{
+	size_t estimate = raw_message_len(msg) + 200;
+
+	if ((layout->u.jstrm.loggingevent_reference[0] != TC_OBJECT)
+	 || (layout->u.jstrm.object_handle > baseWireHandle + 500)) {
+		estimate += 400;
+	}
+	return (estimate);
 }
 
 static int
@@ -445,14 +456,27 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 {
 	char *dp = buf;
 	const char *limit = buf + bufsize;
+	l4sc_layout_ptr_t state = layout;
 	int rc;
 #if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
 	uint64_t timestamp;
 #else
 	unsigned long timestamp;
 #endif
+	struct l4sc_layout statebuf;
 
-	if ((rc = write_loggingevent_prolog(layout, dp, limit)) > 0) {
+	if (layout->u.jstrm.loggingevent_reference[0] != TC_OBJECT) {
+		memcpy(&statebuf, layout, offsetof(struct l4sc_layout, u));
+		reset_l4j_stream(&statebuf);
+		state = &statebuf;
+	} else if ((layout->u.jstrm.object_handle > baseWireHandle + 500)
+				&& (bufsize > raw_message_len(msg) + 580)) {
+		memcpy(&statebuf, layout, offsetof(struct l4sc_layout, u));
+		reset_l4j_stream(&statebuf);
+		state = &statebuf;
+		PUTNEXTBYTE(dp, TC_RESET, limit);
+	}
+	if ((rc = write_loggingevent_prolog(state, dp, limit)) > 0) {
 		dp += rc;
 	}
 	/* mdc and ndc lookup required should always be false */
@@ -462,21 +486,21 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 	timestamp = timestamp * 86400uL + msg->time.tv_sec;
 	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
 	PUTNEXTLONG(dp, timestamp, limit);
-	if ((rc = write_string_object(layout, dp, limit,
+	if ((rc = write_string_object(state, dp, limit,
 			msg->logger->name, strlen(msg->logger->name))) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_locationinfo(layout, dp, limit,
+	if ((rc = write_locationinfo(state, dp, limit,
 		   		     msg->file, msg->line, msg->func)) > 0) {
 		dp += rc;
 	}
 	PUTNEXTBYTE(dp, TC_NULL, limit); /* mdc omitted */
 	PUTNEXTBYTE(dp, TC_NULL, limit); /* ndc omitted */
-	if ((rc = write_string_object(layout, dp, limit,
+	if ((rc = write_string_object(state, dp, limit,
 					msg->msg, msg->msglen)) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_string_object(layout, dp, limit,
+	if ((rc = write_string_object(state, dp, limit,
 			msg->threadid, strlen(msg->threadid))) > 0) {
 		dp += rc;
 	}
@@ -487,11 +511,9 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 	PUTNEXTBYTE(dp, TC_NULL, limit);
 	PUTNEXTBYTE(dp, TC_ENDBLOCKDATA, limit);
 
-	if (layout->u.jstrm.object_handle > baseWireHandle + 500) {
-		if (dp < limit) {
-			PUTNEXTBYTE(dp, TC_RESET, limit);
-			reset_l4j_stream(layout);
-		}
+	if (state == &statebuf) {
+		memcpy(&layout->u.jstrm,
+			&state->u.jstrm, sizeof(layout->u.jstrm));
 	}
 
 	return (dp - buf);
@@ -504,10 +526,13 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 static size_t
 estimate_log4j2_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
 {
-	return (msg->msglen
-	  + strlen(msg->logger->name)
-	  + strlen(msg->file) + strlen(msg->func)
-	  + ((layout->u.jstrm.loggingevent_reference[0]==TC_OBJECT)? 400:1400));
+	size_t estimate = raw_message_len(msg) + 300;
+
+	if ((layout->u.jstrm.simple_message_reference[0] != TC_OBJECT)
+	 || (layout->u.jstrm.object_handle > baseWireHandle + 500)) {
+		estimate += 1000;
+	}
+	return (estimate);
 }
 
 static int
@@ -745,14 +770,27 @@ format_log4j2_message(l4sc_layout_ptr_t layout,
 {
 	char *dp = buf;
 	const char *limit = buf + bufsize;
+	l4sc_layout_ptr_t state = layout;
 	int rc;
 #if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
 	uint64_t timestamp;
 #else
 	unsigned long timestamp;
 #endif
+	struct l4sc_layout statebuf;
 
-	if ((rc = write_logevent_prolog(layout, dp, limit)) > 0) {
+	if (layout->u.jstrm.simple_message_reference[0] != TC_OBJECT) {
+		memcpy(&statebuf, layout, offsetof(struct l4sc_layout, u));
+		reset_l4j_stream(&statebuf);
+		state = &statebuf;
+	} else if ((layout->u.jstrm.object_handle > baseWireHandle + 500)
+				&& (bufsize > raw_message_len(msg) + 1250)) {
+		memcpy(&statebuf, layout, offsetof(struct l4sc_layout, u));
+		reset_l4j_stream(&statebuf);
+		state = &statebuf;
+		PUTNEXTBYTE(dp, TC_RESET, limit);
+	}
+	if ((rc = write_logevent_prolog(state, dp, limit)) > 0) {
 		dp += rc;
 	}
 	PUTNEXTBYTE(dp, 0, limit); /* isEndOfBatch */
@@ -761,43 +799,41 @@ format_log4j2_message(l4sc_layout_ptr_t layout,
 	timestamp = timestamp * 86400uL + msg->time.tv_sec;
 	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
 	PUTNEXTLONG(dp, timestamp, limit); /* timeMillis */
-	if ((rc = write_context_map(layout, dp, limit, NULL)) > 0) {
+	if ((rc = write_context_map(state, dp, limit, NULL)) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_context_stack(layout, dp, limit, NULL)) > 0) {
+	if ((rc = write_context_stack(state, dp, limit, NULL)) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_level_object(layout, dp, limit, msg->level)) > 0) {
+	if ((rc = write_level_object(state, dp, limit, msg->level)) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_string_object(layout, dp, limit,
+	if ((rc = write_string_object(state, dp, limit,
 		"org.apache.logging.log4j.spi.AbstractLogger", 43)) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_string_object(layout, dp, limit,
+	if ((rc = write_string_object(state, dp, limit,
 			msg->logger->name, strlen(msg->logger->name))) > 0) {
 		dp += rc;
 	}
 	PUTNEXTBYTE(dp, TC_NULL, limit); /* marker */
-	if ((rc = write_message_object(layout, dp, limit,
+	if ((rc = write_message_object(state, dp, limit,
 					msg->msg, msg->msglen)) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_source_object(layout, dp, limit,
+	if ((rc = write_source_object(state, dp, limit,
 		   		     msg->file, msg->line, msg->func)) > 0) {
 		dp += rc;
 	}
-	if ((rc = write_string_object(layout, dp, limit,
+	if ((rc = write_string_object(state, dp, limit,
 			msg->threadid, strlen(msg->threadid))) > 0) {
 		dp += rc;
 	}
 	PUTNEXTBYTE(dp, TC_NULL, limit); /* thrownProxy */
 
-	if (layout->u.jstrm.object_handle > baseWireHandle + 500) {
-		if (dp < limit) {
-			PUTNEXTBYTE(dp, TC_RESET, limit);
-			reset_l4j_stream(layout);
-		}
+	if (state == &statebuf) {
+		memcpy(&layout->u.jstrm,
+			&state->u.jstrm, sizeof(layout->u.jstrm));
 	}
 
 	return (dp - buf);

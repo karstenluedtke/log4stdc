@@ -34,6 +34,9 @@ static size_t format_json_message(l4sc_layout_ptr_t layout,
 static size_t format_header(l4sc_layout_ptr_t layout, int kind,
 				char *buf, size_t bufsize);
 
+static size_t estimate_json_size(l4sc_layout_ptr_t layout,
+				l4sc_logmessage_cptr_t msg);
+
 const struct l4sc_layout_class l4sc_json_stream_layout_class = {
 	/* .super 	*/ (l4sc_layout_class_ptr_t) &l4sc_object_class,
 	/* .name 	*/ "json_stream_layout",
@@ -57,7 +60,8 @@ const struct l4sc_layout_class l4sc_json_stream_layout_class = {
 	/* .apply	*/ apply_layout_options,
 	/* .close	*/ NULL,
 	/* .format	*/ format_json_message,
-	/* .header	*/ format_header
+	/* .header	*/ format_header,
+	/* .estimate	*/ estimate_json_size
 };
 
 static int
@@ -124,6 +128,15 @@ format_header(l4sc_layout_ptr_t layout, int kind,
 		  char *buf, size_t bufsize)
 {
 	return (0);
+}
+
+static size_t
+estimate_json_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+{
+	return (msg->msglen + (msg->msglen >> 2)
+	  + strlen(msg->logger->name)
+	  + strlen(msg->file) + strlen(msg->func)
+	  + 400);
 }
 
 /*

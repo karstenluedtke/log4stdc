@@ -39,6 +39,12 @@ static size_t format_log4j2_message(l4sc_layout_ptr_t layout,
 static size_t format_log4j_header(l4sc_layout_ptr_t layout, int kind,
 				char *buf, size_t bufsize);
 
+static size_t estimate_log4j_size(l4sc_layout_ptr_t layout,
+				l4sc_logmessage_cptr_t msg);
+
+static size_t estimate_log4j2_size(l4sc_layout_ptr_t layout,
+				l4sc_logmessage_cptr_t msg);
+
 const struct l4sc_layout_class l4sc_log4j_stream_layout_class = {
 	/* .super 	*/ (l4sc_layout_class_ptr_t) &l4sc_object_class,
 	/* .name 	*/ "log4j_stream_layout",
@@ -62,7 +68,8 @@ const struct l4sc_layout_class l4sc_log4j_stream_layout_class = {
 	/* .apply	*/ apply_layout_options,
 	/* .close	*/ NULL,
 	/* .format	*/ format_log4j_message,
-	/* .header	*/ format_log4j_header
+	/* .header	*/ format_log4j_header,
+	/* .estimate	*/ estimate_log4j_size
 };
 
 const struct l4sc_layout_class l4sc_log4j2_stream_layout_class = {
@@ -88,7 +95,8 @@ const struct l4sc_layout_class l4sc_log4j2_stream_layout_class = {
 	/* .apply	*/ apply_layout_options,
 	/* .close	*/ NULL,
 	/* .format	*/ format_log4j2_message,
-	/* .header	*/ format_log4j_header
+	/* .header	*/ format_log4j_header,
+	/* .estimate	*/ estimate_log4j2_size
 };
 
 static int
@@ -257,6 +265,15 @@ format_log4j_header(l4sc_layout_ptr_t layout, int kind,
 		PUTNEXTSHORT(dp, STREAM_VERSION ,limit);
 	}
 	return (dp - buf);
+}
+
+static size_t
+estimate_log4j_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+{
+	return (msg->msglen
+	  + strlen(msg->logger->name)
+	  + strlen(msg->file) + strlen(msg->func)
+	  + ((layout->u.jstrm.loggingevent_reference[0]==TC_OBJECT)? 200: 600));
 }
 
 static int
@@ -471,12 +488,20 @@ format_log4j_message(l4sc_layout_ptr_t layout,
  * log4j2
  */
 
+static size_t
+estimate_log4j2_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+{
+	return (msg->msglen
+	  + strlen(msg->logger->name)
+	  + strlen(msg->file) + strlen(msg->func)
+	  + ((layout->u.jstrm.loggingevent_reference[0]==TC_OBJECT)? 400:1600));
+}
+
 static int
 write_logevent_prolog(l4sc_layout_ptr_t layout, char *buf, const char *limit)
 {
 	int len;
 	static const char classDesc[] = {
-	TC_OBJECT,
 	TC_CLASSDESC, 0x00, 0x3e, 'o','r','g','.','a','p','a','c','h','e','.','l','o','g','g','i','n','g','.','l','o','g','4','j','.','c','o','r','e','.','i','m','p','l','.','L','o','g','4','j','L','o','g','E','v','e','n','t','$','L','o','g','E','v','e','n','t','P','r','o','x','y',
 	 0x9c, 0xed, 0x0f, 0x5d, 0x70, 0xda, 0x2a, 0x16, /* serialVersionUID */
 	 SC_SERIALIZABLE, 0x00, 0x0d, /* 13 fields will follow */
@@ -568,14 +593,9 @@ static int
 write_level_object(l4sc_layout_ptr_t layout, char *buf, const char *limit,
 		   unsigned level)
 {
-	int rc, levellen;
+	int rc, intlevel, levellen;
 	char *dp = buf;
-	const char *levelname =
-	  IS_AT_LEAST_FATAL_LEVEL(level)? "FATAL":
-	  IS_AT_LEAST_ERROR_LEVEL(level)? "ERROR":
-	  IS_AT_LEAST_WARN_LEVEL(level)?  "WARN":
-	  IS_AT_LEAST_INFO_LEVEL(level)?  "INFO":
-	  IS_AT_LEAST_DEBUG_LEVEL(level)? "DEBUG": "TRACE";
+	const char *levelname;
 
 	static const char classDesc[] = {
 	TC_CLASSDESC, 0x00, 0x1e, 'o','r','g','.','a','p','a','c','h','e','.','l','o','g','g','i','n','g','.','l','o','g','4','j','.','L','e','v','e','l',
@@ -603,8 +623,20 @@ write_level_object(l4sc_layout_ptr_t layout, char *buf, const char *limit,
 			layout->u.jstrm.level_reference,
 			2, classDesc, sizeof(classDesc))) > 0) {
 		dp += rc;
-		PUTNEXTINT(dp, level, limit);
-		levellen = (levelname[4] == '\0')? 4: 5;
+		if (IS_AT_LEAST_FATAL_LEVEL(level)) {
+			intlevel = 100; levelname = "FATAL"; levellen = 5;
+		} else if (IS_AT_LEAST_ERROR_LEVEL(level)) {
+			intlevel = 200; levelname = "ERROR"; levellen = 5;
+		} else if (IS_AT_LEAST_WARN_LEVEL(level)) {
+			intlevel = 300; levelname = "WARN"; levellen = 4;
+		} else if (IS_AT_LEAST_INFO_LEVEL(level)) {
+			intlevel = 400; levelname = "INFO"; levellen = 4;
+		} else if (IS_AT_LEAST_DEBUG_LEVEL(level)) {
+			intlevel = 500; levelname = "DEBUG"; levellen = 5;
+		} else {
+			intlevel = 600; levelname = "TRACE"; levellen = 5;
+		}
+		PUTNEXTINT(dp, intlevel, limit);
 		if ((rc = write_string_object(layout, dp, limit,
 						levelname, levellen)) > 0) {
 			dp += rc;
@@ -612,7 +644,7 @@ write_level_object(l4sc_layout_ptr_t layout, char *buf, const char *limit,
 		if ((rc = write_prolog(layout, dp, limit,
 				"org.apache.logging.log4j.spi.StandardLevel",
 				layout->u.jstrm.standardlevel_reference,
-				1, enumDesc, sizeof(enumDesc))) > 0) {
+				2, enumDesc, sizeof(enumDesc))) > 0) {
 			dp[0] = TC_ENUM; /* instead of TC_OBJECT */
 			dp += rc;
 			if ((rc = write_string_object(layout, dp, limit,

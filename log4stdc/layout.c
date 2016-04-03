@@ -38,6 +38,9 @@ static int  get_layout_option(l4sc_layout_cptr_t obj,
 				char *valbuf, size_t bufsize);
 static void apply_layout_options(l4sc_layout_ptr_t obj);
 
+static size_t estimate_size(l4sc_layout_ptr_t layout,
+				l4sc_logmessage_cptr_t msg);
+
 static size_t format_by_pattern(l4sc_layout_ptr_t layout,
 				l4sc_logmessage_cptr_t msg,
 				char *buf, size_t bufsize);
@@ -71,7 +74,8 @@ const struct l4sc_layout_class l4sc_patternlayout_class = {
 	/* .apply	*/ apply_layout_options,
 	/* .close	*/ NULL,
 	/* .format	*/ format_by_pattern,
-	/* .format	*/ format_header
+	/* .header	*/ format_header,
+	/* .estimate	*/ estimate_size
 };
 
 extern const struct l4sc_layout_class l4sc_json_stream_layout_class;
@@ -220,6 +224,12 @@ format_header(l4sc_layout_ptr_t layout, int kind,
 		  char *buf, size_t bufsize)
 {
 	return (0);
+}
+
+static size_t
+estimate_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+{
+	return (msg->msglen + 200);
 }
 
 static size_t
@@ -427,4 +437,12 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 		return (l4sc_snprintf(buf, bufsize, fmt, tmp));
 	}
 	return ((int) (dp - buf));
+}
+
+size_t
+l4sc_layout_estimate(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+{
+	RETURN_METHCALL(l4sc_layout_class_ptr_t, layout,
+			estimate, (layout, msg),
+			estimate_size(layout, msg));
 }

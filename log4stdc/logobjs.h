@@ -102,7 +102,9 @@ struct l4sc_layout_class {
 			  char *buf, size_t bufsize);
 	size_t	(*header)(l4sc_layout_ptr_t layout, int kind,
 			  char *buf, size_t bufsize);
-	void *spare[10];
+	size_t	(*estimate)(l4sc_layout_ptr_t layout,
+			  l4sc_logmessage_cptr_t msg);
+	void *spare[8];
 };
 
 #define L4SC_FIRST_HEADER	1
@@ -263,6 +265,8 @@ int l4sc_init_logmessage(void *buf, size_t bufsize,
 	const char *file, int line, const char *func);
 int l4sc_formatmsg(l4sc_layout_cptr_t layout,
 	  	l4sc_logmessage_cptr_t msg, char *buf, size_t bufsize);
+size_t l4sc_layout_estimate(l4sc_layout_ptr_t layout,
+		l4sc_logmessage_cptr_t msg);
 
 void l4sc_set_internal_logging(const char *value, int vallen);
 

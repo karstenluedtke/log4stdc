@@ -252,6 +252,39 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 		(ptr) += (len);			\
 	}
 
+#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
+
+#define PUTMSGTIMESTAMP(ptr,msg,limit)					  \
+	if ((ptr)+8 < limit) {						  \
+		uint64_t timestamp = msg->time.tv_day;			  \
+		timestamp = timestamp * 86400uL + msg->time.tv_sec;	  \
+		timestamp = timestamp *  1000   + msg->time.tv_usec/1000; \
+		PUTNEXTLONG(ptr, timestamp, limit);			  \
+	} else {							  \
+		(ptr) += 8;						  \
+	}
+
+#else
+#define PUTMSGTIMESTAMP(ptr,msg,limit)					  \
+	if ((ptr)+8 < limit) {  /* 84375 = 24*60*60*1000 >> 10 */	  \
+		unsigned long hi = 84375uL * msg->time.tv_day;		  \
+		unsigned long lo = 1000 * msg->time.tv_sec		  \
+				   + msg->time.tv_usec/1000;		  \
+		(ptr)[7] = (char) lo;               lo >>= 8;		  \
+		(ptr)[6] = (char) (lo + (hi << 2)); lo >>= 2;		  \
+		hi += lo;                           hi >>= 6;		  \
+		(ptr)[5] = (char) hi;               hi >>= 8;		  \
+		(ptr)[4] = (char) hi;               hi >>= 8;		  \
+		(ptr)[3] = (char) hi;               hi >>= 8;		  \
+		(ptr)[2] = (char) hi;               hi >>= 8;		  \
+		(ptr)[1] = (char) hi;               hi >>= 8;		  \
+		(ptr)[0] = (char) hi;               hi >>= 8;		  \
+		(ptr) += 8;						  \
+	} else {							  \
+		(ptr) += 8;						  \
+	}
+#endif
+
 static void
 reset_l4j_stream(l4sc_layout_ptr_t layout)
 {
@@ -458,11 +491,6 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 	const char *limit = buf + bufsize;
 	l4sc_layout_ptr_t state = layout;
 	int rc;
-#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
-	uint64_t timestamp;
-#else
-	unsigned long timestamp;
-#endif
 	struct l4sc_layout statebuf;
 
 	if (layout->u.jstrm.loggingevent_reference[0] != TC_OBJECT) {
@@ -482,10 +510,7 @@ format_log4j_message(l4sc_layout_ptr_t layout,
 	/* mdc and ndc lookup required should always be false */
 	PUTNEXTBYTE(dp, 0, limit);
 	PUTNEXTBYTE(dp, 0, limit);
-	timestamp = msg->time.tv_day;
-	timestamp = timestamp * 86400uL + msg->time.tv_sec;
-	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
-	PUTNEXTLONG(dp, timestamp, limit);
+	PUTMSGTIMESTAMP(dp, msg, limit);
 	if ((rc = write_string_object(state, dp, limit,
 			msg->logger->name, strlen(msg->logger->name))) > 0) {
 		dp += rc;
@@ -772,11 +797,6 @@ format_log4j2_message(l4sc_layout_ptr_t layout,
 	const char *limit = buf + bufsize;
 	l4sc_layout_ptr_t state = layout;
 	int rc;
-#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
-	uint64_t timestamp;
-#else
-	unsigned long timestamp;
-#endif
 	struct l4sc_layout statebuf;
 
 	if (layout->u.jstrm.simple_message_reference[0] != TC_OBJECT) {
@@ -795,10 +815,7 @@ format_log4j2_message(l4sc_layout_ptr_t layout,
 	}
 	PUTNEXTBYTE(dp, 0, limit); /* isEndOfBatch */
 	PUTNEXTBYTE(dp, 1, limit); /* isLocationRequired */
-	timestamp = msg->time.tv_day;
-	timestamp = timestamp * 86400uL + msg->time.tv_sec;
-	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
-	PUTNEXTLONG(dp, timestamp, limit); /* timeMillis */
+	PUTMSGTIMESTAMP(dp, msg, limit);
 	if ((rc = write_context_map(state, dp, limit, NULL)) > 0) {
 		dp += rc;
 	}

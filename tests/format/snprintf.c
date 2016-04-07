@@ -143,6 +143,10 @@ main (int argc, char *argv[])
 	test3("-2147483648", "%08ld", -0x80000000L);
 	test3("37777777777", "%08lo", 0xffffffffuL);
 
+	test3("ABCDEF", "%ls",    L"ABCDEF");
+	test3("   ABC", "%6.3ls", L"ABCDEF");
+	test3("ABC",    "%.*ls",  3, L"ABCDEF");
+
 	return (0);
 }
 

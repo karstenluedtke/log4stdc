@@ -2,8 +2,10 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <string.h>
+#include <wchar.h>
 
 #include "compat.h"
+#include "bareftc/utf8.h"
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <windows.h>
@@ -104,6 +106,31 @@ put_string(char *buf, int width, int precision, int flags, const char *limit,
 	PUT_STRING(dp,width,precision,flags,limit,s);
 	return (dp - buf);
 }
+
+static int
+put_wstring(char *buf, int width, int precision, int flags, const char *limit,
+           const wchar_t *s)
+{
+	char *dp = buf;
+
+#define PUT_WSTRING(ptr,width,precision,flags,limit,s)			\
+	do {								\
+		int _i, _n = 0, _w = width;				\
+		while (s[_n]) {						\
+			if (++_n == precision) break;			\
+		}							\
+		PUT_LEFT_FILL(ptr, _w, _n, flags, limit, ' ');		\
+		for (_i = 0; _i < _n; _i++) {				\
+			BFC_PUT_UTF8(ptr, limit, s[_i]);		\
+			_w--;						\
+		}							\
+		PUT_RIGHT_FILL(ptr, _w, _n, flags, limit, ' ');		\
+	} while (0 /*just once */)
+
+	PUT_WSTRING(dp,width,precision,flags,limit,s);
+	return (dp - buf);
+}
+
 
 static int
 put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
@@ -523,7 +550,13 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 			break;
 		case CONV_SPEC_STRING:
 			s = va_arg(ap, char *);
-			n = put_string(dp, width, precision, flags, limit, s);
+			if (modifier == CONV_ARG_MODIFIER_LONG) {
+				n = put_wstring(dp, width, precision, flags,
+						limit, (const wchar_t *) s);
+			} else {
+				n = put_string(dp, width, precision, flags,
+						limit, s);
+			}
 			dp += (n > 0)? n: 0;
 			break;
 		case CONV_SPEC_INTEGER:

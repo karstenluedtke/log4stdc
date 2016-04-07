@@ -28,6 +28,7 @@ OFILES= \
 	log4stdc/snprintf.obj \
 	log4stdc/vsnprntf.obj \
 	log4stdc/sockappd.obj \
+	log4stdc/jsonstrm.obj \
 	log4stdc/l4jstrm.obj \
 
 
@@ -39,6 +40,8 @@ TESTS= \
 	tests/format/snprintf.exe \
 	tests/format/currtime.exe \
 	tests/appender/l4jsock.exe \
+	tests/appender/l4j2sock.exe \
+	tests/appender/jsonsock.exe \
 
 
 all: log4stdc.lib
@@ -65,6 +68,7 @@ log4stdc.lib: $(OFILES) $(HEADERS)
 	lib $@ -+ log4stdc\snprintf.obj, nul,
 	lib $@ -+ log4stdc\vsnprntf.obj, nul,
 	lib $@ -+ log4stdc\sockappd.obj, nul,
+	lib $@ -+ log4stdc\jsonstrm.obj, nul,
 	lib $@ -+ log4stdc\l4jstrm.obj, nul,
 
 check: $(OFILES) $(HEADERS) $(TESTS)
@@ -75,6 +79,8 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\format\snprintf.exe
 	tests\format\currtime.exe
 	tests\appender\l4jsock.exe
+	tests\appender\l4j2sock.exe
+	tests\appender\jsonsock.exe
 	echo "check done"
 
 config.h: c600.mak
@@ -142,6 +148,9 @@ log4stdc/vsnprntf.obj: log4stdc/vsnprntf.c $(HEADERS)
 log4stdc/sockappd.obj: log4stdc/sockappd.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/sockappd.c
 
+log4stdc/jsonstrm.obj: log4stdc/jsonstrm.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/jsonstrm.c
+
 log4stdc/l4jstrm.obj: log4stdc/l4jstrm.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4jstrm.c
 
@@ -186,4 +195,16 @@ tests/appender/l4jsock.exe: \
 		log4stdc.lib
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\appender\l4jsock.obj tests/appender/l4jsock.c 
 	$(CC) $(CFLAGS) -Fetests\appender\l4jsock.exe tests\appender\l4jsock.obj log4stdc.lib $(LFLAGS)
+
+tests/appender/l4j2sock.exe: \
+		tests/appender/l4j2sock.c \
+		log4stdc.lib
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\appender\l4j2sock.obj tests/appender/l4j2sock.c 
+	$(CC) $(CFLAGS) -Fetests\appender\l4j2sock.exe tests\appender\l4j2sock.obj log4stdc.lib $(LFLAGS)
+
+tests/appender/jsonsock.exe: \
+		tests/appender/jsonsock.c \
+		log4stdc.lib
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\appender\jsonsock.obj tests/appender/jsonsock.c 
+	$(CC) $(CFLAGS) -Fetests\appender\jsonsock.exe tests\appender\jsonsock.obj log4stdc.lib $(LFLAGS)
 

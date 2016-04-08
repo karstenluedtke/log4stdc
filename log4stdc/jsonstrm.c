@@ -13,6 +13,9 @@
 #include <inttypes.h>
 #elif defined(HAVE_STDINT_H)
 #include <stdint.h>
+#ifndef PRIu64
+#define PRIu64 "llu"
+#endif
 #endif
 
 static int init_json_stream_layout(void *, size_t, bfc_mempool_t );
@@ -165,27 +168,38 @@ format_json_message(l4sc_layout_ptr_t layout,
 	char *dp = buf;
 	const char *limit = buf + bufsize;
 	int i, rc;
-#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
-	uint64_t timestamp;
-#else
-	unsigned long timestamp;
-#endif
-
-	timestamp = msg->time.tv_day;
-	timestamp = timestamp * 86400uL + msg->time.tv_sec;
-	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
-
-	rc = l4sc_snprintf(dp, limit-dp,
-	  "{ \"timeMillis\" : %lld, \"thread\" : \"%s\", \"level\" : \"%s\",\n",
-          timestamp, msg->threadid, 
+	const char *levelstr =
 	  IS_AT_LEAST_FATAL_LEVEL(msg->level)? "FATAL":
 	  IS_AT_LEAST_ERROR_LEVEL(msg->level)? "ERROR":
 	  IS_AT_LEAST_WARN_LEVEL(msg->level)?  "WARN":
 	  IS_AT_LEAST_INFO_LEVEL(msg->level)?  "INFO":
-	  IS_AT_LEAST_DEBUG_LEVEL(msg->level)? "DEBUG": "TRACE");
+	  IS_AT_LEAST_DEBUG_LEVEL(msg->level)? "DEBUG": "TRACE";
+
+#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
+	uint64_t timestamp = msg->time.tv_day;
+	timestamp = timestamp * 86400uL + msg->time.tv_sec;
+	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
+
+	rc = l4sc_snprintf(dp, limit-dp,
+	  "{ \"timeMillis\" : %"PRIu64", \"thread\" : \"%s\", \"level\" : \"%s\",\n",
+          timestamp, msg->threadid, levelstr);
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}
+#else
+	unsigned long timestamp = msg->time.tv_day * 86400uL + msg->time.tv_sec;
+	unsigned long timefrac  = msg->time.tv_usec/1000;
+	while (timefrac >= 1000) {
+		timestamp += 1;
+		timefrac  -= 1000;
+	}
+	rc = l4sc_snprintf(dp, limit-dp,
+	  "{ \"timeMillis\" : %lu%03u, \"thread\" : \"%s\", \"level\" : \"%s\",\n",
+          timestamp, (unsigned) timefrac, msg->threadid, levelstr);
+	if ((rc > 0) && (dp+rc < limit)) {
+		dp += rc;
+	}
+#endif
 	rc = l4sc_snprintf(dp, limit-dp, "  \"message\" : \"");
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;

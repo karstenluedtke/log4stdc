@@ -168,7 +168,7 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 		buf[msg->msglen] = '\0';
 		__android_log_write(prio, tag, buf);
 #else
-		l4sc_layout_cptr_t layout = &appender->layout;
+		l4sc_layout_ptr_t layout = &appender->layout;
 		const int len = l4sc_formatmsg(layout, msg, buf, bufsize);
 		int fd = IS_AT_LEAST_WARN_LEVEL(level)? 2: 1;
 		int rc, written = 0;

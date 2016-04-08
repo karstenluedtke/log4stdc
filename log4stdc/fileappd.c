@@ -224,7 +224,7 @@ static void
 append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
 	if (msg && (msg->msglen > 0)) {
-		l4sc_layout_cptr_t layout = &appender->layout;
+		l4sc_layout_ptr_t layout = &appender->layout;
 		bfc_mempool_t pool = appender->parent_pool;
 		const size_t bufsize = l4sc_layout_estimate(layout, msg);
 		char *poolmem = ((bufsize > 2000) && pool)?

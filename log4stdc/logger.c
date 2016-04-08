@@ -36,6 +36,8 @@ static void close_logger(l4sc_logger_ptr_t obj);
 static void logger_log(l4sc_logger_ptr_t logger,
 		       int level, const char *msg, size_t msglen,
 		       const char *file, int line, const char *func);
+static void logger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg);
+
 static int  is_logger_enabled(l4sc_logger_cptr_t logger, int level);
 static int  set_logger_parent(l4sc_logger_ptr_t logger,
 			      l4sc_logger_ptr_t parent);
@@ -45,11 +47,15 @@ static int  set_logger_appender(l4sc_logger_ptr_t logger,
 static void rootlogger_log(l4sc_logger_ptr_t logger,
 		       int level, const char *msg, size_t msglen,
 		       const char *file, int line, const char *func);
+static void rootlogger_append(l4sc_logger_ptr_t logger,
+				l4sc_logmessage_cptr_t msg);
 
 static int customlogger_is_enabled(l4sc_logger_cptr_t logger, int level);
 static void customlogger_log(l4sc_logger_ptr_t logger, int level,
 			     const char *msg, size_t msglen,
 			     const char *file, int line, const char *func);
+static void customlogger_append(l4sc_logger_ptr_t logger,
+				l4sc_logmessage_cptr_t msg);
 
 static const struct l4sc_logger_class loggercls = {
 	/* .super 	*/ (const struct l4sc_logger_class*) &l4sc_object_class,
@@ -76,7 +82,8 @@ static const struct l4sc_logger_class loggercls = {
 	/* .log  	*/ logger_log,
 	/* .is_enabled	*/ is_logger_enabled,
 	/* .set_parent	*/ set_logger_parent,
-	/* .set_appender*/ set_logger_appender
+	/* .set_appender*/ set_logger_appender,
+	/* .append  	*/ logger_append
 };
 
 static const struct l4sc_logger_class rootloggercls = {
@@ -104,7 +111,8 @@ static const struct l4sc_logger_class rootloggercls = {
 	/* .log  	*/ rootlogger_log,
 	/* .is_enabled	*/ is_logger_enabled,
 	/* .set_parent	*/ set_logger_parent,
-	/* .set_appender*/ set_logger_appender
+	/* .set_appender*/ set_logger_appender,
+	/* .append  	*/ rootlogger_append
 };
 
 static const struct l4sc_logger_class customloggercls = {
@@ -134,7 +142,8 @@ static const struct l4sc_logger_class customloggercls = {
 	/* .log  	*/ customlogger_log,
 	/* .is_enabled	*/ customlogger_is_enabled,
 	/* .set_parent	*/ set_logger_parent,
-	/* .set_appender*/ set_logger_appender
+	/* .set_appender*/ set_logger_appender,
+	/* .append  	*/ customlogger_append
 };
 
 #define rootlogger predefined_loggers[0]
@@ -264,30 +273,38 @@ get_logger_option(l4sc_logger_cptr_t obj, const char *name, size_t namelen,
 	return (0);
 }
 
-
 static void
-logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
-	   const char *file, int line, const char *func)
+logger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
 {
-	int i, rc;
+	int i;
 	l4sc_logger_ptr_t p;
 	l4sc_appender_ptr_t a;
-	l4sc_logmessage_t mbuf;
 
-	rc = l4sc_init_logmessage(&mbuf, sizeof(mbuf),
-				logger, level, msg, msglen, file, line, func);
-	if (rc >= 0) {
-		for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
-			if ((a = logger->appenders[i]) != NULL) {
-				VOID_METHCALL(l4sc_appender_class_ptr_t,
-						a, append, (a, &mbuf));
-			}
+	for (i=0; i < MAX_APPENDERS_PER_LOGGER; i++) {
+		if ((a = logger->appenders[i]) != NULL) {
+			VOID_METHCALL(l4sc_appender_class_ptr_t, a,
+				      append, (a, msg));
 		}
 	}
 
 	if (logger->additivity && (p = logger->parent)) {
 		VOID_METHCALL(l4sc_logger_class_ptr_t, p,
-			      log, (p, level, msg, msglen, file, line, func));
+			      append, (p, msg));
+	}
+}
+
+static void
+logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
+	   const char *file, int line, const char *func)
+{
+	int rc;
+	l4sc_logmessage_t mbuf;
+
+	rc = l4sc_init_logmessage(&mbuf, sizeof(mbuf),
+				logger, level, msg, msglen, file, line, func);
+	if (rc >= 0) {
+		VOID_METHCALL(l4sc_logger_class_ptr_t, logger,
+			      append, (logger, &mbuf));
 	}
 }
 
@@ -401,6 +418,31 @@ rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
 	}
 }
 
+static void
+rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
+{
+	int rc;
+	if (msg && (msg->msglen > 0)) {
+#if defined(__ANDROID__)
+		const unsigned level = msg->level;
+		const char *tag = msg->logger->name;
+		android_LogPriority prio =
+			IS_AT_LEAST_FATAL_LEVEL(level)?	ANDROID_LOG_FATAL:
+			IS_AT_LEAST_ERROR_LEVEL(level)?	ANDROID_LOG_ERROR:
+			IS_AT_LEAST_WARN_LEVEL(level)?	ANDROID_LOG_WARN:
+			IS_AT_LEAST_INFO_LEVEL(level)?	ANDROID_LOG_INFO:
+			IS_AT_LEAST_DEBUG_LEVEL(level)?	ANDROID_LOG_DEBUG:
+							ANDROID_LOG_VERBOSE;
+		__android_log_print(prio,tag,"%.*s",(int)msg->msglen,msg->msg);
+#else
+		rc = write(2, msg->msg, msg->msglen);
+		if ((rc > 0) && (msg->msg[msg->msglen-1] != '\n')) {
+			rc = write(2, "\r\n", 2);
+		}
+#endif
+	}
+}
+
 l4sc_logger_ptr_t
 l4sc_get_root_logger(void)
 {
@@ -481,6 +523,20 @@ customlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
 	if ((logfunc = logger->cxxbuf.p[2]) && msg && (msglen > 0)) {
 		(*logfunc)(logger->cxxbuf.p[0], logger,
 			   level, msg, msglen, file, line, func);
+	}
+}
+
+static void
+customlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
+{
+	void (*logfunc)(void *cbarg, l4sc_logger_cptr_t logger,
+		       int level, const char *msg, size_t msglen,
+		       const char *file, int line, const char *func);
+
+	if ((logfunc = logger->cxxbuf.p[2]) && msg && (msg->msglen > 0)) {
+		(*logfunc)(logger->cxxbuf.p[0], msg->logger,
+			   msg->level, msg->msg, msg->msglen,
+			   msg->file, msg->line, msg->func);
 	}
 }
 

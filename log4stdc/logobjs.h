@@ -51,6 +51,11 @@ extern const struct l4sc_object_class l4sc_object_class;
 struct l4sc_logger_class;
 typedef const struct l4sc_logger_class *l4sc_logger_class_ptr_t;
 
+struct l4sc_logmessage;
+typedef struct l4sc_logmessage l4sc_logmessage_t;
+typedef struct l4sc_logmessage *l4sc_logmessage_ptr_t;
+typedef const struct l4sc_logmessage *l4sc_logmessage_cptr_t;
+
 struct l4sc_logger_class {
 	BFC_OBJECT_CLASSHDR(l4sc_logger_class_ptr_t,
 			    l4sc_logger_ptr_t,l4sc_logger_cptr_t)
@@ -63,13 +68,9 @@ struct l4sc_logger_class {
 			      l4sc_logger_ptr_t parent);
 	int	(*set_appender)(l4sc_logger_ptr_t logger,
 				l4sc_appender_ptr_t appender);
-	void *spare[10];
+	void	(*append)(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg);
+	void *spare[9];
 };
-
-struct l4sc_logmessage;
-typedef struct l4sc_logmessage l4sc_logmessage_t;
-typedef struct l4sc_logmessage *l4sc_logmessage_ptr_t;
-typedef const struct l4sc_logmessage *l4sc_logmessage_cptr_t;
 
 struct l4sc_appender_class;
 typedef const struct l4sc_appender_class *l4sc_appender_class_ptr_t;
@@ -263,7 +264,7 @@ int l4sc_set_layout_class_by_name(l4sc_layout_ptr_t obj,
 int l4sc_init_logmessage(void *buf, size_t bufsize,
 	l4sc_logger_cptr_t logger, int level, const char *msg, size_t msglen,
 	const char *file, int line, const char *func);
-int l4sc_formatmsg(l4sc_layout_cptr_t layout,
+int l4sc_formatmsg(l4sc_layout_ptr_t layout,
 	  	l4sc_logmessage_cptr_t msg, char *buf, size_t bufsize);
 size_t l4sc_layout_estimate(l4sc_layout_ptr_t layout,
 		l4sc_logmessage_cptr_t msg);

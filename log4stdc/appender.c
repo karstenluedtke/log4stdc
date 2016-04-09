@@ -75,6 +75,10 @@ struct appenderpool l4sc_appenders = { NULL, NULL };
 
 const char obsolete_appender_name[] = "###obsolete-appender###";
 
+#define MAX_EXTRA_CLASSES 20
+int l4sc_num_extra_classes = 0;
+l4sc_class_ptr_t l4sc_extra_classes[MAX_EXTRA_CLASSES] = { NULL };
+
 static int
 init_appender(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
@@ -218,6 +222,46 @@ l4sc_append(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 			appender, append, (appender, msg));
 }
 
+int
+l4sc_register_extra_class(l4sc_class_ptr_t cls)
+{
+	int i;
+
+	for (i=0; i < l4sc_num_extra_classes; i++) {
+		if (l4sc_extra_classes[i] == cls) {
+			return (0);
+		}
+	}
+	if (l4sc_num_extra_classes < MAX_EXTRA_CLASSES) {
+		l4sc_extra_classes[l4sc_num_extra_classes++] = cls;
+	}
+	return (1);
+}
+
+l4sc_class_ptr_t
+l4sc_get_extra_class(const char *name, size_t namlen)
+{
+	int i;
+	l4sc_class_ptr_t cls;
+
+	for (i=0; i < l4sc_num_extra_classes; i++) {
+		if ((cls = l4sc_extra_classes[i]) && cls->name) {
+			size_t clen = strlen(cls->name);
+			if ((namlen == clen) 
+			 && (strncasecmp(cls->name, name, namlen) == 0)) {
+				return (cls);
+
+			} else if ((namlen > clen)
+				 && (name[namlen-clen-1] == '.')
+				 && (strncasecmp(cls->name,
+					 name+namlen-clen, namlen) == 0)) {
+				return (cls);
+			}
+		}
+	}
+	return (NULL);
+}
+
 l4sc_appender_ptr_t
 l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 {
@@ -233,9 +277,9 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
 		 && (strncasecmp(kind+klen-12, "FileAppender", 12) == 0)) {
 			clazz = &l4sc_file_appender_class;
 		}
-		if ((klen >= 14)
-		 && (strncasecmp(kind+klen-14, "SocketAppender", 14) == 0)) {
-			clazz = &l4sc_socket_appender_class;
+		cl = (l4sc_appender_class_ptr_t)l4sc_get_extra_class(kind,klen);
+		if (cl) {
+			clazz = cl;
 		}
 		BFC_LIST_FOREACH(appender, &l4sc_appenders, next) {
 			cl = BFC_CLASS(appender);

@@ -470,6 +470,11 @@ xml_tag_get_attrs(const struct xml_tag *tag, struct xml_attr *attrs,
 	return ((int) n);
 }
 
+#ifdef l4sc_configure_from_xml_file
+#undef l4sc_configure_from_xml_file
+#undef l4sc_configure_from_xml_string
+#endif
+
 int
 l4sc_configure_from_xml_file(const char *path)
 {

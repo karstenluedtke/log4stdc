@@ -42,7 +42,7 @@ static size_t estimate_json_size(l4sc_layout_ptr_t layout,
 
 const struct l4sc_layout_class l4sc_json_stream_layout_class = {
 	/* .super 	*/ (l4sc_layout_class_ptr_t) &l4sc_object_class,
-	/* .name 	*/ "json_stream_layout",
+	/* .name 	*/ "JsonLayout",
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ init_json_stream_layout,

@@ -74,7 +74,7 @@ const struct l4sc_layout_class l4sc_log4j_stream_layout_class = {
 
 const struct l4sc_layout_class l4sc_log4j2_stream_layout_class = {
 	/* .super 	*/ (l4sc_layout_class_ptr_t) &l4sc_object_class,
-	/* .name 	*/ "log4j_stream_layout",
+	/* .name 	*/ "SerializedLayout",
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ init_log4j2_stream_layout,

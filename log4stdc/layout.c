@@ -187,17 +187,14 @@ int
 l4sc_set_layout_class_by_name(l4sc_layout_ptr_t obj,
 				const char *value, size_t vallen)
 {
+	l4sc_class_ptr_t cls;
 	static const char thisfunction[] = "set_layout_class_by_name";
 
 	if ((vallen >= 13)
 	 && (strncasecmp(value+vallen-13, "PatternLayout", 13) == 0)) {
 		obj->vptr = &l4sc_patternlayout_class;
-	} else if ((vallen >= 16)
-	 && (strncasecmp(value+vallen-16, "SerializedLayout", 16) == 0)) {
-		obj->vptr = &l4sc_log4j2_stream_layout_class;
-	} else if ((vallen >= 10)
-	 && (strncasecmp(value+vallen-10, "JsonLayout", 10) == 0)) {
-		obj->vptr = &l4sc_json_stream_layout_class;
+	} else if ((cls = l4sc_get_extra_class(value, vallen)) != NULL) {
+		obj->vptr = (l4sc_layout_class_ptr_t) cls;
 	} else {
 		LOGERROR(("%s: unknown layout class %.*s",
 				thisfunction, (int)vallen, value));

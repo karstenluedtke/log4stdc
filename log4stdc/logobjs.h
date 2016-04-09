@@ -269,6 +269,8 @@ int l4sc_formatmsg(l4sc_layout_ptr_t layout,
 size_t l4sc_layout_estimate(l4sc_layout_ptr_t layout,
 		l4sc_logmessage_cptr_t msg);
 
+l4sc_class_ptr_t l4sc_get_extra_class(const char *name, size_t namlen);
+
 void l4sc_set_internal_logging(const char *value, int vallen);
 
 #if defined(__GNUC__) && (__GNUC__ >= 3)

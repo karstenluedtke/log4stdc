@@ -52,7 +52,7 @@ extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
 
 const struct l4sc_appender_class l4sc_socket_appender_class = {
 	/* .super 	*/ &l4sc_sysout_appender_class,
-	/* .name 	*/ "fileappender",
+	/* .name 	*/ "SocketAppender",
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
 	/* .init 	*/ init_appender,

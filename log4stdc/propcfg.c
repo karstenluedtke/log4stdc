@@ -241,6 +241,11 @@ config_from_property_line(const char *buf, const char *limit, int loop)
 	return (0);
 }
 
+#ifdef l4sc_configure_from_property_file
+#undef l4sc_configure_from_property_file
+#undef l4sc_configure_from_property_string
+#endif
+
 int
 l4sc_configure_from_property_file(const char *path)
 {

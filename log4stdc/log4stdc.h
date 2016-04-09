@@ -36,6 +36,11 @@ struct l4sc_configurator;
 typedef struct l4sc_configurator *l4sc_configurator_ptr_t;
 typedef const struct l4sc_configurator *l4sc_configurator_cptr_t;
 
+struct l4sc_object_class;
+struct l4sc_layout_class;
+struct l4sc_appender_class;
+struct l4sc_configurator_class;
+
 #define OFF_LEVEL	 60000u
 #define FATAL_LEVEL	 50000u
 #define ERROR_LEVEL	 40000u
@@ -54,10 +59,49 @@ typedef const struct l4sc_configurator *l4sc_configurator_cptr_t;
 #define IS_AT_LEAST_TRACE_LEVEL(lvl)	((unsigned)(lvl) >= TRACE_LEVEL)
 #define IS_LEVEL_ENABLED(lvl,threshold)	((unsigned)(lvl) >= (unsigned)(threshold))
 
-int l4sc_configure_from_xml_file(const char *path);
-int l4sc_configure_from_xml_string(const char *buf, size_t len);
-int l4sc_configure_from_property_file(const char *path);
-int l4sc_configure_from_property_string(const char *buf, size_t len);
+int l4sc_register_extra_class(const struct l4sc_object_class *cls);
+
+int l4sc_configure_from_file(
+	const struct l4sc_configurator_class *configurator,
+	const char *path, ...);
+
+int l4sc_configure_from_string(
+	const struct l4sc_configurator_class *configurator,
+	const char *buf, size_t len, ...);
+
+extern const struct l4sc_configurator_class l4sc_xml_configurator_class;
+extern const struct l4sc_configurator_class l4sc_property_configurator_class;
+
+extern const struct l4sc_appender_class l4sc_socket_appender_class;
+
+extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
+extern const struct l4sc_layout_class l4sc_log4j2_stream_layout_class;
+extern const struct l4sc_layout_class l4sc_json_stream_layout_class;
+
+#ifndef L4SC_EXTRA_CLASSES
+#define L4SC_EXTRA_CLASSES \
+	&l4sc_socket_appender_class, \
+	&l4sc_log4j_stream_layout_class, \
+	&l4sc_log4j2_stream_layout_class, \
+	&l4sc_json_stream_layout_class
+#endif
+
+#define l4sc_configure_from_xml_file(path) \
+	l4sc_configure_from_file(&l4sc_xml_configurator_class, \
+				 path, L4SC_EXTRA_CLASSES, NULL)
+
+#define l4sc_configure_from_xml_string(buf,len) \
+	l4sc_configure_from_string(&l4sc_xml_configurator_class, \
+				   buf, len, L4SC_EXTRA_CLASSES, NULL)
+
+#define l4sc_configure_from_property_file(path) \
+	l4sc_configure_from_file(&l4sc_property_configurator_class, \
+				 path, L4SC_EXTRA_CLASSES, NULL)
+
+#define l4sc_configure_from_property_string(buf,len) \
+	l4sc_configure_from_string(&l4sc_property_configurator_class, \
+				   buf, len, L4SC_EXTRA_CLASSES, NULL)
+
 
 int l4sc_is_configured(void);
 void l4sc_set_configured(int newval);

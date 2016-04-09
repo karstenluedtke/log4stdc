@@ -9,12 +9,6 @@
 #include "compat.h"
 #include "logobjs.h"
 
-#if defined(__STDC__) || defined(HAVE_INTTYPES_H)
-#include <inttypes.h>
-#elif defined(HAVE_STDINT_H)
-#include <stdint.h>
-#endif
-
 static int init_log4j_stream_layout(void *, size_t, bfc_mempool_t );
 static int init_log4j2_stream_layout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
@@ -252,19 +246,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 		(ptr) += (len);			\
 	}
 
-#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
-
-#define PUTMSGTIMESTAMP(ptr,msg,limit)					  \
-	if ((ptr)+8 < limit) {						  \
-		uint64_t timestamp = msg->time.tv_day;			  \
-		timestamp = timestamp * 86400uL + msg->time.tv_sec;	  \
-		timestamp = timestamp *  1000   + msg->time.tv_usec/1000; \
-		PUTNEXTLONG(ptr, timestamp, limit);			  \
-	} else {							  \
-		(ptr) += 8;						  \
-	}
-
-#else
+/* This should work up to the year 2105 (for 32-bit unsigned long) */
 #define PUTMSGTIMESTAMP(ptr,msg,limit)					  \
 	if ((ptr)+8 < limit) {  /* 84375 = 24*60*60*1000 >> 10 */	  \
 		unsigned long hi = 84375uL * msg->time.tv_day;		  \
@@ -283,7 +265,6 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 	} else {							  \
 		(ptr) += 8;						  \
 	}
-#endif
 
 static void
 reset_l4j_stream(l4sc_layout_ptr_t layout)

@@ -9,15 +9,6 @@
 #include "compat.h"
 #include "logobjs.h"
 
-#if defined(__STDC__) || defined(HAVE_INTTYPES_H)
-#include <inttypes.h>
-#elif defined(HAVE_STDINT_H)
-#include <stdint.h>
-#ifndef PRIu64
-#define PRIu64 "llu"
-#endif
-#endif
-
 static int init_json_stream_layout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
 
@@ -175,31 +166,19 @@ format_json_message(l4sc_layout_ptr_t layout,
 	  IS_AT_LEAST_INFO_LEVEL(msg->level)?  "INFO":
 	  IS_AT_LEAST_DEBUG_LEVEL(msg->level)? "DEBUG": "TRACE";
 
-#if defined(__STDC__) || defined(HAVE_INTTYPES_H) || defined(HAVE_STDINT_H)
-	uint64_t timestamp = msg->time.tv_day;
-	timestamp = timestamp * 86400uL + msg->time.tv_sec;
-	timestamp = timestamp *  1000   + msg->time.tv_usec/1000;
-
-	rc = l4sc_snprintf(dp, limit-dp,
-	  "{ \"timeMillis\" : %"PRIu64", \"thread\" : \"%s\", \"level\" : \"%s\",\n",
-          timestamp, msg->threadid, levelstr);
+	/* This should work up to the year 2105 (for 32-bit unsigned long) */
+	unsigned long timesecs = msg->time.tv_day * 86400uL + msg->time.tv_sec;
+	unsigned long timefrac = msg->time.tv_usec/1000;
+	if (timefrac >= 1000) {
+		timesecs += timefrac / 1000;
+		timefrac  = timefrac % 1000;
+	}
+	rc = l4sc_snprintf(dp, limit-dp, "{ \"timeMillis\" : %lu%03u,"
+			" \"thread\" : \"%s\", \"level\" : \"%s\",\n",
+        	timesecs, (unsigned) timefrac, msg->threadid, levelstr);
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}
-#else
-	unsigned long timestamp = msg->time.tv_day * 86400uL + msg->time.tv_sec;
-	unsigned long timefrac  = msg->time.tv_usec/1000;
-	while (timefrac >= 1000) {
-		timestamp += 1;
-		timefrac  -= 1000;
-	}
-	rc = l4sc_snprintf(dp, limit-dp,
-	  "{ \"timeMillis\" : %lu%03u, \"thread\" : \"%s\", \"level\" : \"%s\",\n",
-          timestamp, (unsigned) timefrac, msg->threadid, levelstr);
-	if ((rc > 0) && (dp+rc < limit)) {
-		dp += rc;
-	}
-#endif
 	rc = l4sc_snprintf(dp, limit-dp, "  \"message\" : \"");
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;

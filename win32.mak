@@ -26,6 +26,8 @@ OFILES= \
 	log4stdc/pmutex.obj \
 	log4stdc/wmutex.obj \
 	log4stdc/xmlcfg.obj \
+	log4stdc/strcfg.obj \
+	log4stdc/filecfg.obj \
 	log4stdc/snprintf.obj \
 	log4stdc/vsnprntf.obj \
 	log4stdc/sockappd.obj \
@@ -132,6 +134,12 @@ log4stdc/wmutex.obj: log4stdc/wmutex.c $(HEADERS)
 
 log4stdc/xmlcfg.obj: log4stdc/xmlcfg.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/xmlcfg.c
+
+log4stdc/strcfg.obj: log4stdc/strcfg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/strcfg.c
+
+log4stdc/filecfg.obj: log4stdc/filecfg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/filecfg.c
 
 log4stdc/snprintf.obj: log4stdc/snprintf.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/snprintf.c

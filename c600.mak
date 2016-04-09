@@ -25,6 +25,8 @@ OFILES= \
 	log4stdc/pmutex.obj \
 	log4stdc/wmutex.obj \
 	log4stdc/xmlcfg.obj \
+	log4stdc/strcfg.obj \
+	log4stdc/filecfg.obj \
 	log4stdc/snprintf.obj \
 	log4stdc/vsnprntf.obj \
 	log4stdc/sockappd.obj \
@@ -65,6 +67,8 @@ log4stdc.lib: $(OFILES) $(HEADERS)
 	lib $@ -+ log4stdc\pmutex.obj, nul,
 	lib $@ -+ log4stdc\wmutex.obj, nul,
 	lib $@ -+ log4stdc\xmlcfg.obj, nul,
+	lib $@ -+ log4stdc\strcfg.obj, nul,
+	lib $@ -+ log4stdc\filecfg.obj, nul,
 	lib $@ -+ log4stdc\snprintf.obj, nul,
 	lib $@ -+ log4stdc\vsnprntf.obj, nul,
 	lib $@ -+ log4stdc\sockappd.obj, nul,
@@ -138,6 +142,12 @@ log4stdc/wmutex.obj: log4stdc/wmutex.c $(HEADERS)
 
 log4stdc/xmlcfg.obj: log4stdc/xmlcfg.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/xmlcfg.c
+
+log4stdc/strcfg.obj: log4stdc/strcfg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/strcfg.c
+
+log4stdc/filecfg.obj: log4stdc/filecfg.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/filecfg.c
 
 log4stdc/snprintf.obj: log4stdc/snprintf.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/snprintf.c

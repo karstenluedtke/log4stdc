@@ -4,6 +4,8 @@
 #include <stdarg.h>
 #include <errno.h>
 
+#include "compat.h"
+
 #include "log4stdc.h"
 #include "logobjs.h"
 

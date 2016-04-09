@@ -6,6 +6,12 @@
 #include <assert.h>
 #include <errno.h>
 
+#if defined(__STDC__) || defined(STDC_HEADERS) || defined(HAVE_WCHAR_H)
+#include <wchar.h>
+#elif defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <wchar.h>
+#endif
+
 #include "log4stdc.h"
 
 void
@@ -49,6 +55,12 @@ test3(const char *expectation, const char *fmt, ...)
 	assert (strcmp(buf, expectation) == 0);
 	assert (rc == strlen(buf));
 }
+
+#if defined(WEOF)
+#define L_ABCDEF L"ABCDEF"
+#else
+static const unsigned short L_ABCDEF[] = { 'A', 'B', 'C', 'D', 'E', 'F', 0 };
+#endif
 
 int
 main (int argc, char *argv[])
@@ -143,9 +155,9 @@ main (int argc, char *argv[])
 	test3("-2147483648", "%08ld", -0x80000000L);
 	test3("37777777777", "%08lo", 0xffffffffuL);
 
-	test3("ABCDEF", "%ls",    L"ABCDEF");
-	test3("   ABC", "%6.3ls", L"ABCDEF");
-	test3("ABC",    "%.*ls",  3, L"ABCDEF");
+	test3("ABCDEF", "%ls",    L_ABCDEF);
+	test3("   ABC", "%6.3ls", L_ABCDEF);
+	test3("ABC",    "%.*ls",  3, L_ABCDEF);
 
 	return (0);
 }

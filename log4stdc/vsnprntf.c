@@ -2,9 +2,9 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <string.h>
-#include <wchar.h>
 
 #include "compat.h"
+
 #include "bareftc/utf8.h"
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -14,6 +14,14 @@
 #elif defined(__STDC__)
 #define signed_long_long	long long
 #define unsigned_long_long	unsigned long long
+#endif
+
+#if defined(__STDC__) || defined(STDC_HEADERS) || defined(HAVE_WCHAR_H)
+#include <wchar.h>
+#elif defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <wchar.h>
+#elif !defined(WEOF)
+typedef unsigned short wchar_t;
 #endif
 
 #define CONV_FLAG_LEFT_ALIGN		0x0001	/* - */

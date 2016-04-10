@@ -33,6 +33,7 @@ OFILES= \
 	log4stdc/sockappd.obj \
 	log4stdc/jsonstrm.obj \
 	log4stdc/l4jstrm.obj \
+	log4stdc/xmlstrm.obj \
 
 
 TESTS= \
@@ -45,6 +46,7 @@ TESTS= \
 	tests/appender/l4jsock.exe \
 	tests/appender/l4j2sock.exe \
 	tests/appender/jsonsock.exe \
+	tests/appender/xmlsock.exe \
 
 
 all: log4stdc.lib
@@ -63,6 +65,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\appender\l4jsock.exe
 	tests\appender\l4j2sock.exe
 	tests\appender\jsonsock.exe
+	tests\appender\xmlsock.exe
 	echo "check done"
 
 config.h: win32.mak
@@ -156,6 +159,9 @@ log4stdc/jsonstrm.obj: log4stdc/jsonstrm.c $(HEADERS)
 log4stdc/l4jstrm.obj: log4stdc/l4jstrm.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/l4jstrm.c
 
+log4stdc/xmlstrm.obj: log4stdc/xmlstrm.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/xmlstrm.c
+
 examples/redirect.exe: \
 		examples/redirect.c \
 		log4stdc.lib
@@ -209,4 +215,10 @@ tests/appender/jsonsock.exe: \
 		log4stdc.lib
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\appender\jsonsock.obj tests/appender/jsonsock.c 
 	$(CC) $(CFLAGS) -Fetests\appender\jsonsock.exe tests\appender\jsonsock.obj log4stdc.lib $(LFLAGS)
+
+tests/appender/xmlsock.exe: \
+		tests/appender/xmlsock.c \
+		log4stdc.lib
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\appender\xmlsock.obj tests/appender/xmlsock.c 
+	$(CC) $(CFLAGS) -Fetests\appender\xmlsock.exe tests\appender\xmlsock.obj log4stdc.lib $(LFLAGS)
 

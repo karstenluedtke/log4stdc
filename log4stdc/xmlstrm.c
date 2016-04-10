@@ -9,7 +9,7 @@
 #include "compat.h"
 #include "logobjs.h"
 
-static int init_json_stream_layout(void *, size_t, bfc_mempool_t );
+static int init_xml_stream_layout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
 
 static void set_layout_name(l4sc_layout_ptr_t obj, const char *name, int len);
@@ -21,22 +21,22 @@ static int  get_layout_option(l4sc_layout_cptr_t obj,
 				char *valbuf, size_t bufsize);
 static void apply_layout_options(l4sc_layout_ptr_t obj);
 
-static size_t format_json_message(l4sc_layout_ptr_t layout,
+static size_t format_xml_message(l4sc_layout_ptr_t layout,
 				l4sc_logmessage_cptr_t msg,
 				char *buf, size_t bufsize);
 
 static size_t format_header(l4sc_layout_ptr_t layout, int kind,
 				char *buf, size_t bufsize);
 
-static size_t estimate_json_size(l4sc_layout_ptr_t layout,
+static size_t estimate_xml_size(l4sc_layout_ptr_t layout,
 				l4sc_logmessage_cptr_t msg);
 
-const struct l4sc_layout_class l4sc_json_stream_layout_class = {
+const struct l4sc_layout_class l4sc_xml_stream_layout_class = {
 	/* .super 	*/ (l4sc_layout_class_ptr_t) &l4sc_object_class,
-	/* .name 	*/ "JsonLayout",
+	/* .name 	*/ "XmlLayout",
 	/* .spare2 	*/ NULL,
 	/* .spare3 	*/ NULL,
-	/* .init 	*/ init_json_stream_layout,
+	/* .init 	*/ init_xml_stream_layout,
 	/* .initrefc 	*/ (void *) l4sc_default_init_refcount,
 	/* .incrrefc 	*/ (void *) l4sc_default_incr_refcount,
 	/* .decrrefc 	*/ (void *) l4sc_default_decr_refcount,
@@ -53,18 +53,18 @@ const struct l4sc_layout_class l4sc_json_stream_layout_class = {
 	/* .get_opt	*/ get_layout_option,
 	/* .apply	*/ apply_layout_options,
 	/* .close	*/ NULL,
-	/* .format	*/ format_json_message,
+	/* .format	*/ format_xml_message,
 	/* .header	*/ format_header,
-	/* .estimate	*/ estimate_json_size
+	/* .estimate	*/ estimate_xml_size
 };
 
 static int
-init_json_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
+init_xml_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
 	BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t,
 			  l4sc_layout_ptr_t, layout, buf, bufsize, pool,
-			  &l4sc_json_stream_layout_class);
-	layout->name = "json stream layout";
+			  &l4sc_xml_stream_layout_class);
+	layout->name = "xml stream layout";
 	return (BFC_SUCCESS);
 }
 
@@ -124,7 +124,7 @@ format_header(l4sc_layout_ptr_t layout, int kind,
 }
 
 static size_t
-estimate_json_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+estimate_xml_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
 {
 	return (msg->msglen + (msg->msglen >> 2)
 	  + strlen(msg->logger->name)
@@ -133,25 +133,22 @@ estimate_json_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
 }
 
 /*
- * {
- *   "timeMillis" : 1459374920444,
- *   "thread" : "Thread-2",
- *   "level" : "DEBUG",
- *   "loggerName" : "MapiSession",
- *   "message" : "writing <transaction transid=\"1\" userid=\"1\">\r\n\t<method>getAddressBookEntries</method>\r\n</transaction>\r\n",
- *   "endOfBatch" : false,
- *   "loggerFqcn" : "org.apache.logging.log4j.spi.AbstractLogger",
- *   "source" : {
- *     "class" : "MapiSession$Communicator",
- *     "method" : "run",
- *     "file" : "MapiSession.java",
- *     "line" : 99
- *   }
- * }
+ * <?xml version="1.0" encoding="UTF-8"?>      -- CONDITIONAL: complete="true"
+ * <Events xmlns="http://logging.apache.org/log4j/2.0/events">
+ *
+ * <Event xmlns="http://logging.apache.org/log4j/2.0/events"
+ *      timeMillis="1460302248157" thread="main" level="INFO"
+ *      loggerName="Logtest" endOfBatch="false"
+ *      loggerFqcn="org.apache.logging.log4j.spi.AbstractLogger">
+ *   <Message>one log line</Message>
+ *   <Source class="Logtest" method="main" file="Logtest.java" line="11"/>
+ * </Event>
+ *
+ * </Events>                                   -- CONDITIONAL: complete="true"
  */
 
 static size_t
-format_json_message(l4sc_layout_ptr_t layout,
+format_xml_message(l4sc_layout_ptr_t layout,
 		  l4sc_logmessage_cptr_t msg,
 		  char *buf, size_t bufsize)
 {
@@ -172,60 +169,45 @@ format_json_message(l4sc_layout_ptr_t layout,
 		timesecs += timefrac / 1000;
 		timefrac  = timefrac % 1000;
 	}
-	rc = l4sc_snprintf(dp, limit-dp, "{ \"timeMillis\" : %lu%03u,"
-					  " \"thread\" : \"%s\","
-					  " \"level\" : \"%s\","
-					  " \"loggerName\" : \"%s\",\n",
-        	timesecs, (unsigned) timefrac,
-		msg->threadid, levelstr, msg->logger->name);
+	rc = l4sc_snprintf(dp, limit-dp,
+		"<Event xmlns=\"http://logging.apache.org/log4j/2.0/events\""
+		" timeMillis=\"%lu%03u\" thread=\"%s\" level=\"%s\""
+		" loggerName=\"%s\" endOfBatch=\"false\" loggerFqcn=\"%s\">\n",
+        	timesecs, (unsigned) timefrac, msg->threadid, levelstr,
+		msg->logger->name,
+		"org.apache.logging.log4j.spi.AbstractLogger");
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}
-	rc = l4sc_snprintf(dp, limit-dp, "  \"message\" : \"");
+	rc = l4sc_snprintf(dp, limit-dp, "  <Message>");
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}
 	for (i = 0; (i < msg->msglen) && (dp+8 < limit); i++) {
 		unsigned char c = (unsigned char) msg->msg[i];
-		if ((c < ' ') || (c == '\"') || (c == '\\')) {
-			*(dp++) = '\\';
-			if ((c == '"') || (c == '\\')) {
-				*(dp++) = c;
-			} else if (c == '\n') {
-				*(dp++) = 'n';
-			} else if (c == '\r') {
-				*(dp++) = 'r';
-			} else if (c == '\t') {
-				*(dp++) = 't';
-			} else if (c == 8) {
-				*(dp++) = 'b';
-			} else if (c == 12) {
-				*(dp++) = 'f';
-			} else {
-				dp += l4sc_snprintf (dp, limit-dp, "u%04lx", c);
-			}
+		if (c > '>') {
+			*(dp++) = (char) c;
+		} else if (c == '&') {
+			memcpy(dp, "&amp;", 5); dp += 5;
+		} else if (c == '<') {
+			memcpy(dp, "&lt;", 4);  dp += 4;
+		} else if (c == '>') {
+			memcpy(dp, "&gt;", 4);  dp += 4;
 		} else {
-			*(dp++) = c;
+			*(dp++) = (char) c;
 		}
 	}
-	rc = l4sc_snprintf(dp, limit-dp, "\",\n");
+	rc = l4sc_snprintf(dp, limit-dp, "</Message>\n");
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}
 	rc = l4sc_snprintf(dp, limit-dp, 
-	  "  \"endOfBatch\" : false, \"loggerFqcn\" : \"%s\",\n",
-	  "org.apache.logging.log4j.spi.AbstractLogger");
-	if ((rc > 0) && (dp+rc < limit)) {
-		dp += rc;
-	}
-	rc = l4sc_snprintf(dp, limit-dp, 
-	  "  \"source\" : { \"class\" : \"%s\", \"method\" : \"%s\","
-			   " \"file\" : \"%s\", \"line\" : %u }\n",
+	  "  <Source class=\"%s\" method=\"%s\" file=\"%s\" line=\"%u\"/>\n",
 	  "", msg->func, msg->file, msg->line);
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}
-	rc = l4sc_snprintf(dp, limit-dp, "}\n");
+	rc = l4sc_snprintf(dp, limit-dp, "</Event>\r\n");
 	if ((rc > 0) && (dp+rc < limit)) {
 		dp += rc;
 	}

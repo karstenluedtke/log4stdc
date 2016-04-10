@@ -45,6 +45,7 @@ liblog4stdc_a_SOURCES+= log4stdc/vsnprntf.c
 liblog4stdc_a_SOURCES+= log4stdc/sockappd.c
 liblog4stdc_a_SOURCES+= log4stdc/jsonstrm.c
 liblog4stdc_a_SOURCES+= log4stdc/l4jstrm.c
+liblog4stdc_a_SOURCES+= log4stdc/xmlstrm.c
 
 testlink_SOURCES = testlink.cpp
 testlink_LDADD = liblog4stdc.a
@@ -134,4 +135,10 @@ tests_appender_jsonsock_SOURCES = tests/appender/jsonsock.c
 tests_appender_jsonsock_LDADD = liblog4stdc.a
 tests_appender_jsonsock_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/appender/jsonsock
+
+check_PROGRAMS += tests/appender/xmlsock
+tests_appender_xmlsock_SOURCES = tests/appender/xmlsock.c
+tests_appender_xmlsock_LDADD = liblog4stdc.a
+tests_appender_xmlsock_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/appender/xmlsock
 

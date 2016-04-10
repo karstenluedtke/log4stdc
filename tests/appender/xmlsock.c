@@ -55,7 +55,7 @@ static const char refstream[] =
   " timeMillis=\"?????????????\" thread=\"????\""
   " level=\"INFO\" loggerName=\"testlogger\" endOfBatch=\"false\""
   " loggerFqcn=\"org.apache.logging.log4j.spi.AbstractLogger\">\n"
-"  <Message>DEF</Message>\n"
+"  <Message>x &lt; 2 &amp;&amp; l\303\244nger als 5\"</Message>\n"
 "  <Source class=\"\""
     " method=\"testfunction\" file=\"sourcefile\" line=\"101\"/>\n"
 "</Event>\r\n";
@@ -107,7 +107,7 @@ int rc, sock;
 				"ABC");
 		l4sc_logprintf(logger, INFO_LEVEL,
 				"sourcefile", 101, "testfunction",
-				"DEF");
+				"x < 2 && l\303\244nger als 5\"");
 		return(0);
 	} else {
 		/* parent */

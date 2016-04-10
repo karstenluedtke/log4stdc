@@ -8,6 +8,7 @@
 
 #include "compat.h"
 #include "logobjs.h"
+#include "bareftc/utf8.h"
 
 static int init_xml_stream_layout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
@@ -185,7 +186,19 @@ format_xml_message(l4sc_layout_ptr_t layout,
 	}
 	for (i = 0; (i < msg->msglen) && (dp+8 < limit); i++) {
 		unsigned char c = (unsigned char) msg->msg[i];
-		if (c > '>') {
+		if (c & 0x80) {
+			unsigned long unicode;
+			unsigned char c1 = (unsigned char) msg->msg[i+1];
+			if ((c >= 0xC0) && (c1 >= 0x80) && (c1 < 0xC0)) {
+				const char *uniptr = msg->msg + i;
+				const char *unilim = msg->msg + msg->msglen;
+				BFC_GET_UTF8(unicode, uniptr, unilim);
+				i += uniptr - &msg->msg[i] - 1;
+			} else {
+				unicode = c; /* assume latin-1 */
+			}
+			BFC_PUT_UTF8(dp, limit, unicode);
+		} else if (c > '>') {
 			*(dp++) = (char) c;
 		} else if (c == '&') {
 			memcpy(dp, "&amp;", 5); dp += 5;

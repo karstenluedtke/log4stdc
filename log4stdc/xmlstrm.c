@@ -59,6 +59,13 @@ const struct l4sc_layout_class l4sc_xml_stream_layout_class = {
 	/* .estimate	*/ estimate_xml_size
 };
 
+static const unsigned short cp1252_80_9F[] = {
+	0x20AC, 0x0081, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+	0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0x008D, 0x017D, 0x008F,
+	0x0090, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+	0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0x009D, 0x017E, 0x0178
+};
+
 static int
 init_xml_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
@@ -194,6 +201,8 @@ format_xml_message(l4sc_layout_ptr_t layout,
 				const char *unilim = msg->msg + msg->msglen;
 				BFC_GET_UTF8(unicode, uniptr, unilim);
 				i += uniptr - &msg->msg[i] - 1;
+			} else if (c < 0xA0) {
+				unicode = cp1252_80_9F[c & 0x1F];
 			} else {
 				unicode = c; /* assume latin-1 */
 			}

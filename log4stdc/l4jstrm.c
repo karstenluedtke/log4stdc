@@ -8,6 +8,7 @@
 
 #include "compat.h"
 #include "logobjs.h"
+#include "bareftc/utf8.h"
 
 static int init_log4j_stream_layout(void *, size_t, bfc_mempool_t );
 static int init_log4j2_stream_layout(void *, size_t, bfc_mempool_t );
@@ -399,14 +400,53 @@ write_loggingevent_prolog(l4sc_layout_ptr_t layout,char *buf,const char *limit)
 static int
 write_string_object(l4sc_layout_ptr_t layout, char *buf, const char *limit,
 						const char *s, size_t len) {
-	char *dp = buf;
+	size_t i;
+	char *lenp, *dp = buf;
+	static const unsigned short cp1252_80_9F[] = {
+	    0x20AC, 0x0081, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+	    0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0x008D, 0x017D, 0x008F,
+	    0x0090, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+	    0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0x009D, 0x017E, 0x0178 };
 
 	layout->u.jstrm.object_handle++;
 
 	PUTNEXTBYTE(dp, TC_STRING, limit);
-	PUTNEXTSHORT(dp, len, limit);
-	PUTNEXTSTRING(dp, s, len, limit);
 
+	lenp = dp;
+	PUTNEXTSHORT(dp, len, limit);
+
+	for (i = 0; i < len; i++) {
+		unsigned char c = (unsigned char) s[i];
+		if (c & 0x80) {
+			unsigned long unicode;
+			unsigned char c1 = (unsigned char) s[i+1];
+			if ((c >= 0xC0) && (c1 >= 0x80) && (c1 < 0xC0)) {
+				const char *uniptr = s + i;
+				const char *unilim = s + len;
+				BFC_GET_UTF8(unicode, uniptr, unilim);
+				i += uniptr - &s[i] - 1;
+			} else if (c < 0xA0) {
+				unicode = cp1252_80_9F[c & 0x1F];
+			} else {
+				unicode = c; /* assume latin-1 */
+			}
+			if (unicode < 0x10000uL) {
+				BFC_PUT_UTF8(dp, limit, unicode);
+			} else { /* special java encoding */
+				unsigned short wbuf[4];
+				unsigned short *wp = wbuf;
+				BFC_PUT_UTF16(wp, wbuf+4, unicode);
+				BFC_PUT_UTF8(dp, limit, wbuf[0]);
+				BFC_PUT_UTF8(dp, limit, wbuf[1]);
+			}
+		} else {
+			PUTNEXTBYTE(dp, c, limit);
+		}
+	}
+	if (dp > lenp + 2 + len) {
+		size_t utflen = dp - lenp - 2;
+		PUTNEXTSHORT(lenp, utflen, limit);
+	}
 	return (dp - buf);
 }
 

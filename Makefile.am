@@ -118,6 +118,12 @@ tests_format_currtime_LDADD = liblog4stdc.a
 tests_format_currtime_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/format/currtime
 
+check_PROGRAMS += tests/format/l4j2strm
+tests_format_l4j2strm_SOURCES = tests/format/l4j2strm.c
+tests_format_l4j2strm_LDADD = liblog4stdc.a
+tests_format_l4j2strm_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/format/l4j2strm
+
 check_PROGRAMS += tests/appender/l4jsock
 tests_appender_l4jsock_SOURCES = tests/appender/l4jsock.c
 tests_appender_l4jsock_LDADD = liblog4stdc.a

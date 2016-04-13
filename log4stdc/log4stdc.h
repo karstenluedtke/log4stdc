@@ -20,6 +20,10 @@
 extern "C" {
 #endif
 
+/** @addtogroup log4stdc_api */
+/** @{ */
+
+/** opaque logger type */
 struct l4sc_logger;
 typedef struct l4sc_logger *l4sc_logger_ptr_t;
 typedef const struct l4sc_logger *l4sc_logger_cptr_t;
@@ -178,6 +182,8 @@ int l4sc_to_level(const char *value, int vallen, int defaultlevel);
  l4sc_logprintf(logger,TRACE_LEVEL,__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__)
 
 #endif /* __STDC__ */
+
+/** @} */
 
 #ifdef __cplusplus
 }	/* C++ */

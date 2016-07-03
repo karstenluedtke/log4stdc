@@ -23,21 +23,28 @@ extern "C" {
 /** @addtogroup log4stdc_api */
 /** @{ */
 
-/** opaque logger type */
 struct l4sc_logger;
+/** @brief  opaque logger type */
 typedef struct l4sc_logger *l4sc_logger_ptr_t;
+/** @brief  immutable opaque logger type */
 typedef const struct l4sc_logger *l4sc_logger_cptr_t;
 
 struct l4sc_appender;
+/** @brief  opaque appender type */
 typedef struct l4sc_appender *l4sc_appender_ptr_t;
+/** @brief  immutable opaque appender type */
 typedef const struct l4sc_appender *l4sc_appender_cptr_t;
 
 struct l4sc_layout;
+/** @brief  opaque layout type */
 typedef struct l4sc_layout *l4sc_layout_ptr_t;
+/** @brief  immutable opaque layout type */
 typedef const struct l4sc_layout *l4sc_layout_cptr_t;
 
 struct l4sc_configurator;
+/** @brief  opaque configurator type */
 typedef struct l4sc_configurator *l4sc_configurator_ptr_t;
+/** @brief  immutable opaque configurator type */
 typedef const struct l4sc_configurator *l4sc_configurator_cptr_t;
 
 struct l4sc_object_class;
@@ -45,30 +52,88 @@ struct l4sc_layout_class;
 struct l4sc_appender_class;
 struct l4sc_configurator_class;
 
-#define OFF_LEVEL	 60000u
-#define FATAL_LEVEL	 50000u
-#define ERROR_LEVEL	 40000u
-#define INHERIT_LEVEL	 33010u
-#define WARN_LEVEL	 30000u
-#define INFO_LEVEL	 20000u
-#define DEBUG_LEVEL	 10000u
-#define TRACE_LEVEL	  5000u
-#define ALL_LEVEL	     0
+#define OFF_LEVEL	 60000u		/**< No log level is higher than this */
+#define FATAL_LEVEL	 50000u		/**< Numeric value of FATAL log level */
+#define ERROR_LEVEL	 40000u		/**< Numeric value of ERROR log level */
+#define INHERIT_LEVEL	 33010u		/**< Special value used internally */
+#define WARN_LEVEL	 30000u		/**< Numeric value of WARN log level  */
+#define INFO_LEVEL	 20000u		/**< Numeric value of INFO log level  */
+#define DEBUG_LEVEL	 10000u		/**< Numeric value of DEBUG log level */
+#define TRACE_LEVEL	  5000u		/**< Numeric value of TRACE log level */
+#define ALL_LEVEL	     0		/**< All log levels are higher */
 
+/** @brief  Test if given log level is at least FATAL level */
 #define IS_AT_LEAST_FATAL_LEVEL(lvl)	((unsigned)(lvl) >= FATAL_LEVEL)
+
+/** @brief  Test if given log level is at least ERROR level */
 #define IS_AT_LEAST_ERROR_LEVEL(lvl)	((unsigned)(lvl) >= ERROR_LEVEL)
+
+/** @brief  Test if given log level is at least WARN level */
 #define IS_AT_LEAST_WARN_LEVEL(lvl)	((unsigned)(lvl) >= WARN_LEVEL)
+
+/** @brief  Test if given log level is at least INFO level */
 #define IS_AT_LEAST_INFO_LEVEL(lvl)	((unsigned)(lvl) >= INFO_LEVEL)
+
+/** @brief  Test if given log level is at least DEBUG level */
 #define IS_AT_LEAST_DEBUG_LEVEL(lvl)	((unsigned)(lvl) >= DEBUG_LEVEL)
+
+/** @brief  Test if given log level is at least TRACE level */
 #define IS_AT_LEAST_TRACE_LEVEL(lvl)	((unsigned)(lvl) >= TRACE_LEVEL)
+
+/** @brief  Test if given log level is at least threshold */
 #define IS_LEVEL_ENABLED(lvl,threshold)	((unsigned)(lvl) >= (unsigned)(threshold))
 
+/**
+ * @brief  Register additional classes (usually appender classes)
+ *         which may be referenced in configuration files.
+ *
+ * The configuration files (e.g. "log4j.xml") contain class names 
+ * for the appenders.
+ * The most basic classes like ConsoleAppender, FileAppender, and
+ * RollingFileAppender are always available, but classes not used that
+ * frequently must be registered before reading the configuration.
+ *
+ * It is safe to call this function multiple times for the same class.
+ *
+ * @param[in]   cls   Class to be registered.
+ *
+ * @return      0 if the class was already registered,
+ *              1 if the class was registered now, or negative on error.
+ */
 int l4sc_register_extra_class(const struct l4sc_object_class *cls);
 
+/**
+ * @brief  Configure log4stdc from a file using the given configurator class.
+ *
+ * @param[in]  configurator  One of the configurator classes
+ *                           l4sc_xml_configurator_class or
+ *                           l4sc_property_configurator_class.
+ *
+ * @param[in]  path          The file name (including its path).
+ *
+ * @param[in]  ...           Appender classes possibly referenced by the file.
+ *
+ * @return     0 on success, or negative on error.
+ */
 int l4sc_configure_from_file(
 	const struct l4sc_configurator_class *configurator,
 	const char *path, ...);
 
+/**
+ * @brief  Configure log4stdc from a string using the given configurator class.
+ *
+ * @param[in]  configurator  One of the configurator classes
+ *                           l4sc_xml_configurator_class or
+ *                           l4sc_property_configurator_class.
+ *
+ * @param[in]  buf           Pointer to the string.
+ *
+ * @param[in]  len           Length of the string, or 0.
+ *
+ * @param[in]  ...           Appender classes possibly referenced by the string.
+ *
+ * @return     0 on success, or negative on error.
+ */
 int l4sc_configure_from_string(
 	const struct l4sc_configurator_class *configurator,
 	const char *buf, size_t len, ...);

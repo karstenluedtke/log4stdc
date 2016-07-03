@@ -40,7 +40,10 @@ struct l4sc_layout;
 typedef struct l4sc_layout *l4sc_layout_ptr_t;
 /** @brief  immutable opaque layout type */
 typedef const struct l4sc_layout *l4sc_layout_cptr_t;
+/** @} */
 
+/** @addtogroup log4stdc_advanced */
+/** @{ */
 struct l4sc_configurator;
 /** @brief  opaque configurator type */
 typedef struct l4sc_configurator *l4sc_configurator_ptr_t;
@@ -156,23 +159,62 @@ extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
 	&l4sc_json_stream_layout_class, \
 	&l4sc_xml_stream_layout_class
 #endif
+/** @} */
 
+/** @addtogroup log4stdc_api */
+/** @{ */
+/**
+ * @brief  Configure log4stdc from an xml file.
+ *
+ * @param[in]  path          Path to the file (zero-terminated).
+ *
+ * @return     0 on success, or negative on error.
+ */
 #define l4sc_configure_from_xml_file(path) \
 	l4sc_configure_from_file(&l4sc_xml_configurator_class, \
 				 path, L4SC_EXTRA_CLASSES, NULL)
 
+/**
+ * @brief  Configure log4stdc from an xml string.
+ *
+ * @param[in]  buf           Pointer to the string.
+ *
+ * @param[in]  len           Length of the string, or 0.
+ *
+ * @return     0 on success, or negative on error.
+ */
 #define l4sc_configure_from_xml_string(buf,len) \
 	l4sc_configure_from_string(&l4sc_xml_configurator_class, \
 				   buf, len, L4SC_EXTRA_CLASSES, NULL)
 
+/**
+ * @brief  Configure log4stdc from a property file.
+ *
+ * @param[in]  path          Path to the file (zero-terminated).
+ *
+ * @return     0 on success, or negative on error.
+ */
 #define l4sc_configure_from_property_file(path) \
 	l4sc_configure_from_file(&l4sc_property_configurator_class, \
 				 path, L4SC_EXTRA_CLASSES, NULL)
 
+/**
+ * @brief  Configure log4stdc from a string containing properties.
+ *
+ * @param[in]  buf           Pointer to the string.
+ *
+ * @param[in]  len           Length of the string, or 0.
+ *
+ * @return     0 on success, or negative on error.
+ */
 #define l4sc_configure_from_property_string(buf,len) \
 	l4sc_configure_from_string(&l4sc_property_configurator_class, \
 				   buf, len, L4SC_EXTRA_CLASSES, NULL)
 
+/** @} */
+
+/** @addtogroup log4stdc_advanced */
+/** @{ */
 
 int l4sc_is_configured(void);
 void l4sc_set_configured(int newval);
@@ -185,7 +227,10 @@ int l4sc_insert_custom_logger(const char *name, void *cbarg,
 	void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger,
 		       int level, const char *msg, size_t msglen,
 		       const char *file, int line, const char *func));
+/** @} */
 
+/** @addtogroup log4stdc_api */
+/** @{ */
 l4sc_logger_ptr_t l4sc_get_root_logger(void);
 l4sc_logger_ptr_t l4sc_get_logger(const char *name, int namelen);
 

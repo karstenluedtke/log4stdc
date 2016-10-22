@@ -24,7 +24,7 @@ struct tm *_localtime64(const __time64_t *);
 static int init_patternlayout(void *, size_t, bfc_mempool_t );
 static size_t get_layout_size(l4sc_layout_cptr_t obj);
 static unsigned get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen);
-static int  is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other);
+static int  compare_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other);
 static size_t get_layout_length(l4sc_layout_cptr_t obj);
 static int  layout_tostring(l4sc_layout_cptr_t obj,
 			    char *buf, size_t bufsize, const char *fmt);
@@ -63,8 +63,8 @@ const struct l4sc_layout_class l4sc_patternlayout_class = {
 	/* .destroy 	*/ NULL, /* inherit */
 	/* .clone 	*/ (void *) l4sc_default_clone_object,
 	/* .clonesize 	*/ get_layout_size,
+	/* .compare 	*/ compare_layout,
 	/* .hashcode 	*/ get_layout_hashcode,
-	/* .equals 	*/ is_equal_layout,
 	/* .length 	*/ get_layout_length,
 	/* .tostring 	*/ layout_tostring,
 	/* .dump 	*/ NULL, /* inherit */
@@ -114,14 +114,14 @@ get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen)
 }
 
 static int
-is_equal_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other)
+compare_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other)
 {
 	if (other == obj) {
-		return (1);
+		return (0);
 	} else if (BFC_CLASS(other) == BFC_CLASS(obj)) {
-		return (strcmp(other->u.pattern, obj->u.pattern) == 0);
+		return (strcmp(other->u.pattern, obj->u.pattern));
 	}
-	return (0);
+	return (1);
 }
 
 static size_t

@@ -43,8 +43,8 @@ const struct l4sc_layout_class l4sc_json_stream_layout_class = {
 	/* .destroy 	*/ NULL, /* inherit */
 	/* .clone 	*/ (void *) l4sc_default_clone_object,
 	/* .clonesize 	*/ get_layout_size,
+	/* .compare 	*/ NULL, /* inherit */
 	/* .hashcode 	*/ NULL, /* inherit */
-	/* .equals 	*/ NULL, /* inherit */
 	/* .length 	*/ NULL, /* inherit */
 	/* .tostring 	*/ NULL, /* inherit */
 	/* .dump 	*/ NULL, /* inherit */

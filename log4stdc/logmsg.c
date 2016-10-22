@@ -30,7 +30,7 @@
 static int init_logmessage(void *, size_t, bfc_mempool_t );
 static size_t get_logmessage_size(l4sc_logmessage_cptr_t obj);
 static unsigned get_logmessage_hashcode(l4sc_logmessage_cptr_t obj,int hashlen);
-static int  is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other);
+static int  compare_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other);
 static size_t get_logmessage_length(l4sc_logmessage_cptr_t obj);
 static int  logmessage_tostring(l4sc_logmessage_cptr_t obj,
 				char *buf, size_t bufsize, const char *fmt);
@@ -47,8 +47,8 @@ const struct l4sc_logmessage_class l4sc_logmessage_class = {
 	/* .destroy 	*/ NULL, /* inherit */
 	/* .clone 	*/ (void *) l4sc_default_clone_object,
 	/* .clonesize 	*/ get_logmessage_size,
+	/* .compare 	*/ compare_logmessage,
 	/* .hashcode 	*/ get_logmessage_hashcode,
-	/* .equals 	*/ is_equal_logmessage,
 	/* .length 	*/ get_logmessage_length,
 	/* .tostring 	*/ logmessage_tostring,
 	/* .dump 	*/ NULL  /* inherit */
@@ -86,15 +86,15 @@ get_logmessage_hashcode(l4sc_logmessage_cptr_t obj, int hashlen)
 }
 
 static int
-is_equal_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other)
+compare_logmessage(l4sc_logmessage_cptr_t obj, l4sc_logmessage_cptr_t other)
 {
 	if (other == obj) {
-		return (1);
+		return (0);
 	} else if ((BFC_CLASS(other) == BFC_CLASS(obj))
 		&& (other->msglen  == obj->msglen)) {
-		return (memcmp(other->msg, obj->msg, obj->msglen) == 0);
+		return (memcmp(other->msg, obj->msg, obj->msglen));
 	}
-	return (0);
+	return (1);
 }
 
 static size_t

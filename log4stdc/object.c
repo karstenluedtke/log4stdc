@@ -29,8 +29,8 @@ const struct l4sc_object_class l4sc_object_class = {
 	/* .destroy 	*/ l4sc_destroy_base_object,
 	/* .clone 	*/ l4sc_default_clone_object,
 	/* .clonesize 	*/ l4sc_default_get_object_size,
+	/* .compare 	*/ l4sc_default_compare_object,
 	/* .hashcode 	*/ l4sc_default_get_object_hashcode,
-	/* .equals 	*/ l4sc_default_is_equal_object,
 	/* .length 	*/ l4sc_default_get_object_length,
 	/* .tostring 	*/ l4sc_default_object_tostring,
 	/* .dump 	*/ l4sc_default_dump_object,
@@ -143,9 +143,9 @@ l4sc_default_get_object_hashcode(l4sc_objcptr_t obj, int hashlen)
 }
 
 int
-l4sc_default_is_equal_object(l4sc_objcptr_t obj, l4sc_objcptr_t other)
+l4sc_default_compare_object(l4sc_objcptr_t obj, l4sc_objcptr_t other)
 {
-	return (obj == other);
+	return (obj != other);
 }
 
 size_t

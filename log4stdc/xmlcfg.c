@@ -65,8 +65,8 @@ const struct l4sc_configurator_class l4sc_xml_configurator_class = {
 	/* .destroy 	*/ NULL, /* inherit */
 	/* .clone 	*/ NULL, /* inherit */
 	/* .clonesize 	*/ get_xml_configurator_size,
+	/* .compare 	*/ NULL, /* inherit */
 	/* .hashcode 	*/ NULL, /* inherit */
-	/* .equals 	*/ NULL, /* inherit */
 	/* .length 	*/ NULL, /* inherit */
 	/* .tostring 	*/ NULL, /* inherit */
 	/* .dump 	*/ NULL, /* inherit */

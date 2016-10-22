@@ -77,8 +77,8 @@ struct bfc_basic_object {
 	void	      (*destroy)  (objptrT);				     \
 	int	      (*clone)    (cobjptrT, void*, size_t, bfc_mempool_t);  \
 	size_t	      (*clonesize)(cobjptrT);				     \
+	int	      (*compare)  (cobjptrT, cobjptrT);			     \
 	unsigned      (*hashcode) (cobjptrT, int);			     \
-	int	      (*equals)   (cobjptrT, cobjptrT);			     \
 	size_t	      (*length)   (cobjptrT);				     \
 	int	      (*tostring) (cobjptrT, char *, size_t, const char *);  \
 	void	      (*dump)     (cobjptrT, int, struct l4sc_logger *);

@@ -5,10 +5,6 @@ AM_CPPFLAGS = -Ilog4stdc
 lib_LIBRARIES = liblog4stdc.a
 include_HEADERS = log4stdc/log4stdc.h
 
-noinst_PROGRAMS = testlink
-
-check_PROGRAMS =
-
 liblog4stdc_a_SOURCES = log4stdc/log4stdc.h
 liblog4stdc_a_SOURCES+= log4stdc/logobjs.h
 liblog4stdc_a_SOURCES+= log4stdc/compat.h
@@ -47,11 +43,11 @@ liblog4stdc_a_SOURCES+= log4stdc/jsonstrm.c
 liblog4stdc_a_SOURCES+= log4stdc/l4jstrm.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlstrm.c
 
-testlink_SOURCES = testlink.cpp
-testlink_LDADD = liblog4stdc.a
-testlink_DEPENDENCIES = liblog4stdc.a
-
-TESTS = testlink
+noinst_PROGRAMS = examples/redirect
+examples_redirect_SOURCES = examples/redirect.c
+examples_redirect_LDADD = liblog4stdc.a
+examples_redirect_DEPENDENCIES = liblog4stdc.a
+TESTS = examples/redirect
 
 if BFCLOG4CXX
 lib_LIBRARIES += liblog4cxx2stdc.a
@@ -78,17 +74,14 @@ liblog4cxx2stdc_a_SOURCES+= log4cxx/mutex.cpp
 liblog4cxx2stdc_a_SOURCES+= log4cxx/properties.cpp
 liblog4cxx2stdc_a_SOURCES+= log4cxx/loader.cpp
 
-testlink_LDADD += liblog4cxx2stdc.a
-testlink_DEPENDENCIES += liblog4cxx2stdc.a
+noinst_PROGRAMS += testlink
+testlink_SOURCES = testlink.cpp
+testlink_LDADD = liblog4stdc.a liblog4cxx2stdc.a
+testlink_DEPENDENCIES = liblog4stdc.a liblog4cxx2stdc.a
+TESTS += testlink
 endif BFCLOG4CXX
 
-noinst_PROGRAMS += examples/redirect
-examples_redirect_SOURCES = examples/redirect.c
-examples_redirect_LDADD = liblog4stdc.a
-examples_redirect_DEPENDENCIES = liblog4stdc.a
-TESTS += examples/redirect
-
-check_PROGRAMS += tests/xmlcfg/level
+check_PROGRAMS = tests/xmlcfg/level
 tests_xmlcfg_level_SOURCES = tests/xmlcfg/level.c
 tests_xmlcfg_level_LDADD = liblog4stdc.a
 tests_xmlcfg_level_DEPENDENCIES = liblog4stdc.a

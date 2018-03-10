@@ -1,0 +1,12 @@
+---
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+BasedOnStyle: LLVM
+IndentWidth: 4
+DerivePointerAlignment: true
+SortIncludes: false
+IndentCaseLabels: false
+---
+Language: Cpp
+BreakBeforeBraces: Linux
+AlwaysBreakAfterReturnType: TopLevel
+SpaceAfterCStyleCast: false

@@ -11,12 +11,11 @@
 /* alloca.h */
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
-#include <malloc.h>  /* for alloca */
+#include <malloc.h> /* for alloca */
 
 #elif defined(HAVE_ALLOCA_H)
 #include <alloca.h>
 #endif
-
 
 /* strncasecmp */
 
@@ -24,18 +23,18 @@
 #define strncasecmp strnicmp
 #endif
 
-
 /* snprintf, vsnprintf */
 
-int l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
-int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
+int
+l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
+int
+l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
-#define snprintf  l4sc_snprintf
+#define snprintf l4sc_snprintf
 
 #if !defined(__STDC__) && !defined(_WIN32) && !defined(HAVE_VSNPRINTF)
 #define vsnprintf l4sc_vsnprintf
 #endif
-
 
 /* time.h */
 
@@ -44,20 +43,17 @@ int l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 #include <sys/time.h>
 #endif
 
-
 /* unistd.h */
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
-
 /* wchar.h */
 
 #if defined(__STDC__) || defined(HAVE_WCHAR_H)
 #include <wchar.h>
 #endif
-
 
 /* errno.h */
 

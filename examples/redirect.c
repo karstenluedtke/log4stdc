@@ -9,29 +9,27 @@
 static int
 enatest(void *user_arg, l4sc_logger_cptr_t logger, int level)
 {
-	return (level >= INFO_LEVEL);
+    return (level >= INFO_LEVEL);
 }
 
 static void
-logfunc(void *user_arg, l4sc_logger_ptr_t logger,
-	int level, const char *msg, size_t msglen,
-	const char *file, int line, const char *func)
+logfunc(void *user_arg, l4sc_logger_ptr_t logger, int level, const char *msg,
+        size_t msglen, const char *file, int line, const char *func)
 {
-	printf("%s: %.*s [%s:%d]\n", func, (int) msglen, msg, file, line);
+    printf("%s: %.*s [%s:%d]\n", func, (int)msglen, msg, file, line);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int some_state;
-	l4sc_logger_ptr_t logger;
+    int some_state;
+    l4sc_logger_ptr_t logger;
 
-	l4sc_insert_custom_logger("barefootc", &some_state, enatest, logfunc);
+    l4sc_insert_custom_logger("barefootc", &some_state, enatest, logfunc);
 
-	logger = l4sc_get_logger("barefootc.some.subclass", 0);
-	l4sc_logprintf(logger, INFO_LEVEL, __FILE__, __LINE__, "main",
-			"this to be output through custom logfunc");
+    logger = l4sc_get_logger("barefootc.some.subclass", 0);
+    l4sc_logprintf(logger, INFO_LEVEL, __FILE__, __LINE__, "main",
+                   "this to be output through custom logfunc");
 
-	exit(0);
+    exit(0);
 }
-

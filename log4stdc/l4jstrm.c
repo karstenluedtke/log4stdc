@@ -198,14 +198,14 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 #define SC_EXTERNALIZABLE 0x04
 #define SC_ENUM 0x10
 
-#define PUTNEXTBYTE(ptr, c, limit)                                             \
+#define PUTNEXTBYTE(ptr,c,limit)                                             \
     if ((ptr) < (limit)) {                                                     \
         *((ptr)++) = (c);                                                      \
     } else {                                                                   \
         (ptr)++;                                                               \
     }
 
-#define PUTNEXTINT(ptr, v, limit)                                              \
+#define PUTNEXTINT(ptr,v,limit)                                              \
     if ((ptr) + 4 < (limit)) {                                                 \
         *((ptr)++) = (char)((v) >> 24);                                        \
         *((ptr)++) = (char)((v) >> 16);                                        \
@@ -215,7 +215,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
         (ptr) += 4;                                                            \
     }
 
-#define PUTNEXTSHORT(ptr, v, limit)                                            \
+#define PUTNEXTSHORT(ptr,v,limit)                                            \
     if ((ptr) + 2 < (limit)) {                                                 \
         *((ptr)++) = (char)((v) >> 8);                                         \
         *((ptr)++) = (char)((v)&255);                                          \
@@ -223,7 +223,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
         (ptr) += 2;                                                            \
     }
 
-#define PUTNEXTLONG(ptr, v, limit)                                             \
+#define PUTNEXTLONG(ptr,v,limit)                                             \
     if ((ptr) + 8 < (limit)) {                                                 \
         *((ptr)++) = (char)((v) >> 56);                                        \
         *((ptr)++) = (char)((v) >> 48);                                        \
@@ -237,7 +237,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
         (ptr) += 8;                                                            \
     }
 
-#define PUTNEXTSTRING(ptr, s, len, limit)                                      \
+#define PUTNEXTSTRING(ptr,s,len,limit)                                      \
     if ((ptr) + (len) < (limit)) {                                             \
         memcpy(ptr, s, len);                                                   \
         (ptr) += (len);                                                        \
@@ -249,7 +249,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
     }
 
 /* This should work up to the year 2105 (for 32-bit unsigned long) */
-#define PUTMSGTIMESTAMP(ptr, msg, limit)                                       \
+#define PUTMSGTIMESTAMP(ptr,msg,limit)                                       \
     if ((ptr) + 8 < limit) { /* 84375 = 24*60*60*1000 >> 10 */                 \
         unsigned long hi = 84375uL * msg->time.tv_day;                         \
         unsigned long lo = 1000 * msg->time.tv_sec + msg->time.tv_usec / 1000; \

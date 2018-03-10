@@ -84,7 +84,7 @@ struct l4sc_configurator_class;
 #define IS_AT_LEAST_TRACE_LEVEL(lvl) ((unsigned)(lvl) >= TRACE_LEVEL)
 
 /** @brief  Test if given log level is at least threshold */
-#define IS_LEVEL_ENABLED(lvl, threshold)                                       \
+#define IS_LEVEL_ENABLED(lvl,threshold)                                       \
     ((unsigned)(lvl) >= (unsigned)(threshold))
 
 /**
@@ -183,7 +183,7 @@ extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
  *
  * @return     0 on success, or negative on error.
  */
-#define l4sc_configure_from_xml_string(buf, len)                               \
+#define l4sc_configure_from_xml_string(buf,len)                               \
     l4sc_configure_from_string(&l4sc_xml_configurator_class, buf, len,         \
                                L4SC_EXTRA_CLASSES, NULL)
 
@@ -207,7 +207,7 @@ extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
  *
  * @return     0 on success, or negative on error.
  */
-#define l4sc_configure_from_property_string(buf, len)                          \
+#define l4sc_configure_from_property_string(buf,len)                          \
     l4sc_configure_from_string(&l4sc_property_configurator_class, buf, len,    \
                                L4SC_EXTRA_CLASSES, NULL)
 

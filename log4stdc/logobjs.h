@@ -26,7 +26,7 @@ struct l4sc_object;
 typedef struct l4sc_object *l4sc_objptr_t;
 typedef const struct l4sc_object *l4sc_objcptr_t;
 
-#define LOGOBJ_METHODS(objptrT, objcptrT)                                      \
+#define LOGOBJ_METHODS(objptrT,objcptrT)                                      \
     void (*set_name)(objptrT obj, const char *name, int len);                  \
     int (*set_opt)(objptrT obj, const char *name, size_t namelen,              \
                    const char *value, size_t vallen);                          \

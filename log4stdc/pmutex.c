@@ -71,12 +71,12 @@ const struct bfc_mutex_class l4sc_posix_mutex_class = {
     /* .unlock	*/ mutex_unlock};
 
 #ifndef HAVE_PTHREAD_MUTEX_INIT
-#define pthread_mutex_init(m, a) assert(!"pthread")
+#define pthread_mutex_init(m,a) assert(!"pthread")
 #define pthread_mutex_destroy(m)
 #define pthread_mutex_lock(m)
 #define pthread_mutex_unlock(m)
 #define pthread_mutexattr_init(a)
-#define pthread_mutexattr_settype(a, v)
+#define pthread_mutexattr_settype(a,v)
 #define pthread_mutexattr_t long
 #endif
 

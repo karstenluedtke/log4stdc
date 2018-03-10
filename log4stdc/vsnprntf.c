@@ -67,7 +67,7 @@ typedef unsigned short wchar_t;
 #define CONV_SPEC_SPECIFIERS "duoxXcspfFeEgGaAn%"
 #define CONV_SPEC_DOUBLE_SPECIFIERS "fFeEgGaA"
 
-#define PUTNEXTCHAR(ptr, c, limit)                                             \
+#define PUTNEXTCHAR(ptr,c,limit)                                             \
     if ((ptr) < (limit)) {                                                     \
         *((ptr)++) = (c);                                                      \
     } else {                                                                   \
@@ -80,7 +80,7 @@ put_string(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-#define PUT_LEFT_FILL(ptr, width, need, flags, limit, c)                       \
+#define PUT_LEFT_FILL(ptr,width,need,flags,limit,c)                       \
     if ((width > need) && !((flags)&CONV_FLAG_LEFT_ALIGN)) {                   \
         do {                                                                   \
             PUTNEXTCHAR(ptr, c, limit);                                        \
@@ -88,13 +88,13 @@ put_string(char *buf, int width, int precision, int flags, const char *limit,
         } while (width > need);                                                \
     }
 
-#define PUT_RIGHT_FILL(ptr, width, need, flags, limit, c)                      \
+#define PUT_RIGHT_FILL(ptr,width,need,flags,limit,c)                      \
     while (width > 0) {                                                        \
         PUTNEXTCHAR(ptr, c, limit);                                            \
         width--;                                                               \
     }
 
-#define PUT_STRING(ptr, width, precision, flags, limit, s)                     \
+#define PUT_STRING(ptr,width,precision,flags,limit,s)                     \
     do {                                                                       \
         int _w = width;                                                        \
         int _n = ((precision) >= 0) ? (precision) : strlen(s);                 \
@@ -121,7 +121,7 @@ put_wstring(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-#define PUT_WSTRING(ptr, width, precision, flags, limit, s)                    \
+#define PUT_WSTRING(ptr,width,precision,flags,limit,s)                    \
     do {                                                                       \
         int _i, _n = 0, _w = width;                                            \
         while (s[_n]) {                                                        \
@@ -149,7 +149,7 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 #define POSITIVE_SIGN_BYTES(flags)                                             \
     (((flags) & (CONV_FLAG_INCLUDE_SIGN | CONV_FLAG_SPACE_SIGN)) ? 1 : 0)
 
-#define UNSIGNED_MUL(T, result, overflow, factor)                              \
+#define UNSIGNED_MUL(T,result,overflow,factor)                              \
     do {                                                                       \
         const T _boundary = ((T)-1) / factor;                                  \
         if (result <= _boundary) {                                             \
@@ -159,7 +159,7 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
         }                                                                      \
     } while (0 /*just once */)
 
-#define UNSIGNED_EXP(T, result, overflow, base, e)                             \
+#define UNSIGNED_EXP(T,result,overflow,base,e)                             \
     do {                                                                       \
         int _pending = e;                                                      \
         const T _boundary = ((T)-1) / base;                                    \
@@ -173,7 +173,7 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
         }                                                                      \
     } while (0 /*just once */)
 
-#define PUT_PREFIX_AND_SIGN(ptr, width, need, flags, limit, prefix, pfxlen)    \
+#define PUT_PREFIX_AND_SIGN(ptr,width,need,flags,limit,prefix,pfxlen)    \
     do {                                                                       \
         int _k;                                                                \
         for (_k = 0; _k < pfxlen; _k++) {                                      \
@@ -189,8 +189,7 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
         }                                                                      \
     } while (0 /*just once */)
 
-#define PUT_UNSIGNED(ptr, width, prec, flags, limit, prefix, pfxlen, T, base,  \
-                     val)                                                      \
+#define PUT_UNSIGNED(ptr,width,prec,flags,limit,prefix,pfxlen,T,base,val)      \
     do {                                                                       \
         T _v = val;                                                            \
         T _divisor = base;                                                     \
@@ -236,11 +235,11 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 
 #if defined(INT_MAX) && defined(LONG_MAX)
 #if (INT_MAX == LONG_MAX)
-#define put_ulong(b, w, prc, flg, lim, pfx, pfl, v)                            \
+#define put_ulong(b,w,prc,flg,lim,pfx,pfl,v)                            \
     put_unsigned(b, w, prc, flg, lim, pfx, pfl, (unsigned)(v))
-#define put_lhex(b, w, prc, flg, lim, pfx, pfl, v)                             \
+#define put_lhex(b,w,prc,flg,lim,pfx,pfl,v)                             \
     put_hex(b, w, prc, flg, lim, pfx, pfl, (unsigned)(v))
-#define put_loctal(b, w, prc, flg, lim, pfx, pfl, v)                           \
+#define put_loctal(b,w,prc,flg,lim,pfx,pfl,v)                           \
     put_octal(b, w, prc, flg, lim, pfx, pfl, (unsigned)(v))
 #endif
 #endif
@@ -303,7 +302,7 @@ put_hex(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-#define PUT_SIGN_AND_PREFIX(ptr, width, need, flags, limit, prefix, pfxlen)    \
+#define PUT_SIGN_AND_PREFIX(ptr,width,need,flags,limit,prefix,pfxlen)    \
     do {                                                                       \
         int _k;                                                                \
         if ((flags)&CONV_FLAG_INCLUDE_SIGN) {                                  \
@@ -319,8 +318,7 @@ put_hex(char *buf, int width, int precision, int flags, const char *limit,
         }                                                                      \
     } while (0 /*just once */)
 
-#define PUT_HEX(ptr, width, prec, flags, limit, prefix, pfxlen, T, digbits,    \
-                val)                                                           \
+#define PUT_HEX(ptr,width,prec,flags,limit,prefix,pfxlen,T,digbits,val)        \
     do {                                                                       \
         T _v = val;                                                            \
         int _digits = 1;                                                       \

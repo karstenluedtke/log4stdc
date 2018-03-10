@@ -61,7 +61,7 @@ merge_path(char *buf, int bufsize, const char *dirpath, const char *relpath,
 
 #define is_open(appender) ((appender)->fu.fh != NULL)
 
-#define need_rollover(appender, len)                                           \
+#define need_rollover(appender,len)                                           \
     (((appender)->maxfilesize > 0) &&                                          \
      ((appender)->maxfilesize < (appender)->filesize + (len)))
 

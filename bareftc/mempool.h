@@ -113,7 +113,7 @@ struct mempool {
 #define bfc_mempool_mark(pool)	\
 	(*BFC_CLASS(pool)->mark)(pool,__FILE__,__LINE__,__FUNCTION__)
 
-#define bfc_mempool_reset(pool, mark)	\
+#define bfc_mempool_reset(pool,mark)	\
 	(*BFC_CLASS(pool)->reset)(pool, mark,__FILE__,__LINE__,__FUNCTION__)
 
 #define bfc_mempool_release(pool)		 bfc_decr_refcount(pool)

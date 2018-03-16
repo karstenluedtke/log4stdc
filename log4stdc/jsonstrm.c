@@ -49,9 +49,9 @@ const struct l4sc_layout_class l4sc_json_stream_layout_class = {
     /* .clonesize 	*/ get_layout_size,
     /* .compare 	*/ NULL, /* inherit */
     /* .hashcode 	*/ NULL, /* inherit */
-    /* .length 	*/ NULL, /* inherit */
+    /* .length 	*/ NULL,         /* inherit */
     /* .tostring 	*/ NULL, /* inherit */
-    /* .dump 	*/ NULL, /* inherit */
+    /* .dump 	*/ NULL,         /* inherit */
     /* .set_name	*/ set_layout_name,
     /* .set_opt	*/ set_layout_option,
     /* .get_opt	*/ get_layout_option,
@@ -96,8 +96,8 @@ static int
 set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
                   const char *value, size_t vallen)
 {
-    LOGINFO(("%s: %.*s=\"%.*s\"", __FUNCTION__, (int)namelen, name, (int)vallen,
-             value));
+    LOGINFO(("%s: %.*s=\"%.*s\"", __FUNCTION__, (int)namelen, name,
+             (int)vallen, value));
 
     if ((namelen == 5) && (strncasecmp(name, "class", 5) == 0)) {
         l4sc_set_layout_class_by_name(obj, value, vallen);

@@ -61,8 +61,8 @@ merge_path(char *buf, int bufsize, const char *dirpath, const char *relpath,
 
 #define is_open(appender) ((appender)->fu.fh != NULL)
 
-#define need_rollover(appender, len)                                           \
-    (((appender)->maxfilesize > 0) &&                                          \
+#define need_rollover(appender,len)                                          \
+    (((appender)->maxfilesize > 0) &&                                         \
      ((appender)->maxfilesize < (appender)->filesize + (len)))
 
 extern const struct l4sc_appender_class l4sc_sysout_appender_class;
@@ -152,8 +152,8 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 {
     static const char thisfunction[] = "set_appender_option";
 
-    LOGINFO(("%s: %.*s=\"%.*s\"", thisfunction, (int)namelen, name, (int)vallen,
-             value));
+    LOGINFO(("%s: %.*s=\"%.*s\"", thisfunction, (int)namelen, name,
+             (int)vallen, value));
 
     if ((namelen == 4) && (strncasecmp(name, "File", 4) == 0)) {
         int n = merge_path(obj->pathbuf, sizeof(obj->pathbuf),
@@ -166,7 +166,8 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
                 obj->parent_pool ? obj->parent_pool : get_default_mempool();
             char *p = mempool_alloc(pool, n + 20);
             if (p != NULL) {
-                merge_path(p, n + 20, initial_working_directory, value, vallen);
+                merge_path(p, n + 20, initial_working_directory, value,
+                           vallen);
                 obj->filename = p;
                 LOGINFO(("%s: File set to \"%s\" (malloc)", thisfunction,
                          obj->filename));
@@ -175,7 +176,8 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
                           (int)vallen, value));
             }
         }
-    } else if ((namelen == 11) && (strncasecmp(name, "MaxFileSize", 11) == 0)) {
+    } else if ((namelen == 11) &&
+               (strncasecmp(name, "MaxFileSize", 11) == 0)) {
         char *unit = NULL;
         unsigned long maxsize = strtoul(value, &unit, 10);
         if (unit != NULL) {
@@ -210,7 +212,8 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
             maxsize <<= 10; /* assume size in kB */
         }
         obj->maxfilesize = maxsize;
-        LOGINFO(("%s: MaxFileSize set to %lu", thisfunction, obj->maxfilesize));
+        LOGINFO(
+            ("%s: MaxFileSize set to %lu", thisfunction, obj->maxfilesize));
 
     } else if ((namelen == 14) &&
                (strncasecmp(name, "MaxBackupIndex", 14) == 0)) {
@@ -320,10 +323,10 @@ open_appender(l4sc_appender_ptr_t appender)
         wlen = MultiByteToWideChar(CP_UTF8, 0, appender->filename, clen, wbuf,
                                    clen + 1);
         wbuf[(wlen < clen) ? wlen : clen] = 0;
-        fh = CreateFileW(wbuf, FILE_APPEND_DATA,
-                         FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_ALWAYS,
-                         FILE_ATTRIBUTE_NORMAL /* FILE_FLAG_WRITE_THROUGH */,
-                         NULL);
+        fh = CreateFileW(
+            wbuf, FILE_APPEND_DATA, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL,
+            OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL /* FILE_FLAG_WRITE_THROUGH */,
+            NULL);
         if (fh != INVALID_HANDLE_VALUE) {
             DWORD sizehigh = 0;
             DWORD size = GetFileSize(fh, &sizehigh);

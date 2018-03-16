@@ -69,13 +69,13 @@ const struct l4sc_configurator_class l4sc_xml_configurator_class = {
     /* .incrrefc 	*/ NULL, /* inherit */
     /* .decrrefc 	*/ NULL, /* inherit */
     /* .destroy 	*/ NULL, /* inherit */
-    /* .clone 	*/ NULL, /* inherit */
+    /* .clone 	*/ NULL,         /* inherit */
     /* .clonesize 	*/ get_xml_configurator_size,
     /* .compare 	*/ NULL, /* inherit */
     /* .hashcode 	*/ NULL, /* inherit */
-    /* .length 	*/ NULL, /* inherit */
+    /* .length 	*/ NULL,         /* inherit */
     /* .tostring 	*/ NULL, /* inherit */
-    /* .dump 	*/ NULL, /* inherit */
+    /* .dump 	*/ NULL,         /* inherit */
     /* .set_name	*/ NULL,
     /* .set_opt	*/ NULL,
     /* .get_opt	*/ NULL,
@@ -181,8 +181,8 @@ on_start_tag(struct parsing_state *ps, const struct xml_tag *tag)
             l4sc_set_logger_appender(ps->current_logger, appender);
         }
     } else if (strncasecmp(name, "appender", 8) == 0) {
-        ps->current_appender = l4sc_get_appender(values.name, values.namelen,
-                                                 values.class, values.classlen);
+        ps->current_appender = l4sc_get_appender(
+            values.name, values.namelen, values.class, values.classlen);
         for (i = 0; i < nattrs; i++) {
             l4sc_set_object_option((l4sc_objptr_t)ps->current_appender,
                                    attrs[i].name, attrs[i].namelen,
@@ -190,7 +190,8 @@ on_start_tag(struct parsing_state *ps, const struct xml_tag *tag)
         }
     } else if (strncasecmp(name, "layout", 6) == 0) {
         if (ps->current_appender) {
-            ps->current_layout = l4sc_get_appender_layout(ps->current_appender);
+            ps->current_layout =
+                l4sc_get_appender_layout(ps->current_appender);
             for (i = 0; i < nattrs; i++) {
                 l4sc_set_object_option((l4sc_objptr_t)ps->current_layout,
                                        attrs[i].name, attrs[i].namelen,
@@ -424,7 +425,8 @@ xml_tag_get_attrs(const struct xml_tag *tag, struct xml_attr *attrs,
                 }
                 LOGDEBUG(("%s: pos %u, char %c, "
                           "assign %u, quote %u, endquote %u",
-                          thisfunction, pos, (char)c, assign, quote, endquote));
+                          thisfunction, pos, (char)c, assign, quote,
+                          endquote));
             }
         }
         if ((assign > start) && (quote > assign) && (endquote > quote)) {

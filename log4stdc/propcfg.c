@@ -30,13 +30,13 @@ const struct l4sc_configurator_class l4sc_property_configurator_class = {
     /* .incrrefc 	*/ NULL, /* inherit */
     /* .decrrefc 	*/ NULL, /* inherit */
     /* .destroy 	*/ NULL, /* inherit */
-    /* .clone 	*/ NULL, /* inherit */
+    /* .clone 	*/ NULL,         /* inherit */
     /* .clonesize 	*/ get_property_configurator_size,
     /* .compare 	*/ NULL, /* inherit */
     /* .hashcode 	*/ NULL, /* inherit */
-    /* .length 	*/ NULL, /* inherit */
+    /* .length 	*/ NULL,         /* inherit */
     /* .tostring 	*/ NULL, /* inherit */
-    /* .dump 	*/ NULL, /* inherit */
+    /* .dump 	*/ NULL,         /* inherit */
     /* .set_name	*/ NULL,
     /* .set_opt	*/ NULL,
     /* .get_opt	*/ NULL,
@@ -189,7 +189,8 @@ config_from_property_line(const char *buf, const char *limit, int loop)
                 } else if (loop == 0) {
                     LOGINFO(("%s: no appender %.*s", thisfunction, vallen, v));
                 } else {
-                    LOGERROR(("%s: no appender %.*s", thisfunction, vallen, v));
+                    LOGERROR(
+                        ("%s: no appender %.*s", thisfunction, vallen, v));
                 }
             }
             return (1);

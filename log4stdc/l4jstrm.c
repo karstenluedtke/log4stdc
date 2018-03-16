@@ -60,9 +60,9 @@ const struct l4sc_layout_class l4sc_log4j_stream_layout_class = {
     /* .clonesize 	*/ get_layout_size,
     /* .compare 	*/ NULL, /* inherit */
     /* .hashcode 	*/ NULL, /* inherit */
-    /* .length 	*/ NULL, /* inherit */
+    /* .length 	*/ NULL,         /* inherit */
     /* .tostring 	*/ NULL, /* inherit */
-    /* .dump 	*/ NULL, /* inherit */
+    /* .dump 	*/ NULL,         /* inherit */
     /* .set_name	*/ set_layout_name,
     /* .set_opt	*/ set_layout_option,
     /* .get_opt	*/ get_layout_option,
@@ -86,9 +86,9 @@ const struct l4sc_layout_class l4sc_log4j2_stream_layout_class = {
     /* .clonesize 	*/ get_layout_size,
     /* .compare 	*/ NULL, /* inherit */
     /* .hashcode 	*/ NULL, /* inherit */
-    /* .length 	*/ NULL, /* inherit */
+    /* .length 	*/ NULL,         /* inherit */
     /* .tostring 	*/ NULL, /* inherit */
-    /* .dump 	*/ NULL, /* inherit */
+    /* .dump 	*/ NULL,         /* inherit */
     /* .set_name	*/ set_layout_name,
     /* .set_opt	*/ set_layout_option,
     /* .get_opt	*/ get_layout_option,
@@ -144,8 +144,8 @@ static int
 set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
                   const char *value, size_t vallen)
 {
-    LOGINFO(("%s: %.*s=\"%.*s\"", __FUNCTION__, (int)namelen, name, (int)vallen,
-             value));
+    LOGINFO(("%s: %.*s=\"%.*s\"", __FUNCTION__, (int)namelen, name,
+             (int)vallen, value));
 
     if ((namelen == 5) && (strncasecmp(name, "class", 5) == 0)) {
         l4sc_set_layout_class_by_name(obj, value, vallen);
@@ -198,82 +198,83 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 #define SC_EXTERNALIZABLE 0x04
 #define SC_ENUM 0x10
 
-#define PUTNEXTBYTE(ptr, c, limit)                                             \
-    if ((ptr) < (limit)) {                                                     \
-        *((ptr)++) = (c);                                                      \
-    } else {                                                                   \
-        (ptr)++;                                                               \
+#define PUTNEXTBYTE(ptr,c,limit)                                            \
+    if ((ptr) < (limit)) {                                                    \
+        *((ptr)++) = (c);                                                     \
+    } else {                                                                  \
+        (ptr)++;                                                              \
     }
 
-#define PUTNEXTINT(ptr, v, limit)                                              \
-    if ((ptr) + 4 < (limit)) {                                                 \
-        *((ptr)++) = (char)((v) >> 24);                                        \
-        *((ptr)++) = (char)((v) >> 16);                                        \
-        *((ptr)++) = (char)((v) >> 8);                                         \
-        *((ptr)++) = (char)((v)&255);                                          \
-    } else {                                                                   \
-        (ptr) += 4;                                                            \
+#define PUTNEXTINT(ptr,v,limit)                                             \
+    if ((ptr) + 4 < (limit)) {                                                \
+        *((ptr)++) = (char)((v) >> 24);                                       \
+        *((ptr)++) = (char)((v) >> 16);                                       \
+        *((ptr)++) = (char)((v) >> 8);                                        \
+        *((ptr)++) = (char)((v)&255);                                         \
+    } else {                                                                  \
+        (ptr) += 4;                                                           \
     }
 
-#define PUTNEXTSHORT(ptr, v, limit)                                            \
-    if ((ptr) + 2 < (limit)) {                                                 \
-        *((ptr)++) = (char)((v) >> 8);                                         \
-        *((ptr)++) = (char)((v)&255);                                          \
-    } else {                                                                   \
-        (ptr) += 2;                                                            \
+#define PUTNEXTSHORT(ptr,v,limit)                                           \
+    if ((ptr) + 2 < (limit)) {                                                \
+        *((ptr)++) = (char)((v) >> 8);                                        \
+        *((ptr)++) = (char)((v)&255);                                         \
+    } else {                                                                  \
+        (ptr) += 2;                                                           \
     }
 
-#define PUTNEXTLONG(ptr, v, limit)                                             \
-    if ((ptr) + 8 < (limit)) {                                                 \
-        *((ptr)++) = (char)((v) >> 56);                                        \
-        *((ptr)++) = (char)((v) >> 48);                                        \
-        *((ptr)++) = (char)((v) >> 40);                                        \
-        *((ptr)++) = (char)((v) >> 32);                                        \
-        *((ptr)++) = (char)((v) >> 24);                                        \
-        *((ptr)++) = (char)((v) >> 16);                                        \
-        *((ptr)++) = (char)((v) >> 8);                                         \
-        *((ptr)++) = (char)((v)&255);                                          \
-    } else {                                                                   \
-        (ptr) += 8;                                                            \
+#define PUTNEXTLONG(ptr,v,limit)                                            \
+    if ((ptr) + 8 < (limit)) {                                                \
+        *((ptr)++) = (char)((v) >> 56);                                       \
+        *((ptr)++) = (char)((v) >> 48);                                       \
+        *((ptr)++) = (char)((v) >> 40);                                       \
+        *((ptr)++) = (char)((v) >> 32);                                       \
+        *((ptr)++) = (char)((v) >> 24);                                       \
+        *((ptr)++) = (char)((v) >> 16);                                       \
+        *((ptr)++) = (char)((v) >> 8);                                        \
+        *((ptr)++) = (char)((v)&255);                                         \
+    } else {                                                                  \
+        (ptr) += 8;                                                           \
     }
 
-#define PUTNEXTSTRING(ptr, s, len, limit)                                      \
-    if ((ptr) + (len) < (limit)) {                                             \
-        memcpy(ptr, s, len);                                                   \
-        (ptr) += (len);                                                        \
-    } else if ((ptr) < (limit)) {                                              \
-        memcpy(ptr, s, (limit) - (ptr));                                       \
-        (ptr) += (len);                                                        \
-    } else {                                                                   \
-        (ptr) += (len);                                                        \
+#define PUTNEXTSTRING(ptr,s,len,limit)                                     \
+    if ((ptr) + (len) < (limit)) {                                            \
+        memcpy(ptr, s, len);                                                  \
+        (ptr) += (len);                                                       \
+    } else if ((ptr) < (limit)) {                                             \
+        memcpy(ptr, s, (limit) - (ptr));                                      \
+        (ptr) += (len);                                                       \
+    } else {                                                                  \
+        (ptr) += (len);                                                       \
     }
 
 /* This should work up to the year 2105 (for 32-bit unsigned long) */
-#define PUTMSGTIMESTAMP(ptr, msg, limit)                                       \
-    if ((ptr) + 8 < limit) { /* 84375 = 24*60*60*1000 >> 10 */                 \
-        unsigned long hi = 84375uL * msg->time.tv_day;                         \
-        unsigned long lo = 1000 * msg->time.tv_sec + msg->time.tv_usec / 1000; \
-        (ptr)[7] = (char)lo;                                                   \
-        lo >>= 8;                                                              \
-        (ptr)[6] = (char)(lo + (hi << 2));                                     \
-        lo >>= 2;                                                              \
-        hi += lo;                                                              \
-        hi >>= 6;                                                              \
-        (ptr)[5] = (char)hi;                                                   \
-        hi >>= 8;                                                              \
-        (ptr)[4] = (char)hi;                                                   \
-        hi >>= 8;                                                              \
-        (ptr)[3] = (char)hi;                                                   \
-        hi >>= 8;                                                              \
-        (ptr)[2] = (char)hi;                                                   \
-        hi >>= 8;                                                              \
-        (ptr)[1] = (char)hi;                                                   \
-        hi >>= 8;                                                              \
-        (ptr)[0] = (char)hi;                                                   \
-        hi >>= 8;                                                              \
-        (ptr) += 8;                                                            \
-    } else {                                                                   \
-        (ptr) += 8;                                                            \
+#define PUTMSGTIMESTAMP(ptr,msg,limit)                                      \
+    if ((ptr) + 8 < limit) { /* 84375 = 24*60*60*1000 >> 10 */                \
+        unsigned long hi = 84375uL * msg->time.tv_day;                        \
+        unsigned long lo =                                                    \
+            1000 * msg->time.tv_sec + msg->time.tv_usec / 1000;               \
+        (ptr)[7] = (char)lo;                                                  \
+        lo >>= 8;                                                             \
+        (ptr)[6] = (char)(lo + (hi << 2));                                    \
+        lo >>= 2;                                                             \
+        hi += lo;                                                             \
+        hi >>= 6;                                                             \
+        (ptr)[5] = (char)hi;                                                  \
+        hi >>= 8;                                                             \
+        (ptr)[4] = (char)hi;                                                  \
+        hi >>= 8;                                                             \
+        (ptr)[3] = (char)hi;                                                  \
+        hi >>= 8;                                                             \
+        (ptr)[2] = (char)hi;                                                  \
+        hi >>= 8;                                                             \
+        (ptr)[1] = (char)hi;                                                  \
+        hi >>= 8;                                                             \
+        (ptr)[0] = (char)hi;                                                  \
+        hi >>= 8;                                                             \
+        (ptr) += 8;                                                           \
+    } else {                                                                  \
+        (ptr) += 8;                                                           \
     }
 
 static void
@@ -1518,8 +1519,8 @@ write_level_object(l4sc_layout_ptr_t layout, char *buf, const char *limit,
             levellen = 5;
         }
         PUTNEXTINT(dp, intlevel, limit);
-        if ((rc = write_string_object(layout, dp, limit, levelname, levellen)) >
-            0) {
+        if ((rc = write_string_object(layout, dp, limit, levelname,
+                                      levellen)) > 0) {
             dp += rc;
         }
         if ((rc = write_prolog(layout, dp, limit,
@@ -1696,9 +1697,9 @@ format_log4j2_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
     if ((rc = write_level_object(state, dp, limit, msg->level)) > 0) {
         dp += rc;
     }
-    if ((rc = write_string_object(state, dp, limit,
-                                  "org.apache.logging.log4j.spi.AbstractLogger",
-                                  43)) > 0) {
+    if ((rc = write_string_object(
+             state, dp, limit, "org.apache.logging.log4j.spi.AbstractLogger",
+             43)) > 0) {
         dp += rc;
     }
     if ((rc = write_string_object(state, dp, limit, msg->logger->name,

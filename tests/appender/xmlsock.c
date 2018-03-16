@@ -28,8 +28,8 @@ static const char configstring[] =
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" LF
     "<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
     " debug=\"1\">" LF "	<appender "
-                       "class=\"org.apache.log4j.SocketAppender\" "
-                       "name=\"testlog\">" LF
+    "class=\"org.apache.log4j.SocketAppender\" "
+    "name=\"testlog\">" LF
     "		<param name=\"RemoteHost\" value=\"localhost\"/>" LF
     "		<param name=\"Port\" value=\"%u\"/>" LF
     "		<layout class=\"org.apache.log4j.XmlLayout\"/>" LF

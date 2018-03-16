@@ -11,17 +11,17 @@
 
 #if defined(__ANDROID__)
 #include <android/log.h>
-#define ANDROID_LOG_PRIO(level)                                                \
-    (IS_AT_LEAST_FATAL_LEVEL(level)                                            \
-         ? ANDROID_LOG_FATAL                                                   \
-         : IS_AT_LEAST_ERROR_LEVEL(level)                                      \
-               ? ANDROID_LOG_ERROR                                             \
-               : IS_AT_LEAST_WARN_LEVEL(level)                                 \
-                     ? ANDROID_LOG_WARN                                        \
-                     : IS_AT_LEAST_INFO_LEVEL(level)                           \
-                           ? ANDROID_LOG_INFO                                  \
-                           : IS_AT_LEAST_DEBUG_LEVEL(level)                    \
-                                 ? ANDROID_LOG_DEBUG                           \
+#define ANDROID_LOG_PRIO(level)                                               \
+    (IS_AT_LEAST_FATAL_LEVEL(level)                                           \
+         ? ANDROID_LOG_FATAL                                                  \
+         : IS_AT_LEAST_ERROR_LEVEL(level)                                     \
+               ? ANDROID_LOG_ERROR                                            \
+               : IS_AT_LEAST_WARN_LEVEL(level)                                \
+                     ? ANDROID_LOG_WARN                                       \
+                     : IS_AT_LEAST_INFO_LEVEL(level)                          \
+                           ? ANDROID_LOG_INFO                                 \
+                           : IS_AT_LEAST_DEBUG_LEVEL(level)                   \
+                                 ? ANDROID_LOG_DEBUG                          \
                                  : ANDROID_LOG_VERBOSE)
 #endif
 
@@ -140,8 +140,8 @@ static int
 set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
                     const char *value, size_t vallen)
 {
-    LOGINFO(("%s: %.*s=\"%.*s\"", __FUNCTION__, (int)namelen, name, (int)vallen,
-             value));
+    LOGINFO(("%s: %.*s=\"%.*s\"", __FUNCTION__, (int)namelen, name,
+             (int)vallen, value));
     return (0);
 }
 
@@ -225,7 +225,8 @@ ref_appender_layout(l4sc_appender_ptr_t appender)
 void
 l4sc_append(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
 {
-    VOID_METHCALL(l4sc_appender_class_ptr_t, appender, append, (appender, msg));
+    VOID_METHCALL(l4sc_appender_class_ptr_t, appender, append,
+                  (appender, msg));
 }
 
 int
@@ -342,8 +343,8 @@ l4sc_get_appender(const char *name, int nlen, const char *kind, int klen)
                           (appender, 1));
             VOID_METHCALL(l4sc_appender_class_ptr_t, appender, set_name,
                           (appender, name, nlen));
-            LOGINFO(("%s: created %s (class %s).", __FUNCTION__, appender->name,
-                     clazz->name));
+            LOGINFO(("%s: created %s (class %s).", __FUNCTION__,
+                     appender->name, clazz->name));
         } else {
             LOGERROR(("%s: error %d creating %s (class %s).", __FUNCTION__, rc,
                       appender->name, clazz->name));
@@ -368,6 +369,6 @@ l4sc_close_appenders(void)
 l4sc_layout_ptr_t
 l4sc_get_appender_layout(l4sc_appender_ptr_t appender)
 {
-    RETURN_METHCALL(l4sc_appender_class_ptr_t, appender, ref_layout, (appender),
-                    &appender->layout);
+    RETURN_METHCALL(l4sc_appender_class_ptr_t, appender, ref_layout,
+                    (appender), &appender->layout);
 }

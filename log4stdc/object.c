@@ -168,7 +168,8 @@ l4sc_default_object_tostring(l4sc_objcptr_t obj, char *buf, size_t bufsize,
 }
 
 void
-l4sc_default_dump_object(l4sc_objcptr_t obj, int depth, struct l4sc_logger *log)
+l4sc_default_dump_object(l4sc_objcptr_t obj, int depth,
+                         struct l4sc_logger *log)
 {
     size_t size;
     const unsigned char *p, *lim;
@@ -195,7 +196,8 @@ l4sc_default_set_object_name(l4sc_objptr_t obj, const char *name, int len)
 
 int
 l4sc_default_set_object_option(l4sc_objptr_t obj, const char *name,
-                               size_t namelen, const char *value, size_t vallen)
+                               size_t namelen, const char *value,
+                               size_t vallen)
 {
     return (0);
 }

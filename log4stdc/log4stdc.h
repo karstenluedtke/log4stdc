@@ -84,7 +84,7 @@ struct l4sc_configurator_class;
 #define IS_AT_LEAST_TRACE_LEVEL(lvl) ((unsigned)(lvl) >= TRACE_LEVEL)
 
 /** @brief  Test if given log level is at least threshold */
-#define IS_LEVEL_ENABLED(lvl, threshold)                                       \
+#define IS_LEVEL_ENABLED(lvl,threshold)                                      \
     ((unsigned)(lvl) >= (unsigned)(threshold))
 
 /**
@@ -135,7 +135,8 @@ l4sc_configure_from_file(const struct l4sc_configurator_class *configurator,
  *
  * @param[in]  len           Length of the string, or 0.
  *
- * @param[in]  ...           Appender classes possibly referenced by the string.
+ * @param[in]  ...           Appender classes possibly referenced by the
+ * string.
  *
  * @return     0 on success, or negative on error.
  */
@@ -154,9 +155,9 @@ extern const struct l4sc_layout_class l4sc_json_stream_layout_class;
 extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
 
 #ifndef L4SC_EXTRA_CLASSES
-#define L4SC_EXTRA_CLASSES                                                     \
-    &l4sc_socket_appender_class, &l4sc_log4j_stream_layout_class,              \
-        &l4sc_log4j2_stream_layout_class, &l4sc_json_stream_layout_class,      \
+#define L4SC_EXTRA_CLASSES                                                    \
+    &l4sc_socket_appender_class, &l4sc_log4j_stream_layout_class,             \
+        &l4sc_log4j2_stream_layout_class, &l4sc_json_stream_layout_class,     \
         &l4sc_xml_stream_layout_class
 #endif
 /** @} */
@@ -170,8 +171,8 @@ extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
  *
  * @return     0 on success, or negative on error.
  */
-#define l4sc_configure_from_xml_file(path)                                     \
-    l4sc_configure_from_file(&l4sc_xml_configurator_class, path,               \
+#define l4sc_configure_from_xml_file(path)                                    \
+    l4sc_configure_from_file(&l4sc_xml_configurator_class, path,              \
                              L4SC_EXTRA_CLASSES, NULL)
 
 /**
@@ -183,8 +184,8 @@ extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
  *
  * @return     0 on success, or negative on error.
  */
-#define l4sc_configure_from_xml_string(buf, len)                               \
-    l4sc_configure_from_string(&l4sc_xml_configurator_class, buf, len,         \
+#define l4sc_configure_from_xml_string(buf,len)                              \
+    l4sc_configure_from_string(&l4sc_xml_configurator_class, buf, len,        \
                                L4SC_EXTRA_CLASSES, NULL)
 
 /**
@@ -194,8 +195,8 @@ extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
  *
  * @return     0 on success, or negative on error.
  */
-#define l4sc_configure_from_property_file(path)                                \
-    l4sc_configure_from_file(&l4sc_property_configurator_class, path,          \
+#define l4sc_configure_from_property_file(path)                               \
+    l4sc_configure_from_file(&l4sc_property_configurator_class, path,         \
                              L4SC_EXTRA_CLASSES, NULL)
 
 /**
@@ -207,8 +208,8 @@ extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
  *
  * @return     0 on success, or negative on error.
  */
-#define l4sc_configure_from_property_string(buf, len)                          \
-    l4sc_configure_from_string(&l4sc_property_configurator_class, buf, len,    \
+#define l4sc_configure_from_property_string(buf,len)                         \
+    l4sc_configure_from_string(&l4sc_property_configurator_class, buf, len,   \
                                L4SC_EXTRA_CLASSES, NULL)
 
 /** @} */
@@ -227,13 +228,12 @@ l4sc_merge_base_directory_path(char *buf, int bufsize, const char *relpath,
                                int rellen);
 
 int
-l4sc_insert_custom_logger(const char *name, void *cbarg,
-                          int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger,
-                                         int level),
-                          void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger,
-                                          int level, const char *msg,
-                                          size_t msglen, const char *file,
-                                          int line, const char *func));
+l4sc_insert_custom_logger(
+    const char *name, void *cbarg,
+    int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger, int level),
+    void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger, int level,
+                    const char *msg, size_t msglen, const char *file, int line,
+                    const char *func));
 /** @} */
 
 /** @addtogroup log4stdc_api */
@@ -292,32 +292,32 @@ int
 l4sc_to_level(const char *value, int vallen, int defaultlevel);
 
 #ifdef __STDC__
-#define L4SC_FATAL(logger, ...)                                                \
-    l4sc_logprintf(logger, FATAL_LEVEL, __FILE__, __LINE__, __FUNCTION__,      \
+#define L4SC_FATAL(logger, ...)                                               \
+    l4sc_logprintf(logger, FATAL_LEVEL, __FILE__, __LINE__, __FUNCTION__,     \
                    __VA_ARGS__)
 
-#define L4SC_CRITICAL(logger, ...)                                             \
-    l4sc_logprintf(logger, FATAL_LEVEL, __FILE__, __LINE__, __FUNCTION__,      \
+#define L4SC_CRITICAL(logger, ...)                                            \
+    l4sc_logprintf(logger, FATAL_LEVEL, __FILE__, __LINE__, __FUNCTION__,     \
                    __VA_ARGS__)
 
-#define L4SC_ERROR(logger, ...)                                                \
-    l4sc_logprintf(logger, ERROR_LEVEL, __FILE__, __LINE__, __FUNCTION__,      \
+#define L4SC_ERROR(logger, ...)                                               \
+    l4sc_logprintf(logger, ERROR_LEVEL, __FILE__, __LINE__, __FUNCTION__,     \
                    __VA_ARGS__)
 
-#define L4SC_WARN(logger, ...)                                                 \
-    l4sc_logprintf(logger, WARN_LEVEL, __FILE__, __LINE__, __FUNCTION__,       \
+#define L4SC_WARN(logger, ...)                                                \
+    l4sc_logprintf(logger, WARN_LEVEL, __FILE__, __LINE__, __FUNCTION__,      \
                    __VA_ARGS__)
 
-#define L4SC_INFO(logger, ...)                                                 \
-    l4sc_logprintf(logger, INFO_LEVEL, __FILE__, __LINE__, __FUNCTION__,       \
+#define L4SC_INFO(logger, ...)                                                \
+    l4sc_logprintf(logger, INFO_LEVEL, __FILE__, __LINE__, __FUNCTION__,      \
                    __VA_ARGS__)
 
-#define L4SC_DEBUG(logger, ...)                                                \
-    l4sc_logprintf(logger, DEBUG_LEVEL, __FILE__, __LINE__, __FUNCTION__,      \
+#define L4SC_DEBUG(logger, ...)                                               \
+    l4sc_logprintf(logger, DEBUG_LEVEL, __FILE__, __LINE__, __FUNCTION__,     \
                    __VA_ARGS__)
 
-#define L4SC_TRACE(logger, ...)                                                \
-    l4sc_logprintf(logger, TRACE_LEVEL, __FILE__, __LINE__, __FUNCTION__,      \
+#define L4SC_TRACE(logger, ...)                                               \
+    l4sc_logprintf(logger, TRACE_LEVEL, __FILE__, __LINE__, __FUNCTION__,     \
                    __VA_ARGS__)
 
 #endif /* __STDC__ */

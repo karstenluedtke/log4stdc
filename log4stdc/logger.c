@@ -252,8 +252,8 @@ set_logger_option(l4sc_logger_ptr_t obj, const char *name, size_t namelen,
 {
     static const char thisfunction[] = "set_logger_option";
 
-    LOGINFO(("%s: %.*s=\"%.*s\"", thisfunction, (int)namelen, name, (int)vallen,
-             value));
+    LOGINFO(("%s: %.*s=\"%.*s\"", thisfunction, (int)namelen, name,
+             (int)vallen, value));
     if ((namelen == 5) && (strncasecmp(name, "level", 5) == 0)) {
         obj->level = l4sc_to_level(value, vallen, ERROR_LEVEL);
         LOGINFO(
@@ -301,7 +301,8 @@ logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
     rc = l4sc_init_logmessage(&mbuf, sizeof(mbuf), logger, level, msg, msglen,
                               file, line, func);
     if (rc >= 0) {
-        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append, (logger, &mbuf));
+        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append,
+                      (logger, &mbuf));
     }
 }
 
@@ -356,8 +357,9 @@ set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
     }
     for (i = 0; i < MAX_APPENDERS_PER_LOGGER; i++) {
         if (logger->appenders[i] == appender) {
-            LOGDEBUG(("%s: %s already appending to %s (class %s)", thisfunction,
-                      logger->name, appender->name, BFC_CLASS(appender)->name));
+            LOGDEBUG(("%s: %s already appending to %s (class %s)",
+                      thisfunction, logger->name, appender->name,
+                      BFC_CLASS(appender)->name));
             return (0);
         }
     }
@@ -371,8 +373,9 @@ set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
             return (1);
         }
     }
-    LOGINFO(("%s: %s has no free slot for appender %s (class %s)", thisfunction,
-             logger->name, appender->name, BFC_CLASS(appender)->name));
+    LOGINFO(("%s: %s has no free slot for appender %s (class %s)",
+             thisfunction, logger->name, appender->name,
+             BFC_CLASS(appender)->name));
     return (-ENOSPC);
 }
 
@@ -488,13 +491,12 @@ l4sc_get_logger(const char *name, int namelen)
 }
 
 int
-l4sc_insert_custom_logger(const char *name, void *cbarg,
-                          int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger,
-                                         int level),
-                          void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger,
-                                          int level, const char *msg,
-                                          size_t msglen, const char *file,
-                                          int line, const char *func))
+l4sc_insert_custom_logger(
+    const char *name, void *cbarg,
+    int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger, int level),
+    void (*logfunc)(void *cbarg, l4sc_logger_ptr_t logger, int level,
+                    const char *msg, size_t msglen, const char *file, int line,
+                    const char *func))
 {
     l4sc_logger_ptr_t logger = l4sc_get_logger(name, 0);
     if (logger) {
@@ -546,7 +548,8 @@ customlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
 }
 
 int
-l4sc_set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
+l4sc_set_logger_appender(l4sc_logger_ptr_t logger,
+                         l4sc_appender_ptr_t appender)
 {
     RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, set_appender,
                     (logger, appender), 0);

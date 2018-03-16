@@ -38,8 +38,8 @@ l4sc_configure_from_string(const struct l4sc_configurator_class *configurator,
     VOID_CMETHCALL(l4sc_configurator_class_ptr_t, configurator, init,
                    (&obj, sizeof(obj), pool));
 
-    RETVAR_CMETHCALL(rc, l4sc_configurator_class_ptr_t, configurator, configure,
-                     (&obj, buf, len), -ENOSYS);
+    RETVAR_CMETHCALL(rc, l4sc_configurator_class_ptr_t, configurator,
+                     configure, (&obj, buf, len), -ENOSYS);
 
     VOID_CMETHCALL(l4sc_configurator_class_ptr_t, configurator, destroy,
                    (&obj));

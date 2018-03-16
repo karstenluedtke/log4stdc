@@ -28,8 +28,8 @@ static const char configstring[] =
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" LF
     "<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
     " debug=\"1\">" LF "	<appender "
-                       "class=\"org.apache.log4j.SocketAppender\" "
-                       "name=\"testlog\">" LF
+    "class=\"org.apache.log4j.SocketAppender\" "
+    "name=\"testlog\">" LF
     "		<param name=\"RemoteHost\" value=\"localhost\"/>" LF
     "		<param name=\"Port\" value=\"%u\"/>" LF
     "		<layout class=\"org.apache.log4j.JsonLayout\"/>" LF
@@ -46,15 +46,15 @@ static const char refstream[] =
     "{ \"timeMillis\" : ?????????????, \"thread\" : \"?\","
     " \"level\" : \"INFO\", \"loggerName\" : \"testlogger\"," LF
     "  \"message\" : \"ABC\"," LF "  \"endOfBatch\" : false, \"loggerFqcn\" : "
-                                  "\"org.apache.logging.log4j.spi."
-                                  "AbstractLogger\"," LF
+    "\"org.apache.logging.log4j.spi."
+    "AbstractLogger\"," LF
     "  \"source\" : { \"class\" : \"\", \"method\" : \"testfunction\", "
     "\"file\" : \"sourcefile\", \"line\" : 100 }" LF "}" LF
     "{ \"timeMillis\" : ?????????????, \"thread\" : \"?\","
     " \"level\" : \"INFO\", \"loggerName\" : \"testlogger\"," LF
     "  \"message\" : \"DEF\"," LF "  \"endOfBatch\" : false, \"loggerFqcn\" : "
-                                  "\"org.apache.logging.log4j.spi."
-                                  "AbstractLogger\"," LF
+    "\"org.apache.logging.log4j.spi."
+    "AbstractLogger\"," LF
     "  \"source\" : { \"class\" : \"\", \"method\" : \"testfunction\", "
     "\"file\" : \"sourcefile\", \"line\" : 101 }" LF "}" LF;
 

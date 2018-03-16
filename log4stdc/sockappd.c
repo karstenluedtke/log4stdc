@@ -150,8 +150,8 @@ set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
 {
     static const char thisfunction[] = "set_appender_option";
 
-    LOGINFO(("%s: %.*s=\"%.*s\"", thisfunction, (int)namelen, name, (int)vallen,
-             value));
+    LOGINFO(("%s: %.*s=\"%.*s\"", thisfunction, (int)namelen, name,
+             (int)vallen, value));
 
     if ((namelen == 10) && (strncasecmp(name, "RemoteHost", 10) == 0)) {
         const int n = vallen;
@@ -261,7 +261,8 @@ set_address(union anyaddr *addr, size_t bufsize, int family, const char *host,
 }
 
 static int
-format_header(l4sc_appender_ptr_t appender, int kind, char *buf, size_t bufsize)
+format_header(l4sc_appender_ptr_t appender, int kind, char *buf,
+              size_t bufsize)
 {
     l4sc_layout_ptr_t layout = &appender->layout;
     RETURN_METHCALL(l4sc_layout_class_ptr_t, layout, header,
@@ -292,8 +293,8 @@ open_appender(l4sc_appender_ptr_t appender)
 #endif
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALSOCK) {
             err = SOCKERROR;
-            LOGERROR(
-                ("%s: no socket, err %d %s", thisfunction, err, strerror(err)));
+            LOGERROR(("%s: no socket, err %d %s", thisfunction, err,
+                      strerror(err)));
             return;
         }
 

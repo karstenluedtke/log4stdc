@@ -157,7 +157,8 @@ l4sc_new_win32_mutex(struct bfc_mutex **objpp, bfc_mempool_t pool,
         rc = init_mutex(object, size, pool);
         if (rc >= 0) {
             object->parent_pool = pool;
-            VOID_METHCALL(bfc_mutex_class_ptr_t, object, initrefc, (object, 1));
+            VOID_METHCALL(bfc_mutex_class_ptr_t, object, initrefc,
+                          (object, 1));
             object->file = file;
             object->line = line;
             object->func = func;

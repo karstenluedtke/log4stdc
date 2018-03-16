@@ -26,13 +26,13 @@ struct l4sc_object;
 typedef struct l4sc_object *l4sc_objptr_t;
 typedef const struct l4sc_object *l4sc_objcptr_t;
 
-#define LOGOBJ_METHODS(objptrT, objcptrT)                                      \
-    void (*set_name)(objptrT obj, const char *name, int len);                  \
-    int (*set_opt)(objptrT obj, const char *name, size_t namelen,              \
-                   const char *value, size_t vallen);                          \
-    int (*get_opt)(objcptrT obj, const char *name, size_t namelen,             \
-                   char *valbuf, size_t bufsize);                              \
-    void (*apply)(objptrT obj);                                                \
+#define LOGOBJ_METHODS(objptrT,objcptrT)                                     \
+    void (*set_name)(objptrT obj, const char *name, int len);                 \
+    int (*set_opt)(objptrT obj, const char *name, size_t namelen,             \
+                   const char *value, size_t vallen);                         \
+    int (*get_opt)(objcptrT obj, const char *name, size_t namelen,            \
+                   char *valbuf, size_t bufsize);                             \
+    void (*apply)(objptrT obj);                                               \
     void (*close)(objptrT obj);
 
 struct l4sc_object_class;
@@ -62,7 +62,8 @@ struct l4sc_logger_class {
                 size_t msglen, const char *file, int line, const char *func);
     int (*is_enabled)(l4sc_logger_cptr_t logger, int level);
     int (*set_parent)(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent);
-    int (*set_appender)(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender);
+    int (*set_appender)(l4sc_logger_ptr_t logger,
+                        l4sc_appender_ptr_t appender);
     void (*append)(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg);
     void *spare[9];
 };
@@ -206,7 +207,7 @@ struct l4sc_configurator {
 #endif
 
 #undef get_default_mempool
-#define get_default_mempool()                                                  \
+#define get_default_mempool()                                                 \
     l4sc_get_default_mempool(__FILE__, __LINE__, __FUNCTION__)
 bfc_mempool_t
 l4sc_get_default_mempool(const char *, int, const char *);

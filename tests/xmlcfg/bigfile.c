@@ -8,29 +8,37 @@
 
 #define LF "\n"
 
+/* clang-format off */
 static const char *configlines[] = {
-    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>",
-    "<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
-    " debug=\"0\">",
-    "	<appender class=\"org.apache.log4j.ConsoleAppender\""
-    " name=\"Console\">",
-    "		<layout class=\"org.apache.log4j.PatternLayout\">",
-    "		    <param name=\"ConversionPattern\""
-    " value=\"%d{ABSOLUTE} [%t] %-5p %c - %m%n\"/>",
-    "		</layout>", "	</appender>",
-    "	<logger additivity=\"false\" name=\"barefootc\">",
-    "		<level value=\"WARN\"/>",
-    "		<appender-ref ref=\"Console\"/>", "	</logger>",
-    "	<logger name=\"barefootc.string\">",
-    "		<level value=\"ERROR\"/>", "	</logger>",
-    "	<logger name=\"barefootc.vector\">",
-    "		<level value=\"DEBUG\"/>", "	</logger>",
-    "	<logger name=\"barefootc.vector.set\">",
-    "		<level value=\"INHERIT\"/>", "	</logger>",
-    "</log4j:configuration>", NULL};
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>",
+"<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
+							" debug=\"0\">",
+"	<appender class=\"org.apache.log4j.ConsoleAppender\""
+		" name=\"Console\">",
+"		<layout class=\"org.apache.log4j.PatternLayout\">",
+"		    <param name=\"ConversionPattern\""
+			 " value=\"%d{ABSOLUTE} [%t] %-5p %c - %m%n\"/>",
+"		</layout>",
+"	</appender>",
+"	<logger additivity=\"false\" name=\"barefootc\">",
+"		<level value=\"WARN\"/>",
+"		<appender-ref ref=\"Console\"/>",
+"	</logger>",
+"	<logger name=\"barefootc.string\">",
+"		<level value=\"ERROR\"/>",
+"	</logger>",
+"	<logger name=\"barefootc.vector\">",
+"		<level value=\"DEBUG\"/>",
+"	</logger>",
+"	<logger name=\"barefootc.vector.set\">",
+"		<level value=\"INHERIT\"/>",
+"	</logger>",
+"</log4j:configuration>",
+NULL };
 
-static const char *emptyline =
-    "                                                                        ";
+static const char *emptyline = 
+"                                                                        ";
+/* clang-format on */
 
 int
 main(int argc, char *argv[])

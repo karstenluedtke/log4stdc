@@ -7,16 +7,22 @@
 
 #define LF "\n"
 
+/* clang-format off */
 static const char configstring[] =
-    "log4j.debug=false" LF "log4j.rootLogger=error, console" LF "" LF
-    "log4j.logger.barefootc= warn, console" LF "log4j.additivity.pal=false" LF
-    "" LF "log4j.logger.barefootc.string=error" LF
-    "log4j.logger.barefootc.vector=debug" LF
-    "log4j.logger.barefootc.vector.set=inherit" LF "" LF
-    "log4j.appender.console=org.apache.log4j.ConsoleAppender" LF
-    "log4j.appender.console.layout=org.apache.log4j.PatternLayout" LF
-    "log4j.appender.console.layout.ConversionPattern=%d{ABSOLUTE} %-5p> "
-    "%m%n" LF;
+"log4j.debug=false" LF
+"log4j.rootLogger=error, console" LF
+"" LF
+"log4j.logger.barefootc= warn, console" LF
+"log4j.additivity.pal=false" LF
+"" LF
+"log4j.logger.barefootc.string=error" LF
+"log4j.logger.barefootc.vector=debug" LF
+"log4j.logger.barefootc.vector.set=inherit" LF
+"" LF
+"log4j.appender.console=org.apache.log4j.ConsoleAppender" LF
+"log4j.appender.console.layout=org.apache.log4j.PatternLayout" LF
+"log4j.appender.console.layout.ConversionPattern=%d{ABSOLUTE} %-5p> %m%n" LF;
+/* clang-format on */
 
 int
 main(int argc, char *argv[])

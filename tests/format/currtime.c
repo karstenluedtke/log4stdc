@@ -19,20 +19,24 @@
 
 #define LF "\n"
 
+/* clang-format off */
 static const char configstring[] =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" LF
-    "<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
-    " debug=\"0\">" LF
-    "	<appender class=\"org.apache.log4j.FileAppender\" name=\"testlog\">" LF
-    "		<param name=\"File\" value=\"test.log\"/>" LF
-    "		<layout class=\"org.apache.log4j.PatternLayout\">" LF
-    "		    <param name=\"ConversionPattern\""
-    " value=\"%d{ABSOLUTE} %-5p&gt; %m%n\"/>" LF "		</layout>" LF
-    "	</appender>" LF
-    "	<logger additivity=\"false\" name=\"testlogger\">" LF
-    "		<level value=\"DEBUG\"/>" LF
-    "		<appender-ref ref=\"testlog\"/>" LF "	</logger>" LF
-    "</log4j:configuration>" LF;
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" LF
+"<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
+							" debug=\"0\">" LF
+"	<appender class=\"org.apache.log4j.FileAppender\" name=\"testlog\">" LF
+"		<param name=\"File\" value=\"test.log\"/>" LF
+"		<layout class=\"org.apache.log4j.PatternLayout\">" LF
+"		    <param name=\"ConversionPattern\""
+			 " value=\"%d{ABSOLUTE} %-5p&gt; %m%n\"/>" LF
+"		</layout>" LF
+"	</appender>" LF
+"	<logger additivity=\"false\" name=\"testlogger\">" LF
+"		<level value=\"DEBUG\"/>" LF
+"		<appender-ref ref=\"testlog\"/>" LF
+"	</logger>" LF
+"</log4j:configuration>" LF;
+/* clang-format on */
 
 int
 main(int argc, char *argv[])

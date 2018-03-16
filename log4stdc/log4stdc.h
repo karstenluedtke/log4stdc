@@ -136,7 +136,7 @@ l4sc_configure_from_file(const struct l4sc_configurator_class *configurator,
  * @param[in]  len           Length of the string, or 0.
  *
  * @param[in]  ...           Appender classes possibly referenced by the
- * string.
+ *                           string.
  *
  * @return     0 on success, or negative on error.
  */

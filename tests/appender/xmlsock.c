@@ -24,41 +24,43 @@
 
 #define LF "\n"
 
+/* clang-format off */
 static const char configstring[] =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" LF
-    "<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
-    " debug=\"1\">" LF "	<appender "
-    "class=\"org.apache.log4j.SocketAppender\" "
-    "name=\"testlog\">" LF
-    "		<param name=\"RemoteHost\" value=\"localhost\"/>" LF
-    "		<param name=\"Port\" value=\"%u\"/>" LF
-    "		<layout class=\"org.apache.log4j.XmlLayout\"/>" LF
-    "	</appender>" LF
-    "	<logger additivity=\"false\" name=\"testlogger\">" LF
-    "		<level value=\"DEBUG\"/>" LF
-    "		<appender-ref ref=\"testlog\"/>" LF "	</logger>" LF
-    "</log4j:configuration>" LF;
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" LF
+"<log4j:configuration xmlns:log4j=\"http://jakarta.apache.org/log4j/\""
+							" debug=\"1\">" LF
+"	<appender class=\"org.apache.log4j.SocketAppender\" name=\"testlog\">" LF
+"		<param name=\"RemoteHost\" value=\"localhost\"/>" LF
+"		<param name=\"Port\" value=\"%u\"/>" LF
+"		<layout class=\"org.apache.log4j.XmlLayout\"/>" LF
+"	</appender>" LF
+"	<logger additivity=\"false\" name=\"testlogger\">" LF
+"		<level value=\"DEBUG\"/>" LF
+"		<appender-ref ref=\"testlog\"/>" LF
+"	</logger>" LF
+"</log4j:configuration>" LF;
 
 /*
  * Expected output stream
  */
-static const char refstream[] =
-    "<Event xmlns=\"http://logging.apache.org/log4j/2.0/events\""
-    " timeMillis=\"?????????????\" thread=\"????\""
-    " level=\"INFO\" loggerName=\"testlogger\" endOfBatch=\"false\""
-    " loggerFqcn=\"org.apache.logging.log4j.spi.AbstractLogger\">\n"
-    "  <Message>ABC</Message>\n"
-    "  <Source class=\"\""
+static const char refstream[] = 
+"<Event xmlns=\"http://logging.apache.org/log4j/2.0/events\""
+  " timeMillis=\"?????????????\" thread=\"????\""
+  " level=\"INFO\" loggerName=\"testlogger\" endOfBatch=\"false\""
+  " loggerFqcn=\"org.apache.logging.log4j.spi.AbstractLogger\">\n"
+"  <Message>ABC</Message>\n"
+"  <Source class=\"\""
     " method=\"testfunction\" file=\"sourcefile\" line=\"100\"/>\n"
-    "</Event>\r\n"
-    "<Event xmlns=\"http://logging.apache.org/log4j/2.0/events\""
-    " timeMillis=\"?????????????\" thread=\"????\""
-    " level=\"INFO\" loggerName=\"testlogger\" endOfBatch=\"false\""
-    " loggerFqcn=\"org.apache.logging.log4j.spi.AbstractLogger\">\n"
-    "  <Message>x &lt; 2 &amp;&amp; l\303\244nger als 5\"</Message>\n"
-    "  <Source class=\"\""
+"</Event>\r\n"
+"<Event xmlns=\"http://logging.apache.org/log4j/2.0/events\""
+  " timeMillis=\"?????????????\" thread=\"????\""
+  " level=\"INFO\" loggerName=\"testlogger\" endOfBatch=\"false\""
+  " loggerFqcn=\"org.apache.logging.log4j.spi.AbstractLogger\">\n"
+"  <Message>x &lt; 2 &amp;&amp; l\303\244nger als 5\"</Message>\n"
+"  <Source class=\"\""
     " method=\"testfunction\" file=\"sourcefile\" line=\"101\"/>\n"
-    "</Event>\r\n";
+"</Event>\r\n";
+/* clang-format on */
 
 int
 main(int argc, char *argv[])

@@ -67,11 +67,12 @@ typedef unsigned short wchar_t;
 #define CONV_SPEC_SPECIFIERS "duoxXcspfFeEgGaAn%"
 #define CONV_SPEC_DOUBLE_SPECIFIERS "fFeEgGaA"
 
-#define PUTNEXTCHAR(ptr, c, limit)                                             \
-    if ((ptr) < (limit)) {                                                     \
-        *((ptr)++) = (c);                                                      \
-    } else {                                                                   \
-        (ptr)++;                                                               \
+/* clang-format off */
+#define PUTNEXTCHAR(ptr,c,limit)                                              \
+    if ((ptr) < (limit)) {                                                    \
+        *((ptr)++) = (c);                                                     \
+    } else {                                                                  \
+        (ptr)++;                                                              \
     }
 
 static int
@@ -80,35 +81,35 @@ put_string(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-#define PUT_LEFT_FILL(ptr, width, need, flags, limit, c)                       \
-    if ((width > need) && !((flags)&CONV_FLAG_LEFT_ALIGN)) {                   \
-        do {                                                                   \
-            PUTNEXTCHAR(ptr, c, limit);                                        \
-            width--;                                                           \
-        } while (width > need);                                                \
+#define PUT_LEFT_FILL(ptr,width,need,flags,limit,c)                           \
+    if ((width > need) && !((flags)&CONV_FLAG_LEFT_ALIGN)) {                  \
+        do {                                                                  \
+            PUTNEXTCHAR(ptr, c, limit);                                       \
+            width--;                                                          \
+        } while (width > need);                                               \
     }
 
-#define PUT_RIGHT_FILL(ptr, width, need, flags, limit, c)                      \
-    while (width > 0) {                                                        \
-        PUTNEXTCHAR(ptr, c, limit);                                            \
-        width--;                                                               \
+#define PUT_RIGHT_FILL(ptr,width,need,flags,limit,c)                          \
+    while (width > 0) {                                                       \
+        PUTNEXTCHAR(ptr, c, limit);                                           \
+        width--;                                                              \
     }
 
-#define PUT_STRING(ptr, width, precision, flags, limit, s)                     \
-    do {                                                                       \
-        int _w = width;                                                        \
-        int _n = ((precision) >= 0) ? (precision) : strlen(s);                 \
-        PUT_LEFT_FILL(ptr, _w, _n, flags, limit, ' ');                         \
-        if (_n > 0) {                                                          \
-            if (ptr + _n < limit) {                                            \
-                memcpy(ptr, s, _n);                                            \
-            } else if (ptr < limit) {                                          \
-                memcpy(ptr, s, limit - ptr);                                   \
-            }                                                                  \
-            ptr += _n;                                                         \
-            _w -= _n;                                                          \
-        }                                                                      \
-        PUT_RIGHT_FILL(ptr, _w, _n, flags, limit, ' ');                        \
+#define PUT_STRING(ptr,width,precision,flags,limit,s)                         \
+    do {                                                                      \
+        int _w = width;                                                       \
+        int _n = ((precision) >= 0) ? (precision) : strlen(s);                \
+        PUT_LEFT_FILL(ptr, _w, _n, flags, limit, ' ');                        \
+        if (_n > 0) {                                                         \
+            if (ptr + _n < limit) {                                           \
+                memcpy(ptr, s, _n);                                           \
+            } else if (ptr < limit) {                                         \
+                memcpy(ptr, s, limit - ptr);                                  \
+            }                                                                 \
+            ptr += _n;                                                        \
+            _w -= _n;                                                         \
+        }                                                                     \
+        PUT_RIGHT_FILL(ptr, _w, _n, flags, limit, ' ');                       \
     } while (0 /*just once */)
 
     PUT_STRING(dp, width, precision, flags, limit, s);
@@ -121,19 +122,19 @@ put_wstring(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-#define PUT_WSTRING(ptr, width, precision, flags, limit, s)                    \
-    do {                                                                       \
-        int _i, _n = 0, _w = width;                                            \
-        while (s[_n]) {                                                        \
-            if (++_n == precision)                                             \
-                break;                                                         \
-        }                                                                      \
-        PUT_LEFT_FILL(ptr, _w, _n, flags, limit, ' ');                         \
-        for (_i = 0; _i < _n; _i++) {                                          \
-            BFC_PUT_UTF8(ptr, limit, s[_i]);                                   \
-            _w--;                                                              \
-        }                                                                      \
-        PUT_RIGHT_FILL(ptr, _w, _n, flags, limit, ' ');                        \
+#define PUT_WSTRING(ptr,width,precision,flags,limit,s)                        \
+    do {                                                                      \
+        int _i, _n = 0, _w = width;                                           \
+        while (s[_n]) {                                                       \
+            if (++_n == precision)                                            \
+                break;                                                        \
+        }                                                                     \
+        PUT_LEFT_FILL(ptr, _w, _n, flags, limit, ' ');                        \
+        for (_i = 0; _i < _n; _i++) {                                         \
+            BFC_PUT_UTF8(ptr, limit, s[_i]);                                  \
+            _w--;                                                             \
+        }                                                                     \
+        PUT_RIGHT_FILL(ptr, _w, _n, flags, limit, ' ');                       \
     } while (0 /*just once */)
 
     PUT_WSTRING(dp, width, precision, flags, limit, s);
@@ -146,104 +147,106 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-#define POSITIVE_SIGN_BYTES(flags)                                             \
+#define POSITIVE_SIGN_BYTES(flags)                                            \
     (((flags) & (CONV_FLAG_INCLUDE_SIGN | CONV_FLAG_SPACE_SIGN)) ? 1 : 0)
 
-#define UNSIGNED_MUL(T, result, overflow, factor)                              \
-    do {                                                                       \
-        const T _boundary = ((T)-1) / factor;                                  \
-        if (result <= _boundary) {                                             \
-            result *= factor;                                                  \
-        } else {                                                               \
-            overflow = 1;                                                      \
-        }                                                                      \
+#define UNSIGNED_MUL(T,result,overflow,factor)                                \
+    do {                                                                      \
+        const T _boundary = ((T)-1) / factor;                                 \
+        if (result <= _boundary) {                                            \
+            result *= factor;                                                 \
+        } else {                                                              \
+            overflow = 1;                                                     \
+        }                                                                     \
     } while (0 /*just once */)
 
-#define UNSIGNED_EXP(T, result, overflow, base, e)                             \
-    do {                                                                       \
-        int _pending = e;                                                      \
-        const T _boundary = ((T)-1) / base;                                    \
-        for (result = 1, overflow = 0; _pending > 0; _pending--) {             \
-            if (result <= _boundary) {                                         \
-                result *= base;                                                \
-            } else {                                                           \
-                overflow = 1;                                                  \
-                break;                                                         \
-            }                                                                  \
-        }                                                                      \
+#define UNSIGNED_EXP(T,result,overflow,base,e)                                \
+    do {                                                                      \
+        int _pending = e;                                                     \
+        const T _boundary = ((T)-1) / base;                                   \
+        for (result = 1, overflow = 0; _pending > 0; _pending--) {            \
+            if (result <= _boundary) {                                        \
+                result *= base;                                               \
+            } else {                                                          \
+                overflow = 1;                                                 \
+                break;                                                        \
+            }                                                                 \
+        }                                                                     \
     } while (0 /*just once */)
 
-#define PUT_PREFIX_AND_SIGN(ptr, width, need, flags, limit, prefix, pfxlen)    \
-    do {                                                                       \
-        int _k;                                                                \
-        for (_k = 0; _k < pfxlen; _k++) {                                      \
-            PUTNEXTCHAR(ptr, prefix[_k], limit);                               \
-            width--;                                                           \
-        }                                                                      \
-        if ((flags)&CONV_FLAG_INCLUDE_SIGN) {                                  \
-            PUTNEXTCHAR(ptr, '+', limit);                                      \
-            width--;                                                           \
-        } else if ((flags)&CONV_FLAG_SPACE_SIGN) {                             \
-            PUTNEXTCHAR(ptr, ' ', limit);                                      \
-            width--;                                                           \
-        }                                                                      \
+#define PUT_PREFIX_AND_SIGN(ptr,width,need,flags,limit,prefix,pfxlen)         \
+    do {                                                                      \
+        int _k;                                                               \
+        for (_k = 0; _k < pfxlen; _k++) {                                     \
+            PUTNEXTCHAR(ptr, prefix[_k], limit);                              \
+            width--;                                                          \
+        }                                                                     \
+        if ((flags)&CONV_FLAG_INCLUDE_SIGN) {                                 \
+            PUTNEXTCHAR(ptr, '+', limit);                                     \
+            width--;                                                          \
+        } else if ((flags)&CONV_FLAG_SPACE_SIGN) {                            \
+            PUTNEXTCHAR(ptr, ' ', limit);                                     \
+            width--;                                                          \
+        }                                                                     \
     } while (0 /*just once */)
 
-#define PUT_UNSIGNED(ptr, width, prec, flags, limit, prefix, pfxlen, T, base,  \
-                     val)                                                      \
-    do {                                                                       \
-        T _v = val;                                                            \
-        T _divisor = base;                                                     \
-        int _digits = 1;                                                       \
-        int _need, _w = width, _ovfl = 0;                                      \
-        char _c = ' ';                                                         \
-        if ((_v == 0) && (prec == 0)) {                                        \
-            _digits = 0;                                                       \
-        } else {                                                               \
-            while (!_ovfl && (_v >= _divisor)) {                               \
-                _digits++;                                                     \
-                UNSIGNED_MUL(T, _divisor, _ovfl, base);                        \
-            }                                                                  \
-            if (_digits < prec) {                                              \
-                _digits = prec;                                                \
-            }                                                                  \
-        }                                                                      \
-        _need = _digits;                                                       \
-        if ((flags)&CONV_FLAG_LEADING_ZEROES) {                                \
-            PUT_PREFIX_AND_SIGN(ptr, _w, _need, flags, limit, prefix, pfxlen); \
-            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, '0');                  \
-        } else {                                                               \
-            _need += pfxlen + POSITIVE_SIGN_BYTES(flags);                      \
-            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, ' ');                  \
-            PUT_PREFIX_AND_SIGN(ptr, _w, _need, flags, limit, prefix, pfxlen); \
-        }                                                                      \
-        while (_digits > 0) {                                                  \
-            UNSIGNED_EXP(T, _divisor, _ovfl, base, _digits - 1);               \
-            _c = (char)(_ovfl ? 0 : (_divisor > 1) ? _v / _divisor : _v);      \
-            _v -= _c * _divisor;                                               \
-            _c += '0';                                                         \
-            PUTNEXTCHAR(ptr, _c, limit);                                       \
-            _digits--;                                                         \
-            _w--;                                                              \
-        }                                                                      \
-        PUT_RIGHT_FILL(ptr, _w, _need, flags, limit, ' ');                     \
+#define PUT_UNSIGNED(ptr,width,prec,flags,limit,prefix,pfxlen,T,base,val)     \
+    do {                                                                      \
+        T _v = val;                                                           \
+        T _divisor = base;                                                    \
+        int _digits = 1;                                                      \
+        int _need, _w = width, _ovfl = 0;                                     \
+        char _c = ' ';                                                        \
+        if ((_v == 0) && (prec == 0)) {                                       \
+            _digits = 0;                                                      \
+        } else {                                                              \
+            while (!_ovfl && (_v >= _divisor)) {                              \
+                _digits++;                                                    \
+                UNSIGNED_MUL(T, _divisor, _ovfl, base);                       \
+            }                                                                 \
+            if (_digits < prec) {                                             \
+                _digits = prec;                                               \
+            }                                                                 \
+        }                                                                     \
+        _need = _digits;                                                      \
+        if ((flags)&CONV_FLAG_LEADING_ZEROES) {                               \
+            PUT_PREFIX_AND_SIGN(ptr, _w, _need, flags, limit, prefix,         \
+                                pfxlen);                                      \
+            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, '0');                 \
+        } else {                                                              \
+            _need += pfxlen + POSITIVE_SIGN_BYTES(flags);                     \
+            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, ' ');                 \
+            PUT_PREFIX_AND_SIGN(ptr, _w, _need, flags, limit, prefix,         \
+                                pfxlen);                                      \
+        }                                                                     \
+        while (_digits > 0) {                                                 \
+            UNSIGNED_EXP(T, _divisor, _ovfl, base, _digits - 1);              \
+            _c = (char)(_ovfl ? 0 : (_divisor > 1) ? _v / _divisor : _v);     \
+            _v -= _c * _divisor;                                              \
+            _c += '0';                                                        \
+            PUTNEXTCHAR(ptr, _c, limit);                                      \
+            _digits--;                                                        \
+            _w--;                                                             \
+        }                                                                     \
+        PUT_RIGHT_FILL(ptr, _w, _need, flags, limit, ' ');                    \
     } while (0 /*just once */)
 
-    PUT_UNSIGNED(dp, width, precision, flags, limit, prefix, pfxlen, unsigned,
-                 10, v);
+    PUT_UNSIGNED(dp, width, precision, flags, limit,
+                 prefix, pfxlen, unsigned, 10, v);
     return (dp - buf);
 }
 
 #if defined(INT_MAX) && defined(LONG_MAX)
 #if (INT_MAX == LONG_MAX)
-#define put_ulong(b, w, prc, flg, lim, pfx, pfl, v)                            \
+#define put_ulong(b,w,prc,flg,lim,pfx,pfl,v)                                  \
     put_unsigned(b, w, prc, flg, lim, pfx, pfl, (unsigned)(v))
-#define put_lhex(b, w, prc, flg, lim, pfx, pfl, v)                             \
+#define put_lhex(b,w,prc,flg,lim,pfx,pfl,v)                                   \
     put_hex(b, w, prc, flg, lim, pfx, pfl, (unsigned)(v))
-#define put_loctal(b, w, prc, flg, lim, pfx, pfl, v)                           \
+#define put_loctal(b,w,prc,flg,lim,pfx,pfl,v)                                 \
     put_octal(b, w, prc, flg, lim, pfx, pfl, (unsigned)(v))
 #endif
 #endif
+/* clang-format on */
 
 #ifndef put_ulong
 static int
@@ -291,88 +294,92 @@ put_size(char *buf, int width, int precision, int flags, const char *limit,
         return (put_unsigned(buf, width, precision, flags, limit, prefix,
                              pfxlen, (unsigned)v));
     } else {
-        PUT_UNSIGNED(dp, width, precision, flags, limit, prefix, pfxlen, size_t,
-                     10, v);
+        PUT_UNSIGNED(dp, width, precision, flags, limit, prefix, pfxlen,
+                     size_t, 10, v);
     }
     return (dp - buf);
 }
 
+/* clang-format off */
 static int
 put_hex(char *buf, int width, int precision, int flags, const char *limit,
         const char *prefix, int pfxlen, unsigned v)
 {
     char *dp = buf;
 
-#define PUT_SIGN_AND_PREFIX(ptr, width, need, flags, limit, prefix, pfxlen)    \
-    do {                                                                       \
-        int _k;                                                                \
-        if ((flags)&CONV_FLAG_INCLUDE_SIGN) {                                  \
-            PUTNEXTCHAR(ptr, '+', limit);                                      \
-            width--;                                                           \
-        } else if ((flags)&CONV_FLAG_SPACE_SIGN) {                             \
-            PUTNEXTCHAR(ptr, ' ', limit);                                      \
-            width--;                                                           \
-        }                                                                      \
-        for (_k = 0; _k < pfxlen; _k++) {                                      \
-            PUTNEXTCHAR(ptr, prefix[_k], limit);                               \
-            width--;                                                           \
-        }                                                                      \
+#define PUT_SIGN_AND_PREFIX(ptr,width,need,flags,limit,prefix,pfxlen)         \
+    do {                                                                      \
+        int _k;                                                               \
+        if ((flags)&CONV_FLAG_INCLUDE_SIGN) {                                 \
+            PUTNEXTCHAR(ptr, '+', limit);                                     \
+            width--;                                                          \
+        } else if ((flags)&CONV_FLAG_SPACE_SIGN) {                            \
+            PUTNEXTCHAR(ptr, ' ', limit);                                     \
+            width--;                                                          \
+        }                                                                     \
+        for (_k = 0; _k < pfxlen; _k++) {                                     \
+            PUTNEXTCHAR(ptr, prefix[_k], limit);                              \
+            width--;                                                          \
+        }                                                                     \
     } while (0 /*just once */)
 
-#define PUT_HEX(ptr, width, prec, flags, limit, prefix, pfxlen, T, digbits,    \
-                val)                                                           \
-    do {                                                                       \
-        T _v = val;                                                            \
-        int _digits = 1;                                                       \
-        int _digshift = digbits;                                               \
-        int _need, _w = width;                                                 \
-        char _c = ' ';                                                         \
-        if ((_v == 0) && (prec == 0)) {                                        \
-            _digits = 0;                                                       \
-        } else {                                                               \
-            while ((_v >> _digshift) >= (T)1) {                                \
-                _digits++;                                                     \
-                _digshift += digbits;                                          \
-                if (_digshift >= 8 * sizeof(T)) {                              \
-                    break;                                                     \
-                }                                                              \
-            }                                                                  \
-            while (_digits < prec) {                                           \
-                _digits++;                                                     \
-                _digshift += digbits;                                          \
-            }                                                                  \
-        }                                                                      \
-        _need = _digits;                                                       \
-        if ((flags)&CONV_FLAG_LEADING_ZEROES) {                                \
-            PUT_SIGN_AND_PREFIX(ptr, _w, _need, flags, limit, prefix, pfxlen); \
-            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, '0');                  \
-        } else {                                                               \
-            _need += pfxlen + POSITIVE_SIGN_BYTES(flags);                      \
-            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, ' ');                  \
-            PUT_SIGN_AND_PREFIX(ptr, _w, _need, flags, limit, prefix, pfxlen); \
-        }                                                                      \
-        while (_digits > 0) {                                                  \
-            _digshift -= digbits;                                              \
-            _c = (_digshift >= 8 * sizeof(T)) ? (char)0                        \
-                                              : (char)(_v >> _digshift);       \
-            _v -= (((T)_c) << _digshift);                                      \
-            if (_c < 10) {                                                     \
-                _c += '0';                                                     \
-            } else if ((flags)&CONV_FLAG_CAPITALS) {                           \
-                _c += ('A' - 10);                                              \
-            } else {                                                           \
-                _c += ('a' - 10);                                              \
-            }                                                                  \
-            PUTNEXTCHAR(ptr, _c, limit);                                       \
-            _digits--;                                                         \
-            _w--;                                                              \
-        }                                                                      \
-        PUT_RIGHT_FILL(ptr, _w, _need, flags, limit, ' ');                     \
+#define PUT_HEX(ptr,width,prec,flags,limit,prefix,pfxlen,T,digbits,val)       \
+    do {                                                                      \
+        T _v = val;                                                           \
+        int _digits = 1;                                                      \
+        int _digshift = digbits;                                              \
+        int _need, _w = width;                                                \
+        char _c = ' ';                                                        \
+        if ((_v == 0) && (prec == 0)) {                                       \
+            _digits = 0;                                                      \
+        } else {                                                              \
+            while ((_v >> _digshift) >= (T)1) {                               \
+                _digits++;                                                    \
+                _digshift += digbits;                                         \
+                if (_digshift >= 8 * sizeof(T)) {                             \
+                    break;                                                    \
+                }                                                             \
+            }                                                                 \
+            while (_digits < prec) {                                          \
+                _digits++;                                                    \
+                _digshift += digbits;                                         \
+            }                                                                 \
+        }                                                                     \
+        _need = _digits;                                                      \
+        if ((flags)&CONV_FLAG_LEADING_ZEROES) {                               \
+            PUT_SIGN_AND_PREFIX(ptr, _w, _need, flags, limit, prefix,         \
+                                pfxlen);                                      \
+            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, '0');                 \
+        } else {                                                              \
+            _need += pfxlen + POSITIVE_SIGN_BYTES(flags);                     \
+            PUT_LEFT_FILL(ptr, _w, _need, flags, limit, ' ');                 \
+            PUT_SIGN_AND_PREFIX(ptr, _w, _need, flags, limit, prefix,         \
+                                pfxlen);                                      \
+        }                                                                     \
+        while (_digits > 0) {                                                 \
+            _digshift -= digbits;                                             \
+            _c = (_digshift >= 8 * sizeof(T)) ? (char)0                       \
+                                              : (char)(_v >> _digshift);      \
+            _v -= (((T)_c) << _digshift);                                     \
+            if (_c < 10) {                                                    \
+                _c += '0';                                                    \
+            } else if ((flags)&CONV_FLAG_CAPITALS) {                          \
+                _c += ('A' - 10);                                             \
+            } else {                                                          \
+                _c += ('a' - 10);                                             \
+            }                                                                 \
+            PUTNEXTCHAR(ptr, _c, limit);                                      \
+            _digits--;                                                        \
+            _w--;                                                             \
+        }                                                                     \
+        PUT_RIGHT_FILL(ptr, _w, _need, flags, limit, ' ');                    \
     } while (0 /*just once */)
 
-    PUT_HEX(dp, width, precision, flags, limit, prefix, pfxlen, unsigned, 4, v);
+    PUT_HEX(dp, width, precision, flags, limit, prefix, pfxlen, unsigned, 4,
+            v);
     return (dp - buf);
 }
+/* clang-format on */
 
 #ifndef put_lhex
 static int
@@ -416,7 +423,8 @@ put_octal(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-    PUT_HEX(dp, width, precision, flags, limit, prefix, pfxlen, unsigned, 3, v);
+    PUT_HEX(dp, width, precision, flags, limit, prefix, pfxlen, unsigned, 3,
+            v);
     return (dp - buf);
 }
 
@@ -590,15 +598,16 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
                                   flags & ~CONV_FLAG_INCLUDE_SIGN, limit, "-",
                                   1, -v);
                 } else {
-                    n = put_ulong(dp, width, precision, flags, limit, "", 0, v);
+                    n = put_ulong(dp, width, precision, flags, limit, "", 0,
+                                  v);
                 }
             } else if ((modifier == CONV_ARG_MODIFIER_SIZE_T) ||
                        (modifier == CONV_ARG_MODIFIER_PTRDIFF_T)) {
                 ptrdiff_t v = va_arg(ap, ptrdiff_t);
                 if (v < 0) {
                     n = put_size(dp, width, precision,
-                                 flags & ~CONV_FLAG_INCLUDE_SIGN, limit, "-", 1,
-                                 -v);
+                                 flags & ~CONV_FLAG_INCLUDE_SIGN, limit, "-",
+                                 1, -v);
                 } else {
                     n = put_size(dp, width, precision, flags, limit, "", 0, v);
                 }
@@ -702,7 +711,8 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
                 n = put_lhex(dp, width, precision, flags, limit, "0x", 2, v);
             } else {
                 size_t v = (size_t)va_arg(ap, void *);
-                n = put_sizehex(dp, width, precision, flags, limit, "0x", 2, v);
+                n = put_sizehex(dp, width, precision, flags, limit, "0x", 2,
+                                v);
             }
             dp += (n > 0) ? n : 0;
             break;

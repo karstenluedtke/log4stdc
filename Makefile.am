@@ -43,6 +43,10 @@ liblog4stdc_a_SOURCES+= log4stdc/jsonstrm.c
 liblog4stdc_a_SOURCES+= log4stdc/l4jstrm.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlstrm.c
 
+liblog4stdc_a_SOURCES+= LICENSE.txt
+liblog4stdc_a_SOURCES+= win32.mak
+liblog4stdc_a_SOURCES+= c600.mak
+
 noinst_PROGRAMS = examples/redirect
 examples_redirect_SOURCES = examples/redirect.c
 examples_redirect_LDADD = liblog4stdc.a

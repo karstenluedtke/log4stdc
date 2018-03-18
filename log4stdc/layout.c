@@ -63,30 +63,30 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
                const char *datefmtspec, l4sc_logmessage_cptr_t msg);
 
 const struct l4sc_layout_class l4sc_patternlayout_class = {
-    /* .super 	*/ (l4sc_layout_class_ptr_t)&l4sc_object_class,
-    /* .name 	*/ "layout",
-    /* .spare2 	*/ NULL,
-    /* .spare3 	*/ NULL,
-    /* .init 	*/ init_patternlayout,
-    /* .initrefc 	*/ (void *)l4sc_default_init_refcount,
-    /* .incrrefc 	*/ (void *)l4sc_default_incr_refcount,
-    /* .decrrefc 	*/ (void *)l4sc_default_decr_refcount,
-    /* .destroy 	*/ NULL, /* inherit */
-    /* .clone 	*/ (void *)l4sc_default_clone_object,
-    /* .clonesize 	*/ get_layout_size,
-    /* .compare 	*/ compare_layout,
-    /* .hashcode 	*/ get_layout_hashcode,
-    /* .length 	*/ get_layout_length,
-    /* .tostring 	*/ layout_tostring,
-    /* .dump 	*/ NULL, /* inherit */
-    /* .set_name	*/ set_layout_name,
-    /* .set_opt	*/ set_layout_option,
-    /* .get_opt	*/ get_layout_option,
-    /* .apply	*/ apply_layout_options,
-    /* .close	*/ NULL,
-    /* .format	*/ format_by_pattern,
-    /* .header	*/ format_header,
-    /* .estimate	*/ estimate_size};
+    /* .super        */ (l4sc_layout_class_ptr_t)&l4sc_object_class,
+    /* .name         */ "layout",
+    /* .spare2       */ NULL,
+    /* .spare3       */ NULL,
+    /* .init         */ init_patternlayout,
+    /* .initrefc     */ (void *)l4sc_default_init_refcount,
+    /* .incrrefc     */ (void *)l4sc_default_incr_refcount,
+    /* .decrrefc     */ (void *)l4sc_default_decr_refcount,
+    /* .destroy      */ NULL, /* inherit */
+    /* .clone        */ (void *)l4sc_default_clone_object,
+    /* .clonesize    */ get_layout_size,
+    /* .compare      */ compare_layout,
+    /* .hashcode     */ get_layout_hashcode,
+    /* .length       */ get_layout_length,
+    /* .tostring     */ layout_tostring,
+    /* .dump         */ NULL, /* inherit */
+    /* .set_name     */ set_layout_name,
+    /* .set_opt      */ set_layout_option,
+    /* .get_opt      */ get_layout_option,
+    /* .apply        */ apply_layout_options,
+    /* .close        */ NULL,
+    /* .format       */ format_by_pattern,
+    /* .header       */ format_header,
+    /* .estimate     */ estimate_size};
 
 extern const struct l4sc_layout_class l4sc_json_stream_layout_class;
 extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;

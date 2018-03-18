@@ -68,30 +68,30 @@ merge_path(char *buf, int bufsize, const char *dirpath, const char *relpath,
 extern const struct l4sc_appender_class l4sc_sysout_appender_class;
 
 const struct l4sc_appender_class l4sc_file_appender_class = {
-    /* .super 	*/ &l4sc_sysout_appender_class,
-    /* .name 	*/ "fileappender",
-    /* .spare2 	*/ NULL,
-    /* .spare3 	*/ NULL,
-    /* .init 	*/ init_appender,
-    /* .initrefc 	*/ (void *)l4sc_default_init_refcount,
-    /* .incrrefc 	*/ (void *)l4sc_default_incr_refcount,
-    /* .decrrefc 	*/ (void *)l4sc_default_decr_refcount,
-    /* .destroy 	*/ destroy_appender,
-    /* .clone 	*/ (void *)l4sc_default_clone_object,
-    /* .clonesize 	*/ get_appender_size,
-    /* .compare 	*/ (void *)l4sc_default_compare_object,
-    /* .hashcode 	*/ (void *)l4sc_default_get_object_hashcode,
-    /* .length 	*/ (void *)l4sc_default_get_object_length,
-    /* .tostring 	*/ (void *)l4sc_default_object_tostring,
-    /* .dump 	*/ (void *)l4sc_default_dump_object,
-    /* .set_name	*/ NULL, /* inherit */
-    /* .set_opt	*/ set_appender_option,
-    /* .get_opt	*/ get_appender_option,
-    /* .apply	*/ apply_appender_options,
-    /* .close	*/ close_appender,
-    /* .append	*/ append_to_output,
-    /* .set_layout	*/ NULL, /* inherit */
-    /* .ref_layout	*/ NULL  /* inherit */
+    /* .super        */ &l4sc_sysout_appender_class,
+    /* .name         */ "fileappender",
+    /* .spare2       */ NULL,
+    /* .spare3       */ NULL,
+    /* .init         */ init_appender,
+    /* .initrefc     */ (void *)l4sc_default_init_refcount,
+    /* .incrrefc     */ (void *)l4sc_default_incr_refcount,
+    /* .decrrefc     */ (void *)l4sc_default_decr_refcount,
+    /* .destroy      */ destroy_appender,
+    /* .clone        */ (void *)l4sc_default_clone_object,
+    /* .clonesize    */ get_appender_size,
+    /* .compare      */ (void *)l4sc_default_compare_object,
+    /* .hashcode     */ (void *)l4sc_default_get_object_hashcode,
+    /* .length       */ (void *)l4sc_default_get_object_length,
+    /* .tostring     */ (void *)l4sc_default_object_tostring,
+    /* .dump         */ (void *)l4sc_default_dump_object,
+    /* .set_name     */ NULL, /* inherit */
+    /* .set_opt      */ set_appender_option,
+    /* .get_opt      */ get_appender_option,
+    /* .apply        */ apply_appender_options,
+    /* .close        */ close_appender,
+    /* .append       */ append_to_output,
+    /* .set_layout   */ NULL, /* inherit */
+    /* .ref_layout   */ NULL  /* inherit */
 };
 
 static char initial_working_directory[256] = {0};

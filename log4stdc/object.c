@@ -19,27 +19,27 @@ struct l4sc_object {
 const struct l4sc_object_class l4sc_object_class = {
     /* intentionally not using selective initialization for base class: */
     /* I want the compiler to complain if something is missing.         */
-    /* .super 	*/ NULL,
-    /* .name 	*/ "object",
-    /* .spare2 	*/ NULL,
-    /* .spare3 	*/ NULL,
-    /* .init 	*/ l4sc_default_init_object,
-    /* .initrefc 	*/ l4sc_default_init_refcount,
-    /* .incrrefc 	*/ l4sc_default_incr_refcount,
-    /* .decrrefc 	*/ l4sc_default_decr_refcount,
-    /* .destroy 	*/ l4sc_destroy_base_object,
-    /* .clone 	*/ l4sc_default_clone_object,
-    /* .clonesize 	*/ l4sc_default_get_object_size,
-    /* .compare 	*/ l4sc_default_compare_object,
-    /* .hashcode 	*/ l4sc_default_get_object_hashcode,
-    /* .length 	*/ l4sc_default_get_object_length,
-    /* .tostring 	*/ l4sc_default_object_tostring,
-    /* .dump 	*/ l4sc_default_dump_object,
-    /* .set_name	*/ l4sc_default_set_object_name,
-    /* .set_opt	*/ l4sc_default_set_object_option,
-    /* .get_opt	*/ l4sc_default_get_object_option,
-    /* .apply	*/ l4sc_default_apply_object_options,
-    /* .close	*/ l4sc_default_close_object};
+    /* .super        */ NULL,
+    /* .name         */ "object",
+    /* .spare2       */ NULL,
+    /* .spare3       */ NULL,
+    /* .init         */ l4sc_default_init_object,
+    /* .initrefc     */ l4sc_default_init_refcount,
+    /* .incrrefc     */ l4sc_default_incr_refcount,
+    /* .decrrefc     */ l4sc_default_decr_refcount,
+    /* .destroy      */ l4sc_destroy_base_object,
+    /* .clone        */ l4sc_default_clone_object,
+    /* .clonesize    */ l4sc_default_get_object_size,
+    /* .compare      */ l4sc_default_compare_object,
+    /* .hashcode     */ l4sc_default_get_object_hashcode,
+    /* .length       */ l4sc_default_get_object_length,
+    /* .tostring     */ l4sc_default_object_tostring,
+    /* .dump         */ l4sc_default_dump_object,
+    /* .set_name     */ l4sc_default_set_object_name,
+    /* .set_opt      */ l4sc_default_set_object_option,
+    /* .get_opt      */ l4sc_default_get_object_option,
+    /* .apply        */ l4sc_default_apply_object_options,
+    /* .close        */ l4sc_default_close_object};
 
 int
 l4sc_default_init_object(void *buf, size_t bufsize, bfc_mempool_t pool)

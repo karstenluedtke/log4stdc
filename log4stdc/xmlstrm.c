@@ -37,30 +37,30 @@ static size_t
 estimate_xml_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg);
 
 const struct l4sc_layout_class l4sc_xml_stream_layout_class = {
-    /* .super 	*/ (l4sc_layout_class_ptr_t)&l4sc_object_class,
-    /* .name 	*/ "XmlLayout",
-    /* .spare2 	*/ NULL,
-    /* .spare3 	*/ NULL,
-    /* .init 	*/ init_xml_stream_layout,
-    /* .initrefc 	*/ (void *)l4sc_default_init_refcount,
-    /* .incrrefc 	*/ (void *)l4sc_default_incr_refcount,
-    /* .decrrefc 	*/ (void *)l4sc_default_decr_refcount,
-    /* .destroy 	*/ NULL, /* inherit */
-    /* .clone 	*/ (void *)l4sc_default_clone_object,
-    /* .clonesize 	*/ get_layout_size,
-    /* .compare 	*/ NULL, /* inherit */
-    /* .hashcode 	*/ NULL, /* inherit */
-    /* .length 	*/ NULL,         /* inherit */
-    /* .tostring 	*/ NULL, /* inherit */
-    /* .dump 	*/ NULL,         /* inherit */
-    /* .set_name	*/ set_layout_name,
-    /* .set_opt	*/ set_layout_option,
-    /* .get_opt	*/ get_layout_option,
-    /* .apply	*/ apply_layout_options,
-    /* .close	*/ NULL,
-    /* .format	*/ format_xml_message,
-    /* .header	*/ format_header,
-    /* .estimate	*/ estimate_xml_size};
+    /* .super        */ (l4sc_layout_class_ptr_t)&l4sc_object_class,
+    /* .name         */ "XmlLayout",
+    /* .spare2       */ NULL,
+    /* .spare3       */ NULL,
+    /* .init         */ init_xml_stream_layout,
+    /* .initrefc     */ (void *)l4sc_default_init_refcount,
+    /* .incrrefc     */ (void *)l4sc_default_incr_refcount,
+    /* .decrrefc     */ (void *)l4sc_default_decr_refcount,
+    /* .destroy      */ NULL, /* inherit */
+    /* .clone        */ (void *)l4sc_default_clone_object,
+    /* .clonesize    */ get_layout_size,
+    /* .compare      */ NULL, /* inherit */
+    /* .hashcode     */ NULL, /* inherit */
+    /* .length       */ NULL, /* inherit */
+    /* .tostring     */ NULL, /* inherit */
+    /* .dump         */ NULL, /* inherit */
+    /* .set_name     */ set_layout_name,
+    /* .set_opt      */ set_layout_option,
+    /* .get_opt      */ get_layout_option,
+    /* .apply        */ apply_layout_options,
+    /* .close        */ NULL,
+    /* .format       */ format_xml_message,
+    /* .header       */ format_header,
+    /* .estimate     */ estimate_xml_size};
 
 static const unsigned short cp1252_80_9F[] = {
     0x20AC, 0x0081, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,

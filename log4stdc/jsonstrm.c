@@ -36,30 +36,30 @@ static size_t
 estimate_json_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg);
 
 const struct l4sc_layout_class l4sc_json_stream_layout_class = {
-    /* .super 	*/ (l4sc_layout_class_ptr_t)&l4sc_object_class,
-    /* .name 	*/ "JsonLayout",
-    /* .spare2 	*/ NULL,
-    /* .spare3 	*/ NULL,
-    /* .init 	*/ init_json_stream_layout,
-    /* .initrefc 	*/ (void *)l4sc_default_init_refcount,
-    /* .incrrefc 	*/ (void *)l4sc_default_incr_refcount,
-    /* .decrrefc 	*/ (void *)l4sc_default_decr_refcount,
-    /* .destroy 	*/ NULL, /* inherit */
-    /* .clone 	*/ (void *)l4sc_default_clone_object,
-    /* .clonesize 	*/ get_layout_size,
-    /* .compare 	*/ NULL, /* inherit */
-    /* .hashcode 	*/ NULL, /* inherit */
-    /* .length 	*/ NULL,         /* inherit */
-    /* .tostring 	*/ NULL, /* inherit */
-    /* .dump 	*/ NULL,         /* inherit */
-    /* .set_name	*/ set_layout_name,
-    /* .set_opt	*/ set_layout_option,
-    /* .get_opt	*/ get_layout_option,
-    /* .apply	*/ apply_layout_options,
-    /* .close	*/ NULL,
-    /* .format	*/ format_json_message,
-    /* .header	*/ format_header,
-    /* .estimate	*/ estimate_json_size};
+    /* .super        */ (l4sc_layout_class_ptr_t)&l4sc_object_class,
+    /* .name         */ "JsonLayout",
+    /* .spare2       */ NULL,
+    /* .spare3       */ NULL,
+    /* .init         */ init_json_stream_layout,
+    /* .initrefc     */ (void *)l4sc_default_init_refcount,
+    /* .incrrefc     */ (void *)l4sc_default_incr_refcount,
+    /* .decrrefc     */ (void *)l4sc_default_decr_refcount,
+    /* .destroy      */ NULL, /* inherit */
+    /* .clone        */ (void *)l4sc_default_clone_object,
+    /* .clonesize    */ get_layout_size,
+    /* .compare      */ NULL, /* inherit */
+    /* .hashcode     */ NULL, /* inherit */
+    /* .length       */ NULL, /* inherit */
+    /* .tostring     */ NULL, /* inherit */
+    /* .dump         */ NULL, /* inherit */
+    /* .set_name     */ set_layout_name,
+    /* .set_opt      */ set_layout_option,
+    /* .get_opt      */ get_layout_option,
+    /* .apply        */ apply_layout_options,
+    /* .close        */ NULL,
+    /* .format       */ format_json_message,
+    /* .header       */ format_header,
+    /* .estimate     */ estimate_json_size};
 
 static int
 init_json_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)

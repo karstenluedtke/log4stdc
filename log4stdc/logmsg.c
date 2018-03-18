@@ -42,22 +42,22 @@ logmessage_tostring(l4sc_logmessage_cptr_t obj, char *buf, size_t bufsize,
                     const char *fmt);
 
 const struct l4sc_logmessage_class l4sc_logmessage_class = {
-    /* .super 	*/ (l4sc_logmessage_class_ptr_t)&l4sc_object_class,
-    /* .name 	*/ "logmessage",
-    /* .spare2 	*/ NULL,
-    /* .spare3 	*/ NULL,
-    /* .init 	*/ init_logmessage,
-    /* .initrefc 	*/ NULL, /* inherit */
-    /* .incrrefc 	*/ NULL, /* inherit */
-    /* .decrrefc 	*/ NULL, /* inherit */
-    /* .destroy 	*/ NULL, /* inherit */
-    /* .clone 	*/ (void *)l4sc_default_clone_object,
-    /* .clonesize 	*/ get_logmessage_size,
-    /* .compare 	*/ compare_logmessage,
-    /* .hashcode 	*/ get_logmessage_hashcode,
-    /* .length 	*/ get_logmessage_length,
-    /* .tostring 	*/ logmessage_tostring,
-    /* .dump 	*/ NULL /* inherit */
+    /* .super        */ (l4sc_logmessage_class_ptr_t)&l4sc_object_class,
+    /* .name         */ "logmessage",
+    /* .spare2       */ NULL,
+    /* .spare3       */ NULL,
+    /* .init         */ init_logmessage,
+    /* .initrefc     */ NULL, /* inherit */
+    /* .incrrefc     */ NULL, /* inherit */
+    /* .decrrefc     */ NULL, /* inherit */
+    /* .destroy      */ NULL, /* inherit */
+    /* .clone        */ (void *)l4sc_default_clone_object,
+    /* .clonesize    */ get_logmessage_size,
+    /* .compare      */ compare_logmessage,
+    /* .hashcode     */ get_logmessage_hashcode,
+    /* .length       */ get_logmessage_length,
+    /* .tostring     */ logmessage_tostring,
+    /* .dump         */ NULL /* inherit */
 };
 
 static int

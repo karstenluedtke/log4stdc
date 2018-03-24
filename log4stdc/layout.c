@@ -62,6 +62,9 @@ static int
 format_logtime(char *buf, size_t bufsize, const char *fmt,
                const char *datefmtspec, l4sc_logmessage_cptr_t msg);
 
+static int
+format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim);
+
 const struct l4sc_layout_class l4sc_patternlayout_class = {
     /* .super        */ (l4sc_layout_class_ptr_t)&l4sc_object_class,
     /* .name         */ "layout",
@@ -100,7 +103,10 @@ init_patternlayout(void *buf, size_t bufsize, bfc_mempool_t pool)
         BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t, l4sc_layout_ptr_t, layout,
                           buf, bufsize, pool, &l4sc_patternlayout_class);
         layout->name = "pattern layout";
-        strncpy(layout->u.pattern, "%m%n", sizeof(layout->u.pattern));
+        strncpy(layout->u.patternlayout.pattern, "%m%n",
+                sizeof(layout->u.patternlayout.pattern));
+        strncpy(layout->u.patternlayout.datefmt, "%Y-%m-%d %H:%M:%S",
+                sizeof(layout->u.patternlayout.pattern));
     }
     return (BFC_SUCCESS);
 }
@@ -116,7 +122,7 @@ get_layout_hashcode(l4sc_layout_cptr_t obj, int hashlen)
 {
     unsigned x = 0;
     const unsigned char *cp;
-    for (cp = (unsigned char *)obj->u.pattern; *cp; cp++) {
+    for (cp = (unsigned char *)obj->u.patternlayout.pattern; *cp; cp++) {
         x = (x << 7) ^ ((x >> (8 * sizeof(x) - 7)) & 0x7f) ^ *cp;
     }
     return (l4sc_reduce_hashcode(x, 8 * sizeof(x), hashlen));
@@ -128,7 +134,8 @@ compare_layout(l4sc_layout_cptr_t obj, l4sc_layout_cptr_t other)
     if (other == obj) {
         return (0);
     } else if (BFC_CLASS(other) == BFC_CLASS(obj)) {
-        return (strcmp(other->u.pattern, obj->u.pattern));
+        return (strcmp(other->u.patternlayout.pattern,
+                       obj->u.patternlayout.pattern));
     }
     return (1);
 }
@@ -143,10 +150,10 @@ static int
 layout_tostring(l4sc_layout_cptr_t obj, char *buf, size_t bufsize,
                 const char *fmt)
 {
-    if (obj && obj->u.pattern && buf) {
-        size_t patlen = strlen(obj->u.pattern);
+    if (obj && obj->u.patternlayout.pattern && buf) {
+        size_t patlen = strlen(obj->u.patternlayout.pattern);
         if (bufsize > patlen) {
-            memcpy(buf, obj->u.pattern, patlen);
+            memcpy(buf, obj->u.patternlayout.pattern, patlen);
             buf[patlen] = 0;
             return ((int)patlen);
         }
@@ -170,6 +177,19 @@ set_layout_name(l4sc_layout_ptr_t obj, const char *name, int len)
     }
 }
 
+static const char *
+skip_width_and_prec(const char *s, const char *limit)
+{
+    const char *cp = s;
+    if ((cp < limit) && (*cp == '-')) {
+        cp++;
+    }
+    while ((cp < limit) && (((*cp >= '0') && (*cp <= '9')) || (*cp == '.'))) {
+        cp++;
+    }
+    return (cp);
+}
+
 static int
 set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
                   const char *value, size_t vallen)
@@ -178,12 +198,30 @@ set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
              (int)vallen, value));
 
     if ((namelen == 17) && (strncasecmp(name, "ConversionPattern", 17) == 0)) {
-        if (vallen < sizeof(obj->u.pattern)) {
-            memcpy(obj->u.pattern, value, vallen);
-            obj->u.pattern[vallen] = 0;
+        const char *cp, *limit = value + vallen;
+        const size_t bufsize = sizeof(obj->u.patternlayout.pattern);
+        if (vallen < bufsize) {
+            memcpy(obj->u.patternlayout.pattern, value, vallen);
+            obj->u.patternlayout.pattern[vallen] = 0;
         } else {
-            memcpy(obj->u.pattern, value, sizeof(obj->u.pattern) - 1);
-            obj->u.pattern[sizeof(obj->u.pattern) - 1] = 0;
+            memcpy(obj->u.patternlayout.pattern, value, bufsize - 1);
+            obj->u.patternlayout.pattern[bufsize - 1] = 0;
+        }
+        for (cp = value; (cp + 2 < limit) && *cp; cp++) {
+            if (cp[0] == '%') {
+                cp = skip_width_and_prec(cp + 1, limit);
+                if ((cp + 2 < limit) && (cp[0] == 'd') && (cp[1] == '{')) {
+                    const char *ep = memchr(cp + 2, '}', limit - (cp + 2));
+                    /* The date of the logging event.
+                     * The date conversion specifier may be followed
+                     * by a set of braces containing a pattern string.
+                     */
+                    format_datespec(obj->u.patternlayout.datefmt,
+                                    sizeof(obj->u.patternlayout.datefmt),
+                                    cp + 2, ep ? ep : limit);
+                    break;
+                }
+            }
         }
     } else if ((namelen == 5) && (strncasecmp(name, "class", 5) == 0)) {
         l4sc_set_layout_class_by_name(obj, value, vallen);
@@ -242,7 +280,7 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
 {
     char *dp = buf;
     const char *limit = buf + bufsize;
-    const char *cp = layout->u.pattern;
+    const char *cp = layout->u.patternlayout.pattern;
     const char *percent;
     char c;
     size_t len;
@@ -252,10 +290,7 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
     while ((c = *(cp++)) && (dp < limit)) {
         if (c == '%') {
             percent = cp - 1;
-            if (*cp == '-')
-                cp++;
-            while (((*cp >= '0') && (*cp <= '9')) || (*cp == '.'))
-                cp++;
+            cp = skip_width_and_prec(cp, cp + 9);
             if (cp < percent + sizeof(fmt) - 2) {
                 memcpy(fmt, percent, cp - percent);
                 fmt[cp - percent] = 's';
@@ -278,8 +313,8 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                  * that is a decimal constant in brackets.
                  */
                 len = l4sc_snprintf(dp, limit - dp, fmt, msg->logger->name);
-                if (*cp == '{') {
-                    const char *sep = strchr(cp, '}');
+                if (*cp == '[') {
+                    const char *sep = strchr(cp, ']');
                     if (sep) {
                         cp = sep + 1;
                     }
@@ -290,7 +325,8 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                  * The date conversion specifier may be followed
                  * by a set of braces containing a pattern string.
                  */
-                len = format_logtime(dp, limit - dp, fmt, cp, msg);
+                len = format_logtime(dp, limit - dp, fmt,
+                                     layout->u.patternlayout.datefmt, msg);
                 if (*cp == '{') {
                     const char *sep = strchr(cp, '}');
                     if (sep) {
@@ -335,19 +371,14 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                 }
                 break;
             case 'p':
-                len = l4sc_snprintf(
-                    dp, limit - dp, fmt,
-                    IS_AT_LEAST_FATAL_LEVEL(level)
-                        ? "FATAL"
-                        : IS_AT_LEAST_ERROR_LEVEL(level)
-                              ? "ERROR"
-                              : IS_AT_LEAST_WARN_LEVEL(level)
-                                    ? "WARN"
-                                    : IS_AT_LEAST_INFO_LEVEL(level)
-                                          ? "INFO"
-                                          : IS_AT_LEAST_DEBUG_LEVEL(level)
-                                                ? "DEBUG"
-                                                : "TRACE");
+                /* clang-format off */
+                len = l4sc_snprintf(dp, limit - dp, fmt,
+                        IS_AT_LEAST_FATAL_LEVEL(level)? "FATAL":
+                        IS_AT_LEAST_ERROR_LEVEL(level)? "ERROR":
+                        IS_AT_LEAST_WARN_LEVEL(level)?  "WARN":
+                        IS_AT_LEAST_INFO_LEVEL(level)?  "INFO":
+                        IS_AT_LEAST_DEBUG_LEVEL(level)? "DEBUG": "TRACE");
+                /* clang-format on */
                 break;
             case 'r':
                 len = l4sc_snprintf(dp, limit - dp, "%lu",
@@ -378,8 +409,9 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
 #include <windows.h>
 #endif
 
+#define MILLISEC_PLACEHOLDER 0x1a /* ASCII SUB -- substitute */
+
 /*
- * Not yet implemented:
  * The date conversion specifier may be followed by a set of braces containing
  * a date and time pattern string compatible with java.text.SimpleDateFormat,
  * ABSOLUTE, DATE or ISO8601.
@@ -388,10 +420,142 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
  */
 
 static int
+format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim)
+{
+    char *dp = buf;
+    const char *cp = fmt;
+
+    while ((cp < lim) && *cp && (dp + 3 < buf + bufsize)) {
+        const char c = *cp++;
+        int digits = 1;
+        while ((cp < lim) && (*cp == c)) {
+            digits++;
+            cp++;
+        }
+        switch (c) {
+        case 'A':
+            if (strncmp(cp, /*A*/ "BSOLUTE", 7) == 0) {
+                cp += 7;
+                if (dp + 13 < buf + bufsize) {
+                    memcpy(dp, "%H:%M:%S,", 9);
+                    memset(dp + 9, MILLISEC_PLACEHOLDER, 3);
+                    dp += 12;
+                }
+            }
+            break;
+        case 'I':
+            if (strncmp(cp, /*I*/ "SO8601", 6) == 0) {
+                cp += 6;
+                if (dp + 22 < buf + bufsize) {
+                    memcpy(dp, "%Y-%m-%d %H:%M:%S,", 18);
+                    memset(dp + 18, MILLISEC_PLACEHOLDER, 3);
+                    dp += 21;
+                } else if (dp + 16 < buf + bufsize) {
+                    memcpy(dp, "%F %H:%M:%S,", 12);
+                    memset(dp + 12, MILLISEC_PLACEHOLDER, 3);
+                    dp += 15;
+                }
+            }
+            break;
+        case 'D':
+            if (strncmp(cp, /*D*/ "ATE", 3) == 0) {
+                cp += 3;
+                if (dp + 22 < buf + bufsize) {
+                    memcpy(dp, "%d %b %Y %H:%M:%S,", 18);
+                    memset(dp + 18, MILLISEC_PLACEHOLDER, 3);
+                    dp += 21;
+                }
+            } else { /* Day in year: 189 */
+                *(dp++) = '%';
+                *(dp++) = 'j';
+            }
+            break;
+        case 'G': /* Era designator: AD */
+            *(dp++) = 'A';
+            *(dp++) = 'D';
+            break;
+        case 'y': /* Year: 1996; 96 */
+            *(dp++) = '%';
+            *(dp++) = (digits > 2) ? 'Y' : 'y';
+            break;
+        case 'M': /* Month in year: July; Jul; 07 */
+            *(dp++) = '%';
+            *(dp++) = (digits > 3) ? 'B' : (digits > 2) ? 'b' : 'm';
+            break;
+        case 'w': /* Week in year: 27 */
+            *(dp++) = '%';
+            *(dp++) = 'V';
+            break;
+        case 'W': /* Week in month: 2 */
+            break;
+        case 'd': /* Day in month: 10 */
+            *(dp++) = '%';
+            *(dp++) = 'd';
+            break;
+        case 'F': /* Day of week in month: 2 */
+            break;
+        case 'E': /* Day in week: Tuesday; Tue */
+            *(dp++) = '%';
+            *(dp++) = (digits > 3) ? 'A' : 'a';
+            break;
+        case 'a': /* Am/pm marker:         PM    */
+            *(dp++) = '%';
+            *(dp++) = 'p';
+            break;
+        case 'H': /* Hour in day (0-23):   0     */
+        case 'k': /* Hour in day (1-24):   24    */
+            *(dp++) = '%';
+            *(dp++) = 'H';
+            break;
+        case 'K': /* Hour in am/pm (0-11): 0     */
+        case 'h': /* Hour in am/pm (1-12): 12    */
+            *(dp++) = '%';
+            *(dp++) = 'I';
+            break;
+        case 'm': /* Minute in hour:       30    */
+            *(dp++) = '%';
+            *(dp++) = 'M';
+            break;
+        case 's': /* Second in minute:     55    */
+            *(dp++) = '%';
+            *(dp++) = 'S';
+            break;
+        case 'S': /* Millisecond:          978   */
+            if (dp + digits + 1 < buf + bufsize) {
+                memset(dp, MILLISEC_PLACEHOLDER, digits);
+                dp += digits;
+            } else {
+                *(dp++) = MILLISEC_PLACEHOLDER;
+                *(dp++) = MILLISEC_PLACEHOLDER;
+            }
+            break;
+        case 'z': /* Time zone: Pacific Standard Time; PST; GMT-08:00 */
+            *(dp++) = '%';
+            *(dp++) = 'Z';
+            break;
+        case 'Z': /* RFC 822 time zone:    -0800 */
+            *(dp++) = '%';
+            *(dp++) = 'z';
+            break;
+        default:
+            *(dp++) = c;
+        }
+    }
+    if (dp < buf + bufsize) {
+        *dp = '\0';
+    } else if (bufsize > 0) {
+        buf[bufsize - 1] = 0;
+    }
+    LOGDEBUG(("%s(%.*s): %s\n", __FUNCTION__, (int)(lim - fmt), fmt, buf));
+    return ((int)(dp - buf));
+}
+
+static int
 format_logtime(char *buf, size_t bufsize, const char *fmt,
                const char *datefmtspec, l4sc_logmessage_cptr_t msg)
 {
     char *dp = buf;
+    char *msbuf = NULL;
     const char *limit = buf + bufsize;
     int n;
     struct tm tmbuf;
@@ -435,18 +599,23 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 #endif
     } while (0 /* just once */);
 #endif
-    n = strftime(dp, limit - dp, "%H:%M:%S", &tmbuf);
+    n = strftime(dp, limit - dp, datefmtspec, &tmbuf);
     if ((n > 0) && (dp + n < limit)) {
+        msbuf = memchr(dp, MILLISEC_PLACEHOLDER, n);
         dp += n;
     }
-    if (dp + 4 < limit) {
-        int n = l4sc_snprintf(dp, limit - dp, ".%03u",
-                              (unsigned)(msg->time.tv_usec / 1000));
-        if ((n > 0) && (dp + n < limit)) {
-            dp += n;
+    if (msbuf && (msbuf + 2 < limit)) {
+        unsigned i = 1, divisor = 10000;
+        msbuf[0] = (char)('0' + (msg->time.tv_usec / 100000));
+        while ((msbuf + i < limit) && (msbuf[i] == MILLISEC_PLACEHOLDER)) {
+            if (divisor > 0) {
+                msbuf[i] = (char)('0' + (msg->time.tv_usec / divisor) % 10);
+            } else {
+                msbuf[i] = '0';
+            }
+            i++;
+            divisor /= 10;
         }
-    } else {
-        dp += 4;
     }
     if (limit == tmp + sizeof(tmp)) {
         return (l4sc_snprintf(buf, bufsize, fmt, tmp));

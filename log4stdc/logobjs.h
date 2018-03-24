@@ -121,7 +121,10 @@ struct l4sc_layout {
             char simple_message_reference[8];
             char stack_trace_element_reference[8];
         } jstrm;
-        char pattern[80];
+        struct patternlayout_s {
+            char pattern[80];
+            char datefmt[40];
+        } patternlayout;
     } u;
 };
 

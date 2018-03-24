@@ -70,12 +70,12 @@ main(int argc, char *argv[])
     assert(strstr(line, "DEBUG>") != NULL);
     assert(strstr(line, "test") != NULL);
 
-    strftime(buf, sizeof(buf), "%H:%M:%S.000 DEBUG> test", localtime(&t0));
+    strftime(buf, sizeof(buf), "%H:%M:%S,000 DEBUG> test", localtime(&t0));
     l4sc_logprintf(logger, DEBUG_LEVEL, __FILE__, __LINE__, "main",
                    "testing above line >= \"%s\"", buf);
     assert(strcmp(line, buf) >= 0);
 
-    strftime(buf, sizeof(buf), "%H:%M:%S.999 ERROR> test", localtime(&t1));
+    strftime(buf, sizeof(buf), "%H:%M:%S,999 ERROR> test", localtime(&t1));
     l4sc_logprintf(logger, DEBUG_LEVEL, __FILE__, __LINE__, "main",
                    "testing above line <= \"%s\"", buf);
     assert(strcmp(line, buf) <= 0);

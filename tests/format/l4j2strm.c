@@ -210,7 +210,7 @@ test1(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
       const char *expectation, int expected_length)
 {
     int i, bytes;
-    char buf[3000];
+    char buf[1400];
 
     bytes = l4sc_formatmsg(layout, msg, buf, sizeof(buf));
 
@@ -249,8 +249,8 @@ main(int argc, char *argv[])
     msg.msg = "another log line";
     msg.msglen = 16;
     msg.time.tv_day = 16836;
-    msg.time.tv_sec = 43200u;
-    msg.time.tv_usec = 10000u;
+    msg.time.tv_sec = 43200uL;
+    msg.time.tv_usec = 10000uL;
 
     test1(&layout, &msg, expectation2, sizeof(expectation2));
 

@@ -104,7 +104,7 @@ init_log4j_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
     BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t, l4sc_layout_ptr_t, layout, buf,
                       bufsize, pool, &l4sc_log4j_stream_layout_class);
     layout->name = "log4j stream layout";
-    layout->u.jstrm.object_handle = 0x7E0000;
+    layout->u.jstrm.object_handle = 0x7E0000uL;
     return (BFC_SUCCESS);
 }
 
@@ -114,7 +114,7 @@ init_log4j2_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
     BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t, l4sc_layout_ptr_t, layout, buf,
                       bufsize, pool, &l4sc_log4j2_stream_layout_class);
     layout->name = "log4j2 stream layout";
-    layout->u.jstrm.object_handle = 0x7E0000;
+    layout->u.jstrm.object_handle = 0x7E0000uL;
     return (BFC_SUCCESS);
 }
 
@@ -188,7 +188,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 #define TC_LONGSTRING 0x7C
 #define TC_PROXYCLASSDESC 0x7D
 #define TC_ENUM 0x7E
-#define baseWireHandle 0x7E0000
+#define baseWireHandle 0x7E0000uL
 /*
  * The flag byte classDescFlags may include values of
  */
@@ -328,7 +328,7 @@ write_prolog(l4sc_layout_ptr_t layout, char *buf, const char *limit,
         PUTNEXTSTRING(dp, refbytes, 6, limit);
         layout->u.jstrm.object_handle++;
     } else {
-        unsigned handle = layout->u.jstrm.object_handle;
+        unsigned long handle = layout->u.jstrm.object_handle;
         PUTNEXTBYTE(dp, TC_OBJECT, limit);
         PUTNEXTSTRING(dp, classdesc, desclen, limit);
         refbytes[0] = TC_OBJECT;

@@ -7,11 +7,13 @@
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
+#include <time.h>
 
 #include "log4stdc.h"
 #include "logobjs.h"
 
-#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_MSC_VER) || defined(_WIN32) || defined(__MINGW32__) ||           \
+    defined(__MINGW64__)
 #define NEWLINE "\r\n"
 #else
 #define NEWLINE "\n"
@@ -22,7 +24,7 @@ test1(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
       const char *expectation, int expected_length)
 {
     int bytes;
-    char buf[3000];
+    char buf[200];
 
     bytes = l4sc_formatmsg(layout, msg, buf, sizeof(buf));
 
@@ -39,8 +41,8 @@ test1(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
 }
 
 void
-test2(l4sc_layout_ptr_t layout, const char *pattern, unsigned day,
-      unsigned sec, unsigned usec, unsigned line, const char *text,
+test2(l4sc_layout_ptr_t layout, const char *pattern, unsigned long day,
+      unsigned long sec, unsigned long usec, unsigned line, const char *text,
       const char *expectation)
 {
     l4sc_logger_ptr_t logger = l4sc_get_logger("testlogger", 0);
@@ -65,7 +67,7 @@ main(int argc, char *argv[])
     struct l4sc_layout layout;
     struct l4sc_logmessage msg;
     struct mempool *pool = get_default_mempool();
-    unsigned day = 0, sec = 0, usec = 0;
+    unsigned long day = 0, sec = 0, usec = 0;
     int rc;
     struct tm *tm;
     struct tm localtm;
@@ -86,19 +88,28 @@ main(int argc, char *argv[])
 
     test1(&layout, &msg, "one log line" NEWLINE, 12 + strlen(NEWLINE));
 
-    day = 36 * 365 + 12 * 366 + 31 + 7; /* 8 Feb 2018 */
-    sec = 13 * 3600 + 45 * 60 + 13;     /* 13:45:13 local time */
-    usec = 455123;
+    day = 36uL * 365 + 12 * 366 + 31 + 7; /* 8 Feb 2018 */
+    sec = 13uL * 3600 + 45 * 60 + 13;     /* 13:45:13 local time */
+    usec = 455123uL;
 
-    tt = 86400uL * day + sec;
-    tm = localtime(&tt);
-    memcpy (&localtm, tm, sizeof(localtm));
-    sec -= 3600 * localtm.tm_hour + 60 * localtm.tm_min;
-    tm = gmtime(&tt);
-    sec += 3600 * tm->tm_hour + 60 * tm->tm_min; /* now UTC */
+    for (sec = 13; sec < 86400uL; sec += 300) {
+        tt = 86400uL * day + sec;
+        tm = localtime(&tt);
+        if ((tm->tm_mday >= 8) && (tm->tm_hour >= 13) && (tm->tm_min >= 45)) {
+            memcpy(&localtm, tm, sizeof(localtm));
+            break;
+        }
+    }
+
+    strftime(expectation, sizeof(expectation), "%a %Y-%m-%d %H:%M:%S", tm);
+    printf("sec %lu: %s\n", sec, expectation);
 
     /* clang-format off */
-    test2(&layout, "%d{ABSOLUTE} %-5p> %m%n", 0, sec, usec, 101, "text",
+    test2(&layout, "%d{yyyy-MM-dd} %-5p> %m%n",
+          day, sec, usec, 100, "text",
+          "2018-02-08 INFO > text" NEWLINE);
+
+    test2(&layout, "%d{ABSOLUTE} %-5p> %m%n", day, sec, usec, 101, "text",
           "13:45:13,455 INFO > text" NEWLINE);
 
     test2(&layout, "%d{ISO8601} %-5p> %m%n", day, sec, usec, 101, "text",
@@ -118,10 +129,10 @@ main(int argc, char *argv[])
           "2018-02-08 13:45:13.455 [mainthread] INFO  testlogger - text"
           NEWLINE);
 
-    rc = strftime(expectation, sizeof(expectation), "%a", &localtm);
+    rc = strftime(expectation, sizeof(expectation), "%a%V", &localtm);
     assert((rc > 0) && (rc < 15));
     strncpy(expectation + rc,
-            /*Thu*/ "06 13:45:13.455123000 INFO > text" NEWLINE,
+            /*Thu06*/ " 13:45:13.455123000 INFO > text" NEWLINE,
             sizeof(expectation) - rc);
     test2(&layout, "%d{EEEww HH:mm:ss.SSSSSSSSS} %-5p> %m%n",
           day, sec, usec, 103, "text", expectation);

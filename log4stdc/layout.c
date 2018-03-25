@@ -10,6 +10,7 @@
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
 #define L4SC_USE_WINDOWS_LOCALTIME 1
+#define L4SC_USE_WINDOWS_STRFTIME 1
 #endif
 
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
@@ -482,7 +483,11 @@ format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim)
             if (strncmp(cp, /*D*/ "ATE", 3) == 0) {
                 cp += 3;
                 if (dp + 22 < buf + bufsize) {
+#ifdef L4SC_USE_WINDOWS_STRFTIME
+                    memcpy(dp, "%d %m %Y %H:%M:%S,", 18);
+#else
                     memcpy(dp, "%d %b %Y %H:%M:%S,", 18);
+#endif
                     memset(dp + 18, MILLISEC_PLACEHOLDER, 3);
                     dp += 21;
                 }
@@ -504,8 +509,11 @@ format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim)
             *(dp++) = (digits > 3) ? 'B' : (digits > 2) ? 'b' : 'm';
             break;
         case 'w': /* Week in year: 27 */
+#ifdef L4SC_USE_WINDOWS_STRFTIME
+#else
             *(dp++) = '%';
             *(dp++) = 'V';
+#endif
             break;
         case 'W': /* Week in month: 2 */
             break;

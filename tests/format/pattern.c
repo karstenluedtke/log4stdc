@@ -12,11 +12,15 @@
 #include "log4stdc.h"
 #include "logobjs.h"
 
-#if defined(_MSC_VER) || defined(_WIN32) || defined(__MINGW32__) ||           \
-    defined(__MINGW64__)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#define WINDOWS_STRFTIME 1
+#define NEWLINE "\r\n"
+#else
+#if defined(_MSC_VER)
 #define NEWLINE "\r\n"
 #else
 #define NEWLINE "\n"
+#endif
 #endif
 
 void
@@ -116,7 +120,11 @@ main(int argc, char *argv[])
           "2018-02-08 13:45:13,455 INFO > text" NEWLINE);
 
     test2(&layout, "%d{DATE} %-5p> %m%n", day, sec, usec, 101, "text",
+#ifdef WINDOWS_STRFTIME /* might throw on %b */
+          "08 02 2018 13:45:13,455 INFO > text" NEWLINE);
+#else
           "08 Feb 2018 13:45:13,455 INFO > text" NEWLINE);
+#endif
 
     test2(&layout, "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c[2] - %m%n",
           day, sec, usec, 102, "text",
@@ -129,13 +137,18 @@ main(int argc, char *argv[])
           "2018-02-08 13:45:13.455 [mainthread] INFO  testlogger - text"
           NEWLINE);
 
+#ifdef WINDOWS_STRFTIME /* throws on %V */
+    rc = -1;
+#else
     rc = strftime(expectation, sizeof(expectation), "%a%V", &localtm);
-    assert((rc > 0) && (rc < 15));
-    strncpy(expectation + rc,
-            /*Thu06*/ " 13:45:13.455123000 INFO > text" NEWLINE,
-            sizeof(expectation) - rc);
-    test2(&layout, "%d{EEEww HH:mm:ss.SSSSSSSSS} %-5p> %m%n",
-          day, sec, usec, 103, "text", expectation);
+#endif
+    if ((rc > 0) && (rc < 15)) {
+        strncpy(expectation + rc,
+                /*Thu06*/ " 13:45:13.455123000 INFO > text" NEWLINE,
+                sizeof(expectation) - rc);
+        test2(&layout, "%d{EEEww HH:mm:ss.SSSSSSSSS} %-5p> %m%n",
+              day, sec, usec, 103, "text", expectation);
+    }
 
     test2(&layout, "%d{dd.MMM.yy HH:mm:ss.S} [%l] %-5p> %m%n",
           day, sec, usec, 104, "text",

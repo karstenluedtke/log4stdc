@@ -23,6 +23,10 @@ _localtime64(const __time64_t *);
 #endif
 #endif
 
+#if defined(HAVE_STDINT_H)
+#include <stdint.h>
+#endif
+
 static int
 init_patternlayout(void *, size_t, bfc_mempool_t);
 static size_t
@@ -623,7 +627,11 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
     }
     if (msbuf && (msbuf + 2 < limit)) {
         unsigned i = 1, divisor = 10000;
-        msbuf[0] = (char)('0' + (msg->time.tv_usec / 100000));
+#ifdef UINT32_C
+        msbuf[0] = (char)('0' + (msg->time.tv_usec / UINT32_C(100000)));
+#else
+        msbuf[0] = (char)('0' + (msg->time.tv_usec / 100000uL));
+#endif
         while ((msbuf + i < limit) && (msbuf[i] == MILLISEC_PLACEHOLDER)) {
             if (divisor > 0) {
                 msbuf[i] = (char)('0' + (msg->time.tv_usec / divisor) % 10);

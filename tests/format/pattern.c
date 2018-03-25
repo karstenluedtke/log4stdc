@@ -66,8 +66,11 @@ main(int argc, char *argv[])
     struct l4sc_logmessage msg;
     struct mempool *pool = get_default_mempool();
     unsigned day = 0, sec = 0, usec = 0;
+    int rc;
     struct tm *tm;
+    struct tm localtm;
     time_t tt = 0;
+    char expectation[80];
 
     logger = l4sc_get_logger("testlogger", 0);
 
@@ -85,11 +88,12 @@ main(int argc, char *argv[])
 
     day = 36 * 365 + 12 * 366 + 31 + 7; /* 8 Feb 2018 */
     sec = 13 * 3600 + 45 * 60 + 13;     /* 13:45:13 local time */
-    usec = 455000;
+    usec = 455123;
 
     tt = 86400uL * day + sec;
     tm = localtime(&tt);
-    sec -= 3600 * tm->tm_hour + 60 * tm->tm_min;
+    memcpy (&localtm, tm, sizeof(localtm));
+    sec -= 3600 * localtm.tm_hour + 60 * localtm.tm_min;
     tm = gmtime(&tt);
     sec += 3600 * tm->tm_hour + 60 * tm->tm_min; /* now UTC */
 
@@ -103,8 +107,7 @@ main(int argc, char *argv[])
     test2(&layout, "%d{DATE} %-5p> %m%n", day, sec, usec, 101, "text",
           "08 Feb 2018 13:45:13,455 INFO > text" NEWLINE);
 
-    test2(&layout,
-          "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c[2] - %m%n",
+    test2(&layout, "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c[2] - %m%n",
           day, sec, usec, 102, "text",
           "2018-02-08 13:45:13.455 [mainthread] INFO  testlogger - text"
           NEWLINE);
@@ -114,6 +117,20 @@ main(int argc, char *argv[])
           day, sec, usec, 102, "text",
           "2018-02-08 13:45:13.455 [mainthread] INFO  testlogger - text"
           NEWLINE);
+
+    rc = strftime(expectation, sizeof(expectation), "%a", &localtm);
+    assert((rc > 0) && (rc < 15));
+    strncpy(expectation + rc,
+            /*Thu*/ "06 13:45:13.455123000 INFO > text" NEWLINE,
+            sizeof(expectation) - rc);
+    test2(&layout, "%d{EEEww HH:mm:ss.SSSSSSSSS} %-5p> %m%n",
+          day, sec, usec, 103, "text", expectation);
+
+    test2(&layout, "%d{dd.MMM.yy HH:mm:ss.S} [%l] %-5p> %m%n",
+          day, sec, usec, 104, "text",
+          "08.Feb.18 13:45:13.4 [testfunction(sourcefile:104)] INFO > text"
+          NEWLINE);
+
     /* clang-format on */
 
     return (0);

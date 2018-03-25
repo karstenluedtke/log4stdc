@@ -106,7 +106,7 @@ init_patternlayout(void *buf, size_t bufsize, bfc_mempool_t pool)
         strncpy(layout->u.patternlayout.pattern, "%m%n",
                 sizeof(layout->u.patternlayout.pattern));
         strncpy(layout->u.patternlayout.datefmt, "%Y-%m-%d %H:%M:%S",
-                sizeof(layout->u.patternlayout.pattern));
+                sizeof(layout->u.patternlayout.datefmt));
     }
     return (BFC_SUCCESS);
 }
@@ -302,6 +302,15 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
             }
             len = 0;
             c = *cp++;
+            if (c == 'l') {
+                if (memcmp(cp, /*l*/ "evel", 4) == 0) {
+                    c = 'p';
+                    cp += 4;
+                } else if (memcmp(cp, /*l*/ "ogger", 5) == 0) {
+                    c = 'c';
+                    cp += 5;
+                }
+            }
             switch (c) {
             case 0:
                 --cp; /* let cp point to '\0' again */
@@ -315,6 +324,11 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                 len = l4sc_snprintf(dp, limit - dp, fmt, msg->logger->name);
                 if (*cp == '[') {
                     const char *sep = strchr(cp, ']');
+                    if (sep) {
+                        cp = sep + 1;
+                    }
+                } else if (*cp == '{') {
+                    const char *sep = strchr(cp, '}');
                     if (sep) {
                         cp = sep + 1;
                     }
@@ -345,6 +359,9 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                 len = l4sc_snprintf(dp, limit - dp, "%d", msg->line);
                 break;
             case 'm':
+                if (memcmp(cp, /*m*/ "sg", 2) == 0) {
+                    cp += 2;
+                }
                 if (msg && ((len = msg->msglen) > 0)) {
                     if (dp + len < limit) {
                         memcpy(dp, msg->msg, len);

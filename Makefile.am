@@ -109,6 +109,12 @@ tests_format_snprintf_LDADD = liblog4stdc.a
 tests_format_snprintf_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/format/snprintf
 
+check_PROGRAMS += tests/format/pattern
+tests_format_pattern_SOURCES = tests/format/pattern.c
+tests_format_pattern_LDADD = liblog4stdc.a
+tests_format_pattern_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/format/pattern
+
 check_PROGRAMS += tests/format/currtime
 tests_format_currtime_SOURCES = tests/format/currtime.c
 tests_format_currtime_LDADD = liblog4stdc.a

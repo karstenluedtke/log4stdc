@@ -42,6 +42,7 @@ TESTS= \
 	tests/xmlcfg/bigfile.exe \
 	tests/propcfg/level.exe \
 	tests/format/snprintf.exe \
+	tests/format/pattern.exe \
 	tests/format/currtime.exe \
 	tests/format/l4j2strm.exe \
 	tests/appender/l4jsock.exe \
@@ -62,6 +63,7 @@ check: $(OFILES) $(HEADERS) $(TESTS)
 	tests\xmlcfg\bigfile.exe
 	tests\propcfg\level.exe
 	tests\format\snprintf.exe
+	tests\format\pattern.exe
 	tests\format\currtime.exe
 	tests\format\l4j2strm.exe
 	tests\appender\l4jsock.exe
@@ -193,6 +195,12 @@ tests/format/snprintf.exe: \
 		log4stdc.lib
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\format\snprintf.obj tests/format/snprintf.c 
 	$(CC) $(CFLAGS) -Fetests\format\snprintf.exe tests\format\snprintf.obj log4stdc.lib $(LFLAGS)
+
+tests/format/pattern.exe: \
+		tests/format/pattern.c \
+		log4stdc.lib
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fotests\format\pattern.obj tests/format/pattern.c 
+	$(CC) $(CFLAGS) -Fetests\format\pattern.exe tests\format\pattern.obj log4stdc.lib $(LFLAGS)
 
 tests/format/currtime.exe: \
 		tests/format/currtime.c \

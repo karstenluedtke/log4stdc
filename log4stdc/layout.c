@@ -64,8 +64,8 @@ static size_t
 format_header(l4sc_layout_ptr_t layout, int kind, char *buf, size_t bufsize);
 
 static int
-format_logtime(char *buf, size_t bufsize, const char *fmt,
-               const char *datefmtspec, l4sc_logmessage_cptr_t msg);
+format_logtime(char *buf, size_t bufsize, const char *fmt, const char *datefmt,
+               size_t datefmtlen, l4sc_logmessage_cptr_t msg);
 
 static int
 format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim);
@@ -286,9 +286,9 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
     char *dp = buf;
     const char *limit = buf + bufsize;
     const char *cp = layout->u.patternlayout.pattern;
-    const char *percent;
+    const char *percent, *datefmt;
     char c;
-    size_t len;
+    size_t len, datefmtlen;
     int level = msg ? msg->level : 0;
     char fmt[12];
 
@@ -344,14 +344,18 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                  * The date conversion specifier may be followed
                  * by a set of braces containing a pattern string.
                  */
-                len = format_logtime(dp, limit - dp, fmt,
-                                     layout->u.patternlayout.datefmt, msg);
+                datefmt = "yyyy-MM-dd HH-mm-ss";
+                datefmtlen = 19;
                 if (*cp == '{') {
                     const char *sep = strchr(cp, '}');
                     if (sep) {
+                        datefmt = cp + 1;
+                        datefmtlen = sep - datefmt;
                         cp = sep + 1;
                     }
                 }
+                len = format_logtime(dp, limit - dp, fmt, datefmt, datefmtlen,
+                                     msg);
                 break;
             case 'F':
                 len = l4sc_snprintf(dp, limit - dp, fmt, msg->file);
@@ -580,11 +584,10 @@ format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim)
 }
 
 static int
-format_logtime(char *buf, size_t bufsize, const char *fmt,
-               const char *datefmtspec, l4sc_logmessage_cptr_t msg)
+format_logtime(char *buf, size_t bufsize, const char *fmt, const char *datefmt,
+               size_t datefmtlen, l4sc_logmessage_cptr_t msg)
 {
     char *dp = buf;
-    char *msbuf = NULL;
     const char *limit = buf + bufsize;
     int n;
     struct tm tmbuf;
@@ -628,27 +631,10 @@ format_logtime(char *buf, size_t bufsize, const char *fmt,
 #endif
     } while (0 /* just once */);
 #endif
-    n = strftime(dp, limit - dp, datefmtspec, &tmbuf);
+    n = l4sc_format_jtime(dp, limit - dp, datefmt, datefmtlen, &tmbuf,
+                          msg->time.tv_usec);
     if ((n > 0) && (dp + n < limit)) {
-        msbuf = memchr(dp, MILLISEC_PLACEHOLDER, n);
         dp += n;
-    }
-    if (msbuf && (msbuf + 2 < limit)) {
-        unsigned i = 1, divisor = 10000;
-#ifdef UINT32_C
-        msbuf[0] = (char)('0' + (msg->time.tv_usec / UINT32_C(100000)));
-#else
-        msbuf[0] = (char)('0' + (msg->time.tv_usec / 100000uL));
-#endif
-        while ((msbuf + i < limit) && (msbuf[i] == MILLISEC_PLACEHOLDER)) {
-            if (divisor > 0) {
-                msbuf[i] = (char)('0' + (msg->time.tv_usec / divisor) % 10);
-            } else {
-                msbuf[i] = '0';
-            }
-            i++;
-            divisor /= 10;
-        }
     }
     if (limit == tmp + sizeof(tmp)) {
         return (l4sc_snprintf(buf, bufsize, fmt, tmp));

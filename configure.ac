@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([log4stdc], [1.0.1], [karsten.luedtke.berlin@googlemail.com])
+AC_INIT([log4stdc], [1.0.2], [karsten.luedtke.berlin@googlemail.com])
 AC_ARG_ENABLE([bfclog4cxx],
 [  --enable-bfclog4cxx    Build replacement library for log4cxx],
 [case "${enableval}" in
@@ -60,6 +60,26 @@ AC_CHECK_TYPES([struct timespec], [], [], [[
 # endif
 #endif
 ]])
+
+AC_CHECK_MEMBER([struct tm.tm_gmtoff], [AC_DEFINE([HAVE_TM_TM_GMTOFF],1,
+    [Define to 1 if the system has the tm_gmtoff field in struct tm])],
+    [], [[
+#define _BSD_SOURCE 1
+#include <time.h>
+]])
+AC_CHECK_MEMBER([struct tm.__tm_gmtoff], [AC_DEFINE([HAVE_TM___TM_GMTOFF],1,
+    [Define to 1 if the system has the __tm_gmtoff field in struct tm])],
+    [], [[#include <time.h>]])
+
+AC_CHECK_MEMBER([struct tm.tm_zone], [AC_DEFINE([HAVE_TM_TM_ZONE],1,
+    [Define to 1 if the system has the tm_zone field in struct tm])],
+    [], [[
+#define _BSD_SOURCE 1
+#include <time.h>
+]])
+AC_CHECK_MEMBER([struct tm.__tm_zone], [AC_DEFINE([HAVE_TM___TM_ZONE],1,
+    [Define to 1 if the system has the __tm_zone field in struct tm])],
+    [], [[#include <time.h>]])
 
 # Checks for library functions.
 AC_FUNC_ALLOCA

@@ -13,7 +13,6 @@
 #include "logobjs.h"
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
-#define WINDOWS_STRFTIME 1
 #define NEWLINE "\r\n"
 #else
 #if defined(_MSC_VER)
@@ -72,11 +71,12 @@ main(int argc, char *argv[])
     struct l4sc_logmessage msg;
     struct mempool *pool = get_default_mempool();
     unsigned long day = 0, sec = 0, usec = 0;
-    int rc;
     struct tm *tm;
     struct tm localtm;
     time_t tt = 0;
     char expectation[80];
+    char zonestring[40];
+    char zonerfc822[20];
 
     logger = l4sc_get_logger("testlogger", 0);
 
@@ -96,7 +96,7 @@ main(int argc, char *argv[])
     sec = 13uL * 3600 + 45 * 60 + 13;     /* 13:45:13 local time */
     usec = 455123uL;
 
-    for (sec = 13; sec < 86400uL; sec += 300) {
+    for (sec = 13; sec < 86400uL; sec += 60) {
         tt = 86400uL * day + sec;
         tm = localtime(&tt);
         if ((tm->tm_mday >= 8) && (tm->tm_hour >= 13) && (tm->tm_min >= 45)) {
@@ -120,11 +120,7 @@ main(int argc, char *argv[])
           "2018-02-08 13:45:13,455 INFO > text" NEWLINE);
 
     test2(&layout, "%d{DATE} %-5p> %m%n", day, sec, usec, 101, "text",
-#ifdef WINDOWS_STRFTIME /* might throw on %b */
-          "08 02 2018 13:45:13,455 INFO > text" NEWLINE);
-#else
           "08 Feb 2018 13:45:13,455 INFO > text" NEWLINE);
-#endif
 
     test2(&layout, "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c[2] - %m%n",
           day, sec, usec, 102, "text",
@@ -137,23 +133,80 @@ main(int argc, char *argv[])
           "2018-02-08 13:45:13.455 [mainthread] INFO  testlogger - text"
           NEWLINE);
 
-#ifdef WINDOWS_STRFTIME /* throws on %V */
-    rc = -1;
-#else
-    rc = strftime(expectation, sizeof(expectation), "%a%V", &localtm);
-#endif
-    if ((rc > 0) && (rc < 15)) {
-        strncpy(expectation + rc,
-                /*Thu06*/ " 13:45:13.455123000 INFO > text" NEWLINE,
-                sizeof(expectation) - rc);
-        test2(&layout, "%d{EEEww HH:mm:ss.SSSSSSSSS} %-5p> %m%n",
-              day, sec, usec, 103, "text", expectation);
-    }
+    test2(&layout, "%d{EEEww HH:mm:ss.SSSSSSSSS} %-5p> %m%n",
+          day, sec, usec, 103, "text",
+          "Thu06 13:45:13.455123000 INFO > text" NEWLINE);
 
     test2(&layout, "%d{dd.MMM.yy HH:mm:ss.S} [%l] %-5p> %m%n",
           day, sec, usec, 104, "text",
           "08.Feb.18 13:45:13.4 [testfunction(sourcefile:104)] INFO > text"
           NEWLINE);
+
+    /* clang-format on */
+    /* 2001-07-04 12:08:56.235 local time */
+    day = 23uL * 365 + 8 * 366 + 31 + 28 + 31 + 30 + 31 + 30 + 3;
+    sec = 12uL * 3600 + 8 * 60 + 56;
+    usec = 235000;
+
+    for (sec = 56; sec < 86400uL; sec += 60) {
+        tt = 86400uL * day + sec;
+        tm = localtime(&tt);
+        if ((tm->tm_mday >= 4) && (tm->tm_hour >= 12) && (tm->tm_min >= 8)) {
+            memcpy(&localtm, tm, sizeof(localtm));
+            break;
+        }
+    }
+
+    strftime(expectation, sizeof(expectation), "%a %Y-%m-%d %H:%M:%S", tm);
+    printf("sec %lu: %s\n", sec, expectation);
+
+    strftime(expectation, sizeof(expectation), "%a %Y-%m-%d %H:%M:%S", &localtm);
+    printf("sec %lu: %s\n", sec, expectation);
+    l4sc_format_jtime(zonestring, sizeof(zonestring), "z", 1, &localtm, 0);
+    l4sc_format_jtime(zonerfc822, sizeof(zonerfc822), "Z", 1, &localtm, 0);
+
+    /* clang-format off */
+    snprintf(expectation, sizeof(expectation), 
+          "2001.07.04 AD at 12:08:56 %s INFO > text" NEWLINE, zonestring);
+    test2(&layout, "%d{yyyy.MM.dd G 'at' HH:mm:ss z} %-5p> %m%n",
+          day, sec, usec, 201, "text", expectation);
+
+    test2(&layout, "%d{EEE, MMM d, ''yy} %-5p> %m%n",
+          day, sec, usec, 202, "text",
+          "Wed, Jul 4, '01 INFO > text" NEWLINE);
+
+    test2(&layout, "%d{h:mm a} %-5p> %m%n",
+          day, sec, usec, 203, "text",
+          "12:08 PM INFO > text" NEWLINE);
+
+    snprintf(expectation, sizeof(expectation), 
+          "12 o'clock PM, %s INFO > text" NEWLINE, zonestring);
+    test2(&layout, "%d{hh 'o''clock' a, zzzz} %-5p> %m%n",
+          day, sec, usec, 204, "text", expectation);
+
+    snprintf(expectation, sizeof(expectation), 
+          "0:08 PM, %s INFO > text" NEWLINE, zonestring);
+    test2(&layout, "%d{K:mm a, z} %-5p> %m%n",
+          day, sec, usec, 205, "text", expectation);
+
+    test2(&layout, "%d{yyyyy.MMMMM.dd GGG hh:mm aaa} %-5p> %m%n",
+          day, sec, usec, 206, "text",
+          "02001.July.04 AD 12:08 PM INFO > text" NEWLINE);
+
+    snprintf(expectation, sizeof(expectation), 
+          "Wed, 4 Jul 2001 12:08:56 %s INFO > text" NEWLINE, zonerfc822);
+    test2(&layout, "%d{EEE, d MMM yyyy HH:mm:ss Z} %-5p> %m%n",
+          day, sec, usec, 207, "text", expectation);
+
+    snprintf(expectation, sizeof(expectation), 
+          "010704120856%s INFO > text" NEWLINE, zonerfc822);
+    test2(&layout, "%d{yyMMddHHmmssZ} %-5p> %m%n",
+          day, sec, usec, 208, "text", expectation);
+
+    snprintf(expectation, sizeof(expectation), 
+          "2001-07-04T12:08:56.235%s INFO > text" NEWLINE, zonerfc822);
+    test2(&layout, "%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %-5p> %m%n",
+          day, sec, usec, 209, "text", expectation);
 
     /* clang-format on */
 

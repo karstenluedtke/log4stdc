@@ -29,6 +29,7 @@ OFILES= \
 	log4stdc/filecfg.obj \
 	log4stdc/snprintf.obj \
 	log4stdc/vsnprntf.obj \
+	log4stdc/fmtjtime.obj \
 	log4stdc/sockappd.obj \
 	log4stdc/jsonstrm.obj \
 	log4stdc/l4jstrm.obj \
@@ -75,6 +76,7 @@ log4stdc.lib: $(OFILES) $(HEADERS)
 	lib $@ -+ log4stdc\filecfg.obj, nul,
 	lib $@ -+ log4stdc\snprintf.obj, nul,
 	lib $@ -+ log4stdc\vsnprntf.obj, nul,
+	lib $@ -+ log4stdc\fmtjtime.obj, nul,
 	lib $@ -+ log4stdc\sockappd.obj, nul,
 	lib $@ -+ log4stdc\jsonstrm.obj, nul,
 	lib $@ -+ log4stdc\l4jstrm.obj, nul,
@@ -162,6 +164,9 @@ log4stdc/snprintf.obj: log4stdc/snprintf.c $(HEADERS)
 
 log4stdc/vsnprntf.obj: log4stdc/vsnprntf.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/vsnprntf.c
+
+log4stdc/fmtjtime.obj: log4stdc/fmtjtime.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/fmtjtime.c
 
 log4stdc/sockappd.obj: log4stdc/sockappd.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/sockappd.c

@@ -1,13 +1,14 @@
 
-#include "compat.h"
-
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
+#define _BSD_SOURCE 1
 #include <time.h>
+
+#include "compat.h"
 
 #include "log4stdc.h"
 #include "logobjs.h"
@@ -142,7 +143,25 @@ main(int argc, char *argv[])
           "08.Feb.18 13:45:13.4 [testfunction(sourcefile:104)] INFO > text"
           NEWLINE);
 
+#ifdef HAVE_TM_TM_ZONE
+    snprintf(expectation, sizeof(expectation), 
+          "2018-02-08 13:45:13.455 %s INFO  - text" NEWLINE, localtm.tm_zone);
+    test2(&layout, "%d{yyyy-MM-dd HH:mm:ss.SSS z} %-5p - %m%n",
+          day, sec, usec, 105, "text", expectation);
+#endif
+
+    if (sec == 45913) /* we are in central european time zone */ {
+        test2(&layout, "%d{yyyy-MM-dd HH:mm:ss.SSSZ} %-5p - %m%n",
+              day, sec, usec, 105, "text",
+              "2018-02-08 13:45:13.455+0100 INFO  - text" NEWLINE);
+
+        test2(&layout, "%d{yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZZ} %-5p - %m%n",
+              day, sec, usec, 105, "text",
+              "2018-02-08T13:45:13.455+01:00 INFO  - text" NEWLINE);
+    }
+
     /* clang-format on */
+    /* Tests derived from examples in Java SimpleDateFormat class doc */
     /* 2001-07-04 12:08:56.235 local time */
     day = 23uL * 365 + 8 * 366 + 31 + 28 + 31 + 30 + 31 + 30 + 3;
     sec = 12uL * 3600 + 8 * 60 + 56;
@@ -160,10 +179,16 @@ main(int argc, char *argv[])
     strftime(expectation, sizeof(expectation), "%a %Y-%m-%d %H:%M:%S", tm);
     printf("sec %lu: %s\n", sec, expectation);
 
-    strftime(expectation, sizeof(expectation), "%a %Y-%m-%d %H:%M:%S", &localtm);
-    printf("sec %lu: %s\n", sec, expectation);
     l4sc_format_jtime(zonestring, sizeof(zonestring), "z", 1, &localtm, 0);
     l4sc_format_jtime(zonerfc822, sizeof(zonerfc822), "Z", 1, &localtm, 0);
+
+#ifdef HAVE_TM_TM_ZONE
+#define zonestring localtm.tm_zone
+#else
+#ifdef HAVE_TM___TM_ZONE
+#define zonestring localtm.__tm_zone
+#endif
+#endif
 
     /* clang-format off */
     snprintf(expectation, sizeof(expectation), 

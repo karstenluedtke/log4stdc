@@ -67,9 +67,6 @@ static int
 format_logtime(char *buf, size_t bufsize, const char *fmt, const char *datefmt,
                size_t datefmtlen, l4sc_logmessage_cptr_t msg);
 
-static int
-format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim);
-
 const struct l4sc_layout_class l4sc_patternlayout_class = {
     /* .super        */ (l4sc_layout_class_ptr_t)&l4sc_object_class,
     /* .name         */ "layout",
@@ -110,8 +107,6 @@ init_patternlayout(void *buf, size_t bufsize, bfc_mempool_t pool)
         layout->name = "pattern layout";
         strncpy(layout->u.patternlayout.pattern, "%m%n",
                 sizeof(layout->u.patternlayout.pattern));
-        strncpy(layout->u.patternlayout.datefmt, "%Y-%m-%d %H:%M:%S",
-                sizeof(layout->u.patternlayout.datefmt));
     }
     return (BFC_SUCCESS);
 }
@@ -203,7 +198,6 @@ set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
              (int)vallen, value));
 
     if ((namelen == 17) && (strncasecmp(name, "ConversionPattern", 17) == 0)) {
-        const char *cp, *limit = value + vallen;
         const size_t bufsize = sizeof(obj->u.patternlayout.pattern);
         if (vallen < bufsize) {
             memcpy(obj->u.patternlayout.pattern, value, vallen);
@@ -211,22 +205,6 @@ set_layout_option(l4sc_layout_ptr_t obj, const char *name, size_t namelen,
         } else {
             memcpy(obj->u.patternlayout.pattern, value, bufsize - 1);
             obj->u.patternlayout.pattern[bufsize - 1] = 0;
-        }
-        for (cp = value; (cp + 2 < limit) && *cp; cp++) {
-            if (cp[0] == '%') {
-                cp = skip_width_and_prec(cp + 1, limit);
-                if ((cp + 2 < limit) && (cp[0] == 'd') && (cp[1] == '{')) {
-                    const char *ep = memchr(cp + 2, '}', limit - (cp + 2));
-                    /* The date of the logging event.
-                     * The date conversion specifier may be followed
-                     * by a set of braces containing a pattern string.
-                     */
-                    format_datespec(obj->u.patternlayout.datefmt,
-                                    sizeof(obj->u.patternlayout.datefmt),
-                                    cp + 2, ep ? ep : limit);
-                    break;
-                }
-            }
         }
     } else if ((namelen == 5) && (strncasecmp(name, "class", 5) == 0)) {
         l4sc_set_layout_class_by_name(obj, value, vallen);
@@ -444,145 +422,6 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
  * For example, d{HH:mm:ss,SSS}, d{dd MMM yyyy HH:mm:ss,SSS} or d{DATE}.
  * If no date format specifier is given then ISO8601 format is assumed.
  */
-
-static int
-format_datespec(char *buf, size_t bufsize, const char *fmt, const char *lim)
-{
-    char *dp = buf;
-    const char *cp = fmt;
-
-    while ((cp < lim) && *cp && (dp + 3 < buf + bufsize)) {
-        const char c = *cp++;
-        int digits = 1;
-        while ((cp < lim) && (*cp == c)) {
-            digits++;
-            cp++;
-        }
-        switch (c) {
-        case 'A':
-            if (strncmp(cp, /*A*/ "BSOLUTE", 7) == 0) {
-                cp += 7;
-                if (dp + 13 < buf + bufsize) {
-                    memcpy(dp, "%H:%M:%S,", 9);
-                    memset(dp + 9, MILLISEC_PLACEHOLDER, 3);
-                    dp += 12;
-                }
-            }
-            break;
-        case 'I':
-            if (strncmp(cp, /*I*/ "SO8601", 6) == 0) {
-                cp += 6;
-                if (dp + 22 < buf + bufsize) {
-                    memcpy(dp, "%Y-%m-%d %H:%M:%S,", 18);
-                    memset(dp + 18, MILLISEC_PLACEHOLDER, 3);
-                    dp += 21;
-                } else if (dp + 16 < buf + bufsize) {
-                    memcpy(dp, "%F %H:%M:%S,", 12);
-                    memset(dp + 12, MILLISEC_PLACEHOLDER, 3);
-                    dp += 15;
-                }
-            }
-            break;
-        case 'D':
-            if (strncmp(cp, /*D*/ "ATE", 3) == 0) {
-                cp += 3;
-                if (dp + 22 < buf + bufsize) {
-#ifdef L4SC_USE_WINDOWS_STRFTIME
-                    memcpy(dp, "%d %m %Y %H:%M:%S,", 18);
-#else
-                    memcpy(dp, "%d %b %Y %H:%M:%S,", 18);
-#endif
-                    memset(dp + 18, MILLISEC_PLACEHOLDER, 3);
-                    dp += 21;
-                }
-            } else { /* Day in year: 189 */
-                *(dp++) = '%';
-                *(dp++) = 'j';
-            }
-            break;
-        case 'G': /* Era designator: AD */
-            *(dp++) = 'A';
-            *(dp++) = 'D';
-            break;
-        case 'y': /* Year: 1996; 96 */
-            *(dp++) = '%';
-            *(dp++) = (digits > 2) ? 'Y' : 'y';
-            break;
-        case 'M': /* Month in year: July; Jul; 07 */
-            *(dp++) = '%';
-            *(dp++) = (digits > 3) ? 'B' : (digits > 2) ? 'b' : 'm';
-            break;
-        case 'w': /* Week in year: 27 */
-#ifdef L4SC_USE_WINDOWS_STRFTIME
-#else
-            *(dp++) = '%';
-            *(dp++) = 'V';
-#endif
-            break;
-        case 'W': /* Week in month: 2 */
-            break;
-        case 'd': /* Day in month: 10 */
-            *(dp++) = '%';
-            *(dp++) = 'd';
-            break;
-        case 'F': /* Day of week in month: 2 */
-            break;
-        case 'E': /* Day in week: Tuesday; Tue */
-            *(dp++) = '%';
-            *(dp++) = (digits > 3) ? 'A' : 'a';
-            break;
-        case 'a': /* Am/pm marker:         PM    */
-            *(dp++) = '%';
-            *(dp++) = 'p';
-            break;
-        case 'H': /* Hour in day (0-23):   0     */
-        case 'k': /* Hour in day (1-24):   24    */
-            *(dp++) = '%';
-            *(dp++) = 'H';
-            break;
-        case 'K': /* Hour in am/pm (0-11): 0     */
-        case 'h': /* Hour in am/pm (1-12): 12    */
-            *(dp++) = '%';
-            *(dp++) = 'I';
-            break;
-        case 'm': /* Minute in hour:       30    */
-            *(dp++) = '%';
-            *(dp++) = 'M';
-            break;
-        case 's': /* Second in minute:     55    */
-            *(dp++) = '%';
-            *(dp++) = 'S';
-            break;
-        case 'S': /* Millisecond:          978   */
-            if (dp + digits + 1 < buf + bufsize) {
-                memset(dp, MILLISEC_PLACEHOLDER, digits);
-                dp += digits;
-            } else {
-                *(dp++) = MILLISEC_PLACEHOLDER;
-                *(dp++) = MILLISEC_PLACEHOLDER;
-            }
-            break;
-        case 'z': /* Time zone: Pacific Standard Time; PST; GMT-08:00 */
-            *(dp++) = '%';
-            *(dp++) = 'Z';
-            break;
-        case 'Z': /* RFC 822 time zone:    -0800 */
-            *(dp++) = '%';
-            *(dp++) = 'z';
-            break;
-        default:
-            *(dp++) = c;
-        }
-    }
-    if (dp < buf + bufsize) {
-        *dp = '\0';
-    } else if (bufsize > 0) {
-        buf[bufsize - 1] = 0;
-    }
-    LOGDEBUG(("%s(%.*s): %s\n", __FUNCTION__, (int)(lim - fmt), fmt, buf));
-    return ((int)(dp - buf));
-}
-
 static int
 format_logtime(char *buf, size_t bufsize, const char *fmt, const char *datefmt,
                size_t datefmtlen, l4sc_logmessage_cptr_t msg)

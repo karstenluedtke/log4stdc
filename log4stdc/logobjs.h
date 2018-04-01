@@ -123,7 +123,6 @@ struct l4sc_layout {
         } jstrm;
         struct patternlayout_s {
             char pattern[80];
-            char datefmt[40];
         } patternlayout;
     } u;
 };

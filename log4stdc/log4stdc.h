@@ -278,6 +278,9 @@ int
 l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
 int
 l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
+
+struct tm;
+
 int
 l4sc_format_jtime(char *buf, size_t bufsize, const char *fmt, size_t fmtsize,
                   struct tm *tm, long usec);

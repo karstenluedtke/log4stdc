@@ -67,6 +67,7 @@ put_unsigned(char *buf, size_t bufsize, int width, unsigned val)
         return (len);
     } else if ((val < 60) && (width + 2 < (int)bufsize)) {
         char c1, c0;
+        /* clang-format off */
         if (val < 20) {
             c1 = '1'; c0 = (char)('0' + val - 10);
         } else if (val < 40) {
@@ -82,6 +83,7 @@ put_unsigned(char *buf, size_t bufsize, int width, unsigned val)
                 c1 = '5'; c0 = (char)('0' + val - 50);
             }
         }
+        /* clang-format on */
         while (len + 2 < width) {
             buf[len++] = '0';
         }
@@ -89,7 +91,7 @@ put_unsigned(char *buf, size_t bufsize, int width, unsigned val)
         buf[len++] = c0;
         return (len);
     }
-    for (len=1; len < width; ++len) {
+    for (len = 1; len < width; ++len) {
         divisor *= 10;
     }
     if (divisor < val) {
@@ -103,7 +105,7 @@ put_unsigned(char *buf, size_t bufsize, int width, unsigned val)
         unsigned remainder = val - (q * divisor);
         buf[0] = (char)('0' + q);
         divisor /= 10;
-        for (len=1; (divisor >= 1) && (len < (int)bufsize); len++) {
+        for (len = 1; (divisor >= 1) && (len < (int)bufsize); len++) {
             q = remainder / divisor;
             remainder -= (q * divisor);
             divisor /= 10;
@@ -120,6 +122,7 @@ put_millis(char *buf, size_t bufsize, int width, long usec)
     const char *limit = buf + bufsize;
 
     if ((int)bufsize > 0) {
+        unsigned divisor = 10000;
 #ifdef UINT32_C
         unsigned q = usec / UINT32_C(100000);
         unsigned remainder = usec - (q * UINT32_C(100000));
@@ -129,7 +132,6 @@ put_millis(char *buf, size_t bufsize, int width, long usec)
 #endif
         buf[0] = (char)('0' + q);
         len = 1;
-        unsigned divisor = 10000;
         while ((len < width) && (divisor > 0) && (buf + len < limit)) {
             q = remainder / divisor;
             remainder -= (q * divisor);
@@ -159,12 +161,12 @@ put_rfc822zone(char *buf, size_t bufsize, int width, int offs)
             hr = (unsigned)(-offs) / 60;
             mn = (unsigned)(-offs) - hr * 60;
         }
-        len = 1 + put_unsigned(buf+1, bufsize-1, 2, hr);
+        len = 1 + put_unsigned(buf + 1, bufsize - 1, 2, hr);
         if ((width == 6) && ((int)bufsize >= 6)) {
             buf[3] = ':';
-            len += 1 + put_unsigned(buf+4, bufsize-4, 2, mn);
+            len += 1 + put_unsigned(buf + 4, bufsize - 4, 2, mn);
         } else {
-            len += put_unsigned(buf+3, bufsize-3, 2, mn);
+            len += put_unsigned(buf + 3, bufsize - 3, 2, mn);
         }
     }
     return (len);
@@ -238,7 +240,8 @@ l4sc_format_jtime(char *buf, size_t bufsize, const char *fmt, size_t fmtsize,
             // A decimal number [00,53]. Monday as the first day of the week.
             // All days in a new year preceding the first Monday are considered
             // to be in week 0 (non-ISO8601).
-            val = (tm->tm_yday + 7 - (tm->tm_wday ? (tm->tm_wday - 1) : 6)) / 7;
+            val =
+                (tm->tm_yday + 7 - (tm->tm_wday ? (tm->tm_wday - 1) : 6)) / 7;
             len = put_unsigned(dp, ep - dp, digits, val);
             break;
         case 'W': /* Week in month: 2 */
@@ -313,7 +316,7 @@ l4sc_format_jtime(char *buf, size_t bufsize, const char *fmt, size_t fmtsize,
 #endif
             break;
         case '\'':
-            for (len=0; digits > 1; digits -= 2) {
+            for (len = 0; digits > 1; digits -= 2) {
                 if (dp + len < ep) {
                     dp[len++] = '\'';
                 }

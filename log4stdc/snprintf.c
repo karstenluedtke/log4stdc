@@ -5,6 +5,10 @@
 
 #include "compat.h"
 
+#if defined(__STDC__) || defined(_WIN32) || defined(HAVE_VSNPRINTF)
+#include <stdio.h>
+#endif
+
 int
 l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...)
 {

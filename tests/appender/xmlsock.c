@@ -21,6 +21,7 @@
 #endif
 
 #include "log4stdc.h"
+#include "logobjs.h"
 
 #define LF "\n"
 
@@ -48,6 +49,7 @@ static const char refstream[] =
   " timeMillis=\"?????????????\" thread=\"????\""
   " level=\"INFO\" loggerName=\"testlogger\" endOfBatch=\"false\""
   " loggerFqcn=\"org.apache.logging.log4j.spi.AbstractLogger\">\n"
+"  <Instant epochSecond=\"??????????\" nanoOfSecond=\"0\"/>\n"
 "  <Message>ABC</Message>\n"
 "  <Source class=\"\""
     " method=\"testfunction\" file=\"sourcefile\" line=\"100\"/>\n"
@@ -56,6 +58,7 @@ static const char refstream[] =
   " timeMillis=\"?????????????\" thread=\"????\""
   " level=\"INFO\" loggerName=\"testlogger\" endOfBatch=\"false\""
   " loggerFqcn=\"org.apache.logging.log4j.spi.AbstractLogger\">\n"
+"  <Instant epochSecond=\"??????????\" nanoOfSecond=\"123456000\"/>\n"
 "  <Message>x &lt; 2 &amp;&amp; l\303\244nger als 5\"</Message>\n"
 "  <Source class=\"\""
     " method=\"testfunction\" file=\"sourcefile\" line=\"101\"/>\n"
@@ -69,8 +72,9 @@ main(int argc, char *argv[])
     l4sc_logger_ptr_t logger;
     int rc, sock;
     socklen_t alen;
-    char buf[800];
+    char buf[900];
     struct sockaddr_in addr;
+    l4sc_logmessage_t msg[2];
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     assert(sock != -1);
@@ -104,10 +108,16 @@ main(int argc, char *argv[])
         logger = l4sc_get_logger("testlogger", 0);
         assert(logger != NULL);
 
-        l4sc_logprintf(logger, INFO_LEVEL, "sourcefile", 100, "testfunction",
-                       "ABC");
-        l4sc_logprintf(logger, INFO_LEVEL, "sourcefile", 101, "testfunction",
-                       "x < 2 && l\303\244nger als 5\"");
+        l4sc_init_logmessage(msg, sizeof(msg), logger, INFO_LEVEL, "ABC", 3,
+                             "sourcefile", 100, "testfunction");
+        msg->time.tv_usec = 0;
+        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append, (logger, msg));
+
+        l4sc_init_logmessage(msg, sizeof(msg), logger, INFO_LEVEL,
+                             "x < 2 && l\303\244nger als 5\"", 23,
+                             "sourcefile", 101, "testfunction");
+        msg->time.tv_usec = 123456;
+        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append, (logger, msg));
         return (0);
     } else {
         /* parent */

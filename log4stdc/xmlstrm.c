@@ -134,7 +134,7 @@ static size_t
 estimate_xml_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
 {
     return (msg->msglen + (msg->msglen >> 2) + strlen(msg->logger->name) +
-            strlen(msg->file) + strlen(msg->func) + 400);
+            strlen(msg->file) + strlen(msg->func) + 500);
 }
 
 /*
@@ -145,6 +145,7 @@ estimate_xml_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
  *      timeMillis="1460302248157" thread="main" level="INFO"
  *      loggerName="Logtest" endOfBatch="false"
  *      loggerFqcn="org.apache.logging.log4j.spi.AbstractLogger">
+ *   <Instant epochSecond="1460302248" nanoOfSecond="157123000"/>
  *   <Message>one log line</Message>
  *   <Source class="Logtest" method="main" file="Logtest.java" line="11"/>
  * </Event>
@@ -185,6 +186,12 @@ format_xml_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
         " loggerName=\"%s\" endOfBatch=\"false\" loggerFqcn=\"%s\">\n",
         timesecs, (unsigned)timefrac, msg->threadid, levelstr,
         msg->logger->name, "org.apache.logging.log4j.spi.AbstractLogger");
+    if ((rc > 0) && (dp + rc < limit)) {
+        dp += rc;
+    }
+    rc = l4sc_snprintf(dp, limit - dp, "  <Instant"
+                       " epochSecond=\"%lu\" nanoOfSecond=\"%lu\"/>\n",
+                       timesecs, 1000uL * msg->time.tv_usec);
     if ((rc > 0) && (dp + rc < limit)) {
         dp += rc;
     }

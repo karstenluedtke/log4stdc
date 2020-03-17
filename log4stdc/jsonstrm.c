@@ -175,16 +175,16 @@ format_json_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
         timesecs += timefrac / 1000;
         timefrac = timefrac % 1000;
     }
-    rc = l4sc_snprintf(dp, limit - dp, "{ \"timeMillis\" : %lu%03u,"
-                                       " \"instant\" : "
-                                         "{ \"epochSecond\" : %lu,"
-                                         " \"nanoOfSecond\" : %lu },"
-                                       " \"thread\" : \"%s\","
-                                       " \"level\" : \"%s\","
-                                       " \"loggerName\" : \"%s\",\n",
-                       timesecs, (unsigned)timefrac,
-                       timesecs, 1000uL * msg->time.tv_usec,
-                       msg->threadid, levelstr,
+    rc = l4sc_snprintf(dp, limit - dp,
+                       "{ \"timeMillis\" : %lu%03u,"
+                       " \"instant\" : "
+                       "{ \"epochSecond\" : %lu,"
+                       " \"nanoOfSecond\" : %lu },"
+                       " \"thread\" : \"%s\","
+                       " \"level\" : \"%s\","
+                       " \"loggerName\" : \"%s\",\n",
+                       timesecs, (unsigned)timefrac, timesecs,
+                       1000uL * msg->time.tv_usec, msg->threadid, levelstr,
                        msg->logger->name);
     if ((rc > 0) && (dp + rc < limit)) {
         dp += rc;

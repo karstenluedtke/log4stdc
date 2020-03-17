@@ -242,7 +242,13 @@ l4sc_logger_ptr_t
 l4sc_get_root_logger(void);
 l4sc_logger_ptr_t
 l4sc_get_logger(const char *name, int namelen);
-
+int
+l4sc_is_logger_enabled(l4sc_logger_cptr_t logger, int level);
+int
+l4sc_set_logger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent);
+int
+l4sc_set_logger_appender(l4sc_logger_ptr_t logger,
+                         l4sc_appender_ptr_t appender);
 int
 l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level);
 int

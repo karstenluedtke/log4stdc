@@ -53,6 +53,9 @@ set_logger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent);
 static int
 set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender);
 
+static int
+set_rootlogger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent);
+
 static void
 rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
                size_t msglen, const char *file, int line, const char *func);
@@ -119,7 +122,7 @@ static const struct l4sc_logger_class rootloggercls = {
     /* .close        */ close_logger,
     /* .log          */ rootlogger_log,
     /* .is_enabled   */ is_logger_enabled,
-    /* .set_parent   */ set_logger_parent,
+    /* .set_parent   */ set_rootlogger_parent,
     /* .set_appender */ set_logger_appender,
     /* .append       */ rootlogger_append};
 
@@ -334,7 +337,32 @@ is_logger_enabled(l4sc_logger_cptr_t logger, int level)
 static int
 set_logger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent)
 {
+    if (parent) {
+        logger->parent = parent;
+    } else {
+        logger->parent = &rootlogger;
+    }
     return (0);
+}
+
+static int
+remove_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
+{
+    int i, removed = 0;
+    static const char thisfunction[] = "remove_logger_appender";
+
+    for (i = 0; i < MAX_APPENDERS_PER_LOGGER; i++) {
+        if (logger->appenders[i] &&
+            ((appender == NULL) || (logger->appenders[i] == appender))) {
+            LOGINFO(("%s: %s clearing %p (class %s) at #%d", thisfunction,
+                     logger->name, logger->appenders[i],
+                     BFC_CLASS(logger->appenders[i])->name, i));
+            logger->appenders[i]->refc--;
+            logger->appenders[i] = NULL;
+            removed++;
+        }
+    }
+    return (removed);
 }
 
 static int
@@ -343,6 +371,10 @@ set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender)
     int i;
     static const char thisfunction[] = "set_logger_appender";
     extern const char obsolete_appender_name[]; /* in appender.c */
+
+    if (appender == NULL) {
+        return remove_logger_appender(logger, NULL);
+    }
 
     for (i = 0; i < MAX_APPENDERS_PER_LOGGER; i++) {
         if (logger->appenders[i] &&
@@ -387,6 +419,13 @@ apply_logger_options(l4sc_logger_ptr_t obj)
 static void
 close_logger(l4sc_logger_ptr_t obj)
 {
+}
+
+static int
+set_rootlogger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent)
+{
+    LOGERROR(("cannot set rootlogger parent"));
+    return (-EINVAL);
 }
 
 static void
@@ -545,6 +584,20 @@ customlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
         (*logfunc)(logger->cxxbuf.p[0], msg->logger, msg->level, msg->msg,
                    msg->msglen, msg->file, msg->line, msg->func);
     }
+}
+
+int
+l4sc_is_logger_enabled(l4sc_logger_cptr_t logger, int level)
+{
+    RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, is_enabled,
+                    (logger, level), 0);
+}
+
+int
+l4sc_set_logger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent)
+{
+    RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, set_parent,
+                    (logger, parent), 0);
 }
 
 int

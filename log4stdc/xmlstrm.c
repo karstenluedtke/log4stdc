@@ -189,7 +189,8 @@ format_xml_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
     if ((rc > 0) && (dp + rc < limit)) {
         dp += rc;
     }
-    rc = l4sc_snprintf(dp, limit - dp, "  <Instant"
+    rc = l4sc_snprintf(dp, limit - dp,
+                       "  <Instant"
                        " epochSecond=\"%lu\" nanoOfSecond=\"%lu\"/>\n",
                        timesecs, 1000uL * msg->time.tv_usec);
     if ((rc > 0) && (dp + rc < limit)) {

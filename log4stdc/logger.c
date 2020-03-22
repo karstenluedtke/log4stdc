@@ -16,6 +16,7 @@
 #include <android/log.h>
 #endif
 
+#define MAX_LOGGER_RECURSIONS 20
 #define MAX_APPENDERS_PER_LOGGER 4
 
 static int
@@ -44,15 +45,18 @@ static void
 logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
            const char *file, int line, const char *func);
 static void
-logger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg);
+logger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
+              int recurse);
 
 static int
-is_logger_enabled(l4sc_logger_cptr_t logger, int level);
+is_logger_enabled(l4sc_logger_cptr_t logger, int level, int recurse);
 static int
 set_logger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent);
 static int
 set_logger_appender(l4sc_logger_ptr_t logger, l4sc_appender_ptr_t appender);
 
+static int
+is_rootlogger_enabled(l4sc_logger_cptr_t logger, int level, int recurse);
 static int
 set_rootlogger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent);
 
@@ -60,15 +64,17 @@ static void
 rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
                size_t msglen, const char *file, int line, const char *func);
 static void
-rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg);
+rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
+                  int recurse);
 
 static int
-customlogger_is_enabled(l4sc_logger_cptr_t logger, int level);
+customlogger_is_enabled(l4sc_logger_cptr_t logger, int level, int recurse);
 static void
 customlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
                  size_t msglen, const char *file, int line, const char *func);
 static void
-customlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg);
+customlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
+                    int recurse);
 
 static const struct l4sc_logger_class loggercls = {
     /* .super        */ (const struct l4sc_logger_class *)&l4sc_object_class,
@@ -121,7 +127,7 @@ static const struct l4sc_logger_class rootloggercls = {
     /* .apply        */ apply_logger_options,
     /* .close        */ close_logger,
     /* .log          */ rootlogger_log,
-    /* .is_enabled   */ is_logger_enabled,
+    /* .is_enabled   */ is_rootlogger_enabled,
     /* .set_parent   */ set_rootlogger_parent,
     /* .set_appender */ set_logger_appender,
     /* .append       */ rootlogger_append};
@@ -277,7 +283,8 @@ get_logger_option(l4sc_logger_cptr_t obj, const char *name, size_t namelen,
 }
 
 static void
-logger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
+logger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
+              int recurse)
 {
     int i;
     l4sc_logger_ptr_t p;
@@ -289,8 +296,9 @@ logger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
         }
     }
 
-    if (logger->additivity && (p = logger->parent)) {
-        VOID_METHCALL(l4sc_logger_class_ptr_t, p, append, (p, msg));
+    if (logger->additivity && (p = logger->parent) && (recurse > 0)) {
+        VOID_METHCALL(l4sc_logger_class_ptr_t, p, append,
+                      (p, msg, recurse - 1));
     }
 }
 
@@ -305,24 +313,24 @@ logger_log(l4sc_logger_ptr_t logger, int level, const char *msg, size_t msglen,
                               file, line, func);
     if (rc >= 0) {
         VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append,
-                      (logger, &mbuf));
+                      (logger, &mbuf, MAX_LOGGER_RECURSIONS));
     }
 }
 
 static int
-is_logger_enabled(l4sc_logger_cptr_t logger, int level)
+is_logger_enabled(l4sc_logger_cptr_t logger, int level, int recurse)
 {
     unsigned loglevel = (unsigned)level;
 
     if (!logger) {
         return (0);
     }
-    if (logger->level == INHERIT_LEVEL) {
+    if ((logger->level == INHERIT_LEVEL) && (recurse > 0)) {
         l4sc_logger_cptr_t p = logger->parent;
         int rc, loops = 0;
-        while (p && (loops++ < 20)) {
+        while (p && (loops++ < MAX_LOGGER_RECURSIONS)) {
             RETVAR_METHCALL(rc, l4sc_logger_class_ptr_t, p, is_enabled,
-                            (p, level), -ENOSYS);
+                            (p, level, recurse - 1), -ENOSYS);
             if (rc != -ENOSYS) {
                 return (rc);
             } else if (p->level != INHERIT_LEVEL) {
@@ -428,6 +436,17 @@ set_rootlogger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent)
     return (-EINVAL);
 }
 
+static int
+is_rootlogger_enabled(l4sc_logger_cptr_t logger, int level, int recurse)
+{
+    unsigned loglevel = (unsigned)level;
+
+    if (!logger) {
+        return (0);
+    }
+    return (IS_LEVEL_ENABLED(loglevel, logger->level));
+}
+
 static void
 rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
                size_t msglen, const char *file, int line, const char *func)
@@ -459,7 +478,8 @@ rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
 }
 
 static void
-rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
+rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
+                  int recurse)
 {
     int rc;
     if (msg && (msg->msglen > 0)) {
@@ -548,7 +568,7 @@ l4sc_insert_custom_logger(
 }
 
 static int
-customlogger_is_enabled(l4sc_logger_cptr_t logger, int level)
+customlogger_is_enabled(l4sc_logger_cptr_t logger, int level, int recurse)
 {
     int (*enatest)(void *cbarg, l4sc_logger_cptr_t logger, int level);
     int enabled = 1;
@@ -574,7 +594,8 @@ customlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
 }
 
 static void
-customlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg)
+customlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
+                    int recurse)
 {
     void (*logfunc)(void *cbarg, l4sc_logger_cptr_t logger, int level,
                     const char *msg, size_t msglen, const char *file, int line,
@@ -590,22 +611,7 @@ int
 l4sc_is_logger_enabled(l4sc_logger_cptr_t logger, int level)
 {
     RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, is_enabled,
-                    (logger, level), 0);
-}
-
-int
-l4sc_set_logger_parent(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent)
-{
-    RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, set_parent,
-                    (logger, parent), 0);
-}
-
-int
-l4sc_set_logger_appender(l4sc_logger_ptr_t logger,
-                         l4sc_appender_ptr_t appender)
-{
-    RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, set_appender,
-                    (logger, appender), 0);
+                    (logger, level, MAX_LOGGER_RECURSIONS), 0);
 }
 
 int

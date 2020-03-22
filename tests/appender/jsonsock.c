@@ -109,12 +109,14 @@ main(int argc, char *argv[])
         l4sc_init_logmessage(msg, sizeof(msg), logger, INFO_LEVEL, "ABC", 3,
                              "sourcefile", 100, "testfunction");
         msg->time.tv_usec = 0;
-        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append, (logger, msg));
+        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append,
+                      (logger, msg, 20));
 
         l4sc_init_logmessage(msg, sizeof(msg), logger, INFO_LEVEL, "DEF", 3,
                              "sourcefile", 101, "testfunction");
         msg->time.tv_usec = 456789;
-        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append, (logger, msg));
+        VOID_METHCALL(l4sc_logger_class_ptr_t, logger, append,
+                      (logger, msg, 20));
 
         return (0);
     } else {

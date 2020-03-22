@@ -4,12 +4,14 @@
 #include "log4stdc.h"
 #include "logobjs.h"
 
+#define MAX_LOGGER_RECURSIONS 20
+
 int
 l4sc_logger_enabled(l4sc_logger_cptr_t logger, int level)
 {
     if (logger) {
         RETURN_METHCALL(l4sc_logger_class_ptr_t, logger, is_enabled,
-                        (logger, level),
+                        (logger, level, MAX_LOGGER_RECURSIONS),
                         IS_LEVEL_ENABLED(level, logger->level));
     }
     return (0);

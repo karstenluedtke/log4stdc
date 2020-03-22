@@ -192,7 +192,8 @@ liblog4stdc_a_AR = $(AR) $(ARFLAGS)
 liblog4stdc_a_LIBADD =
 am_liblog4stdc_a_OBJECTS = log4stdc/logprf.$(OBJEXT) \
 	log4stdc/l4sc_vlg.$(OBJEXT) log4stdc/l4sc_log.$(OBJEXT) \
-	log4stdc/enabled.$(OBJEXT) log4stdc/fmtmsg.$(OBJEXT) \
+	log4stdc/enabled.$(OBJEXT) log4stdc/sparent.$(OBJEXT) \
+	log4stdc/sappendr.$(OBJEXT) log4stdc/fmtmsg.$(OBJEXT) \
 	log4stdc/logger.$(OBJEXT) log4stdc/appender.$(OBJEXT) \
 	log4stdc/fileappd.$(OBJEXT) log4stdc/sockappd.$(OBJEXT) \
 	log4stdc/layout.$(OBJEXT) log4stdc/logmsg.$(OBJEXT) \
@@ -631,15 +632,16 @@ liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjs.h \
 	log4stdc/compat.h bareftc/object.h bareftc/mempool.h \
 	bareftc/mutex.h bareftc/atomic.h bareftc/lnkdlist.h \
 	bareftc/utf8.h log4stdc/logprf.c log4stdc/l4sc_vlg.c \
-	log4stdc/l4sc_log.c log4stdc/enabled.c log4stdc/fmtmsg.c \
-	log4stdc/logger.c log4stdc/appender.c log4stdc/fileappd.c \
-	log4stdc/sockappd.c log4stdc/layout.c log4stdc/logmsg.c \
-	log4stdc/propcfg.c log4stdc/object.c log4stdc/l4scpool.c \
-	log4stdc/pmutex.c log4stdc/wmutex.c log4stdc/xmlcfg.c \
-	log4stdc/strcfg.c log4stdc/filecfg.c log4stdc/snprintf.c \
-	log4stdc/vsnprntf.c log4stdc/fmtjtime.c log4stdc/sockappd.c \
-	log4stdc/jsonstrm.c log4stdc/l4jstrm.c log4stdc/xmlstrm.c \
-	LICENSE.txt win32.mak c600.mak
+	log4stdc/l4sc_log.c log4stdc/enabled.c log4stdc/sparent.c \
+	log4stdc/sappendr.c log4stdc/fmtmsg.c log4stdc/logger.c \
+	log4stdc/appender.c log4stdc/fileappd.c log4stdc/sockappd.c \
+	log4stdc/layout.c log4stdc/logmsg.c log4stdc/propcfg.c \
+	log4stdc/object.c log4stdc/l4scpool.c log4stdc/pmutex.c \
+	log4stdc/wmutex.c log4stdc/xmlcfg.c log4stdc/strcfg.c \
+	log4stdc/filecfg.c log4stdc/snprintf.c log4stdc/vsnprntf.c \
+	log4stdc/fmtjtime.c log4stdc/sockappd.c log4stdc/jsonstrm.c \
+	log4stdc/l4jstrm.c log4stdc/xmlstrm.c LICENSE.txt win32.mak \
+	c600.mak
 examples_redirect_SOURCES = examples/redirect.c
 examples_redirect_LDADD = liblog4stdc.a
 examples_redirect_DEPENDENCIES = liblog4stdc.a
@@ -842,6 +844,10 @@ log4stdc/l4sc_vlg.$(OBJEXT): log4stdc/$(am__dirstamp) \
 log4stdc/l4sc_log.$(OBJEXT): log4stdc/$(am__dirstamp) \
 	log4stdc/$(DEPDIR)/$(am__dirstamp)
 log4stdc/enabled.$(OBJEXT): log4stdc/$(am__dirstamp) \
+	log4stdc/$(DEPDIR)/$(am__dirstamp)
+log4stdc/sparent.$(OBJEXT): log4stdc/$(am__dirstamp) \
+	log4stdc/$(DEPDIR)/$(am__dirstamp)
+log4stdc/sappendr.$(OBJEXT): log4stdc/$(am__dirstamp) \
 	log4stdc/$(DEPDIR)/$(am__dirstamp)
 log4stdc/fmtmsg.$(OBJEXT): log4stdc/$(am__dirstamp) \
 	log4stdc/$(DEPDIR)/$(am__dirstamp)
@@ -1056,8 +1062,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/object.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/pmutex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/propcfg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/sappendr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/snprintf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/sockappd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/sparent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/strcfg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/vsnprntf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/wmutex.Po@am__quote@

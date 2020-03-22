@@ -20,6 +20,8 @@ liblog4stdc_a_SOURCES+= log4stdc/logprf.c
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_vlg.c
 liblog4stdc_a_SOURCES+= log4stdc/l4sc_log.c
 liblog4stdc_a_SOURCES+= log4stdc/enabled.c
+liblog4stdc_a_SOURCES+= log4stdc/sparent.c
+liblog4stdc_a_SOURCES+= log4stdc/sappendr.c
 liblog4stdc_a_SOURCES+= log4stdc/fmtmsg.c
 
 liblog4stdc_a_SOURCES+= log4stdc/logger.c

@@ -60,11 +60,12 @@ struct l4sc_logger_class {
     LOGOBJ_METHODS(l4sc_logger_ptr_t, l4sc_logger_cptr_t)
     void (*log)(l4sc_logger_ptr_t logger, int level, const char *msg,
                 size_t msglen, const char *file, int line, const char *func);
-    int (*is_enabled)(l4sc_logger_cptr_t logger, int level);
+    int (*is_enabled)(l4sc_logger_cptr_t logger, int level, int recurse);
     int (*set_parent)(l4sc_logger_ptr_t logger, l4sc_logger_ptr_t parent);
     int (*set_appender)(l4sc_logger_ptr_t logger,
                         l4sc_appender_ptr_t appender);
-    void (*append)(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg);
+    void (*append)(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
+                   int recurse);
     void *spare[9];
 };
 

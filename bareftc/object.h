@@ -39,26 +39,41 @@ struct l4sc_logger;
 
 typedef struct mempool *bfc_mempool_t;
 
-#define BFC_OBJHDR(classptrT,objptrT) \
-	classptrT	vptr;		/**< virtual methods	*/	\
-	const char *	name;		/**< object name	*/	\
-	volatile int	refc;		/**< reference count	*/	\
-	struct bfc_mutex *lock;		/**< for locking the object */	\
-	bfc_mempool_t	parent_pool;	/**< for freeing the object */
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) &&             \
+    !defined(__STDC_NO_ATOMICS__)
 
-#define BFC_CONTAINER_HDR(classptrT,objptrT) \
-	BFC_OBJHDR(classptrT,objptrT) \
-	bfc_mempool_t	pool;		/**< for allocating children */
+#include <stdatomic.h>
+
+#define BFC_OBJHDR(classptrT,objptrT)                                         \
+    classptrT           vptr;           /**< virtual methods        */        \
+    const char*         name;           /**< object name            */        \
+    atomic_int          refc;           /**< reference count        */        \
+    struct bfc_mutex*   lock;           /**< for locking the object */        \
+    bfc_mempool_t       parent_pool;    /**< for freeing the object */
+
+#else
+#define BFC_OBJHDR(classptrT,objptrT)                                         \
+    classptrT           vptr;           /**< virtual methods        */        \
+    const char*         name;           /**< object name            */        \
+    volatile int        refc;           /**< reference count        */        \
+    struct bfc_mutex*   lock;           /**< for locking the object */        \
+    bfc_mempool_t       parent_pool;    /**< for freeing the object */
+
+#endif
+
+#define BFC_CONTAINER_HDR(classptrT,objptrT)                                  \
+    BFC_OBJHDR(classptrT, objptrT)                                            \
+    bfc_mempool_t       pool;           /**< for allocating children */
 
 struct bfc_objhdr {
-	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
+    BFC_OBJHDR(bfc_classptr_t, bfc_objptr_t)
 };
 
 struct bfc_basic_object {
-	BFC_OBJHDR(bfc_classptr_t,bfc_objptr_t)
-	size_t	length;
-	size_t	private_6;
-	size_t	private_7;
+    BFC_OBJHDR(bfc_classptr_t, bfc_objptr_t)
+    size_t length;
+    size_t private_6;
+    size_t private_7;
 };
 
 #define BFC_STATIC_OBJHDR_INITIALIZERS(cls,name) \

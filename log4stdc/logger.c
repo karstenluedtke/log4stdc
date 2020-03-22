@@ -451,7 +451,6 @@ static void
 rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
                size_t msglen, const char *file, int line, const char *func)
 {
-    int rc;
     if (msg && (msglen > 0)) {
 #if defined(__ANDROID__)
         const char *tag = logger->name;
@@ -469,7 +468,7 @@ rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
                                         : ANDROID_LOG_VERBOSE;
         __android_log_print(prio, tag, "%.*s", (int)msglen, msg);
 #else
-        rc = write(2, msg, msglen);
+        int rc = write(2, msg, msglen);
         if ((rc > 0) && (msg[msglen - 1] != '\n')) {
             rc = write(2, "\r\n", 2);
         }
@@ -481,7 +480,6 @@ static void
 rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
                   int recurse)
 {
-    int rc;
     if (msg && (msg->msglen > 0)) {
 #if defined(__ANDROID__)
         const unsigned level = msg->level;
@@ -500,7 +498,7 @@ rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
                                         : ANDROID_LOG_VERBOSE;
         __android_log_print(prio, tag, "%.*s", (int)msg->msglen, msg->msg);
 #else
-        rc = write(2, msg->msg, msg->msglen);
+        int rc = write(2, msg->msg, msg->msglen);
         if ((rc > 0) && (msg->msg[msg->msglen - 1] != '\n')) {
             rc = write(2, "\r\n", 2);
         }

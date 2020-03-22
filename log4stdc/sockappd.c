@@ -144,6 +144,17 @@ get_appender_size(l4sc_appender_cptr_t obj)
 #define remotehost filename
 #define remoteport maxbackupindex
 
+#if defined(L4SC_WINDOWS_SOCKETS)
+static SOCKET *
+get_socket_storage(l4sc_appender_ptr_t appender)
+{
+    return (SOCKET *)&appender->fu;
+}
+#define get_socket(a) *get_socket_storage(a)
+#else
+#define get_socket(a) (a)->fu.fd
+#endif
+
 static int
 set_appender_option(l4sc_appender_ptr_t obj, const char *name, size_t namelen,
                     const char *value, size_t vallen)
@@ -208,12 +219,12 @@ append_to_output(l4sc_appender_ptr_t appender, l4sc_logmessage_cptr_t msg)
         if ((len = l4sc_formatmsg(layout, msg, buf, bufsize)) > 0) {
             if (is_open(appender)) {
 #if defined(L4SC_WINDOWS_SOCKETS)
-                SOCKET sock = *(SOCKET *)&appender->fu;
+                SOCKET sock = get_socket(appender);
                 if (send(sock, buf, len, 0) == -1) {
                     close_appender(appender);
                 }
 #else
-                int sock = appender->fu.fd;
+                int sock = get_socket(appender);
                 if (send(sock, buf, len, MSG_NOSIGNAL) == -1) {
                     close_appender(appender);
                 }
@@ -323,7 +334,7 @@ open_appender(l4sc_appender_ptr_t appender)
         if (hdrlen > 0) {
             send(sock, header, hdrlen, 0);
         }
-        *(SOCKET *)&appender->fu = sock;
+        *get_socket_storage(appender) = sock;
 #else
         if (hdrlen > 0) {
             send(sock, header, hdrlen, MSG_NOSIGNAL);
@@ -338,9 +349,9 @@ static void
 close_appender(l4sc_appender_ptr_t appender)
 {
 #if defined(L4SC_WINDOWS_SOCKETS)
-    SOCKET sock = *(SOCKET *)&appender->fu;
+    SOCKET sock = get_socket(appender);
 #else
-    int sock = appender->fu.fd;
+    int sock = get_socket(appender);
 #endif
     appender->fu.fh = NULL;
     appender->fu.fd = 0;

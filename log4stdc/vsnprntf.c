@@ -248,6 +248,9 @@ put_unsigned(char *buf, int width, int precision, int flags, const char *limit,
 #endif
 /* clang-format on */
 
+#define UNSIGNED_VALUE_FITS_UNSIGNED(v)                                       \
+    (((v) >> (8 * sizeof(unsigned) - 8)) < 256u)
+
 #ifndef put_ulong
 static int
 put_ulong(char *buf, int width, int precision, int flags, const char *limit,
@@ -255,7 +258,7 @@ put_ulong(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-    if ((v >> (8 * sizeof(unsigned))) == 0) {
+    if (UNSIGNED_VALUE_FITS_UNSIGNED(v)) {
         return (put_unsigned(buf, width, precision, flags, limit, prefix,
                              pfxlen, (unsigned)v));
     } else {
@@ -273,7 +276,7 @@ put_ullong(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-    if ((v >> (8 * sizeof(unsigned))) == 0) {
+    if (UNSIGNED_VALUE_FITS_UNSIGNED(v)) {
         return (put_unsigned(buf, width, precision, flags, limit, prefix,
                              pfxlen, (unsigned)v));
     } else {
@@ -290,7 +293,7 @@ put_size(char *buf, int width, int precision, int flags, const char *limit,
 {
     char *dp = buf;
 
-    if ((v >> (8 * sizeof(unsigned))) == 0) {
+    if (UNSIGNED_VALUE_FITS_UNSIGNED(v)) {
         return (put_unsigned(buf, width, precision, flags, limit, prefix,
                              pfxlen, (unsigned)v));
     } else {

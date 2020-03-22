@@ -145,6 +145,7 @@ put_millis(char *buf, size_t bufsize, int width, long usec)
     return (len);
 }
 
+#if defined(HAVE_TM_TM_GMTOFF) || defined(HAVE_TM___TM_GMTOFF)
 static int
 put_rfc822zone(char *buf, size_t bufsize, int width, int offs)
 {
@@ -171,6 +172,7 @@ put_rfc822zone(char *buf, size_t bufsize, int width, int offs)
     }
     return (len);
 }
+#endif
 
 /**
  * The date conversion specifier may be followed by a set of braces containing
@@ -304,7 +306,7 @@ l4sc_format_jtime(char *buf, size_t bufsize, const char *fmt, size_t fmtsize,
             break;
 #endif
 #ifdef HAVE_TM___TM_ZONE
-            len = put_text(dp, ep - dp, __tm_zone);
+            len = put_text(dp, ep - dp, tm->__tm_zone);
             break;
 #endif
         case 'Z': /* RFC 822 time zone:    -0800 */

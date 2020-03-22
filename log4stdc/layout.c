@@ -15,12 +15,14 @@
 
 #if defined(L4SC_USE_WINDOWS_LOCALTIME)
 #include <windows.h>
+#if defined(LOCALTIME64_DECLARATION_MISSING)
 #if defined(HAVE__LOCALTIME64_S)
 errno_t
 _localtime64_s(struct tm *, const __time64_t *);
 #else
 struct tm *
 _localtime64(const __time64_t *);
+#endif
 #endif
 #endif
 

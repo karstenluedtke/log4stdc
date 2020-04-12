@@ -166,7 +166,7 @@ on_start_tag(struct parsing_state *ps, const struct xml_tag *tag)
             values.reflen = attrs[i].vallen;
         }
     }
-    ps->depth = tag->level + (tag->tagtype == XML_START_TAG) ? 1 : 0;
+    ps->depth = tag->level + ((tag->tagtype == XML_START_TAG) ? 1 : 0);
     if (strncasecmp(name, "logger", 6) == 0) {
         ps->current_logger = l4sc_get_logger(values.name, values.namelen);
         for (i = 0; i < nattrs; i++) {

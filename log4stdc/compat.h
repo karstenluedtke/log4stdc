@@ -30,6 +30,9 @@ l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
 int
 l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
+#ifdef snprintf
+#undef snprintf
+#endif
 #define snprintf l4sc_snprintf
 
 #if !defined(__STDC__) && !defined(_WIN32) && !defined(HAVE_VSNPRINTF)

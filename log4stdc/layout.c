@@ -152,7 +152,7 @@ static int
 layout_tostring(l4sc_layout_cptr_t obj, char *buf, size_t bufsize,
                 const char *fmt)
 {
-    if (obj && obj->u.patternlayout.pattern && buf) {
+    if (obj && buf) {
         size_t patlen = strlen(obj->u.patternlayout.pattern);
         if (bufsize > patlen) {
             memcpy(buf, obj->u.patternlayout.pattern, patlen);

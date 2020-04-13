@@ -457,6 +457,21 @@ put_lloctal(char *buf, int width, int precision, int flags, const char *limit,
 }
 #endif
 
+static int
+put_double(char *buf, int width, int precision, int flags, const char *limit,
+           const char *spec, int speclen, double f)
+{
+    char *dp = buf;
+    const char *cp = spec;
+
+    /* just copy the spec */
+    while (cp < spec + speclen) {
+        PUTNEXTCHAR(dp, *cp, limit);
+        cp++;
+    }
+    return (dp - buf);
+}
+
 int
 l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
 {
@@ -727,10 +742,13 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap)
         case CONV_SPEC_ADAPTIVE_CAPITALS:
         case CONV_SPEC_HEXFLOAT:
         case CONV_SPEC_HEXFLOAT_CAPITALS:
+            f = va_arg(ap, double);
+            n = (int)(cp - spec);
+            n = put_double(dp, width, precision, flags, limit, spec, n, f);
+            dp += (n > 0) ? n : 0;
+            break;
         case CONV_SPEC_STORE_BYTES_WRITTEN:
         default: /* just copy the spec */
-            f = va_arg(ap, double);
-            f = f;
             while (spec < cp) {
                 PUTNEXTCHAR(dp, *spec, limit);
                 spec++;

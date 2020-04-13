@@ -81,7 +81,8 @@ do {									    \
 				| (((unsigned) cp[1] & 0x3F)      );	    \
 			cp += 2;					    \
 			if ((unicode >= 0xD800) && (unicode < 0xDC00)	    \
-			    && (cp+2 < (limit)) && (cp[0] == 0xED)) {	    \
+			    && (cp+2 < (limit))				    \
+			    && (((unsigned)cp[0] & 0xFF) == 0xED)) {	    \
 				unicode = (((unicode & 0x3FF)+ 0x40) << 10) \
 					| (((unsigned) cp[1] & 0x0F) <<  6) \
 					| (((unsigned) cp[2] & 0x3F)      );\

@@ -13,6 +13,8 @@ OFILES= \
 	log4stdc/l4sc_vlg.obj \
 	log4stdc/l4sc_log.obj \
 	log4stdc/enabled.obj \
+	log4stdc/sparent.obj \
+	log4stdc/sappendr.obj \
 	log4stdc/fmtmsg.obj \
 	log4stdc/logger.obj \
 	log4stdc/appender.obj \
@@ -103,6 +105,12 @@ log4stdc/l4sc_log.obj: log4stdc/l4sc_log.c $(HEADERS)
 
 log4stdc/enabled.obj: log4stdc/enabled.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/enabled.c
+
+log4stdc/sparent.obj: log4stdc/sparent.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/sparent.c
+
+log4stdc/sappendr.obj: log4stdc/sappendr.c $(HEADERS)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/sappendr.c
 
 log4stdc/fmtmsg.obj: log4stdc/fmtmsg.c $(HEADERS)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -Fo$@ log4stdc/fmtmsg.c

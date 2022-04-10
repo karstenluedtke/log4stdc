@@ -41,7 +41,6 @@ liblog4stdc_a_SOURCES+= log4stdc/filecfg.c
 liblog4stdc_a_SOURCES+= log4stdc/snprintf.c
 liblog4stdc_a_SOURCES+= log4stdc/vsnprntf.c
 liblog4stdc_a_SOURCES+= log4stdc/fmtjtime.c
-liblog4stdc_a_SOURCES+= log4stdc/sockappd.c
 liblog4stdc_a_SOURCES+= log4stdc/jsonstrm.c
 liblog4stdc_a_SOURCES+= log4stdc/l4jstrm.c
 liblog4stdc_a_SOURCES+= log4stdc/xmlstrm.c

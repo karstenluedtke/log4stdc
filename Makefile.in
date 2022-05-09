@@ -679,7 +679,8 @@ liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjs.h \
 	log4stdc/wmutex.c log4stdc/xmlcfg.c log4stdc/strcfg.c \
 	log4stdc/filecfg.c log4stdc/snprintf.c log4stdc/vsnprntf.c \
 	log4stdc/fmtjtime.c log4stdc/jsonstrm.c log4stdc/l4jstrm.c \
-	log4stdc/xmlstrm.c LICENSE.txt win32.mak c600.mak
+	log4stdc/xmlstrm.c LICENSE.txt win32.mak c600.mak log4stdc.sln \
+	log4stdc.vcxproj
 examples_redirect_SOURCES = examples/redirect.c
 examples_redirect_LDADD = liblog4stdc.a
 examples_redirect_DEPENDENCIES = liblog4stdc.a

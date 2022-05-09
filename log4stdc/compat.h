@@ -27,6 +27,9 @@
 
 int
 l4sc_snprintf(char *buf, size_t bufsize, const char *fmt, ...);
+
+/* MSCV from VS2015 on defines snprintf */
+#if !defined(_MSC_VER) || _MSC_VER < 1900
 int
 l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
@@ -37,6 +40,8 @@ l4sc_vsnprintf(char *buf, size_t bufsize, const char *fmt, va_list ap);
 
 #if !defined(__STDC__) && !defined(_WIN32) && !defined(HAVE_VSNPRINTF)
 #define vsnprintf l4sc_vsnprintf
+#endif
+
 #endif
 
 /* time.h */

@@ -303,7 +303,7 @@ l4sc_close_appenders(void);
 int
 l4sc_to_level(const char *value, int vallen, int defaultlevel);
 
-#ifdef __STDC__
+#if defined(__STDC__) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
 #define L4SC_FATAL(logger, ...)                                               \
     l4sc_logprintf(logger, FATAL_LEVEL, __FILE__, __LINE__, __FUNCTION__,     \
                    __VA_ARGS__)

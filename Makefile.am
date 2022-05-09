@@ -48,6 +48,8 @@ liblog4stdc_a_SOURCES+= log4stdc/xmlstrm.c
 liblog4stdc_a_SOURCES+= LICENSE.txt
 liblog4stdc_a_SOURCES+= win32.mak
 liblog4stdc_a_SOURCES+= c600.mak
+liblog4stdc_a_SOURCES+= log4stdc.sln
+liblog4stdc_a_SOURCES+= log4stdc.vcxproj
 
 noinst_PROGRAMS = examples/redirect
 examples_redirect_SOURCES = examples/redirect.c

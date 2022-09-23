@@ -324,7 +324,7 @@ format_by_pattern(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                  * The date conversion specifier may be followed
                  * by a set of braces containing a pattern string.
                  */
-                datefmt = "yyyy-MM-dd HH:mm:ss";
+                datefmt = "yyyy-MM-dd HH:mm:ss,SSS";
                 datefmtlen = 19;
                 if (*cp == '{') {
                     const char *sep = strchr(cp, '}');

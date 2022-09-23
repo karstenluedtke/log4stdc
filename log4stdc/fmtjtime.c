@@ -208,7 +208,7 @@ l4sc_format_jtime(char *buf, size_t bufsize, const char *fmt, size_t fmtsize,
             break;
         case 'I':
             if (strncmp(cp, /*I*/ "SO8601", 6) == 0) {
-                static const char isofmt[] = "yyyy-MM-dd HH:mm:ss,SSS";
+                static const char isofmt[] = "yyyy-MM-ddTHH:mm:ss,SSS";
                 return l4sc_format_jtime(buf, bufsize, isofmt, 23, tm, usec);
             }
             break;
@@ -216,6 +216,9 @@ l4sc_format_jtime(char *buf, size_t bufsize, const char *fmt, size_t fmtsize,
             if (strncmp(cp, /*D*/ "ATE", 3) == 0) {
                 static const char datfmt[] = "dd MMM yyyy HH:mm:ss,SSS";
                 return l4sc_format_jtime(buf, bufsize, datfmt, 24, tm, usec);
+            } else if (strncmp(cp, /*D*/ "EFAULT", 6) == 0) {
+                static const char dfltfmt[] = "yyyy-MM-dd HH:mm:ss,SSS";
+                return l4sc_format_jtime(buf, bufsize, dfltfmt, 23, tm, usec);
             } else { /* Day in year: 189 */
                 val = tm->tm_yday + 1;
                 len = put_unsigned(dp, ep - dp, digits, val);

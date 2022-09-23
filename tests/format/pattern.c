@@ -118,7 +118,7 @@ main(int argc, char *argv[])
           "13:45:13,455 INFO > text" NEWLINE);
 
     test2(&layout, "%d{ISO8601} %-5p> %m%n", day, sec, usec, 101, "text",
-          "2018-02-08 13:45:13,455 INFO > text" NEWLINE);
+          "2018-02-08T13:45:13,455 INFO > text" NEWLINE);
 
     test2(&layout, "%d{DATE} %-5p> %m%n", day, sec, usec, 101, "text",
           "08 Feb 2018 13:45:13,455 INFO > text" NEWLINE);

@@ -455,17 +455,12 @@ rootlogger_log(l4sc_logger_ptr_t logger, int level, const char *msg,
 #if defined(__ANDROID__)
         const char *tag = logger->name;
         android_LogPriority prio =
-            IS_AT_LEAST_FATAL_LEVEL(level)
-                ? ANDROID_LOG_FATAL
-                : IS_AT_LEAST_ERROR_LEVEL(level)
-                      ? ANDROID_LOG_ERROR
-                      : IS_AT_LEAST_WARN_LEVEL(level)
-                            ? ANDROID_LOG_WARN
-                            : IS_AT_LEAST_INFO_LEVEL(level)
-                                  ? ANDROID_LOG_INFO
-                                  : IS_AT_LEAST_DEBUG_LEVEL(level)
-                                        ? ANDROID_LOG_DEBUG
-                                        : ANDROID_LOG_VERBOSE;
+            IS_AT_LEAST_FATAL_LEVEL(level)   ? ANDROID_LOG_FATAL
+            : IS_AT_LEAST_ERROR_LEVEL(level) ? ANDROID_LOG_ERROR
+            : IS_AT_LEAST_WARN_LEVEL(level)  ? ANDROID_LOG_WARN
+            : IS_AT_LEAST_INFO_LEVEL(level)  ? ANDROID_LOG_INFO
+            : IS_AT_LEAST_DEBUG_LEVEL(level) ? ANDROID_LOG_DEBUG
+                                             : ANDROID_LOG_VERBOSE;
         __android_log_print(prio, tag, "%.*s", (int)msglen, msg);
 #else
         int rc = write(2, msg, msglen);
@@ -485,17 +480,12 @@ rootlogger_append(l4sc_logger_ptr_t logger, l4sc_logmessage_cptr_t msg,
         const unsigned level = msg->level;
         const char *tag = msg->logger->name;
         android_LogPriority prio =
-            IS_AT_LEAST_FATAL_LEVEL(level)
-                ? ANDROID_LOG_FATAL
-                : IS_AT_LEAST_ERROR_LEVEL(level)
-                      ? ANDROID_LOG_ERROR
-                      : IS_AT_LEAST_WARN_LEVEL(level)
-                            ? ANDROID_LOG_WARN
-                            : IS_AT_LEAST_INFO_LEVEL(level)
-                                  ? ANDROID_LOG_INFO
-                                  : IS_AT_LEAST_DEBUG_LEVEL(level)
-                                        ? ANDROID_LOG_DEBUG
-                                        : ANDROID_LOG_VERBOSE;
+            IS_AT_LEAST_FATAL_LEVEL(level)   ? ANDROID_LOG_FATAL
+            : IS_AT_LEAST_ERROR_LEVEL(level) ? ANDROID_LOG_ERROR
+            : IS_AT_LEAST_WARN_LEVEL(level)  ? ANDROID_LOG_WARN
+            : IS_AT_LEAST_INFO_LEVEL(level)  ? ANDROID_LOG_INFO
+            : IS_AT_LEAST_DEBUG_LEVEL(level) ? ANDROID_LOG_DEBUG
+                                             : ANDROID_LOG_VERBOSE;
         __android_log_print(prio, tag, "%.*s", (int)msg->msglen, msg->msg);
 #else
         int rc = write(2, msg->msg, msg->msglen);

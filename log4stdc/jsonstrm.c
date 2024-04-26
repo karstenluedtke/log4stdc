@@ -156,17 +156,12 @@ format_json_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
     char *dp = buf;
     const char *limit = buf + bufsize;
     int i, rc;
-    const char *levelstr =
-        IS_AT_LEAST_FATAL_LEVEL(msg->level)
-            ? "FATAL"
-            : IS_AT_LEAST_ERROR_LEVEL(msg->level)
-                  ? "ERROR"
-                  : IS_AT_LEAST_WARN_LEVEL(msg->level)
-                        ? "WARN"
-                        : IS_AT_LEAST_INFO_LEVEL(msg->level)
-                              ? "INFO"
-                              : IS_AT_LEAST_DEBUG_LEVEL(msg->level) ? "DEBUG"
-                                                                    : "TRACE";
+    const char *levelstr = IS_AT_LEAST_FATAL_LEVEL(msg->level)   ? "FATAL"
+                           : IS_AT_LEAST_ERROR_LEVEL(msg->level) ? "ERROR"
+                           : IS_AT_LEAST_WARN_LEVEL(msg->level)  ? "WARN"
+                           : IS_AT_LEAST_INFO_LEVEL(msg->level)  ? "INFO"
+                           : IS_AT_LEAST_DEBUG_LEVEL(msg->level) ? "DEBUG"
+                                                                 : "TRACE";
 
     /* This should work up to the year 2105 (for 32-bit unsigned long) */
     unsigned long timesecs = msg->time.tv_day * 86400uL + msg->time.tv_sec;

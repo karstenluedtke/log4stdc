@@ -12,17 +12,12 @@
 #if defined(__ANDROID__)
 #include <android/log.h>
 #define ANDROID_LOG_PRIO(level)                                               \
-    (IS_AT_LEAST_FATAL_LEVEL(level)                                           \
-         ? ANDROID_LOG_FATAL                                                  \
-         : IS_AT_LEAST_ERROR_LEVEL(level)                                     \
-               ? ANDROID_LOG_ERROR                                            \
-               : IS_AT_LEAST_WARN_LEVEL(level)                                \
-                     ? ANDROID_LOG_WARN                                       \
-                     : IS_AT_LEAST_INFO_LEVEL(level)                          \
-                           ? ANDROID_LOG_INFO                                 \
-                           : IS_AT_LEAST_DEBUG_LEVEL(level)                   \
-                                 ? ANDROID_LOG_DEBUG                          \
-                                 : ANDROID_LOG_VERBOSE)
+    (IS_AT_LEAST_FATAL_LEVEL(level)   ? ANDROID_LOG_FATAL                     \
+     : IS_AT_LEAST_ERROR_LEVEL(level) ? ANDROID_LOG_ERROR                     \
+     : IS_AT_LEAST_WARN_LEVEL(level)  ? ANDROID_LOG_WARN                      \
+     : IS_AT_LEAST_INFO_LEVEL(level)  ? ANDROID_LOG_INFO                      \
+     : IS_AT_LEAST_DEBUG_LEVEL(level) ? ANDROID_LOG_DEBUG                     \
+                                      : ANDROID_LOG_VERBOSE)
 #endif
 
 static int

@@ -251,45 +251,18 @@ on_end_tag(struct parsing_state *ps, const struct xml_tag *endtag)
 static int
 configure_from_file(l4sc_configurator_ptr_t cfgtr, const char *path)
 {
-    FILE *fp;
     char *buff;
     int rc = 0;
-    size_t bufsize = 8000, length = 0;
+    size_t length = 0;
     struct mempool *pool = get_default_mempool();
     static const char thisfunction[] = "configure_from_file";
 
     LOGINFO(("%s: \"%s\"", thisfunction, path));
 
-    fp = fopen(path, "r");
-    if (fp == NULL) {
-        rc = -errno;
-        LOGERROR(("%s: opening file \"%s\" failed, error %d: %s", thisfunction,
-                  path, rc, strerror(-rc)));
-        return (rc);
+    if ((rc = l4sc_read_cfgfile(path, pool, &buff, &length)) > 0) {
+        rc = configure_from_string(cfgtr, buff, length);
+        mempool_free(pool, buff);
     }
-
-    buff = mempool_alloc(pool, bufsize);
-    while ((rc = fread(buff + length, 1, bufsize - length, fp)) > 0) {
-        length += rc;
-        if (length >= bufsize) {
-            bufsize = (3 * bufsize / 2) + 4000;
-            LOGDEBUG(("%s: have %ld, realloc(%ld)...", thisfunction,
-                      (long)length, (long)bufsize));
-            buff = mempool_realloc(pool, buff, bufsize);
-            if (buff == NULL) {
-                rc = -ENOMEM;
-                LOGERROR(
-                    ("%s: realloc(%ld) failed.", thisfunction, (long)bufsize));
-                fclose(fp);
-                return (rc);
-            }
-        }
-    }
-    fclose(fp);
-
-    rc = configure_from_string(cfgtr, buff, length);
-
-    mempool_free(pool, buff);
 
     LOGINFO(("%s: \"%s\" done, error %d", thisfunction, path, rc));
 

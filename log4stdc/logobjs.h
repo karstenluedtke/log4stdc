@@ -294,6 +294,10 @@ l4sc_get_extra_class(const char *name, size_t namlen);
 void
 l4sc_set_internal_logging(const char *value, int vallen);
 
+int
+l4sc_read_cfgfile(const char *path, struct mempool *pool,
+                  /*out*/ char **bufp, /*out*/ size_t *sizep);
+
 #if defined(__GNUC__) && (__GNUC__ >= 3)
 void
 l4sc_logerror(const char *fmt, ...) __attribute__((format(printf, 1, 2)));

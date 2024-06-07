@@ -152,13 +152,14 @@ extern const struct l4sc_appender_class l4sc_socket_appender_class;
 extern const struct l4sc_layout_class l4sc_log4j_stream_layout_class;
 extern const struct l4sc_layout_class l4sc_log4j2_stream_layout_class;
 extern const struct l4sc_layout_class l4sc_json_stream_layout_class;
+extern const struct l4sc_layout_class l4sc_json_ws_stream_layout_class;
 extern const struct l4sc_layout_class l4sc_xml_stream_layout_class;
 
 #ifndef L4SC_EXTRA_CLASSES
 #define L4SC_EXTRA_CLASSES                                                    \
     &l4sc_socket_appender_class, &l4sc_log4j_stream_layout_class,             \
         &l4sc_log4j2_stream_layout_class, &l4sc_json_stream_layout_class,     \
-        &l4sc_xml_stream_layout_class
+        &l4sc_json_ws_stream_layout_class, &l4sc_xml_stream_layout_class
 #endif
 /** @} */
 

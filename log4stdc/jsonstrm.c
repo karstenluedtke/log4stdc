@@ -62,6 +62,41 @@ const struct l4sc_layout_class l4sc_json_stream_layout_class = {
     /* .estimate     */ estimate_json_size};
 
 static int
+init_json_ws_stream_layout(void *, size_t, bfc_mempool_t);
+
+static size_t
+format_json_ws_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
+                       char *buf, size_t bufsize);
+static size_t
+estimate_json_ws_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg);
+
+const struct l4sc_layout_class l4sc_json_ws_stream_layout_class = {
+    /* .super        */ (l4sc_layout_class_ptr_t)&l4sc_object_class,
+    /* .name         */ "JsonWsLayout",
+    /* .spare2       */ NULL,
+    /* .spare3       */ NULL,
+    /* .init         */ init_json_ws_stream_layout,
+    /* .initrefc     */ (void *)l4sc_default_init_refcount,
+    /* .incrrefc     */ (void *)l4sc_default_incr_refcount,
+    /* .decrrefc     */ (void *)l4sc_default_decr_refcount,
+    /* .destroy      */ NULL, /* inherit */
+    /* .clone        */ (void *)l4sc_default_clone_object,
+    /* .clonesize    */ get_layout_size,
+    /* .compare      */ NULL, /* inherit */
+    /* .hashcode     */ NULL, /* inherit */
+    /* .length       */ NULL, /* inherit */
+    /* .tostring     */ NULL, /* inherit */
+    /* .dump         */ NULL, /* inherit */
+    /* .set_name     */ set_layout_name,
+    /* .set_opt      */ set_layout_option,
+    /* .get_opt      */ get_layout_option,
+    /* .apply        */ apply_layout_options,
+    /* .close        */ NULL,
+    /* .format       */ format_json_ws_message,
+    /* .header       */ format_header,
+    /* .estimate     */ estimate_json_ws_size};
+
+static int
 init_json_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
     BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t, l4sc_layout_ptr_t, layout, buf,
@@ -234,4 +269,93 @@ format_json_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
         dp += rc;
     }
     return (dp - buf);
+}
+
+#define WEBSOCKET_F0_FIN 0x80
+#define WEBSOCKET_F0_OPCODE 0x0F
+#define WEBSOCKET_F0_CONT 0x00
+#define WEBSOCKET_F0_TEXT 0x01
+#define WEBSOCKET_F0_BINARY 0x02
+#define WEBSOCKET_F0_CLOSE 0x08
+#define WEBSOCKET_F0_PING 0x09
+#define WEBSOCKET_F0_PONG 0x0A
+
+#define WEBSOCKET_F1_MASK 0x80
+#define WEBSOCKET_F1_LENGTH 0x7F
+#define WEBSOCKET_F1_LEN2B 126
+#define WEBSOCKET_F1_LEN8B 127
+
+#define WEBSOCKET_NO_MASK 256 /*or'ed into opcode in websocket_send*/
+
+static int
+init_json_ws_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
+{
+    BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t, l4sc_layout_ptr_t, layout, buf,
+                      bufsize, pool, &l4sc_json_stream_layout_class);
+    layout->name = "json websocket stream layout";
+    return (BFC_SUCCESS);
+}
+
+static size_t
+estimate_json_ws_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
+{
+    return (16 + estimate_json_size(layout, msg));
+}
+
+static size_t
+format_json_ws_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
+                       char *buf, size_t bufsize)
+{
+    const unsigned char opcode = WEBSOCKET_F0_TEXT;
+    const unsigned char f1_mask = WEBSOCKET_F1_MASK;
+    unsigned char *frame = (unsigned char *)buf;
+    unsigned char *maskp = frame + 10; // preliminary
+    unsigned char *payload = maskp + (f1_mask ? 4 : 0);
+    size_t len;
+
+    if (bufsize < 40) {
+        return 0;
+    }
+
+    len = format_json_ws_message(layout, msg, (char *)payload,
+                                 buf + bufsize - (char *)payload);
+
+    frame[0] = WEBSOCKET_F0_FIN | opcode;
+
+    if (len < WEBSOCKET_F1_LEN2B) {
+        frame[1] = f1_mask | len;
+        maskp = frame + 2;
+    } else if ((len >> 8) < 256) {
+        frame[1] = f1_mask | WEBSOCKET_F1_LEN2B;
+        frame[2] = (unsigned char)(len >> 8);
+        frame[3] = (unsigned char)len;
+        maskp = frame + 4;
+    } else {
+        unsigned i;
+        size_t shiftval = len;
+        frame[1] = f1_mask | WEBSOCKET_F1_LEN8B;
+        memset(frame + 2, 0, 8);
+        for (i = 9; (shiftval != 0) && (i > 1); i--, shiftval >>= 8) {
+            frame[i] = (unsigned char)shiftval;
+        }
+        maskp = frame + 10;
+    }
+
+    if (f1_mask) {
+        size_t i;
+        size_t rndval = (size_t)buf + (size_t)&rndval + len;
+        for (i = 0; i < 4; i++, rndval >>= 3) {
+            maskp[i] = (unsigned char)rndval;
+        }
+        for (i = 0; i < len; i++) {
+            maskp[4 + i] = payload[i] ^ maskp[i & 3];
+        }
+        payload = maskp + 4;
+
+    } else if (payload != maskp) {
+        memmove(maskp, payload, len);
+        payload = maskp;
+    }
+
+    return (payload + len - frame);
 }

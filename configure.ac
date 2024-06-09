@@ -22,6 +22,12 @@ AC_CHECK_LIB([rt], [clock_gettime])
 AC_CHECK_LIB([pthread], [pthread_mutexattr_settype])
 AC_CHECK_LIB([log], [__android_log_print])
 
+AC_CHECK_LIB([z], [deflate])
+AC_CHECK_LIB([ssl], [EVP_MD_CTX_new],
+    [AC_DEFINE([HAVE_OPENSSL3], [1], [Define to 1 if OPENSSL 3.x is available.]) LIBS="-lssl -lcrypto $LIBS"],
+    [],
+    [-lcrypto])
+
 AC_CHECK_HEADER([winsock2.h],
     [AC_DEFINE([HAVE_LIBWS2_32], [1], [Define if libws2_32 exists.]) LIBS="-lws2_32 $LIBS"],
     [],

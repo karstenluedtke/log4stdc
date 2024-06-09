@@ -28,6 +28,7 @@ liblog4stdc_a_SOURCES+= log4stdc/logger.c
 liblog4stdc_a_SOURCES+= log4stdc/appender.c
 liblog4stdc_a_SOURCES+= log4stdc/fileappd.c
 liblog4stdc_a_SOURCES+= log4stdc/sockappd.c
+liblog4stdc_a_SOURCES+= log4stdc/sslappdr.c
 liblog4stdc_a_SOURCES+= log4stdc/layout.c
 liblog4stdc_a_SOURCES+= log4stdc/logmsg.c
 liblog4stdc_a_SOURCES+= log4stdc/propcfg.c

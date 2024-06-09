@@ -200,14 +200,15 @@ am_liblog4stdc_a_OBJECTS = log4stdc/logprf.$(OBJEXT) \
 	log4stdc/sappendr.$(OBJEXT) log4stdc/fmtmsg.$(OBJEXT) \
 	log4stdc/logger.$(OBJEXT) log4stdc/appender.$(OBJEXT) \
 	log4stdc/fileappd.$(OBJEXT) log4stdc/sockappd.$(OBJEXT) \
-	log4stdc/layout.$(OBJEXT) log4stdc/logmsg.$(OBJEXT) \
-	log4stdc/propcfg.$(OBJEXT) log4stdc/object.$(OBJEXT) \
-	log4stdc/l4scpool.$(OBJEXT) log4stdc/pmutex.$(OBJEXT) \
-	log4stdc/wmutex.$(OBJEXT) log4stdc/xmlcfg.$(OBJEXT) \
-	log4stdc/strcfg.$(OBJEXT) log4stdc/filecfg.$(OBJEXT) \
-	log4stdc/snprintf.$(OBJEXT) log4stdc/vsnprntf.$(OBJEXT) \
-	log4stdc/fmtjtime.$(OBJEXT) log4stdc/jsonstrm.$(OBJEXT) \
-	log4stdc/l4jstrm.$(OBJEXT) log4stdc/xmlstrm.$(OBJEXT)
+	log4stdc/sslappdr.$(OBJEXT) log4stdc/layout.$(OBJEXT) \
+	log4stdc/logmsg.$(OBJEXT) log4stdc/propcfg.$(OBJEXT) \
+	log4stdc/object.$(OBJEXT) log4stdc/l4scpool.$(OBJEXT) \
+	log4stdc/pmutex.$(OBJEXT) log4stdc/wmutex.$(OBJEXT) \
+	log4stdc/xmlcfg.$(OBJEXT) log4stdc/strcfg.$(OBJEXT) \
+	log4stdc/filecfg.$(OBJEXT) log4stdc/snprintf.$(OBJEXT) \
+	log4stdc/vsnprntf.$(OBJEXT) log4stdc/fmtjtime.$(OBJEXT) \
+	log4stdc/jsonstrm.$(OBJEXT) log4stdc/l4jstrm.$(OBJEXT) \
+	log4stdc/xmlstrm.$(OBJEXT)
 liblog4stdc_a_OBJECTS = $(am_liblog4stdc_a_OBJECTS)
 am_examples_redirect_OBJECTS = examples/redirect.$(OBJEXT)
 examples_redirect_OBJECTS = $(am_examples_redirect_OBJECTS)
@@ -281,9 +282,10 @@ am__depfiles_remade = ./$(DEPDIR)/testlink.Po \
 	log4stdc/$(DEPDIR)/object.Po log4stdc/$(DEPDIR)/pmutex.Po \
 	log4stdc/$(DEPDIR)/propcfg.Po log4stdc/$(DEPDIR)/sappendr.Po \
 	log4stdc/$(DEPDIR)/snprintf.Po log4stdc/$(DEPDIR)/sockappd.Po \
-	log4stdc/$(DEPDIR)/sparent.Po log4stdc/$(DEPDIR)/strcfg.Po \
-	log4stdc/$(DEPDIR)/vsnprntf.Po log4stdc/$(DEPDIR)/wmutex.Po \
-	log4stdc/$(DEPDIR)/xmlcfg.Po log4stdc/$(DEPDIR)/xmlstrm.Po \
+	log4stdc/$(DEPDIR)/sparent.Po log4stdc/$(DEPDIR)/sslappdr.Po \
+	log4stdc/$(DEPDIR)/strcfg.Po log4stdc/$(DEPDIR)/vsnprntf.Po \
+	log4stdc/$(DEPDIR)/wmutex.Po log4stdc/$(DEPDIR)/xmlcfg.Po \
+	log4stdc/$(DEPDIR)/xmlstrm.Po \
 	tests/appender/$(DEPDIR)/jsonsock.Po \
 	tests/appender/$(DEPDIR)/l4j2sock.Po \
 	tests/appender/$(DEPDIR)/l4jsock.Po \
@@ -685,13 +687,13 @@ liblog4stdc_a_SOURCES = log4stdc/log4stdc.h log4stdc/logobjs.h \
 	log4stdc/l4sc_log.c log4stdc/enabled.c log4stdc/sparent.c \
 	log4stdc/sappendr.c log4stdc/fmtmsg.c log4stdc/logger.c \
 	log4stdc/appender.c log4stdc/fileappd.c log4stdc/sockappd.c \
-	log4stdc/layout.c log4stdc/logmsg.c log4stdc/propcfg.c \
-	log4stdc/object.c log4stdc/l4scpool.c log4stdc/pmutex.c \
-	log4stdc/wmutex.c log4stdc/xmlcfg.c log4stdc/strcfg.c \
-	log4stdc/filecfg.c log4stdc/snprintf.c log4stdc/vsnprntf.c \
-	log4stdc/fmtjtime.c log4stdc/jsonstrm.c log4stdc/l4jstrm.c \
-	log4stdc/xmlstrm.c LICENSE.txt win32.mak c600.mak log4stdc.sln \
-	log4stdc.vcxproj
+	log4stdc/sslappdr.c log4stdc/layout.c log4stdc/logmsg.c \
+	log4stdc/propcfg.c log4stdc/object.c log4stdc/l4scpool.c \
+	log4stdc/pmutex.c log4stdc/wmutex.c log4stdc/xmlcfg.c \
+	log4stdc/strcfg.c log4stdc/filecfg.c log4stdc/snprintf.c \
+	log4stdc/vsnprntf.c log4stdc/fmtjtime.c log4stdc/jsonstrm.c \
+	log4stdc/l4jstrm.c log4stdc/xmlstrm.c LICENSE.txt win32.mak \
+	c600.mak log4stdc.sln log4stdc.vcxproj
 examples_redirect_SOURCES = examples/redirect.c
 examples_redirect_LDADD = liblog4stdc.a
 examples_redirect_DEPENDENCIES = liblog4stdc.a
@@ -915,6 +917,8 @@ log4stdc/fileappd.$(OBJEXT): log4stdc/$(am__dirstamp) \
 	log4stdc/$(DEPDIR)/$(am__dirstamp)
 log4stdc/sockappd.$(OBJEXT): log4stdc/$(am__dirstamp) \
 	log4stdc/$(DEPDIR)/$(am__dirstamp)
+log4stdc/sslappdr.$(OBJEXT): log4stdc/$(am__dirstamp) \
+	log4stdc/$(DEPDIR)/$(am__dirstamp)
 log4stdc/layout.$(OBJEXT): log4stdc/$(am__dirstamp) \
 	log4stdc/$(DEPDIR)/$(am__dirstamp)
 log4stdc/logmsg.$(OBJEXT): log4stdc/$(am__dirstamp) \
@@ -1116,6 +1120,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/snprintf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/sockappd.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/sparent.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/sslappdr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/strcfg.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/vsnprntf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@log4stdc/$(DEPDIR)/wmutex.Po@am__quote@ # am--include-marker
@@ -1776,6 +1781,7 @@ distclean: distclean-am
 	-rm -f log4stdc/$(DEPDIR)/snprintf.Po
 	-rm -f log4stdc/$(DEPDIR)/sockappd.Po
 	-rm -f log4stdc/$(DEPDIR)/sparent.Po
+	-rm -f log4stdc/$(DEPDIR)/sslappdr.Po
 	-rm -f log4stdc/$(DEPDIR)/strcfg.Po
 	-rm -f log4stdc/$(DEPDIR)/vsnprntf.Po
 	-rm -f log4stdc/$(DEPDIR)/wmutex.Po
@@ -1883,6 +1889,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f log4stdc/$(DEPDIR)/snprintf.Po
 	-rm -f log4stdc/$(DEPDIR)/sockappd.Po
 	-rm -f log4stdc/$(DEPDIR)/sparent.Po
+	-rm -f log4stdc/$(DEPDIR)/sslappdr.Po
 	-rm -f log4stdc/$(DEPDIR)/strcfg.Po
 	-rm -f log4stdc/$(DEPDIR)/vsnprntf.Po
 	-rm -f log4stdc/$(DEPDIR)/wmutex.Po

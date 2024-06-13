@@ -291,8 +291,11 @@ static int
 init_json_ws_stream_layout(void *buf, size_t bufsize, bfc_mempool_t pool)
 {
     BFC_INIT_PROLOGUE(l4sc_layout_class_ptr_t, l4sc_layout_ptr_t, layout, buf,
-                      bufsize, pool, &l4sc_json_stream_layout_class);
+                      bufsize, pool, &l4sc_json_ws_stream_layout_class);
     layout->name = "json websocket stream layout";
+    LOGDEBUG(("init_json_ws_stream_layout(%p, bufsize %ld, pool %p): %s %s",
+              buf, (long)bufsize, pool, BFC_CLASS(layout)->name,
+              layout->name));
     return (BFC_SUCCESS);
 }
 
@@ -317,8 +320,8 @@ format_json_ws_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
         return 0;
     }
 
-    len = format_json_ws_message(layout, msg, (char *)payload,
-                                 buf + bufsize - (char *)payload);
+    len = format_json_message(layout, msg, (char *)payload,
+                              buf + bufsize - (char *)payload);
 
     frame[0] = WEBSOCKET_F0_FIN | opcode;
 

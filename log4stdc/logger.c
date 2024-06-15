@@ -537,6 +537,39 @@ l4sc_get_logger(const char *name, int namelen)
     return (logger);
 }
 
+l4sc_logger_ptr_t
+l4sc_get_sublogger(l4sc_logger_ptr_t parent, const char *name, int namelen)
+{
+    int len = strlen(parent->name);
+    int nlen = (namelen > 0) ? namelen : strlen(name);
+    int bufsize = len + nlen + 2;
+    char *buf;
+    l4sc_logger_ptr_t logger = NULL;
+
+    buf = alloca(bufsize);
+
+    memcpy(buf, parent->name, len);
+    if (buf[len - 1] != '.') {
+        buf[len++] = '.';
+    }
+
+    memcpy(buf + len, name, nlen);
+    len += nlen;
+    if (len < bufsize) {
+        buf[len] = '\0';
+    } else {
+        LOGERROR(
+            ("l4sc_get_sublogger: name buffer overrun %d/%d", len, bufsize));
+    }
+
+    logger = l4sc_get_logger(buf, len);
+    if (logger) {
+        logger->parent = parent;
+    }
+
+    return (logger);
+}
+
 int
 l4sc_insert_custom_logger(
     const char *name, void *cbarg,

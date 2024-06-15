@@ -243,6 +243,8 @@ l4sc_logger_ptr_t
 l4sc_get_root_logger(void);
 l4sc_logger_ptr_t
 l4sc_get_logger(const char *name, int namelen);
+l4sc_logger_ptr_t
+l4sc_get_sublogger(l4sc_logger_ptr_t parent, const char *name, int namelen);
 int
 l4sc_is_logger_enabled(l4sc_logger_cptr_t logger, int level);
 int

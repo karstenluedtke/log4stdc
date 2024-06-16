@@ -9,6 +9,10 @@
 #include "compat.h"
 #include "logobjs.h"
 
+#if defined(__STDC__) || defined(HAVE_STDINT_H)
+#include <stdint.h>
+#endif
+
 static int
 init_json_stream_layout(void *, size_t, bfc_mempool_t);
 static size_t
@@ -305,6 +309,17 @@ estimate_json_ws_size(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg)
     return (16 + estimate_json_size(layout, msg));
 }
 
+static void
+generate_mask(unsigned char *mask, const void *buf, size_t len);
+static void
+mask_in_place(unsigned char *payload, unsigned char *mask, size_t len);
+static void
+copy_and_mask(unsigned char *dest, unsigned char *payload, unsigned char *mask,
+              size_t len);
+static void
+copy_reverse_and_mask(unsigned char *dest, unsigned char *payload,
+                      unsigned char *mask, size_t len);
+
 static size_t
 format_json_ws_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
                        char *buf, size_t bufsize)
@@ -312,7 +327,8 @@ format_json_ws_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
     const unsigned char opcode = WEBSOCKET_F0_TEXT;
     const unsigned char f1_mask = WEBSOCKET_F1_MASK;
     unsigned char *frame = (unsigned char *)buf;
-    unsigned char *maskp = frame + 10; // preliminary
+    /* initialize with estimated values, corrected later ... */
+    unsigned char *maskp = frame + ((msg->msglen < 60000) ? 4 : 10);
     unsigned char *payload = maskp + (f1_mask ? 4 : 0);
     size_t len;
 
@@ -323,17 +339,43 @@ format_json_ws_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
     len = format_json_message(layout, msg, (char *)payload,
                               buf + bufsize - (char *)payload);
 
-    frame[0] = WEBSOCKET_F0_FIN | opcode;
-
     if (len < WEBSOCKET_F1_LEN2B) {
-        frame[1] = f1_mask | len;
         maskp = frame + 2;
     } else if ((len >> 8) < 256) {
+        maskp = frame + 4;
+    } else {
+        maskp = frame + 10;
+    }
+
+    if (f1_mask) {
+        unsigned char *dest = maskp + 4;
+        if (payload == dest) {
+            generate_mask(maskp, buf, len);
+            mask_in_place(payload, maskp, len);
+        } else if (payload > dest) {
+            generate_mask(maskp, buf, len);
+            copy_and_mask(dest, payload, maskp, len);
+        } else {
+            unsigned char maskbuf[4];
+            generate_mask(maskbuf, buf, len);
+            copy_reverse_and_mask(dest, payload, maskbuf, len);
+            memcpy(maskp, maskbuf, 4);
+        }
+        payload = dest;
+
+    } else if (payload != maskp) {
+        memmove(maskp, payload, len);
+        payload = maskp;
+    }
+
+    frame[0] = WEBSOCKET_F0_FIN | opcode;
+    if (maskp == frame + 2) {
+        frame[1] = f1_mask | len;
+    } else if (maskp == frame + 4) {
         frame[1] = f1_mask | WEBSOCKET_F1_LEN2B;
         frame[2] = (unsigned char)(len >> 8);
         frame[3] = (unsigned char)len;
-        maskp = frame + 4;
-    } else {
+    } else if (maskp == frame + 10) {
         unsigned i;
         size_t shiftval = len;
         frame[1] = f1_mask | WEBSOCKET_F1_LEN8B;
@@ -341,24 +383,73 @@ format_json_ws_message(l4sc_layout_ptr_t layout, l4sc_logmessage_cptr_t msg,
         for (i = 9; (shiftval != 0) && (i > 1); i--, shiftval >>= 8) {
             frame[i] = (unsigned char)shiftval;
         }
-        maskp = frame + 10;
-    }
-
-    if (f1_mask) {
-        size_t i;
-        size_t rndval = (size_t)buf + (size_t)&rndval + len;
-        for (i = 0; i < 4; i++, rndval >>= 3) {
-            maskp[i] = (unsigned char)rndval;
-        }
-        for (i = 0; i < len; i++) {
-            maskp[4 + i] = payload[i] ^ maskp[i & 3];
-        }
-        payload = maskp + 4;
-
-    } else if (payload != maskp) {
-        memmove(maskp, payload, len);
-        payload = maskp;
     }
 
     return (payload + len - frame);
+}
+
+static void
+generate_mask(unsigned char *mask, const void *buf, size_t len)
+{
+    size_t rndval = (size_t)buf + (size_t)&rndval + len;
+    int i;
+
+    for (i = 0; i < 4; i++, rndval >>= 3) {
+        mask[i] = (unsigned char)rndval;
+    }
+}
+
+static void
+mask_in_place(unsigned char *payload, unsigned char *mask, size_t len)
+{
+    size_t i = 0;
+
+    if ((((intptr_t)payload | (intptr_t)mask) & 0x03) == 0) {
+#if defined(__STDC__) || defined(HAVE_STDINT_H) || defined(UINT32_MAX)
+        uint32_t mask32 = *mask;
+        uint32_t *dst32 = (uint32_t *)payload;
+        for (; i < len; i += 4, dst32++) {
+            *dst32 ^= mask32;
+        }
+#else
+        if (sizeof(unsigned) == 4) {
+            unsigned mask32 = *mask;
+            unsigned *dst32 = (unsigned *)payload;
+            for (; i < len; i += 4, dst32++) {
+                *dst32 ^= mask32;
+            }
+        }
+#endif
+    }
+
+    for (; i < len; i++) {
+        payload[i] ^= mask[i & 3];
+    }
+}
+
+static void
+copy_and_mask(unsigned char *dest, unsigned char *payload, unsigned char *mask,
+              size_t len)
+{
+    size_t i;
+
+    for (i = 0; i < len; i++) {
+        dest[i] = payload[i] ^ mask[i & 3];
+    }
+}
+
+static void
+copy_reverse_and_mask(unsigned char *dest, unsigned char *payload,
+                      unsigned char *mask, size_t len)
+{
+    size_t i;
+
+    if (len > 0) {
+        for (i = len - 1;; i--) {
+            dest[i] = payload[i] ^ mask[i & 3];
+            if (i == 0) {
+                break;
+            }
+        }
+    }
 }

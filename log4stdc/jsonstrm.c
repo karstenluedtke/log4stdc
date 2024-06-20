@@ -406,14 +406,14 @@ mask_in_place(unsigned char *payload, unsigned char *mask, size_t len)
 
     if ((((intptr_t)payload | (intptr_t)mask) & 0x03) == 0) {
 #if defined(__STDC__) || defined(HAVE_STDINT_H) || defined(UINT32_MAX)
-        uint32_t mask32 = *mask;
+        uint32_t mask32 = *(uint32_t *)mask;
         uint32_t *dst32 = (uint32_t *)payload;
         for (; i < len; i += 4, dst32++) {
             *dst32 ^= mask32;
         }
 #else
         if (sizeof(unsigned) == 4) {
-            unsigned mask32 = *mask;
+            unsigned mask32 = *(unsigned *)mask;
             unsigned *dst32 = (unsigned *)payload;
             for (; i < len; i += 4, dst32++) {
                 *dst32 ^= mask32;

@@ -131,6 +131,12 @@ tests_format_l4j2strm_LDADD = liblog4stdc.a
 tests_format_l4j2strm_DEPENDENCIES = liblog4stdc.a
 TESTS += tests/format/l4j2strm
 
+check_PROGRAMS += tests/format/jsonws
+tests_format_jsonws_SOURCES = tests/format/jsonws.c
+tests_format_jsonws_LDADD = liblog4stdc.a
+tests_format_jsonws_DEPENDENCIES = liblog4stdc.a
+TESTS += tests/format/jsonws
+
 check_PROGRAMS += tests/appender/l4jsock
 tests_appender_l4jsock_SOURCES = tests/appender/l4jsock.c
 tests_appender_l4jsock_LDADD = liblog4stdc.a

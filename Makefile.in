@@ -95,7 +95,8 @@ TESTS = examples/redirect$(EXEEXT) $(am__EXEEXT_1) \
 	tests/xmlcfg/level$(EXEEXT) tests/xmlcfg/bigfile$(EXEEXT) \
 	tests/propcfg/level$(EXEEXT) tests/format/snprintf$(EXEEXT) \
 	tests/format/pattern$(EXEEXT) tests/format/currtime$(EXEEXT) \
-	tests/format/l4j2strm$(EXEEXT) tests/appender/l4jsock$(EXEEXT) \
+	tests/format/l4j2strm$(EXEEXT) tests/format/jsonws$(EXEEXT) \
+	tests/appender/l4jsock$(EXEEXT) \
 	tests/appender/l4j2sock$(EXEEXT) \
 	tests/appender/jsonsock$(EXEEXT) \
 	tests/appender/xmlsock$(EXEEXT)
@@ -106,7 +107,7 @@ check_PROGRAMS = tests/xmlcfg/level$(EXEEXT) \
 	tests/xmlcfg/bigfile$(EXEEXT) tests/propcfg/level$(EXEEXT) \
 	tests/format/snprintf$(EXEEXT) tests/format/pattern$(EXEEXT) \
 	tests/format/currtime$(EXEEXT) tests/format/l4j2strm$(EXEEXT) \
-	tests/appender/l4jsock$(EXEEXT) \
+	tests/format/jsonws$(EXEEXT) tests/appender/l4jsock$(EXEEXT) \
 	tests/appender/l4j2sock$(EXEEXT) \
 	tests/appender/jsonsock$(EXEEXT) \
 	tests/appender/xmlsock$(EXEEXT)
@@ -228,6 +229,8 @@ am_tests_appender_xmlsock_OBJECTS = tests/appender/xmlsock.$(OBJEXT)
 tests_appender_xmlsock_OBJECTS = $(am_tests_appender_xmlsock_OBJECTS)
 am_tests_format_currtime_OBJECTS = tests/format/currtime.$(OBJEXT)
 tests_format_currtime_OBJECTS = $(am_tests_format_currtime_OBJECTS)
+am_tests_format_jsonws_OBJECTS = tests/format/jsonws.$(OBJEXT)
+tests_format_jsonws_OBJECTS = $(am_tests_format_jsonws_OBJECTS)
 am_tests_format_l4j2strm_OBJECTS = tests/format/l4j2strm.$(OBJEXT)
 tests_format_l4j2strm_OBJECTS = $(am_tests_format_l4j2strm_OBJECTS)
 am_tests_format_pattern_OBJECTS = tests/format/pattern.$(OBJEXT)
@@ -289,6 +292,7 @@ am__depfiles_remade = ./$(DEPDIR)/testlink.Po \
 	tests/appender/$(DEPDIR)/l4jsock.Po \
 	tests/appender/$(DEPDIR)/xmlsock.Po \
 	tests/format/$(DEPDIR)/currtime.Po \
+	tests/format/$(DEPDIR)/jsonws.Po \
 	tests/format/$(DEPDIR)/l4j2strm.Po \
 	tests/format/$(DEPDIR)/pattern.Po \
 	tests/format/$(DEPDIR)/snprintf.Po \
@@ -328,6 +332,7 @@ SOURCES = $(liblog4cxx2stdc_a_SOURCES) $(liblog4stdc_a_SOURCES) \
 	$(tests_appender_l4jsock_SOURCES) \
 	$(tests_appender_xmlsock_SOURCES) \
 	$(tests_format_currtime_SOURCES) \
+	$(tests_format_jsonws_SOURCES) \
 	$(tests_format_l4j2strm_SOURCES) \
 	$(tests_format_pattern_SOURCES) \
 	$(tests_format_snprintf_SOURCES) \
@@ -341,6 +346,7 @@ DIST_SOURCES = $(am__liblog4cxx2stdc_a_SOURCES_DIST) \
 	$(tests_appender_l4jsock_SOURCES) \
 	$(tests_appender_xmlsock_SOURCES) \
 	$(tests_format_currtime_SOURCES) \
+	$(tests_format_jsonws_SOURCES) \
 	$(tests_format_l4j2strm_SOURCES) \
 	$(tests_format_pattern_SOURCES) \
 	$(tests_format_snprintf_SOURCES) \
@@ -734,6 +740,9 @@ tests_format_currtime_DEPENDENCIES = liblog4stdc.a
 tests_format_l4j2strm_SOURCES = tests/format/l4j2strm.c
 tests_format_l4j2strm_LDADD = liblog4stdc.a
 tests_format_l4j2strm_DEPENDENCIES = liblog4stdc.a
+tests_format_jsonws_SOURCES = tests/format/jsonws.c
+tests_format_jsonws_LDADD = liblog4stdc.a
+tests_format_jsonws_DEPENDENCIES = liblog4stdc.a
 tests_appender_l4jsock_SOURCES = tests/appender/l4jsock.c
 tests_appender_l4jsock_LDADD = liblog4stdc.a
 tests_appender_l4jsock_DEPENDENCIES = liblog4stdc.a
@@ -1010,6 +1019,12 @@ tests/format/currtime.$(OBJEXT): tests/format/$(am__dirstamp) \
 tests/format/currtime$(EXEEXT): $(tests_format_currtime_OBJECTS) $(tests_format_currtime_DEPENDENCIES) $(EXTRA_tests_format_currtime_DEPENDENCIES) tests/format/$(am__dirstamp)
 	@rm -f tests/format/currtime$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_format_currtime_OBJECTS) $(tests_format_currtime_LDADD) $(LIBS)
+tests/format/jsonws.$(OBJEXT): tests/format/$(am__dirstamp) \
+	tests/format/$(DEPDIR)/$(am__dirstamp)
+
+tests/format/jsonws$(EXEEXT): $(tests_format_jsonws_OBJECTS) $(tests_format_jsonws_DEPENDENCIES) $(EXTRA_tests_format_jsonws_DEPENDENCIES) tests/format/$(am__dirstamp)
+	@rm -f tests/format/jsonws$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_format_jsonws_OBJECTS) $(tests_format_jsonws_LDADD) $(LIBS)
 tests/format/l4j2strm.$(OBJEXT): tests/format/$(am__dirstamp) \
 	tests/format/$(DEPDIR)/$(am__dirstamp)
 
@@ -1126,6 +1141,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/appender/$(DEPDIR)/l4jsock.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/appender/$(DEPDIR)/xmlsock.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/format/$(DEPDIR)/currtime.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/format/$(DEPDIR)/jsonws.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/format/$(DEPDIR)/l4j2strm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/format/$(DEPDIR)/pattern.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/format/$(DEPDIR)/snprintf.Po@am__quote@ # am--include-marker
@@ -1451,6 +1467,13 @@ tests/format/currtime.log: tests/format/currtime$(EXEEXT)
 tests/format/l4j2strm.log: tests/format/l4j2strm$(EXEEXT)
 	@p='tests/format/l4j2strm$(EXEEXT)'; \
 	b='tests/format/l4j2strm'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+tests/format/jsonws.log: tests/format/jsonws$(EXEEXT)
+	@p='tests/format/jsonws$(EXEEXT)'; \
+	b='tests/format/jsonws'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1786,6 +1809,7 @@ distclean: distclean-am
 	-rm -f tests/appender/$(DEPDIR)/l4jsock.Po
 	-rm -f tests/appender/$(DEPDIR)/xmlsock.Po
 	-rm -f tests/format/$(DEPDIR)/currtime.Po
+	-rm -f tests/format/$(DEPDIR)/jsonws.Po
 	-rm -f tests/format/$(DEPDIR)/l4j2strm.Po
 	-rm -f tests/format/$(DEPDIR)/pattern.Po
 	-rm -f tests/format/$(DEPDIR)/snprintf.Po
@@ -1893,6 +1917,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/appender/$(DEPDIR)/l4jsock.Po
 	-rm -f tests/appender/$(DEPDIR)/xmlsock.Po
 	-rm -f tests/format/$(DEPDIR)/currtime.Po
+	-rm -f tests/format/$(DEPDIR)/jsonws.Po
 	-rm -f tests/format/$(DEPDIR)/l4j2strm.Po
 	-rm -f tests/format/$(DEPDIR)/pattern.Po
 	-rm -f tests/format/$(DEPDIR)/snprintf.Po

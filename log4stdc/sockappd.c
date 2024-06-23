@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #endif
 
 #if defined(HAVE_SIGNAL_H)
@@ -293,11 +294,12 @@ open_appender(l4sc_appender_ptr_t appender)
 #if defined(L4SC_WINDOWS_SOCKETS)
         SOCKET sock;
         int err;
+        DWORD flag;
 #define INVALSOCK INVALID_SOCKET
 #define CLOSESOCK closesocket
 #define SOCKERROR WSAGetLastError()
 #else
-        int sock, err;
+        int sock, err, flag;
 #define INVALSOCK -1
 #define CLOSESOCK close
 #define SOCKERROR errno
@@ -314,7 +316,7 @@ open_appender(l4sc_appender_ptr_t appender)
         if (bind(sock, &addrbuf.sa, sizeof(addrbuf.sin)) == -1) {
             err = SOCKERROR;
             CLOSESOCK(sock);
-            LOGERROR(("%s: connect failed, err %d %s", thisfunction, err,
+            LOGERROR(("%s: bind failed, err %d %s", thisfunction, err,
                       strerror(err)));
             return;
         }
@@ -328,6 +330,15 @@ open_appender(l4sc_appender_ptr_t appender)
                       strerror(err)));
             return;
         }
+
+        flag = 1;
+        if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&flag,
+                       sizeof(flag)) < 0) {
+            err = SOCKERROR;
+            LOGERROR(("%s: TCP_NODELAY failed, err %d %s", thisfunction, err,
+                      strerror(err)));
+        }
+
         hdrlen =
             format_header(appender, L4SC_FIRST_HEADER, header, sizeof(header));
 #if defined(L4SC_WINDOWS_SOCKETS)

@@ -14,9 +14,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-//#ifdef HAVE_UNISTD_H
+// #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-//#endif
+// #endif
 
 #include "log4cxx/logger.h"
 #include "log4cxx/xml/domconfigurator.h"

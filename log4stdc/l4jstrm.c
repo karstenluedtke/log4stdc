@@ -210,7 +210,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
         *((ptr)++) = (char)((v) >> 24);                                       \
         *((ptr)++) = (char)((v) >> 16);                                       \
         *((ptr)++) = (char)((v) >> 8);                                        \
-        *((ptr)++) = (char)((v)&255);                                         \
+        *((ptr)++) = (char)((v) & 255);                                       \
     } else {                                                                  \
         (ptr) += 4;                                                           \
     }
@@ -218,7 +218,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
 #define PUTNEXTSHORT(ptr,v,limit)                                           \
     if ((ptr) + 2 < (limit)) {                                                \
         *((ptr)++) = (char)((v) >> 8);                                        \
-        *((ptr)++) = (char)((v)&255);                                         \
+        *((ptr)++) = (char)((v) & 255);                                       \
     } else {                                                                  \
         (ptr) += 2;                                                           \
     }
@@ -232,7 +232,7 @@ apply_layout_options(l4sc_layout_ptr_t obj)
         *((ptr)++) = (char)((v) >> 24);                                       \
         *((ptr)++) = (char)((v) >> 16);                                       \
         *((ptr)++) = (char)((v) >> 8);                                        \
-        *((ptr)++) = (char)((v)&255);                                         \
+        *((ptr)++) = (char)((v) & 255);                                       \
     } else {                                                                  \
         (ptr) += 8;                                                           \
     }

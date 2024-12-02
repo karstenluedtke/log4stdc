@@ -374,30 +374,81 @@ close_appender(l4sc_appender_ptr_t appender)
     unlock_appender(appender, lock);
 }
 
+#if defined(L4SC_WINDOWS_FILES)
+static int
+append_index(wchar_t *buf, int pos, int index)
+{
+    int taillen;
+    char tail[8];
+
+    if (index < 10) {
+        taillen = 2;
+        buf[pos + 0] = '.';
+        buf[pos + 1] = '0' + index;
+        buf[pos + 2] = 0;
+    } else {
+        taillen = l4sc_snprintf(tail, 6, ".%u", index);
+        MultiByteToWideChar(CP_UTF8, 0, tail, taillen, buf + pos, taillen + 1);
+        buf[pos + taillen] = 0;
+    }
+
+    return pos + taillen;
+}
+#else
+static int
+append_index(char *buf, int pos, int index)
+{
+    int taillen;
+
+    if (index < 10) {
+        taillen = 2;
+        buf[pos + 0] = '.';
+        buf[pos + 1] = '0' + index;
+        buf[pos + 2] = '\0';
+    } else {
+        taillen = l4sc_snprintf(buf + pos, 6, ".%u", index);
+    }
+
+    return pos + taillen;
+}
+#endif
+
 static int
 start_rollover(l4sc_appender_ptr_t appender)
 {
     int fnlen, bufsize;
+#if defined(L4SC_WINDOWS_FILES)
+    int wlen;
+    wchar_t *from, *to;
+#else
     char *from, *to;
+#endif
     if (appender->filename == NULL) {
         return (0);
     }
     fnlen = strlen(appender->filename);
-    bufsize = fnlen + 10;
+    bufsize = (fnlen + 10) * sizeof(from[0]);
     from = alloca(bufsize);
     to = alloca(bufsize);
+#if defined(L4SC_WINDOWS_FILES)
+    wlen = MultiByteToWideChar(CP_UTF8, 0, appender->filename, fnlen, from,
+                               fnlen + 1);
+    if ((wlen >= 0) && (wlen < fnlen)) {
+        fnlen = wlen;
+    }
+    from[fnlen] = 0;
+#else
+    memcpy(from, appender->filename, fnlen);
+    from[fnlen] = '\0';
+#endif
     /*
      * test.log > test.log.0
      */
-    memcpy(from, appender->filename, fnlen);
-    from[fnlen] = '\0';
-    memcpy(to, appender->filename, fnlen);
-    to[fnlen + 0] = '.';
-    to[fnlen + 1] = '0';
-    to[fnlen + 2] = '\0';
+    memcpy(to, from, fnlen * sizeof(from[0]));
+    append_index(to, fnlen, 0);
 #if defined(L4SC_WINDOWS_FILES)
     close_appender(appender);
-    MoveFileExA(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
+    MoveFileExW(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
 #else
     rename(from, to);
     close_appender(appender);
@@ -410,24 +461,37 @@ static void
 complete_rollover(l4sc_appender_ptr_t appender)
 {
     int i, fnlen, bufsize;
+#if defined(L4SC_WINDOWS_FILES)
+    int wlen;
+    wchar_t *from, *to;
+#else
     char *from, *to;
+#endif
     if (appender->filename == NULL) {
         return;
     }
     fnlen = strlen(appender->filename);
-    bufsize = fnlen + 10;
+    bufsize = (fnlen + 10) * sizeof(from[0]);
     from = alloca(bufsize);
     to = alloca(bufsize);
+#if defined(L4SC_WINDOWS_FILES)
+    wlen = MultiByteToWideChar(CP_UTF8, 0, appender->filename, fnlen, from,
+                               fnlen + 1);
+    if ((wlen >= 0) && (wlen < fnlen)) {
+        fnlen = wlen;
+    }
+#else
     memcpy(from, appender->filename, fnlen);
-    memcpy(to, appender->filename, fnlen);
+#endif
+    memcpy(to, from, fnlen * sizeof(from[0]));
     to[fnlen] = from[fnlen] = '\0';
 
     /*
      * Remove last backup file
      */
-    l4sc_snprintf(from + fnlen, 6, ".%u", appender->maxbackupindex);
+    append_index(from, fnlen, appender->maxbackupindex);
 #if defined(L4SC_WINDOWS_FILES)
-    DeleteFileA(from);
+    DeleteFileW(from);
 #else
     unlink(from);
 #endif
@@ -438,10 +502,10 @@ complete_rollover(l4sc_appender_ptr_t appender)
      * test.log.0 -> test.log.1
      */
     for (i = appender->maxbackupindex; i > 0; i--) {
-        l4sc_snprintf(to + fnlen, 6, ".%d", i);
-        l4sc_snprintf(from + fnlen, 6, ".%d", i - 1);
+        append_index(from, fnlen, i - 1);
+        append_index(to, fnlen, i);
 #if defined(L4SC_WINDOWS_FILES)
-        MoveFileExA(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
+        MoveFileExW(from, to, 0 /* !MOVEFILE_COPY_ALLOWED */);
 #else
         rename(from, to);
 #endif

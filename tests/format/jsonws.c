@@ -170,7 +170,7 @@ main(int argc, char *argv[])
     assert(layout != NULL);
 
     l4sc_init_logmessage(msg, sizeof(msg), logger, INFO_LEVEL, "ABC", 3,
-                         "sourcefile", 100, "testfunction");
+                         "/tmp/sourcefile", 100, "testfunction");
     msg->time.tv_usec = 0;
     RETVAR_METHCALL(bytes, l4sc_layout_class_ptr_t, layout, format,
                     (layout, msg, buf, sizeof(buf)), -1);
@@ -178,7 +178,7 @@ main(int argc, char *argv[])
     check_formatted_message(buf, bytes, refstream1);
 
     l4sc_init_logmessage(msg, sizeof(msg), logger, INFO_LEVEL, "DEF", 3,
-                         "sourcefile", 101, "testfunction");
+                         "C:\\Windows\\sourcefile", 101, "testfunction");
     msg->time.tv_usec = 456789;
     RETVAR_METHCALL(bytes, l4sc_layout_class_ptr_t, layout, format,
                     (layout, msg, buf, sizeof(buf)), -1);

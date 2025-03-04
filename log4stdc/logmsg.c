@@ -129,6 +129,7 @@ l4sc_init_logmessage(void *buf, size_t bufsize, l4sc_logger_cptr_t logger,
                      const char *file, int line, const char *func)
 {
     l4sc_logmessage_ptr_t m = (l4sc_logmessage_ptr_t)buf;
+    const char *cp;
     int rc;
 
     if ((rc = init_logmessage(buf, bufsize, NULL)) >= 0) {
@@ -172,6 +173,12 @@ l4sc_init_logmessage(void *buf, size_t bufsize, l4sc_logger_cptr_t logger,
         m->func = func;
         m->file = file;
         m->line = line;
+        if (((cp = strrchr(m->file, '/')) != NULL) && (cp[1] != '\0')) {
+            m->file = cp + 1; /* basename(m->file) for posix file names */
+        }
+        if (((cp = strrchr(m->file, '\\')) != NULL) && (cp[1] != '\0')) {
+            m->file = cp + 1; /* basename(m->file) for Windows file names */
+        }
 #if defined(L4SC_USE_WINDOWS_THREADID)
         l4sc_snprintf(m->threadid, sizeof(m->threadid), "%lu",
                       (unsigned long)GetCurrentThreadId());

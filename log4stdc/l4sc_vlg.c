@@ -19,7 +19,7 @@ l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,
 
     if (l4sc_logger_enabled(logger, level)) {
         bfc_mempool_t pool = logger->parent_pool;
-        char *poolmem = ((maxbytes > 2000) && pool)
+        char *poolmem = ((maxbytes > 600 * sizeof(void *)) && pool)
                             ? bfc_mempool_alloc(pool, maxbytes + 1)
                             : NULL;
         char *msg = poolmem ? poolmem : alloca(maxbytes + 1);

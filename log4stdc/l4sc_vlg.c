@@ -28,6 +28,10 @@ l4sc_vlog(l4sc_logger_ptr_t logger, int level, size_t maxbytes, int partial,
             if (partial) {
                 len = maxbytes;
             } else {
+                if (poolmem) {
+                    bfc_mempool_free(pool, poolmem);
+                    poolmem = NULL;
+                }
                 return (rc);
             }
         }

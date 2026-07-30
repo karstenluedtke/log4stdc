@@ -30,7 +30,7 @@ struct xml_tag {
 #define XML_COMMENT_TAG 4
 
 #define MAX_ATTRS 10
-#define MAX_ATTR_LEN 80
+#define MAX_ATTR_LEN (40*sizeof(void*)) /* filename in fileappender: 160 */
 
 struct xml_attr {
     int namelen;
@@ -130,7 +130,8 @@ on_start_tag(struct parsing_state *ps, const struct xml_tag *tag)
     struct xml_attr attrs[MAX_ATTRS];
     static const char thisfunction[] = "on_start_tag";
 
-    LOGDEBUG(("%s: stack %p", thisfunction, &values));
+    LOGDEBUG(("%s: MAX_ATTR_LEN %d, stack %p",
+              thisfunction, MAX_ATTR_LEN, &values));
 
     xml_tag_name_tostring(tag, name, sizeof(name));
     nattrs = xml_tag_get_attrs(tag, attrs, MAX_ATTRS, MAX_ATTR_LEN);
